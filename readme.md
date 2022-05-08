@@ -42,14 +42,6 @@ High-level plan is represented in the table
 
 | Feature | Status |
 | ------- | ------ |
-| Building Blocks | Completed ✔️ |
-| API Gateway | Completed ✔️ |
-| Identity Service | Completed ✔️ |
-| Customer Service | Completed ✔️ |
-| Catalog Service | Completed ✔️ |
-| Order Service |  In Progress 👷‍♂️ |
-| Shipping Service | Not Started 🚩 |
-| Payment Service | Not Started 🚩 |
 
 ## Technologies - Libraries
 - ✔️ **[`.NET 6`](https://dotnet.microsoft.com/download)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core
@@ -99,7 +91,7 @@ Some of shipping service capabilities are `Register Shipping methods`, `Edit Shi
 3. Install Visual Studio 2022, Rider or VSCode.
 4. Install docker - [https://docs.docker.com/docker-for-windows/install/](https://docs.docker.com/docker-for-windows/install/).
 5. Make sure that you have ~10GB disk space.
-6. Clone Project [https://github.com/mehdihadeli/Store-microservices](https://github.com/mehdihadeli/Store-microservices), make sure that's compiling
+6. Clone Project [https://github.com/mehdihadeli/store-microservices-sample](https://github.com/mehdihadeli/Store-microservices), make sure that's compiling
 7. Open [store.sln](./Store.sln) solution.
 
 ## Contribution
@@ -116,4 +108,4 @@ The application is in development status. You are feel free to submit pull reque
 - [https://github.com/devmentors/Inflow-micro](https://github.com/devmentors/Inflow-micro)
 
 ## License
-The project is under [MIT license](https://github.com/mehdihadeli/Store-microservices/blob/main/LICENSE).
+The project is under [MIT license](https://github.com/mehdihadeli/store-microservices-sample/blob/main/LICENSE).

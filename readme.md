@@ -1,4 +1,4 @@
-# Store Microservices Sample
+# 🛍️ Store Microservices Sample
 
 `Store Microservices` is a fictional online store sample, based on different software architecture and technologies like Microservices Architecture, Vertical Slice Architecture, CQRS pattern, Domain Driven Design, Event Driven Architecture and using Postgres for write side and MongoDb.
 

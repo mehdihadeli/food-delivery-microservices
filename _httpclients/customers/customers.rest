@@ -1,0 +1,109 @@
+# https://github.com/Huachao/vscode-restclient
+@customers-api=http://localhost:8000
+@api-gateway=http://localhost:3000
+@customer_id = 860808335851520
+@restock_subscription_id = 862777745866752
+@product_id=1
+
+# @name ApiRoot
+GET {{customers-api}}
+
+###
+# @name Authenticate
+POST {{api-gateway}}/api/v1/identity/login
+accept: application/json
+Content-Type: application/json
+
+{
+  "userNameOrEmail": "mehdi",
+  "password": "123456",
+  "remember": true
+}
+
+###
+# @name Get_All_Customers
+@page=1
+@pageSize=10
+GET {{api-gateway}}/api/v1/customers?Page={{page}}&PageSize={{pageSize}}
+accept: application/json
+Content-Type: application/x-www-form-urlencoded
+
+###
+# @name Get_Customer_By_Id
+GET {{api-gateway}}/api/v1/customers/{{customer_id}}
+accept: application/json
+Content-Type: application/x-www-form-urlencoded
+
+###
+# @name Create_Customer
+POST {{api-gateway}}/api/v1/customers
+accept: application/json
+Content-Type: application/json
+
+{
+  "email": "mehdi3@test.com"
+}
+
+###
+# @name Get_All_Restock_Subscriptions
+@from_date=2020-01-01
+@to_date=2023-01-01
+@page=1
+@page_size=10
+GET {{api-gateway}}/api/v1/customers/restock-subscriptions?From={{from_date}}&To={{to_date}}&Page={{page}}&PageSize={{page_size}}
+accept: application/json
+authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+###
+
+
+###
+# @name Get_Restock_Subscriptions_By_Emails
+@email1=mehdi@test.com
+@email2=mehdi2@test.com
+GET {{api-gateway}}/api/v1/customers/restock-subscriptions/by-emails?Emails={{email1}}&Emails={{email2}}
+accept: application/json
+authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+
+
+###
+# @name Get_Restock_Subscriptions_By_Id
+
+GET {{api-gateway}}/api/v1/customers/restock-subscriptions/{{restock_subscription_id}}
+Content-Type: application/x-www-form-urlencoded
+accept: application/json
+authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+
+###
+# @name Create_Restock_Subscriptions_By
+@email="mehdi3@test.com"
+POST {{api-gateway}}/api/v1/customers/restock-subscriptions
+accept: application/json
+Content-Type: application/json
+
+{
+  "customerId": {{customer_id}},
+  "productId": {{product_id}},
+  "email": {{email}}
+}
+
+###
+# @name Delete_Restock_Subscriptions_By_Id
+DELETE {{api-gateway}}/api/v1/customers/restock-subscriptions/{{restock_subscription_id}}
+accept: */*
+authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+
+###
+# @name Delete_Restock_Subscriptions_By_Time
+@from="2021-02-17"
+@to="2022-03-17"
+DELETE {{api-gateway}}/api/v1/customers/restock-subscriptions
+accept: */*
+authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+Content-Type: application/json
+
+{
+  "from": {{from}},
+  "to": {{to}}
+}
+
+

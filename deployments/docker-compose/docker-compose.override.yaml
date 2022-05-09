@@ -1,0 +1,32 @@
+version: '3'
+services:
+  catalogs:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoOptions__ConnectionString=mongodb://mongo:${MONGODB_PORT}
+      - DatabaseName=Store-services-catalogs
+      - PostgresOptions__ConnectionString=Server=postgres;Port=5432;Database=Store.Services.Catalogs;User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Include Error Detail=true
+      - PostgresOptions__UseInMemory=false
+      - RabbitConfiguration__Hostname=rabbitmq
+      - RabbitConfiguration__UserName=guest
+      - RabbitConfiguration__Password=guest
+      - RabbitConfiguration__Port=5672
+      - OutboxOptions__ConnectionString=Server=postgres;Port=5432;Database=Store.Services.Catalogs;User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Include Error Detail=true
+      - HangfireMessageSchedulerOptions__ConnectionString=Server=postgres;Port=5432;Database=Store.Services.Catalogs;User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Include Error Detail=true
+      - InternalMessageSchedulerOptions__ConnectionString=Server=postgres;Port=5432;Database=Store.Services.Catalogs;User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Include Error Detail=true
+  rabbitmq:
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+  postgres:
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+
+  mongo:
+    ports:
+      - ${MONGODB_PORT}:27017

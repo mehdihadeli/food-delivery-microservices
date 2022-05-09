@@ -29,7 +29,6 @@ Thanks a bunch for supporting me!
 - Communications between bounded contexts through asynchronous `Message Broker` with using `RabbitMQ` with some autonomous services.
 - Simple `CQRS` implementation and `Event Driven Architecture` with using Postgres for `Write Side` and MongoDB and Elastic Search for `Read Side`. For syncing Read Side and Write Side I will use [EventStore Projections](https://developers.eventstore.com/server/v5/projections.html#introduction-to-projections) or [Marten Projections](https://martendb.io/events/projections/). we could also sync our Read and Write models with passing some integration event between services for achieving eventually consistency.
 - Implementing various type of testing like `Unit Testing`,  `Integration Testing` and `End-To-End Testing`.
-- Using [Inbox Pattern](https://event-driven.io/en/outbox_inbox_patterns_and_delivery_guarantees_explained/) for guaranty message [Idempotency](https://www.enterpriseintegrationpatterns.com/patterns/messaging/IdempotentReceiver.html) for receiver microservice and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/) pattern and using [Outbox Pattern](https://event-driven.io/en/outbox_inbox_patterns_and_delivery_guarantees_explained/) for ensuring about any message lost and [At-Least one Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/) rule.
 - Using `Best Practice` and `New Technologies` and `Design Patterns`.
 - Using `Event Storming` for extracting data model and bounded context (using Miro).
 - Using Docker-Compose, Helm and Kubernetes for our deployment mechanism and Also using Terraform as infrastructure as a code.
@@ -42,8 +41,17 @@ High-level plan is represented in the table
 
 | Feature | Status |
 | ------- | ------ |
+| Building Blocks | Completed ✔️ |
+| API Gateway | Completed ✔️ |
+| Identity Service | Completed ✔️ |
+| Customer Service | Completed ✔️ |
+| Catalog Service | Completed ✔️ |
+| Order Service |  In Progress 👷‍|
+| Shipping Service | Not Started 🚩 |
+| Payment Service | Not Started 🚩 |
 
 ## Technologies - Libraries
+
 - ✔️ **[`.NET 6`](https://dotnet.microsoft.com/download)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core
 - ✔️ **[`Npgsql Entity Framework Core Provider`](https://www.npgsql.org/efcore/)** - Npgsql has an Entity Framework (EF) Core provider. It behaves like other EF Core providers (e.g. SQL Server), so the general EF Core docs apply here as well
 - ✔️ **[`FluentValidation`](https://github.com/FluentValidation/FluentValidation)** - Popular .NET validation library for building strongly-typed validation rules
@@ -62,6 +70,7 @@ High-level plan is represented in the table
 - ✔️ **[`AutoMapper`](https://github.com/AutoMapper/AutoMapper)** - Convention-based object-object mapper in .NET.
 - ✔️ **[`Hellang.Middleware.ProblemDetails`](https://github.com/khellang/Middleware/tree/master/src/ProblemDetails)** - A middleware for handling exception in .Net Core
 - ✔️ **[`IdGen`](https://github.com/RobThree/IdGen)** - Twitter Snowflake-alike ID generator for .Net
+- ✔️ **[`MassTransit`](https://github.com/MassTransit/MassTransit)** - Distributed Application Framework for .NET
 
 
 ## The Domain And Bounded Context - Service Boundary

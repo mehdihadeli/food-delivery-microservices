@@ -1,0 +1,15 @@
+# http://localhost:15672/api/index.html
+# https://www.rabbitmq.com/management.html#http-api
+
+@rabbitmq-api=http://localhost:15672/api
+
+###
+# @name ApiRoot
+GET {{rabbitmq-api}}
+###
+
+
+###
+# @name Exchanges
+GET {{rabbitmq-api}}/exchanges
+###

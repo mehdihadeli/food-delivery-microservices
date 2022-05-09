@@ -1,0 +1,78 @@
+version: '3'
+services:
+  gateway:
+    build:
+      context: ../../
+      dockerfile: src/ApiGateway/Store.ApiGateway/Dockerfile
+    container_name: e-commerce-gateway
+    # restart: unless-stopped
+    ports:
+      - ${GATEWAY_PORT}:80
+    networks:
+      - e-commerce
+
+  catalogs:
+    image: catalogs:${TAG}
+    build:
+      args:
+        Version: "1"
+      context: ../../
+      dockerfile: src/Services/Store.Services.Catalogs/Dockerfile
+    container_name: e-commerce-catalogs
+    # restart: unless-stopped
+    ports:
+      - ${CATALOGS_SVC_PORT}:80
+    depends_on:
+      - postgres
+      - rabbitmq
+      - mongo
+    links:
+      - postgres
+      - rabbitmq
+      - mongo
+    networks:
+      - e-commerce
+
+  identity:
+    image: identity:${TAG}
+    build:
+      args:
+        Version: "1"
+      context: ../../
+      dockerfile: src/Services/Store.Services.Identity/Dockerfile
+    container_name: e-commerce-identity
+    # restart: unless-stopped
+    ports:
+      - ${IDENTITY_SVC_PORT}:80
+    depends_on:
+      - postgres
+      - rabbitmq
+      - mongo
+    links:
+      - postgres
+      - rabbitmq
+      - mongo
+    networks:
+      - e-commerce
+
+  customers:
+    image: customers:${TAG}
+    build:
+      args:
+        Version: "1"
+      context: ../../
+      dockerfile: src/Services/Store.Services.Customers/Dockerfile
+    container_name: e-commerce-customers
+    # restart: unless-stopped
+    ports:
+      - ${CUSTOMERS_SVC_PORT}:80
+    depends_on:
+      - postgres
+      - rabbitmq
+      - mongo
+    links:
+      - postgres
+      - rabbitmq
+      - mongo
+    networks:
+      - e-commerce

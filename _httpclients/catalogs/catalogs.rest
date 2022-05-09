@@ -1,0 +1,91 @@
+# https://github.com/Huachao/vscode-restclient
+@catalog-api=http://localhost:4000
+@api-gateway=http://localhost:3000
+@contentType = application/json
+@product_id = 1
+
+###
+# @name ApiRoot
+GET {{catalog-api}}
+###
+
+###
+# @name Authenticate
+POST {{api-gateway}}/api/v1/identity/login
+accept: application/json
+Content-Type: application/json
+
+{
+  "userNameOrEmail": "mehdi",
+  "password": "123456",
+  "remember": true
+}
+###
+
+###
+# @name Create_New_Product
+POST {{api-gateway}}/api/v1/catalogs/products
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+
+{
+  "name": "test3",
+  "price": 100,
+  "stock": 10,
+  "restockThreshold": 5,
+  "maxStockThreshold": 10,
+  "status": 1,
+  "height": 10,
+  "width": 10,
+  "depth": 10,
+  "size": "H",
+  "color": 1,
+  "categoryId": 1,
+  "supplierId": 1,
+  "brandId": 1,
+  "description": "string",
+  "images": [
+    {
+      "imageUrl": "string",
+      "isMain": true
+    }
+  ]
+}
+###
+
+###
+# @name Get_All_Products
+@page = 1
+@pageSize = 20
+GET {{api-gateway}}/api/v1/catalogs/products?Page={{page}}&PageSize={{pageSize}}
+accept: application/json
+Content-Type: application/x-www-form-urlencoded
+###
+
+###
+# @name Get_Product_By_Id
+
+GET {{api-gateway}}/api/v1/catalogs/products/{{product_id}}
+accept: application/json
+###
+
+###
+# @name Debit_Product_Stock
+@debit_quantity = 1
+POST {{api-gateway}}/api/v1/catalogs/products/{{product_id}}/debit-stock?quantity={{debit_quantity}}
+accept: */*
+Content-Type: application/x-www-form-urlencoded
+authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+###
+
+
+###
+# @name Replenish_Product_Stock
+@replenish_quantity = 1
+POST {{api-gateway}}/api/v1/catalogs/products/{{product_id}}/replenish-stock?quantity={{replenish_quantity}}
+accept: */*
+Content-Type: application/x-www-form-urlencoded
+authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+###
+

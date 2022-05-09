@@ -1,0 +1,11 @@
+{
+    "apps": [
+      {
+        "name": "api-gateway",
+        "script": "dotnet",
+        "args" : "run",
+        "cwd": "/src/ApiGateway/Store.ApiGateway/Store.ApiGateway/",
+		"autorestart": false
+      }
+    ]
+  }

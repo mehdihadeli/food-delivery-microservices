@@ -1,0 +1,28 @@
+name: tye-shop
+registry: mehdihadeli 
+
+services:
+
+- name: postgres
+  image: debezium/postgres
+  env_file:
+    - .env
+  bindings:
+    - port: 5432
+      connectionString: Server=${host};Port=${port};User Id=${env:POSTGRES_USER};Password=${env:POSTGRES_PASSWORD};
+  tags:
+    - inf
+
+- name: identity-app
+  project: src/Identity/Identity.Api/Identity.Api.csproj
+  env_file:
+    - .env
+  bindings:
+  - port: 7000
+
+- name: shop-api
+  project: src/Application/Shop.Api/Shop.Api.csproj
+  env_file:
+    - .env
+  bindings:
+  - port: 5000

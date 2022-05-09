@@ -1,0 +1,3 @@
+[submodule "src/BuildingBlocks/micro-bootstrap"]
+	path = src/BuildingBlocks/micro-bootstrap
+	url = https://github.com/mehdihadeli/micro-bootstrap.git

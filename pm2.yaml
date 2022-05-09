@@ -1,0 +1,26 @@
+# https://stackoverflow.com/a/42619477/581476
+# https://pm2.keymetrics.io/docs/usage/application-declaration/
+apps:
+  - name: api-gateway
+    cwd: src\ApiGateway\Store.ApiGateway\Store.ApiGateway\
+    script: dotnet
+    args: run
+    autorestart: false
+
+  - name: catalogs-service
+    cwd: src\Services\Store.Services.Catalogs\Store.Services.Catalogs.Api\
+    script: dotnet 
+    args: run
+    autorestart: false
+
+  - name: customers-service
+    cwd: src\Services\Store.Services.Customers\Store.Services.Customers.Api\
+    script: dotnet
+    args: run
+    autorestart: false
+
+  - name: Identity-service
+    cwd: src\Services\Store.Services.Identity\Store.Services.Identity.Api\
+    script: dotnet
+    args: run
+    autorestart: false

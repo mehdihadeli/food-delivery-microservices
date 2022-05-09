@@ -1,0 +1,91 @@
+# https://github.com/Huachao/vscode-restclient
+@identity-api=http://localhost:7000
+@api-gateway=http://localhost:3000
+@contentType = application/json
+
+###
+# @name ApiRoot
+GET {{identity-api}}
+###
+
+###
+# @name Login
+POST {{api-gateway}}/api/v1/identity/login
+accept: application/json
+Content-Type: application/json
+
+{
+  "userNameOrEmail": "mehdi",
+  "password": "123456",
+  "remember": true
+}
+###
+
+###
+# @name Register_New_User
+POST {{api-gateway}}/api/v1/identity/users
+accept: application/json
+Content-Type: application/json
+
+{
+  "firstName": "mehdi4",
+  "lastName": "test",
+  "userName": "mehdi4",
+  "email": "mehdi4@test.com",
+  "password": "123456",
+  "confirmPassword": "123456",
+  "roles": [
+    "user"
+  ]
+}
+###
+
+###
+# @name Get_All_Users
+@page=1
+@pageSize=20
+GET {{api-gateway}}/api/v1/identity/users?Page={{page}}&PageSize={{pageSize}}
+accept: application/json
+Content-Type: application/x-www-form-urlencoded
+###
+
+###
+# @name Get_User_By_Email
+@email=mehdi@test.com
+GET {{api-gateway}}/api/v1/identity/users/by-email/{{email}}
+accept: application/json
+###
+
+
+################################
+# Identity-Server
+################################
+###
+# @name OpenId_Configuration
+GET {{identity-api}}/.well-known/openid-configuration
+###
+
+###
+# @name Get_oauthClient_Token
+POST {{identity-api}}/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&scope=shop-api&client_id=oauthClient&client_secret=SuperSecretPassword
+###
+
+
+###
+# @name Get_frontend-client_Token
+POST {{identity-api}}/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&scope=shop-api&client_id=frontend-client&username=mehdi&password=123456
+###
+
+
+###
+# @name Authorize
+POST {{identity-api}}/connect/authorize
+Content-Type: application/x-www-form-urlencoded
+
+scope=shop-api&client_id=frontend-client

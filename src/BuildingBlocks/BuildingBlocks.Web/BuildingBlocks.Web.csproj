@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
+    <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
+    <PackageReference Include="MinimalApis.Extensions" Version="0.5.0-pre.20220321.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--https://github.com/dotnet/aspnetcore/issues/19481-->
+    <!--https://docs.microsoft.com/en-us/aspnet/core/fundamentals/metapackage-app-->
+    <!--https://docs.microsoft.com/en-us/aspnet/core/fundamentals/target-aspnetcore-->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

@@ -13,7 +13,7 @@ services:
       # volumes:
       #   - rabbitmq:/var/lib/rabbitmq
     networks:
-      - e-commerce
+      - store
 
     #######################################################
     #  mongo
@@ -25,10 +25,10 @@ services:
     # environment:
     #   - MONGO_INITDB_ROOT_USERNAME=root
     #   - MONGO_INITDB_ROOT_PASSWORD=secret
-    ports:
-      - ${MONGODB_PORT}: 27017
+    ports: 
+      - ${MONGO_PORT}:${MONGO_PORT}
     networks:
-      - e-commerce
+      - store
 
     #######################################################
     #  postgres
@@ -42,35 +42,35 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
-      - e-commerce
+      - store
 
     #######################################################
     #  EventStoreDB
     #######################################################
-  eventstore.db:
-      image: eventstore/eventstore:21.2.0-buster-slim
-      restart: on-failure
-      environment:
-          - EVENTSTORE_CLUSTER_SIZE=1
-          - EVENTSTORE_RUN_PROJECTIONS=All
-          - EVENTSTORE_START_STANDARD_PROJECTIONS=true
-          - EVENTSTORE_EXT_TCP_PORT=1010
-          - EVENTSTORE_EXT_HTTP_PORT=2113
-          - EVENTSTORE_INSECURE=true
-          - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
-          - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
-      ports:
-          - '1010:1113'
-          - '2113:2113'
-      volumes:
-          - type: volume
-            source: eventstore-volume-data
-            target: /var/lib/eventstore
-          - type: volume
-            source: eventstore-volume-logs
-            target: /var/log/eventstore
-      networks:
-          - esdb_network
+  # eventstore.db:
+  #     image: eventstore/eventstore:21.2.0-buster-slim
+  #     restart: on-failure
+  #     environment:
+  #         - EVENTSTORE_CLUSTER_SIZE=1
+  #         - EVENTSTORE_RUN_PROJECTIONS=All
+  #         - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+  #         - EVENTSTORE_EXT_TCP_PORT=1010
+  #         - EVENTSTORE_EXT_HTTP_PORT=2113
+  #         - EVENTSTORE_INSECURE=true
+  #         - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+  #         - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+  #     ports:
+  #         - '1010:1113'
+  #         - '2113:2113'
+  #     volumes:
+  #         - type: volume
+  #           source: eventstore-volume-data
+  #           target: /var/lib/eventstore
+  #         - type: volume
+  #           source: eventstore-volume-logs
+  #           target: /var/log/eventstore
+  #     networks:
+  #         - esdb_network
 
     #######################################################
     #  elasticsearch
@@ -208,8 +208,8 @@ services:
 #     pgadmin:
 
 networks:
-  e-commerce:
-    name: e-commerce
+  store:
+    name: store
   esdb_network:
     name: esdb_network
     driver: bridge

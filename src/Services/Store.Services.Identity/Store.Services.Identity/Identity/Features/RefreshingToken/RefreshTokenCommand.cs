@@ -2,14 +2,14 @@ using System.Security.Claims;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Command;
 using BuildingBlocks.Security.Jwt;
+using FluentValidation;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Store.Services.Identity.Identity.Exceptions;
 using Store.Services.Identity.Identity.Features.GenerateJwtToken;
 using Store.Services.Identity.Identity.Features.GenerateRefreshToken;
 using Store.Services.Identity.Shared.Exceptions;
 using Store.Services.Identity.Shared.Models;
-using FluentValidation;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.JsonWebTokens;
 using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 
 namespace Store.Services.Identity.Identity.Features.RefreshingToken;
@@ -49,7 +49,7 @@ internal class RefreshTokenHandler : ICommandHandler<RefreshTokenCommand, Refres
         Guard.Against.Null(request, nameof(RefreshTokenCommand));
 
         // invalid token/signing key was passed and we can't extract user claims
-        var userClaimsPrincipal = _jwtService.ValidateToken(request.AccessTokenData);
+        var userClaimsPrincipal = _jwtService.GetPrincipalFromToken(request.AccessTokenData);
 
         if (userClaimsPrincipal is null)
             throw new InvalidTokenException(userClaimsPrincipal);
@@ -66,28 +66,28 @@ internal class RefreshTokenHandler : ICommandHandler<RefreshTokenCommand, Refres
                 new GenerateRefreshTokenCommand { UserId = identityUser.Id, Token = request.RefreshTokenData },
                 cancellationToken)).RefreshToken;
 
-        var jsonWebToken =
-            (await _commandProcessor.SendAsync(
-                new GenerateJwtTokenCommand(identityUser, refreshToken.Token), cancellationToken)).JsonWebToken;
+        var accessToken =
+            await _commandProcessor.SendAsync(
+                new GenerateJwtTokenCommand(identityUser, refreshToken.Token), cancellationToken);
 
-        return new RefreshTokenResult(identityUser, jsonWebToken, refreshToken.Token);
+        return new RefreshTokenResult(identityUser, accessToken, refreshToken.Token);
     }
 }
 
-public record RefreshTokenResult
+public class RefreshTokenResult
 {
-    public RefreshTokenResult(ApplicationUser user, JsonWebToken jwtToken, string refreshToken)
+    public RefreshTokenResult(ApplicationUser user, string accessToken, string refreshToken)
     {
-        Id = user.Id;
+        UserId = user.Id;
         FirstName = user.FirstName;
         LastName = user.LastName;
         Username = user.UserName;
-        JsonWebToken = jwtToken;
+        AccessToken = accessToken;
         RefreshToken = refreshToken;
     }
 
-    public JsonWebToken JsonWebToken { get; }
-    public Guid Id { get; }
+    public string AccessToken { get; }
+    public Guid UserId { get; }
     public string FirstName { get; }
     public string LastName { get; }
     public string Username { get; }

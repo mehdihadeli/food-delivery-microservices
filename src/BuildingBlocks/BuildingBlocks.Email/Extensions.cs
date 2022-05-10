@@ -13,6 +13,7 @@ public static class Extensions
         Action<EmailOptions>? configureOptions = null)
     {
         var config = configuration.GetOptions<EmailOptions>(nameof(EmailOptions));
+        configureOptions?.Invoke(config ?? new EmailOptions());
 
         if (provider == EmailProvider.SendGrid)
         {

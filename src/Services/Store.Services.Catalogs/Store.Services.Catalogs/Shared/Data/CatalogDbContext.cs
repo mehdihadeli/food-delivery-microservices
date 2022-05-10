@@ -1,4 +1,3 @@
-using BuildingBlocks.Abstractions.CQRS.Event.Internal;
 using BuildingBlocks.Core.Persistence.EfCore;
 using Store.Services.Catalogs.Brands;
 using Store.Services.Catalogs.Categories;
@@ -15,12 +14,6 @@ public class CatalogDbContext : EfDbContextBase, ICatalogDbContext
     public CatalogDbContext(DbContextOptions options) : base(options)
     {
     }
-
-    public CatalogDbContext(DbContextOptions options, IDomainEventPublisher domainEventPublisher)
-        : base(options, domainEventPublisher)
-    {
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

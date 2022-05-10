@@ -7,15 +7,10 @@ namespace BuildingBlocks.Core.CQRS.Command;
 public class CommandProcessor : ICommandProcessor
 {
     private readonly IMediator _mediator;
-    private readonly ICommandScheduler _commandScheduler;
 
-    public CommandProcessor(
-        IMediator mediator,
-        ICommandScheduler commandScheduler
-    )
+    public CommandProcessor(IMediator mediator)
     {
         _mediator = mediator;
-        _commandScheduler = commandScheduler;
     }
 
     public Task<TResult> SendAsync<TResult>(
@@ -27,11 +22,11 @@ public class CommandProcessor : ICommandProcessor
 
     public Task ScheduleAsync(IInternalCommand internalCommandCommand, CancellationToken cancellationToken = default)
     {
-        return _commandScheduler.ScheduleAsync(internalCommandCommand, cancellationToken);
+        return Task.CompletedTask;
     }
 
     public Task ScheduleAsync(IInternalCommand[] internalCommandCommands, CancellationToken cancellationToken = default)
     {
-        return _commandScheduler.ScheduleAsync(internalCommandCommands, cancellationToken);
+        return Task.CompletedTask;
     }
 }

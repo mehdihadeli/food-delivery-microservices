@@ -4,10 +4,10 @@ namespace Store.Services.Customers.Shared.Extensions.ApplicationBuilderExtension
 
 public static partial class ApplicationBuilderExtensions
 {
-    public static async Task<IApplicationBuilder> UseInfrastructure(this IApplicationBuilder app, ILogger logger)
+    public static Task<IApplicationBuilder> UseInfrastructure(this IApplicationBuilder app, ILogger logger)
     {
         app.UseMonitoring();
 
-        return app;
+        return Task.FromResult(app);
     }
 }

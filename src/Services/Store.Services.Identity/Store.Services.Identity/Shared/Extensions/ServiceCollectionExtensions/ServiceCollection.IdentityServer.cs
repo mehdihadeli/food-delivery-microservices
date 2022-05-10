@@ -1,8 +1,7 @@
 using Duende.IdentityServer.Services;
+using Microsoft.AspNetCore.Builder;
 using Store.Services.Identity.Identity.Services;
 using Store.Services.Identity.Shared.Models;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 
 // Ref:https://www.scottbrady91.com/identity-server/getting-started-with-identityserver-4
 namespace Store.Services.Identity.Shared.Extensions.ServiceCollectionExtensions;

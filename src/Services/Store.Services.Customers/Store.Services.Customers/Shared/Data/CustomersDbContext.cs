@@ -15,11 +15,6 @@ public class CustomersDbContext : EfDbContextBase, ICustomersDbContext
     {
     }
 
-    public CustomersDbContext(DbContextOptions options, IDomainEventPublisher domainEventPublisher)
-        : base(options, domainEventPublisher)
-    {
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension(EfConstants.UuidGenerator);

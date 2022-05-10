@@ -1,10 +1,10 @@
+using Ardalis.GuardClauses;
 using BuildingBlocks.Caching.InMemory;
 using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
-using BuildingBlocks.CQRS;
 using BuildingBlocks.Email;
 using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Logging;
@@ -37,6 +37,8 @@ public static partial class ServiceCollectionExtensions
         services.AddMonitoring(healthChecksBuilder =>
         {
             var postgresOptions = configuration.GetOptions<PostgresOptions>(nameof(PostgresOptions));
+            Guard.Against.Null(postgresOptions, nameof(postgresOptions));
+
             healthChecksBuilder.AddNpgSql(
                 postgresOptions.ConnectionString,
                 name: "Customers-Postgres-Check",
@@ -45,18 +47,20 @@ public static partial class ServiceCollectionExtensions
 
         services.AddEmailService(configuration);
 
-        services.AddCqrs(new[] {typeof(CustomersRoot).Assembly}, s =>
-        {
-            s.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>))
-                .AddScoped(typeof(IStreamPipelineBehavior<,>), typeof(StreamRequestValidationBehavior<,>))
-                .AddScoped(typeof(IStreamPipelineBehavior<,>), typeof(StreamLoggingBehavior<,>))
-                .AddScoped(typeof(IStreamPipelineBehavior<,>), typeof(StreamCachingBehavior<,>))
-                .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
-                .AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>))
-                .AddScoped(typeof(IPipelineBehavior<,>), typeof(InvalidateCachingBehavior<,>))
-                .AddScoped(typeof(IPipelineBehavior<,>), typeof(EfTxBehavior<,>));
-        });
+        services.AddCqrs(
+            doMoreActions: s =>
+            {
+                s.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>))
+                    .AddScoped(typeof(IStreamPipelineBehavior<,>), typeof(StreamRequestValidationBehavior<,>))
+                    .AddScoped(typeof(IStreamPipelineBehavior<,>), typeof(StreamLoggingBehavior<,>))
+                    .AddScoped(typeof(IStreamPipelineBehavior<,>), typeof(StreamCachingBehavior<,>))
+                    .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
+                    .AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>))
+                    .AddScoped(typeof(IPipelineBehavior<,>), typeof(InvalidateCachingBehavior<,>))
+                    .AddScoped(typeof(IPipelineBehavior<,>), typeof(EfTxBehavior<,>));
+            });
 
+        services.AddInMemoryMessagePersistence();
         services.AddCustomMassTransit(
             configuration,
             busRegistrationConfigurator =>

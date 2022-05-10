@@ -39,8 +39,6 @@ public static class CQRSRegistrationExtensions
                 }
             });
 
-        // services.Decorate(typeof(IEventHandler<>), typeof(EventHandlerDecorator<>));
-
         services.Add<ICommandProcessor, CommandProcessor>(serviceLifetime)
             .Add<IQueryProcessor, QueryProcessor>(serviceLifetime)
             .Add<IEventProcessor, EventProcessor>(serviceLifetime)

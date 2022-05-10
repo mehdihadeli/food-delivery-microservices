@@ -14,7 +14,7 @@ public static class ConfigurationExtensions
     /// <param name="configuration">The configuration instance to bind.</param>
     /// <param name="section">The configuration section</param>
     /// <returns>The new instance of <typeparamref name="TModel"/>.</returns>
-    public static TModel GetOptions<TModel>(this IConfiguration configuration, string section)
+    public static TModel? GetOptions<TModel>(this IConfiguration configuration, string section)
         where TModel : new()
     {
         var model = configuration.GetSection(section).Get<TModel>();

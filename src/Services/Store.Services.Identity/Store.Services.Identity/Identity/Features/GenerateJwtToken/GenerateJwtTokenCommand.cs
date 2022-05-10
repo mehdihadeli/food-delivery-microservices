@@ -2,17 +2,15 @@ using System.Collections.Immutable;
 using System.Security.Claims;
 using BuildingBlocks.Abstractions.CQRS.Command;
 using BuildingBlocks.Security.Jwt;
-using Store.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Store.Services.Identity.Shared.Models;
 
 namespace Store.Services.Identity.Identity.Features.GenerateJwtToken;
 
-public record GenerateJwtTokenCommand(ApplicationUser User, string RefreshToken)
-    : ICommand<GenerateJwtTokenCommandResult>;
+public record GenerateJwtTokenCommand(ApplicationUser User, string RefreshToken) : ICommand<string>;
 
-public class GenerateRefreshTokenCommandHandler :
-    ICommandHandler<GenerateJwtTokenCommand, GenerateJwtTokenCommandResult>
+public class GenerateRefreshTokenCommandHandler : ICommandHandler<GenerateJwtTokenCommand, string>
 {
     private readonly ILogger<GenerateRefreshTokenCommandHandler> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
@@ -28,7 +26,7 @@ public class GenerateRefreshTokenCommandHandler :
         _logger = logger;
     }
 
-    public async Task<GenerateJwtTokenCommandResult> Handle(
+    public async Task<string> Handle(
         GenerateJwtTokenCommand request,
         CancellationToken cancellationToken)
     {
@@ -38,7 +36,7 @@ public class GenerateRefreshTokenCommandHandler :
         var allClaims = await GetClaimsAsync(request.User.UserName);
         var fullName = $"{identityUser.FirstName} {identityUser.LastName}";
 
-        var jsonWebToken = _jwtService.GenerateJwtToken(
+        var accessToken = _jwtService.GenerateJwtToken(
             identityUser.UserName,
             identityUser.Email,
             identityUser.Id.ToString(),
@@ -49,9 +47,9 @@ public class GenerateRefreshTokenCommandHandler :
             allClaims.Roles.ToImmutableList(),
             allClaims.PermissionClaims.ToImmutableList());
 
-        _logger.LogInformation("JsonWebToken generated with this information: {JsonWebToken}", jsonWebToken);
+        _logger.LogInformation("access-token generated, \n: {AccessToken}", accessToken);
 
-        return new GenerateJwtTokenCommandResult(jsonWebToken);
+        return accessToken;
     }
 
     public async Task<(IList<Claim> UserClaims, IList<string> Roles, IList<string> PermissionClaims)>

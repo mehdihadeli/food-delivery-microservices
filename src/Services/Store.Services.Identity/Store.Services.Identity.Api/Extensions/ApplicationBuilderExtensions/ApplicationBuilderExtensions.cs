@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Builder;
-
 namespace Store.Services.Identity.Api.Extensions.ApplicationBuilderExtensions;
 
 public static class ApplicationBuilderExtensions

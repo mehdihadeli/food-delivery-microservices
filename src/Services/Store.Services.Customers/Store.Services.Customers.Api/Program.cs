@@ -2,6 +2,7 @@ using System.Reflection;
 using BuildingBlocks.Core;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Monitoring;
+using BuildingBlocks.Security;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
@@ -14,6 +15,7 @@ using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Serilog;
 using Serilog.Events;
+using Store.Services.Customers.Shared.Data;
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
 // https://benfoster.io/blog/mvc-to-minimal-apis-aspnet-6/
@@ -64,7 +66,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-// builder.Services.AddCustomJwtAuthentication(builder.Configuration);
+builder.Services.AddCustomJwtAuthentication(builder.Configuration);
 builder.Services.AddCustomAuthorization(
     rolePolicies: new List<RolePolicy>
     {

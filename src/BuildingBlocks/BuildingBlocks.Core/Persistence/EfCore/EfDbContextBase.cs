@@ -17,19 +17,12 @@ public abstract class EfDbContextBase :
     IDbContext,
     IDomainEventContext
 {
-    private readonly IDomainEventPublisher _domainEventPublisher;
+    // private readonly IDomainEventPublisher _domainEventPublisher;
 
     private IDbContextTransaction? _currentTransaction;
 
     protected EfDbContextBase(DbContextOptions options) : base(options)
     {
-    }
-
-    protected EfDbContextBase(DbContextOptions options, IDomainEventPublisher domainEventPublisher) : base(options)
-    {
-        _domainEventPublisher = domainEventPublisher;
-        _domainEventPublisher = Guard.Against.Null(domainEventPublisher, nameof(domainEventPublisher));
-        System.Diagnostics.Debug.WriteLine($"{GetType().Name}::ctor");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,7 +38,8 @@ public abstract class EfDbContextBase :
         var types = builder.Model.GetEntityTypes().Where(x => x.ClrType.IsAssignableTo(typeof(IHaveAggregateVersion)));
         foreach (var entityType in types)
         {
-            builder.Entity(entityType.ClrType).Property(nameof(IHaveAggregateVersion.OriginalVersion)).IsConcurrencyToken();
+            builder.Entity(entityType.ClrType).Property(nameof(IHaveAggregateVersion.OriginalVersion))
+                .IsConcurrencyToken();
         }
     }
 
@@ -114,24 +108,9 @@ public abstract class EfDbContextBase :
         }
     }
 
-    public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
+    public Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
     {
-        // https://github.com/dotnet-architecture/eShopOnContainers/blob/e05a87658128106fef4e628ccb830bc89325d9da/src/Services/Ordering/Ordering.Infrastructure/OrderingContext.cs#L65
-        // https://github.com/dotnet-architecture/eShopOnContainers/issues/700#issuecomment-461807560
-        // http://www.kamilgrzybek.com/design/how-to-publish-and-handle-domain-events/
-        // http://www.kamilgrzybek.com/design/handling-domain-events-missing-part/
-        // https://youtu.be/x-UXUGVLMj8?t=4515
-        // https://enterprisecraftsmanship.com/posts/domain-events-simple-reliable-solution/
-        // https://lostechies.com/jimmybogard/2014/05/13/a-better-domain-events-pattern/
-        // https://www.ledjonbehluli.com/posts/domain_to_integration_event/
-        // https://ardalis.com/immediate-domain-event-salvation-with-mediatr/
-        await _domainEventPublisher.PublishAsync(GetAllUncommittedEvents().ToArray(), cancellationToken);
-
-        // After executing this line all the changes (from the Command Handler and Domain Event Handlers)
-        // performed through the DbContext will be committed
-        var result = await SaveChangesAsync(cancellationToken);
-
-        return true;
+        return Task.FromResult<bool>(true);
     }
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)

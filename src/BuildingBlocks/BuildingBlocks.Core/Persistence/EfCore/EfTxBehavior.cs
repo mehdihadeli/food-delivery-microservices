@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 
 namespace BuildingBlocks.Core.Persistence.EfCore;
 
-[DebuggerStepThrough]
 public class EfTxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull, IRequest<TResponse>
     where TResponse : notnull

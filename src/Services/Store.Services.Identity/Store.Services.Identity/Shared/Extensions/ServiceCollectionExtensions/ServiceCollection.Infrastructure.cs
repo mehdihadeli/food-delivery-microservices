@@ -1,4 +1,5 @@
 using System.Reflection;
+using Ardalis.GuardClauses;
 using BuildingBlocks.Caching.InMemory;
 using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Extensions;
@@ -10,9 +11,9 @@ using BuildingBlocks.Logging;
 using BuildingBlocks.Monitoring;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Validation;
-using Store.Services.Identity.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Store.Services.Identity.Users;
 
 namespace Store.Services.Identity.Shared.Extensions.ServiceCollectionExtensions;
 
@@ -47,6 +48,7 @@ public static partial class ServiceCollectionExtensions
                 .AddScoped(typeof(IPipelineBehavior<,>), typeof(EfTxBehavior<,>));
         });
 
+        services.AddInMemoryMessagePersistence();
         services.AddCustomMassTransit(
             configuration,
             customBusRegistrationConfigurator =>
@@ -60,6 +62,8 @@ public static partial class ServiceCollectionExtensions
         services.AddMonitoring(healthChecksBuilder =>
         {
             var postgresOptions = configuration.GetOptions<PostgresOptions>(nameof(PostgresOptions));
+            Guard.Against.Null(postgresOptions, nameof(postgresOptions));
+
             healthChecksBuilder.AddNpgSql(
                 postgresOptions.ConnectionString,
                 name: "Identity-Postgres-Check",

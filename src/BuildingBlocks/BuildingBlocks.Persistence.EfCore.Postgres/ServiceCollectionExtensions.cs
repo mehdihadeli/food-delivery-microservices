@@ -6,6 +6,7 @@ using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Persistence.EfCore;
 using BuildingBlocks.Core.Persistence.EfCore;
+using Core.Persistence.Postgres;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -47,6 +48,8 @@ public static class ServiceCollectionExtensions
             builder?.Invoke(options);
         });
 
+        services.AddScoped<IConnectionFactory, NpgsqlConnectionFactory>();
+
         services.AddScoped<IDbFacadeResolver>(provider => provider.GetService<TDbContext>()!);
         services.AddScoped<IDomainEventContext>(provider => provider.GetService<TDbContext>()!);
         services.AddScoped<IDomainEventsAccessor, EfDomainEventAccessor>();
@@ -54,7 +57,9 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddPostgresCustomRepository(this IServiceCollection services, Type customRepositoryType)
+    public static IServiceCollection AddPostgresCustomRepository(
+        this IServiceCollection services,
+        Type customRepositoryType)
     {
         services.Scan(scan => scan
             .FromAssembliesOf(customRepositoryType)
@@ -99,7 +104,7 @@ public static class ServiceCollectionExtensions
 
         foreach (var file in files
                      .Where(f => f.StartsWith(filePrefix) && f.EndsWith(".sql"))
-                     .Select(f => new { PhysicalFile = f, LogicalFile = f.Replace(filePrefix, string.Empty) })
+                     .Select(f => new {PhysicalFile = f, LogicalFile = f.Replace(filePrefix, string.Empty)})
                      .OrderBy(f => f.LogicalFile))
         {
             using var stream = assembly.GetManifestResourceStream(file.PhysicalFile);

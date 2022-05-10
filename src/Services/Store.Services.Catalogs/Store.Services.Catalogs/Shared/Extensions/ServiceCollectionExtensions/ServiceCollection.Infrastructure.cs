@@ -1,3 +1,4 @@
+using Ardalis.GuardClauses;
 using BuildingBlocks.Caching.InMemory;
 using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Extensions;
@@ -44,6 +45,7 @@ public static class ServiceCollection
                 .AddScoped(typeof(IPipelineBehavior<,>), typeof(EfTxBehavior<,>));
         });
 
+        services.AddInMemoryMessagePersistence();
         services.AddCustomMassTransit(
             configuration,
             customBusRegistrationConfigurator =>
@@ -57,6 +59,8 @@ public static class ServiceCollection
         services.AddMonitoring(healthChecksBuilder =>
         {
             var postgresOptions = configuration.GetOptions<PostgresOptions>(nameof(PostgresOptions));
+            Guard.Against.Null(postgresOptions, nameof(postgresOptions));
+
             healthChecksBuilder.AddNpgSql(
                 postgresOptions.ConnectionString,
                 name: "CatalogsService-Postgres-Check",

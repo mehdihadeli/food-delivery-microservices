@@ -1,16 +1,17 @@
 using System.Reflection;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Monitoring;
+using BuildingBlocks.Security;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
 using BuildingBlocks.Web.Extensions.ServiceCollectionExtensions;
-using Store.Services.Identity;
-using Store.Services.Identity.Api.Extensions.ApplicationBuilderExtensions;
-using Store.Services.Identity.Api.Extensions.ServiceCollectionExtensions;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Serilog;
+using Store.Services.Identity;
+using Store.Services.Identity.Api.Extensions.ApplicationBuilderExtensions;
+using Store.Services.Identity.Api.Extensions.ServiceCollectionExtensions;
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
 // https://benfoster.io/blog/mvc-to-minimal-apis-aspnet-6/
@@ -46,7 +47,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-// builder.Services.AddCustomJwtAuthentication(builder.Configuration);
+builder.Services.AddCustomJwtAuthentication(builder.Configuration);
 builder.Services.AddCustomAuthorization();
 
 builder.AddIdentityModule();

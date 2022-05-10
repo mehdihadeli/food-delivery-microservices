@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Core.Extensions;
+﻿using Ardalis.GuardClauses;
+using BuildingBlocks.Core.Extensions;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
@@ -15,12 +16,14 @@ public static class Extensions
     {
         var rabbitMqOptions = configuration.GetOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
 
+        Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));
+
         services.AddMassTransit(busRegistrationConfigurator =>
         {
-            busRegistrationConfigurator.SetKebabCaseEndpointNameFormatter();
+            // busRegistrationConfigurator.SetKebabCaseEndpointNameFormatter();
 
             // exclude namespace for the messages
-            busRegistrationConfigurator.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(false));
+            busRegistrationConfigurator.SetEndpointNameFormatter(new SnakeCaseEndpointNameFormatter(false));
 
             customBusRegistrationConfigurator?.Invoke(busRegistrationConfigurator);
 
@@ -28,10 +31,11 @@ public static class Extensions
             {
                 cfg.Host(rabbitMqOptions.Host, hostConfigurator =>
                 {
-                    hostConfigurator.Username(rabbitMqOptions.User);
+                    hostConfigurator.Username(rabbitMqOptions.UserName);
                     hostConfigurator.Password(rabbitMqOptions.Password);
                 });
 
+                cfg.MessageTopology.SetEntityNameFormatter(new CustomEntityNameFormatter());
                 configureReceiveEndpoints?.Invoke(context, cfg);
             });
         });

@@ -95,36 +95,36 @@ internal class LoginHandler : ICommandHandler<Login, LoginResponse>
 
         var refreshToken =
             (await _commandProcessor.SendAsync(
-                new GenerateRefreshTokenCommand { UserId = identityUser.Id },
+                new GenerateRefreshTokenCommand {UserId = identityUser.Id},
                 cancellationToken)).RefreshToken;
 
-        var jsonWebToken =
-            (await _commandProcessor.SendAsync(
+        var accessToken =
+            await _commandProcessor.SendAsync(
                 new GenerateJwtTokenCommand(identityUser, refreshToken.Token),
-                cancellationToken)).JsonWebToken;
+                cancellationToken);
 
         _logger.LogInformation("User with ID: {ID} has been authenticated", identityUser.Id);
 
         // we can don't return value from command and get token from a short term session in our request with `TokenStorageService`
-        return new LoginResponse(identityUser, jsonWebToken, refreshToken.Token);
+        return new LoginResponse(identityUser, accessToken, refreshToken.Token);
     }
 }
 
 public class LoginResponse
 
 {
-    public LoginResponse(ApplicationUser user, JsonWebToken jwtToken, string refreshToken)
+    public LoginResponse(ApplicationUser user, string accessToken, string refreshToken)
     {
-        Id = user.Id;
+        UserId = user.Id;
         FirstName = user.FirstName;
         LastName = user.LastName;
         Username = user.UserName;
-        JsonWebToken = jwtToken;
+        AccessToken = accessToken;
         RefreshToken = refreshToken;
     }
 
-    public JsonWebToken JsonWebToken { get; }
-    public Guid Id { get; }
+    public Guid UserId { get; }
+    public string AccessToken { get; }
     public string FirstName { get; }
     public string LastName { get; }
     public string Username { get; }

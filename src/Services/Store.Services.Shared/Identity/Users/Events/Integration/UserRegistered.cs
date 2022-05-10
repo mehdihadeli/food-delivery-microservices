@@ -9,4 +9,4 @@ public record UserRegistered(
     string UserName,
     string FirstName,
     string LastName,
-    List<string>? Roles) : IntegrationEvent, ITxRequest;
+    List<string>? Roles) : IntegrationEvent;

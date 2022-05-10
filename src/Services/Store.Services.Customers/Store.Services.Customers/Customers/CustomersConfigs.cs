@@ -13,7 +13,6 @@ internal class CustomersConfigs : IModuleDefinition
     public IServiceCollection AddModuleServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IDataSeeder, CustomersDataSeeder>();
-        services.AddSingleton<IIntegrationEventMapper, CustomersEventMapper>();
 
         return services;
     }

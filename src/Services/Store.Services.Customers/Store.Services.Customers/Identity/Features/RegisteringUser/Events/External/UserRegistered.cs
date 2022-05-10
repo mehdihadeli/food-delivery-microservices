@@ -1,7 +1,7 @@
 using BuildingBlocks.Abstractions.CQRS.Command;
+using MassTransit;
 using Store.Services.Customers.Customers.Features.CreatingCustomer;
 using Store.Services.Shared.Identity.Users.Events.Integration;
-using MassTransit;
 
 namespace Store.Services.Customers.Identity.Features.RegisteringUser.Events.External;
 

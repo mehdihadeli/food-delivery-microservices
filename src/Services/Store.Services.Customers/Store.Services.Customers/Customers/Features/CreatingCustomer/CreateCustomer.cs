@@ -29,8 +29,7 @@ internal class CreateCustomerValidator : AbstractValidator<CreateCustomer>
     }
 }
 
-// Synchronous integration for creating customer
-internal class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCustomerResult>
+public class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCustomerResult>
 {
     private readonly IIdentityApiClient _identityApiClient;
     private readonly CustomersDbContext _customersDbContext;

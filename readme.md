@@ -95,13 +95,14 @@ Some of shipping service capabilities are `Register Shipping methods`, `Edit Shi
 
 ## Prerequisites
 
-1. Install git - [https://git-scm.com/downloads](https://git-scm.com/downloads).
-2. Install .NET Core 6.0 - [https://dotnet.microsoft.com/download/dotnet/6.0](https://dotnet.microsoft.com/download/dotnet/6.0).
-3. Install Visual Studio 2022, Rider or VSCode.
-4. Install docker - [https://docs.docker.com/docker-for-windows/install/](https://docs.docker.com/docker-for-windows/install/).
-5. Make sure that you have ~10GB disk space.
-6. Clone Project [https://github.com/mehdihadeli/store-microservices-sample](https://github.com/mehdihadeli/Store-microservices), make sure that's compiling
-7. Open [store.sln](./Store.sln) solution.
+1. This application uses `Https` for hosting apis, to setup a valid certificate on your machine, you can create a [Self-Signed Certificate](https://docs.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide#create-a-self-signed-certificate).
+2. Install git - [https://git-scm.com/downloads](https://git-scm.com/downloads).
+3. Install .NET Core 6.0 - [https://dotnet.microsoft.com/download/dotnet/6.0](https://dotnet.microsoft.com/download/dotnet/6.0).
+4. Install Visual Studio 2022, Rider or VSCode.
+5. Install docker - [https://docs.docker.com/docker-for-windows/install/](https://docs.docker.com/docker-for-windows/install/).
+6. Make sure that you have ~10GB disk space.
+7. Clone Project [https://github.com/mehdihadeli/store-microservices-sample](https://github.com/mehdihadeli/Store-microservices), make sure that's compiling
+8. Open [store.sln](./Store.sln) solution.
 
 ## Contribution
 The application is in development status. You are feel free to submit pull request or create the issue.

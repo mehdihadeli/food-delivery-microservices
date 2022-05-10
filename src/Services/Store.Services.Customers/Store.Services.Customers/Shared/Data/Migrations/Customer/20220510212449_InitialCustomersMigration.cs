@@ -33,8 +33,7 @@ namespace Store.Services.Customers.Shared.Data.Migrations.Customer
                     phone_number = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: true),
                     created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     created_by = table.Column<int>(type: "integer", nullable: true),
-                    original_version = table.Column<long>(type: "bigint", nullable: false),
-                    current_version = table.Column<long>(type: "bigint", nullable: false)
+                    original_version = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,8 +55,7 @@ namespace Store.Services.Customers.Shared.Data.Migrations.Customer
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
                     created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     created_by = table.Column<int>(type: "integer", nullable: true),
-                    original_version = table.Column<long>(type: "bigint", nullable: false),
-                    current_version = table.Column<long>(type: "bigint", nullable: false)
+                    original_version = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {

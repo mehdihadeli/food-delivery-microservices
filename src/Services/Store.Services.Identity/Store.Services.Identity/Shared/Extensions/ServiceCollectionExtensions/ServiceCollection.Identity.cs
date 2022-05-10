@@ -29,7 +29,6 @@ public static partial class ServiceCollectionExtensions
         // Problem with .net core identity - will override our default authentication scheme `JwtBearerDefaults.AuthenticationScheme` to unwanted `Store.Services.Identity.Application` in `AddIdentity()` method .net identity
         // https://github.com/IdentityServer/IdentityServer4/issues/1525
 
-
         if (configuration.GetValue<bool>("PostgresOptions.UseInMemory"))
         {
             services.AddDbContext<IdentityContext>(options =>

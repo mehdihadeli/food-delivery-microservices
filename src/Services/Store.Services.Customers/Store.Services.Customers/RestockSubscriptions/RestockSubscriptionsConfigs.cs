@@ -12,8 +12,6 @@ public class RestockSubscriptionsConfigs : IModuleDefinition
 
     public IServiceCollection AddModuleServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IIntegrationEventMapper, RestockSubscriptionsEventMapper>();
-
         return services;
     }
 

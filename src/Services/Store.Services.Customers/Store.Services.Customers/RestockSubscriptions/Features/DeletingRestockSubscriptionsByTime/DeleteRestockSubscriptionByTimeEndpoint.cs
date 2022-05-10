@@ -21,7 +21,7 @@ public class DeleteRestockSubscriptionByTimeEndpoint : IMinimalEndpointDefinitio
 
     [Authorize(Roles = CustomersConstants.Role.Admin)]
     private static async Task<IResult> DeleteRestockSubscriptionByTime(
-        DeleteRestockSubscriptionByTimeRequest request,
+        [FromBody]DeleteRestockSubscriptionByTimeRequest request,
         ICommandProcessor commandProcessor,
         CancellationToken cancellationToken)
     {

@@ -2,7 +2,7 @@ using BuildingBlocks.Abstractions.Messaging;
 
 namespace BuildingBlocks.Abstractions.Serialization;
 
-public interface IMessageSerializer
+public interface IMessageSerializer : ISerializer
 {
     string ContentType { get; }
 

@@ -67,11 +67,13 @@ public static partial class ServiceCollectionExtensions
             {
                 busRegistrationConfigurator.AddIdentityConsumers();
                 busRegistrationConfigurator.AddProductConsumers();
+                busRegistrationConfigurator.AddCustomerConsumers();
             },
             (busRegistrationContext, busFactoryConfigurator) =>
             {
                 busFactoryConfigurator.AddIdentityEndpoints(busRegistrationContext);
                 busFactoryConfigurator.AddProductEndpoints(busRegistrationContext);
+                busFactoryConfigurator.AddCustomerEndpoints(busRegistrationContext);
 
                 busFactoryConfigurator.AddCustomerPublishers();
                 busFactoryConfigurator.AddRestockSubscriptionPublishers();

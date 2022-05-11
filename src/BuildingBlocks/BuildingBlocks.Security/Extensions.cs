@@ -59,7 +59,7 @@ public static class Extensions
                 options.SaveToken = true;
                 options.RefreshOnIssuerKeyNotFound = false;
                 options.RequireHttpsMetadata = false;
-                options.IncludeErrorDetails = false;
+                options.IncludeErrorDetails = true;
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -91,13 +91,13 @@ public static class Extensions
                     },
                     OnChallenge = context =>
                     {
-                        context.HandleResponse();
-                        if (!context.Response.HasStarted)
-                        {
-                            throw new IdentityException(
-                                "You are not Authorized.",
-                                statusCode: HttpStatusCode.Unauthorized);
-                        }
+                        // context.HandleResponse();
+                        // if (!context.Response.HasStarted)
+                        // {
+                        //     throw new IdentityException(
+                        //         "You are not Authorized.",
+                        //         statusCode: HttpStatusCode.Unauthorized);
+                        // }
 
                         return Task.CompletedTask;
                     },

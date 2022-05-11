@@ -87,7 +87,7 @@ public class JwtService : IJwtService
             _jwtOptions.Audience,
             notBefore: now,
             claims: jwtClaims,
-            expires: now.AddSeconds(_jwtOptions.TokenLifeTimeSecond == 0 ? 3600 : _jwtOptions.TokenLifeTimeSecond),
+            expires: now.AddSeconds(_jwtOptions.TokenLifeTimeSecond == 0 ? 36000 : _jwtOptions.TokenLifeTimeSecond),
             signingCredentials: signingCredentials);
 
         var token = new JwtSecurityTokenHandler().WriteToken(jwt);

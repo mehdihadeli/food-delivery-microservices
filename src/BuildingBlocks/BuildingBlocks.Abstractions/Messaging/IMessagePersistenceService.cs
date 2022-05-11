@@ -1,3 +1,4 @@
+using BuildingBlocks.Abstractions.CQRS.Command;
 using BuildingBlocks.Abstractions.CQRS.Event.Internal;
 
 namespace BuildingBlocks.Abstractions.Messaging;
@@ -19,10 +20,10 @@ public interface IMessagePersistenceService
         CancellationToken cancellationToken = default)
         where TMessageEnvelope : MessageEnvelope;
 
-    Task AddInternalMessageAsync<TMessageEnvelope>(
-        TMessageEnvelope messageEnvelope,
+    Task AddInternalMessageAsync<TCommand>(
+        TCommand internalCommand,
         CancellationToken cancellationToken = default)
-        where TMessageEnvelope : MessageEnvelope;
+        where TCommand : class, IInternalCommand;
 
     Task AddNotificationAsync(
         IDomainNotificationEvent notification,

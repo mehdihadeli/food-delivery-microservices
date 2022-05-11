@@ -1,12 +1,13 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Query;
 using BuildingBlocks.Core.CQRS.Query;
-using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Types;
+using BuildingBlocks.Persistence.Mongo;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using Store.Services.Customers.RestockSubscriptions.Dtos;
 using Store.Services.Customers.RestockSubscriptions.Models.Read;
 using Store.Services.Customers.Shared.Data;
-using MongoDB.Driver;
 
 namespace Store.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptions;
 
@@ -31,12 +32,12 @@ internal class GetRestockSubscriptionsValidator : AbstractValidator<GetRestockSu
     }
 }
 
-public class GetProductsHandler : IQueryHandler<GetRestockSubscriptions, GetRestockSubscriptionsResult>
+public class GeRestockSubscriptionsHandler : IQueryHandler<GetRestockSubscriptions, GetRestockSubscriptionsResult>
 {
     private readonly CustomersReadDbContext _customersReadDbContext;
     private readonly IMapper _mapper;
 
-    public GetProductsHandler(CustomersReadDbContext customersReadDbContext, IMapper mapper)
+    public GeRestockSubscriptionsHandler(CustomersReadDbContext customersReadDbContext, IMapper mapper)
     {
         _customersReadDbContext = customersReadDbContext;
         _mapper = mapper;
@@ -56,7 +57,7 @@ public class GetProductsHandler : IQueryHandler<GetRestockSubscriptions, GetRest
             .OrderByDescending(x => x.Created);
 
         var restockSubscriptions =
-            await filtering.PaginateAsync<RestockSubscriptionReadModel, RestockSubscriptionDto>(
+            await filtering.ApplyPagingAsync<RestockSubscriptionReadModel, RestockSubscriptionDto>(
                 _mapper.ConfigurationProvider,
                 query.Page,
                 query.PageSize,

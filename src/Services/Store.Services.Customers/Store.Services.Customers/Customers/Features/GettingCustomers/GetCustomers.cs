@@ -1,13 +1,13 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Query;
 using BuildingBlocks.Core.CQRS.Query;
-using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Types;
+using BuildingBlocks.Persistence.Mongo;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using Store.Services.Customers.Customers.Dtos;
 using Store.Services.Customers.Customers.Models.Reads;
 using Store.Services.Customers.Shared.Data;
-using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 
 namespace Store.Services.Customers.Customers.Features.GettingCustomers;
 
@@ -43,7 +43,7 @@ public class GetCustomersHandler : IQueryHandler<GetCustomers, GetCustomersResul
         var customer = await _customersReadDbContext.Customers.AsQueryable()
             .OrderByDescending(x => x.City)
             .ApplyFilter(request.Filters)
-            .PaginateAsync<CustomerReadModel, CustomerReadDto>(
+            .ApplyPagingAsync<CustomerReadModel, CustomerReadDto>(
                 _mapper.ConfigurationProvider,
                 request.Page,
                 request.PageSize,

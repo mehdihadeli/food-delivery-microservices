@@ -11,7 +11,7 @@ namespace BuildingBlocks.Persistence.Mongo;
 
 public static class MongoQueryableExtensions
 {
-    public static async Task<ListResultModel<T>> PaginateAsync<T>(
+    public static async Task<ListResultModel<T>> ApplyPagingAsync<T>(
         this IMongoQueryable<T> collection,
         int page = 1,
         int pageSize = 10,
@@ -31,7 +31,7 @@ public static class MongoQueryableExtensions
         return ListResultModel<T>.Create(data, totalItems, page, pageSize);
     }
 
-    public static async Task<ListResultModel<R>> PaginateAsync<T, R>(
+    public static async Task<ListResultModel<R>> ApplyPagingAsync<T, R>(
         this IMongoQueryable<T> collection,
         IConfigurationProvider configuration,
         int page = 1,
@@ -85,14 +85,5 @@ public static class MongoQueryableExtensions
         }
 
         return source.Where(filterExpressions.Aggregate((expr1, expr2) => expr1.And(expr2)));
-    }
-
-    public static IMongoQueryable<TEntity> ApplyPaging<TEntity>(
-        this IMongoQueryable<TEntity> source,
-        int page,
-        int size)
-        where TEntity : class
-    {
-        return MongoQueryable.Skip(source, page * size).Take(size);
     }
 }

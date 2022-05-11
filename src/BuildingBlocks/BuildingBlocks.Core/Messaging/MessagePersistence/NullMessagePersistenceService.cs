@@ -1,3 +1,4 @@
+using BuildingBlocks.Abstractions.CQRS.Command;
 using BuildingBlocks.Abstractions.CQRS.Event.Internal;
 using BuildingBlocks.Abstractions.Messaging;
 
@@ -21,12 +22,10 @@ public class NullMessagePersistenceService : IMessagePersistenceService
         return Task.CompletedTask;
     }
 
-    public Task AddInternalMessageAsync<TMessageEnvelope>(
-        TMessageEnvelope messageEnvelope,
-        CancellationToken cancellationToken = default)
-        where TMessageEnvelope : MessageEnvelope
+    public Task AddInternalMessageAsync<TCommand>(TCommand internalCommand, CancellationToken cancellationToken = default)
+        where TCommand : class, IInternalCommand
     {
-        return Task.CompletedTask;
+       return Task.CompletedTask;
     }
 
     public Task AddNotificationAsync(

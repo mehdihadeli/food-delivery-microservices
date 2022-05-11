@@ -12,7 +12,7 @@ public static partial class InMemoryMessagingRegistrationExtensions
         ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
     {
         services.AddDbContext<InMemoryMessagePersistenceContext>(
-            options => { options.UseInMemoryDatabase($"InMemoryOutbox_{Guid.NewGuid()}"); });
+            options => { options.UseInMemoryDatabase($"InMemoryOutbox_{Guid.NewGuid()}"); }, ServiceLifetime.Singleton);
 
         services.Replace<IMessagePersistenceService, InMemoryMessagePersistenceService>(serviceLifetime);
 

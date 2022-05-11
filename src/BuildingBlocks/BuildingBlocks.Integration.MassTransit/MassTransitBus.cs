@@ -1,4 +1,8 @@
 ﻿using BuildingBlocks.Abstractions.Messaging;
+using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Messaging.Extensions;
+using BuildingBlocks.Core.Types;
+using Humanizer;
 using MassTransit;
 using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
 
@@ -21,14 +25,16 @@ public class MassTransitBus : IBus
         CancellationToken cancellationToken = default)
         where TMessage : class, IMessage
     {
+        IDictionary<string, object?> meta = headers ?? new Dictionary<string, object?>();
+        meta = GetMetadata(message, meta);
+
+        var envelope = new MessageEnvelope<TMessage>(message, meta);
+
         await _publishEndpoint.Publish(message, ctx =>
             {
-                if (headers is { })
+                foreach (var header in meta)
                 {
-                    foreach (var header in headers)
-                    {
-                        ctx.Headers.Set(header.Key, header.Value);
-                    }
+                    ctx.Headers.Set(header.Key, header.Value);
                 }
             },
             cancellationToken);
@@ -42,6 +48,9 @@ public class MassTransitBus : IBus
         CancellationToken cancellationToken = default)
         where TMessage : class, IMessage
     {
+        IDictionary<string, object?> meta = headers ?? new Dictionary<string, object?>();
+        meta = GetMetadata(message, meta);
+
         if (string.IsNullOrEmpty(queue) && string.IsNullOrEmpty(exchangeOrTopic))
         {
             await PublishAsync(message, headers, cancellationToken);
@@ -54,12 +63,9 @@ public class MassTransitBus : IBus
         var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(endpointAddress));
         await sendEndpoint.Send(message, ctx =>
             {
-                if (headers is { })
+                foreach (var header in meta)
                 {
-                    foreach (var header in headers)
-                    {
-                        ctx.Headers.Set(header.Key, header.Value);
-                    }
+                    ctx.Headers.Set(header.Key, header.Value);
                 }
             },
             cancellationToken);
@@ -70,14 +76,21 @@ public class MassTransitBus : IBus
         IDictionary<string, object?>? headers,
         CancellationToken cancellationToken = default)
     {
+        IDictionary<string, object?> meta = headers ?? new Dictionary<string, object?>();
+        if (message is IMessage data)
+        {
+            meta = GetMetadata(data, meta);
+        }
+        else
+        {
+            meta = GetMetadata(message, meta);
+        }
+
         await _publishEndpoint.Publish(message, ctx =>
             {
-                if (headers is { })
+                foreach (var header in meta)
                 {
-                    foreach (var header in headers)
-                    {
-                        ctx.Headers.Set(header.Key, header.Value);
-                    }
+                    ctx.Headers.Set(header.Key, header.Value);
                 }
             },
             cancellationToken);
@@ -96,18 +109,25 @@ public class MassTransitBus : IBus
             return;
         }
 
+        IDictionary<string, object?> meta = headers ?? new Dictionary<string, object?>();
+        if (message is IMessage data)
+        {
+            meta = GetMetadata(data, meta);
+        }
+        else
+        {
+            meta = GetMetadata(message, meta);
+        }
+
         // Ref: https://stackoverflow.com/a/60269493/581476
         string endpointAddress = GetEndpointAddress(exchangeOrTopic, queue);
 
         var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(endpointAddress));
         await sendEndpoint.Send(message, ctx =>
             {
-                if (headers is { })
+                foreach (var header in meta)
                 {
-                    foreach (var header in headers)
-                    {
-                        ctx.Headers.Set(header.Key, header.Value);
-                    }
+                    ctx.Headers.Set(header.Key, header.Value);
                 }
             },
             cancellationToken);
@@ -164,5 +184,52 @@ public class MassTransitBus : IBus
         params Type[] assemblyMarkerTypes)
     {
         return Task.CompletedTask;
+    }
+
+    private static IDictionary<string, object?> GetMetadata<TMessage>(
+        TMessage message,
+        IDictionary<string, object?>? headers)
+        where TMessage : class, IMessage
+    {
+        var meta = headers ?? new Dictionary<string, object?>();
+
+        if (!meta.ContainsKey(MessageHeaders.MessageId))
+        {
+            //TODO: Using snowflak id here
+            var messageId = message.MessageId;
+            meta.AddMessageId(messageId.ToString());
+        }
+
+        if (!meta.ContainsKey(MessageHeaders.CorrelationId))
+        {
+            meta.AddCorrelationId(Guid.NewGuid().ToString());
+        }
+
+        meta.AddMessageName(message.GetType().Name.Underscore());
+        meta.AddMessageType(TypeMapper.GetTypeName(message.GetType()));
+        meta.AddCreatedUnixTime(DateTimeExtensions.ToUnixTimeSecond(DateTime.Now));
+        return meta;
+    }
+
+    private static IDictionary<string, object?> GetMetadata(object message, IDictionary<string, object?>? headers)
+    {
+        var meta = headers ?? new Dictionary<string, object?>();
+
+        if (!meta.ContainsKey(MessageHeaders.MessageId))
+        {
+            //TODO: Using snowflak id here
+            var messageId = Guid.NewGuid();
+            meta.AddMessageId(messageId.ToString());
+        }
+
+        if (!meta.ContainsKey(MessageHeaders.CorrelationId))
+        {
+            meta.AddCorrelationId(Guid.NewGuid().ToString());
+        }
+
+        meta.AddMessageName(message.GetType().Name.Underscore());
+        meta.AddMessageType(TypeMapper.GetTypeName(message.GetType()));
+        meta.AddCreatedUnixTime(DateTimeExtensions.ToUnixTimeSecond(DateTime.Now));
+        return meta;
     }
 }

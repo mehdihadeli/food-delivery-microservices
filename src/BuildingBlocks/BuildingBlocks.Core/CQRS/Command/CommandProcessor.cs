@@ -1,5 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Command;
-using BuildingBlocks.Abstractions.Scheduler;
+using BuildingBlocks.Abstractions.Messaging;
 using MediatR;
 
 namespace BuildingBlocks.Core.CQRS.Command;
@@ -7,26 +7,34 @@ namespace BuildingBlocks.Core.CQRS.Command;
 public class CommandProcessor : ICommandProcessor
 {
     private readonly IMediator _mediator;
+    private readonly IMessagePersistenceService _messagePersistenceService;
 
-    public CommandProcessor(IMediator mediator)
+    public CommandProcessor(IMediator mediator, IMessagePersistenceService messagePersistenceService)
     {
         _mediator = mediator;
+        _messagePersistenceService = messagePersistenceService;
     }
 
     public Task<TResult> SendAsync<TResult>(
         ICommand<TResult> command,
         CancellationToken cancellationToken = default)
+        where TResult : notnull
     {
         return _mediator.Send(command, cancellationToken);
     }
 
     public Task ScheduleAsync(IInternalCommand internalCommandCommand, CancellationToken cancellationToken = default)
     {
-        return Task.CompletedTask;
+        return _messagePersistenceService.AddInternalMessageAsync(internalCommandCommand, cancellationToken);
     }
 
-    public Task ScheduleAsync(IInternalCommand[] internalCommandCommands, CancellationToken cancellationToken = default)
+    public async Task ScheduleAsync(
+        IInternalCommand[] internalCommandCommands,
+        CancellationToken cancellationToken = default)
     {
-        return Task.CompletedTask;
+        foreach (var internalCommandCommand in internalCommandCommands)
+        {
+            await ScheduleAsync(internalCommandCommand, cancellationToken);
+        }
     }
 }

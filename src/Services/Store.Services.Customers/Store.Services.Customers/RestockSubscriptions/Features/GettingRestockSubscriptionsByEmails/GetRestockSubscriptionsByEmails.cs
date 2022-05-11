@@ -2,10 +2,10 @@ using Ardalis.GuardClauses;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using BuildingBlocks.Abstractions.CQRS.Query;
-using Store.Services.Customers.RestockSubscriptions.Dtos;
-using Store.Services.Customers.Shared.Data;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using Store.Services.Customers.RestockSubscriptions.Dtos;
+using Store.Services.Customers.Shared.Data;
 
 namespace Store.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionsByEmails;
 

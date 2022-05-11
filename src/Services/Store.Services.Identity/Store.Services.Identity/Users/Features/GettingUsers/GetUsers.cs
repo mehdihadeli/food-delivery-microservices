@@ -46,7 +46,7 @@ public class GetUsersHandler : IQueryHandler<GetUsers, GetUsersResult>
             .ApplyIncludeList(request.Includes)
             .ApplyFilter(request.Filters)
             .AsNoTracking()
-            .PaginateAsync<ApplicationUser, IdentityUserDto>(
+            .ApplyPagingAsync<ApplicationUser, IdentityUserDto>(
                 _mapper.ConfigurationProvider,
                 request.Page,
                 request.PageSize,

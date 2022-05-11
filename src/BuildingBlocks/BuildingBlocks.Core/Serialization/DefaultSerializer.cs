@@ -1,6 +1,11 @@
-﻿using System.Text.Json;
+﻿using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using BuildingBlocks.Abstractions.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using JsonConverter = Newtonsoft.Json.JsonConverter;
+using JsonProperty = Newtonsoft.Json.Serialization.JsonProperty;
 
 namespace BuildingBlocks.Core.Serialization;
 
@@ -10,28 +15,54 @@ public class DefaultSerializer : ISerializer
 
     public string Serialize(object obj, bool camelCase = true, bool indented = true)
     {
-        return JsonSerializer.Serialize(obj, CreateSerializerSettings(camelCase, indented));
+        return JsonConvert.SerializeObject(obj, CreateSerializerSettings(camelCase, indented));
     }
 
     public T? Deserialize<T>(string payload, bool camelCase = true)
     {
-        return JsonSerializer.Deserialize<T>(payload, CreateSerializerSettings(camelCase));
+        return JsonConvert.DeserializeObject<T>(payload, CreateSerializerSettings(camelCase));
     }
 
     public object? Deserialize(string payload, Type type, bool camelCase = true)
     {
-        return JsonSerializer.Deserialize(payload, type, CreateSerializerSettings(camelCase));
+        return JsonConvert.DeserializeObject(payload, type, CreateSerializerSettings(camelCase));
     }
 
-    private JsonSerializerOptions CreateSerializerSettings(bool camelCase = true, bool indented = false)
+
+    protected JsonSerializerSettings? CreateSerializerSettings(bool camelCase = true, bool indented = false)
     {
-        var settings = new JsonSerializerOptions
+        var settings = new JsonSerializerSettings {ContractResolver = new ContractResolverWithPrivate()};
+
+        if (indented)
         {
-            WriteIndented = indented,
-            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-            PropertyNamingPolicy = camelCase ? JsonNamingPolicy.CamelCase : null
-        };
+            settings.Formatting = Formatting.Indented;
+        }
+
+        // for handling private constructor
+        settings.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
+        settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
         return settings;
+    }
+
+    private class ContractResolverWithPrivate : CamelCasePropertyNamesContractResolver
+    {
+        // http://danielwertheim.se/json-net-private-setters/
+        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        {
+            var prop = base.CreateProperty(member, memberSerialization);
+
+            if (!prop.Writable)
+            {
+                var property = member as PropertyInfo;
+                if (property != null)
+                {
+                    var hasPrivateSetter = property.GetSetMethod(true) != null;
+                    prop.Writable = hasPrivateSetter;
+                }
+            }
+
+            return prop;
+        }
     }
 }

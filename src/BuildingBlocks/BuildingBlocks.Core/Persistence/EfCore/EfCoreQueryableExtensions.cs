@@ -12,7 +12,7 @@ namespace BuildingBlocks.Core.Persistence.EfCore;
 // https://github.com/dynamicexpresso/DynamicExpresso
 public static class EfCoreQueryableExtensions
 {
-    public static async Task<ListResultModel<T>> PaginateAsync<T>(
+    public static async Task<ListResultModel<T>> ApplyPagingAsync<T>(
         this IQueryable<T> collection,
         int page = 1,
         int pageSize = 10,
@@ -33,7 +33,7 @@ public static class EfCoreQueryableExtensions
         return ListResultModel<T>.Create(data, totalItems, page, pageSize);
     }
 
-    public static async Task<ListResultModel<TR>> PaginateAsync<T, TR>(
+    public static async Task<ListResultModel<TR>> ApplyPagingAsync<T, TR>(
         this IQueryable<T> collection,
         IConfigurationProvider configuration,
         int page = 1,
@@ -54,6 +54,15 @@ public static class EfCoreQueryableExtensions
             .ToListAsync(cancellationToken: cancellationToken);
 
         return ListResultModel<TR>.Create(data, totalItems, page, pageSize);
+    }
+
+    public static IQueryable<TEntity> ApplyPaging<TEntity>(
+        this IQueryable<TEntity> source,
+        int page,
+        int size)
+        where TEntity : class
+    {
+        return source.Skip(page * size).Take(size);
     }
 
     public static IQueryable<T> Limit<T>(
@@ -105,14 +114,5 @@ public static class EfCoreQueryableExtensions
         }
 
         return source;
-    }
-
-    public static IQueryable<TEntity> ApplyPaging<TEntity>(
-        this IQueryable<TEntity> source,
-        int page,
-        int size)
-        where TEntity : class
-    {
-        return source.Skip(page * size).Take(size);
     }
 }

@@ -43,7 +43,7 @@ public class GetProductsHandler : IQueryHandler<GetProducts, GetProductsResult>
             .ApplyIncludeList(request.Includes)
             .ApplyFilter(request.Filters)
             .AsNoTracking()
-            .PaginateAsync<Product, ProductDto>(_mapper.ConfigurationProvider, request.Page, request.PageSize, cancellationToken: cancellationToken);
+            .ApplyPagingAsync<Product, ProductDto>(_mapper.ConfigurationProvider, request.Page, request.PageSize, cancellationToken: cancellationToken);
 
         return new GetProductsResult(products);
     }

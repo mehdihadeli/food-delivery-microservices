@@ -107,10 +107,10 @@ app.UseSerilogRequestLogging();
 
 app.UseCustomHealthCheck();
 
-await app.ConfigureModules();
-
 app.UseAuthentication();
 app.UseAuthorization();
+
+await app.ConfigureModules();
 
 app.MapControllers();
 app.MapModulesEndpoints();

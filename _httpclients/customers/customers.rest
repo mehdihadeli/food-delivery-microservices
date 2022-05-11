@@ -52,7 +52,7 @@ Content-Type: application/json
 @page_size=10
 GET {{api-gateway}}/api/v1/customers/restock-subscriptions?From={{from_date}}&To={{to_date}}&Page={{page}}&PageSize={{page_size}}
 accept: application/json
-authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+authorization: bearer {{Authenticate.response.body.accessToken}}
 ###
 
 
@@ -62,7 +62,7 @@ authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
 @email2=mehdi2@test.com
 GET {{api-gateway}}/api/v1/customers/restock-subscriptions/by-emails?Emails={{email1}}&Emails={{email2}}
 accept: application/json
-authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+authorization: bearer {{Authenticate.response.body.accessToken}}
 
 
 ###
@@ -71,7 +71,7 @@ authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
 GET {{api-gateway}}/api/v1/customers/restock-subscriptions/{{restock_subscription_id}}
 Content-Type: application/x-www-form-urlencoded
 accept: application/json
-authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+authorization: bearer {{Authenticate.response.body.accessToken}}
 
 ###
 # @name Create_Restock_Subscriptions_By
@@ -90,7 +90,7 @@ Content-Type: application/json
 # @name Delete_Restock_Subscriptions_By_Id
 DELETE {{api-gateway}}/api/v1/customers/restock-subscriptions/{{restock_subscription_id}}
 accept: */*
-authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+authorization: bearer {{Authenticate.response.body.accessToken}}
 
 ###
 # @name Delete_Restock_Subscriptions_By_Time
@@ -98,7 +98,7 @@ authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
 @to="2022-03-17"
 DELETE {{api-gateway}}/api/v1/customers/restock-subscriptions
 accept: */*
-authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+authorization: bearer {{Authenticate.response.body.accessToken}}
 Content-Type: application/json
 
 {

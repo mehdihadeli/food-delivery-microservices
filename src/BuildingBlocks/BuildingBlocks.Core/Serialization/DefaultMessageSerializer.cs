@@ -1,51 +1,51 @@
-using System.Text.Json;
+using System.Text;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Serialization;
 using BuildingBlocks.Core.Types;
+using Newtonsoft.Json;
 
 namespace BuildingBlocks.Core.Serialization;
 
-public class DefaultMessageSerializer : IMessageSerializer
+public class DefaultMessageSerializer : DefaultSerializer, IMessageSerializer
 {
-    private readonly JsonSerializerOptions? _settings = new() {WriteIndented = true};
-
-    public string ContentType => "application/json";
+    public new string ContentType => "application/json";
 
     public string Serialize(MessageEnvelope messageEnvelope)
     {
-        return JsonSerializer.Serialize(messageEnvelope, _settings);
+        return JsonConvert.SerializeObject(messageEnvelope, new JsonSerializerSettings());
     }
 
     public string Serialize<TMessage>(TMessage message)
         where TMessage : IMessage
     {
-        return JsonSerializer.Serialize(message, _settings);
+        return JsonConvert.SerializeObject(message, CreateSerializerSettings());
     }
 
     public TMessage? Deserialize<TMessage>(string message)
         where TMessage : IMessage
     {
-        return JsonSerializer.Deserialize<TMessage>(message, _settings);
+        return JsonConvert.DeserializeObject<TMessage>(message, CreateSerializerSettings());
     }
 
     public object? Deserialize(string payload, string payloadType)
     {
         var type = TypeMapper.GetType(payloadType);
-        var deserializedData = JsonSerializer.Deserialize(payload, type, _settings);
+        var deserializedData = JsonConvert.DeserializeObject(payload, type, CreateSerializerSettings());
 
         return deserializedData;
     }
 
     public MessageEnvelope? Deserialize(string json)
     {
-        return JsonSerializer.Deserialize<MessageEnvelope>(json, _settings);
+        return JsonConvert.DeserializeObject<MessageEnvelope>(json, CreateSerializerSettings());
     }
 
     public IMessage? Deserialize(ReadOnlySpan<byte> data, string payloadType)
     {
         var type = TypeMapper.GetType(payloadType);
 
-        var deserializedData = JsonSerializer.Deserialize(data, type, _settings);
+        var json = Encoding.UTF8.GetString(data);
+        var deserializedData = JsonConvert.DeserializeObject(json, type, CreateSerializerSettings());
 
         return deserializedData as IMessage;
     }

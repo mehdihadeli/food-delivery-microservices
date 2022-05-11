@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Customers\Features\CreatingCustomer\Events" />
     <Folder Include="Identity\Features" />
     <Folder Include="Products\Features" />
   </ItemGroup>

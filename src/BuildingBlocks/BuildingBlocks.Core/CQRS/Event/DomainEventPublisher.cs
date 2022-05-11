@@ -9,29 +9,29 @@ namespace BuildingBlocks.Core.CQRS.Event;
 public class DomainEventPublisher : IDomainEventPublisher
 {
     private readonly IEventProcessor _eventProcessor;
+    private readonly IMessagePersistenceService _messagePersistenceService;
     private readonly IDomainEventsAccessor _domainEventsAccessor;
-    private readonly IBus _bus;
     private readonly IDomainNotificationEventPublisher _domainNotificationEventPublisher;
     private readonly IServiceProvider _serviceProvider;
 
     public DomainEventPublisher(
         IEventProcessor eventProcessor,
-        IBus messagePublisher,
+        IMessagePersistenceService messagePersistenceService,
         IDomainNotificationEventPublisher domainNotificationEventPublisher,
         IDomainEventsAccessor domainEventsAccessor,
         IServiceProvider serviceProvider)
     {
+        _messagePersistenceService = messagePersistenceService;
         _domainEventsAccessor = domainEventsAccessor;
         _domainNotificationEventPublisher =
             Guard.Against.Null(domainNotificationEventPublisher, nameof(domainNotificationEventPublisher));
-        _bus = Guard.Against.Null(messagePublisher, nameof(messagePublisher));
         _eventProcessor = Guard.Against.Null(eventProcessor, nameof(eventProcessor));
         _serviceProvider = Guard.Against.Null(serviceProvider, nameof(serviceProvider));
     }
 
     public Task PublishAsync(IDomainEvent domainEvent, CancellationToken cancellationToken = default)
     {
-        return PublishAsync(new[] { domainEvent }, cancellationToken);
+        return PublishAsync(new[] {domainEvent}, cancellationToken);
     }
 
     public async Task PublishAsync(IDomainEvent[] domainEvents, CancellationToken cancellationToken = default)
@@ -65,7 +65,9 @@ public class DomainEventPublisher : IDomainEventPublisher
         var wrappedIntegrationEvents = eventsToDispatch.GetWrappedIntegrationEvents().ToArray();
         foreach (var wrappedIntegrationEvent in wrappedIntegrationEvents)
         {
-            await _bus.PublishAsync(wrappedIntegrationEvent, null, cancellationToken: cancellationToken);
+            await _messagePersistenceService.AddPublishMessageAsync(
+                new MessageEnvelope(wrappedIntegrationEvent, new Dictionary<string, object?>()),
+                cancellationToken);
         }
 
         IReadOnlyList<IEventMapper> eventMappers = _serviceProvider.GetServices<IEventMapper>().ToImmutableList();
@@ -77,7 +79,9 @@ public class DomainEventPublisher : IDomainEventPublisher
         {
             foreach (var integrationEvent in integrationEvents)
             {
-                await _bus.PublishAsync(integrationEvent, null, cancellationToken: cancellationToken);
+                await _messagePersistenceService.AddPublishMessageAsync(
+                    new MessageEnvelope(integrationEvent, new Dictionary<string, object?>()),
+                    cancellationToken);
             }
         }
 
@@ -86,10 +90,12 @@ public class DomainEventPublisher : IDomainEventPublisher
 
         if (notificationEvents.Any())
         {
-            await _domainNotificationEventPublisher.PublishAsync(notificationEvents.ToArray()!, cancellationToken);
+            foreach (var notification in notificationEvents)
+            {
+                await _messagePersistenceService.AddNotificationAsync(notification, cancellationToken);
+            }
         }
     }
-
 
     private IReadOnlyList<IDomainNotificationEvent> GetNotificationEvents(
         IServiceProvider serviceProvider,

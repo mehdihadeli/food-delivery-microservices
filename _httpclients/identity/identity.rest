@@ -1,5 +1,5 @@
 # https://github.com/Huachao/vscode-restclient
-@identity-api=http://localhost:7000
+@identity-api=https://localhost:7001
 @api-gateway=http://localhost:3000
 @contentType = application/json
 
@@ -10,7 +10,7 @@ GET {{identity-api}}
 
 ###
 # @name Login
-POST {{api-gateway}}/api/v1/identity/login
+POST {{identity-api}}/api/v1/identity/login
 accept: application/json
 Content-Type: application/json
 

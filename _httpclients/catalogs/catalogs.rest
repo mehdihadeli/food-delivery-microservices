@@ -27,7 +27,7 @@ Content-Type: application/json
 POST {{api-gateway}}/api/v1/catalogs/products
 accept: application/json
 Content-Type: application/json
-authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+authorization: bearer {{Authenticate.response.body.accessToken}}
 
 {
   "name": "test3",
@@ -76,7 +76,7 @@ accept: application/json
 POST {{api-gateway}}/api/v1/catalogs/products/{{product_id}}/debit-stock?quantity={{debit_quantity}}
 accept: */*
 Content-Type: application/x-www-form-urlencoded
-authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+authorization: bearer {{Authenticate.response.body.accessToken}}
 ###
 
 
@@ -86,6 +86,6 @@ authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
 POST {{api-gateway}}/api/v1/catalogs/products/{{product_id}}/replenish-stock?quantity={{replenish_quantity}}
 accept: */*
 Content-Type: application/x-www-form-urlencoded
-authorization: bearer {{Authenticate.response.body.jsonWebToken.accessToken}}
+authorization: bearer {{Authenticate.response.body.accessToken}}
 ###
 

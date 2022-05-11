@@ -1,8 +1,7 @@
 namespace BuildingBlocks.Abstractions.Types;
 
-public interface ISystemInfo
+public interface IMachineInstanceInfo
 {
     string ClientGroup { get; }
     Guid ClientId { get; }
-    bool PublishOnly { get; }
 }

@@ -30,5 +30,5 @@ public interface IMessagePersistenceService
 
     Task ProcessAsync(Guid messageId, MessageDeliveryType deliveryType, CancellationToken cancellationToken = default);
 
-    Task ProcessAllAsync(MessageDeliveryType? deliveryType = null, CancellationToken cancellationToken = default);
+    Task ProcessAllAsync(CancellationToken cancellationToken = default);
 }

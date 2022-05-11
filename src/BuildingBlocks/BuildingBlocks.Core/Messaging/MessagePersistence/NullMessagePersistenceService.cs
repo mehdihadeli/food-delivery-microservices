@@ -44,7 +44,7 @@ public class NullMessagePersistenceService : IMessagePersistenceService
         return Task.CompletedTask;
     }
 
-    public Task ProcessAllAsync(MessageDeliveryType? deliveryType = null, CancellationToken cancellationToken = default)
+    public Task ProcessAllAsync(CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }

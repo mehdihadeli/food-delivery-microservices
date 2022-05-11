@@ -8,6 +8,8 @@ using BuildingBlocks.Core.CQRS.Event;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.IdsGenerator;
+using BuildingBlocks.Core.Messaging.BackgroundServices;
+using BuildingBlocks.Core.Messaging.MessagePersistence;
 using BuildingBlocks.Core.Serialization;
 using BuildingBlocks.Core.Types;
 using Microsoft.Extensions.Configuration;
@@ -22,9 +24,9 @@ public static class CoreRegistrationExtensions
         IConfiguration configuration,
         params Assembly[] assembliesToScan)
     {
-        var systemInfo = SystemInfo.New();
+        var systemInfo = MachineInstanceInfo.New();
 
-        services.AddSingleton<ISystemInfo>(systemInfo);
+        services.AddSingleton<IMachineInstanceInfo>(systemInfo);
         services.AddSingleton(systemInfo);
         services.AddSingleton<IExclusiveLock, ExclusiveLock>();
 
@@ -73,6 +75,20 @@ public static class CoreRegistrationExtensions
         params Assembly[] assembliesToScan)
     {
         AddMessagingMediator(services, serviceLifetime, assembliesToScan);
+
+        AddPersistenceMessage(services, configuration, serviceLifetime);
+    }
+
+    private static void AddPersistenceMessage(
+        IServiceCollection services,
+        IConfiguration configuration,
+        ServiceLifetime serviceLifetime)
+    {
+        services.Add<IMessagePersistenceService, NullMessagePersistenceService>(serviceLifetime);
+        services.AddHostedService<MessagePersistenceBackgroundService>();
+        services.AddOptions<MessagePersistenceOptions>()
+            .Bind(configuration.GetSection(nameof(MessagePersistenceOptions)))
+            .ValidateDataAnnotations();
     }
 
     private static void AddMessagingMediator(

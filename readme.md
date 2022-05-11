@@ -17,7 +17,15 @@ Thanks a bunch for supporting me!
 - [Plan](#plan)
 - [Technologies - Libraries](#technologies---libraries)
 - [The Domain and Bounded Context - Service Boundary](#the-domain-and-bounded-context---service-boundary)
+- [Application Architecture](#application-architecture)
+- [Application Structure](#application-structure)
+- [Vertical Slice Flow](#vertical-slice-flow)
 - [Prerequisites](#prerequisites)
+- [How to Run](#how-to-run)
+  - [Using PM2](#using-pm2)
+  - [Using Docker-Compose](#using-docker-compose)
+  - [Using Tye](#using-tye)
+  - [Using Kubernetes](#using-kubernetes)
 - [Contribution](#contribution)
 - [Project References](project-references)
 - [License](#license)
@@ -134,6 +142,51 @@ We use a `Api Gateway` and here I used [YARP](https://microsoft.github.io/revers
 With using api Gateway our internal microservices are transparent and user can not access them directly and all requests will serve through this Gateway.
 Also we could use gateway for load balancing, authentication and authorization, caching ,...
 
+
+## Application Structure
+
+In this project I used [vertical slice architecture](https://jimmybogard.com/vertical-slice-architecture/) or [Restructuring to a Vertical Slice Architecture](https://codeopinion.com/restructuring-to-a-vertical-slice-architecture/) also I used [feature folder structure](http://www.kamilgrzybek.com/design/feature-folders/) in this project.
+
+- We treat each request as a distinct use case or slice, encapsulating and grouping all concerns from front-end to back.
+- When We adding or changing a feature in an application in n-tire architecture, we are typically touching many different "layers" in an application. we are changing the user interface, adding fields to models, modifying validation, and so on. Instead of coupling across a layer, we couple vertically along a slice and each change affects only one slice.
+- We `Minimize coupling` `between slices`, and `maximize coupling` `in a slice`.
+- With this approach, each of our vertical slices can decide for itself how to best fulfill the request. New features only add code, we're not changing shared code and worrying about side effects. For implementing vertical slice architecture using cqrs pattern is a good match.
+
+![](./assets/Vertical-Slice-Architecture.jpg)
+
+![](./assets/vsa2.png)
+
+Also here I used [CQRS](https://www.eventstore.com/cqrs-pattern) for decompose my features to very small parts that makes our application:
+
+- maximize performance, scalability and simplicity.
+- adding new feature to this mechanism is very easy without any breaking change in other part of our codes. New features only add code, we're not changing shared code and worrying about side effects.
+- easy to maintain and any changes only affect on one command or query (or a slice) and avoid any breaking changes on other parts
+- it gives us better separation of concerns and cross cutting concern (with help of MediatR behavior pipelines) in our code instead of a big service class for doing a lot of things.
+
+With using [CQRS](https://event-driven.io/en/cqrs_facts_and_myths_explained/), our code will be more aligned with [SOLID principles](https://en.wikipedia.org/wiki/SOLID), especially with:
+
+- [Single Responsibility](https://en.wikipedia.org/wiki/Single-responsibility_principle) rule - because logic responsible for a given operation is enclosed in its own type.
+- [Open-Closed](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle) rule - because to add new operation you don’t need to edit any of the existing types, instead you need to add a new file with a new type representing that operation.
+
+Here instead of some [Technical Splitting](http://www.kamilgrzybek.com/design/feature-folders/) for example a folder or layer for our `services`, `controllers` and `data models` which increase dependencies between our technical splitting and also jump between layers or folders, We cut each business functionality into some vertical slices, and inner each of these slices we have [Technical Folders Structure](http://www.kamilgrzybek.com/design/feature-folders/) specific to that feature (command, handlers, infrastructure, repository, controllers, data models, ...).
+
+Usually, when we work on a given functionality we need some technical things for example:
+
+- API endpoint (Controller)
+- Request Input (Dto)
+- Request Output (Dto)
+- Some class to handle Request, For example Command and Command Handler or Query and Query Handler
+- Data Model
+
+Now we could all of these things beside each other and it decrease jumping and dependencies between some layers or folders.
+
+Keeping such a split works great with CQRS. It segregates our operations and slices the application code vertically instead of horizontally. In Our CQRS pattern each command/query handler is a separate slice. This is where you can reduce coupling between layers. Each handler can be a separated code unit, even copy/pasted. Thanks to that, we can tune down the specific method to not follow general conventions (e.g. use custom SQL query or even different storage). In a traditional layered architecture, when we change the core generic mechanism in one layer, it can impact all methods.
+
+![](./assets/splitting.png)
+
+## Vertical Slice Flow
+TODO
+
 ## Prerequisites
 
 1. This application uses `Https` for hosting apis, to setup a valid certificate on your machine, you can create a [Self-Signed Certificate](https://docs.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide#create-a-self-signed-certificate).
@@ -144,6 +197,113 @@ Also we could use gateway for load balancing, authentication and authorization, 
 6. Make sure that you have ~10GB disk space.
 7. Clone Project [https://github.com/mehdihadeli/store-microservices-sample](https://github.com/mehdihadeli/Store-microservices), make sure that's compiling
 8. Open [store.sln](./Store.sln) solution.
+
+## How to Run
+
+For Running this application we could run our microservices one by one in our Dev Environment, for me, it's Rider, Or we could run it with using [Docker-Compose](#using-docker-compose) or we could use [Kubernetes](#using-kubernetes).
+
+For testing apis I used [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) plugin of VSCode its related file scenarios are available in [_httpclients](\_httpclients) folder. also after running api you have access to `swagger open api` for all microservices in `/swagger` route path.
+
+In this application I use a `fake email sender` with name of [ethereal](https://ethereal.email/) as a SMTP provider for sending email. after sending email by the application you can see the list of sent emails in [ethereal messages panel](https://ethereal.email/messages). My temp username and password is available inner the all of [appsettings file](./src/Services/Store.Services.Customers/Store.Services.Customers.Api/appsettings.json).
+
+### Using PM2
+For ruining all microservices and control on their running mode we could use [PM2](https://pm2.keymetrics.io/) tools. for installing `pm2` on our system globally we should use this command:
+
+``` bash
+npm install pm2 -g
+```
+
+After installing pm2 on our machine, we could run all of our microservices with running bellow command in root of the application with using [pm2.yaml](./pm2.yaml) file.
+
+``` bash
+pm2 start pm2.yaml
+```
+
+Some PM2 useful commands:
+
+``` bash
+pm2 -h
+
+pm2 list
+
+pm2 logs
+
+pm2 monit
+
+pm2 info pm2.yaml
+
+pm2 stop pm2.yaml
+
+pm2 restart pm2.yaml
+
+pm2 delete pm2.yaml
+```
+
+
+### Using Docker-Compose
+
+10. Go to [deployments/docker-compose/docker-compose.yaml](./deployments/docker-compose/docker-compose.yaml) and run: `docker-compose up`.
+11. Wait until all dockers got are downloaded and running.
+12. You should automatically get:
+    - Postgres running
+    - RabbitMQ running
+    - MongoDB running
+    - Microservies running and accessible:
+      - Api Gateway, Available at: [http://localhost:3000](http://localhost:3000)
+      - Customers Service, Available at: [http://localhost:8000](http://localhost:8000)
+      - Catalogs Service, Available at: [http://localhost:4000](http://localhost:4000)
+      - Identity Service, Available at: [http://localhost:7000](http://localhost:7000)
+
+
+Some useful docker commands:
+
+``` powershell
+// start dockers
+docker-compose -f .\docker-compose.yaml up
+
+// build without caching
+docker-compose -f .\docker-compose.yaml build --no-cache
+
+// to stop running dockers
+docker-compose kill
+
+// to clean stopped dockers
+docker-compose down -v
+
+// showing running dockers
+docker ps
+
+// to show all dockers (also stopped)
+docker ps -a
+```
+### Using Tye
+We could run our microservices with new microsoft tools with name of [Project Tye](https://devblogs.microsoft.com/dotnet/introducing-project-tye/).
+
+Project Tye is an experimental developer tool that makes developing, testing, and deploying microservices and distributed applications easier.
+
+For installing `Tye` globally on our machine we should use this command:
+
+``` bash
+dotnet tool install -g Microsoft.Tye --version "0.11.0-alpha.22111.1"
+```
+OR if you already have Tye installed and want to update:
+
+``` bash
+dotnet tool update -g Microsoft.Tye
+```
+
+After installing tye, we could run our microservices with following command in the root of our project:
+
+``` bash
+tye run
+```
+One of key feature from tye run is a dashboard to view the state of your application. Navigate to [http://localhost:8000](http://localhost:8000) to see the dashboard running.
+
+Also We could run some [docker images](https://devblogs.microsoft.com/dotnet/introducing-project-tye/#adding-external-dependencies-redis) with Tye and Tye makes the process of deploying your application to [Kubernetes](https://devblogs.microsoft.com/dotnet/introducing-project-tye/#deploying-to-kubernetes) very simple with minimal knowlege or configuration required.
+
+### Using Kubernetes
+
+TODO
 
 ## Contribution
 The application is in development status. You are feel free to submit pull request or create the issue.

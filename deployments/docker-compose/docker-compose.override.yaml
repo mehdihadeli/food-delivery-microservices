@@ -3,7 +3,7 @@ services:
   catalogs:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - MongoOptions__ConnectionString=mongodb://mongo:${MONGODB_PORT}
+      - MongoOptions__ConnectionString=mongodb://mongo:${MONGO_PORT}
       - DatabaseName=Store-services-catalogs
       - PostgresOptions__ConnectionString=Server=postgres;Port=5432;Database=Store.Services.Catalogs;User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Include Error Detail=true
       - PostgresOptions__UseInMemory=false
@@ -29,4 +29,4 @@ services:
 
   mongo:
     ports:
-      - ${MONGODB_PORT}:27017
+      - ${MONGO_PORT}:27017

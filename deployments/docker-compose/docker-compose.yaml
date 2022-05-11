@@ -6,12 +6,12 @@ services:
     build:
       context: ../../
       dockerfile: src/ApiGateway/Store.ApiGateway/Dockerfile
-    container_name: e-commerce-gateway
+    container_name: store-gateway
     restart: on-failure
     ports:
       - ${GATEWAY_PORT}:80
     networks:
-      - e-commerce
+      - store
 
   catalogs:
     image: catalogs:${TAG}
@@ -20,7 +20,7 @@ services:
         Version: "1"
       context: ../../
       dockerfile: src/Services/Store.Services.Catalogs/Dockerfile
-    container_name: e-commerce-catalogs
+    container_name: store-catalogs
     restart: on-failure
     ports:
       - ${CATALOGS_SVC_PORT}:80
@@ -29,7 +29,7 @@ services:
       - rabbitmq
       - mongo
     networks:
-      - e-commerce
+      - store
 
   identity:
     image: identity:${TAG}
@@ -38,7 +38,7 @@ services:
         Version: "1"
       context: ../../
       dockerfile: src/Services/Store.Services.Identity/Dockerfile
-    container_name: e-commerce-identity
+    container_name: store-identity
     restart: on-failure
     ports:
       - ${IDENTITY_SVC_PORT}:80
@@ -46,7 +46,7 @@ services:
       - postgres
       - rabbitmq
     networks:
-      - e-commerce
+      - store
 
   customers:
     image: customers:${TAG}
@@ -55,7 +55,7 @@ services:
         Version: "1"
       context: ../../
       dockerfile: src/Services/Store.Services.Customers/Dockerfile
-    container_name: e-commerce-customers
+    container_name: store-customers
     restart: on-failure
     ports:
       - ${CUSTOMERS_SVC_PORT}:80
@@ -64,7 +64,7 @@ services:
       - rabbitmq
       - mongo
     networks:
-      - e-commerce
+      - store
 
     #######################################################
     #  rabbitmq
@@ -79,7 +79,7 @@ services:
       # volumes:
       #   - rabbitmq:/var/lib/rabbitmq
     networks:
-      - e-commerce
+      - store
 
     #######################################################
     #  mongo
@@ -92,9 +92,9 @@ services:
     #   - MONGO_INITDB_ROOT_USERNAME=root
     #   - MONGO_INITDB_ROOT_PASSWORD=secret
     ports:
-      - ${MONGODB_PORT}:27017
+      - ${MONGO_PORT}:${MONGO_PORT}
     networks:
-      - e-commerce
+      - store
 
     #######################################################
     #  postgres
@@ -108,8 +108,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
-      - e-commerce
+      - store
 
 networks:
-  e-commerce:
-    name: e-commerce
+  store:
+    name: store

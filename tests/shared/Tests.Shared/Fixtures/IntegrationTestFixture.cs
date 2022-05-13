@@ -1,6 +1,6 @@
 using BuildingBlocks.Abstractions.CQRS.Command;
 using BuildingBlocks.Abstractions.Messaging;
-using FluentMigrator.Runner.Processors.Postgres;
+using BuildingBlocks.Persistence.EfCore.Postgres;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;

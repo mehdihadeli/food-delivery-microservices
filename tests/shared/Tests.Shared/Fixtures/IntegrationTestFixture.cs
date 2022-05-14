@@ -186,10 +186,7 @@ public class IntegrationTestFixture<TEntryPoint> : IAsyncLifetime
 
     public IServiceProvider ServiceProvider => _factory.Services;
     public IConfiguration Configuration => _factory.Configuration;
-    public ILogger<IntegrationTestFixture<TEntryPoint>> Logger =>
-        ServiceProvider.GetRequiredService<ILogger<IntegrationTestFixture<TEntryPoint>>>();
-    public IBus Bus =>
-        ServiceProvider.GetRequiredService<IBus>();
+    public IBus Bus => ServiceProvider.GetRequiredService<IBus>();
 
     private async Task ResetState()
     {
@@ -209,9 +206,9 @@ public class IntegrationTestFixture<TEntryPoint> : IAsyncLifetime
 
     public void SetOutputHelper(ITestOutputHelper outputHelper)
     {
-        _factory.OutputHelper = outputHelper;
         var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
         loggerFactory.AddXUnit(outputHelper);
+        _factory.OutputHelper = outputHelper;
     }
 
     public IHttpContextAccessor HttpContextAccessor =>

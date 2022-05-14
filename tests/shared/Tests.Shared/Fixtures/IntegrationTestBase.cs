@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 using BuildingBlocks.Core.Extensions;
+using Microsoft.Extensions.Logging;
 using Tests.Shared.Builders;
 using Tests.Shared.Mocks;
 
@@ -25,6 +26,9 @@ public abstract class IntegrationTestBase<TEntryPoint> : IClassFixture<Integrati
     protected CancellationTokenSource CancellationTokenSource { get; } = new(TimeSpan.FromSeconds(10));
     protected IServiceScope Scope { get; }
     protected IntegrationTestFixture<TEntryPoint> IntegrationTestFixture { get; }
+
+    protected ILogger<IntegrationTestBase<TEntryPoint>> Logger =>
+        Scope.ServiceProvider.GetRequiredService<ILogger<IntegrationTestBase<TEntryPoint>>>();
 
     protected CancellationToken CancellationToken => CancellationTokenSource.Token;
     protected TextWriter TextWriter => Scope.ServiceProvider.GetRequiredService<TextWriter>();
@@ -56,7 +60,7 @@ public abstract class IntegrationTestBase<TEntryPoint> : IClassFixture<Integrati
         var admin = new LoginRequestBuilder().Build();
         var user = new LoginRequestBuilder()
             .WithUserNameOrEmail(Constants.Users.User.UserName)
-            .WithPassword (Constants.Users.User.Password)
+            .WithPassword(Constants.Users.User.Password)
             .Build();
 
         var adminLoginResult =

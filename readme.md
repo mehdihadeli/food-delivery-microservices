@@ -1,6 +1,6 @@
-# 🛍️ Store Microservices Sample
+# 🛍️ ECommerece Microservices Sample
 
-`Store Microservices` is a fictional online store sample, based on different software architecture and technologies like Microservices Architecture, Vertical Slice Architecture, CQRS pattern, Domain Driven Design, Event Driven Architecture and using Postgres for write side and MongoDb.
+`ECommerece Microservices` is a fictional online store sample, based on different software architecture and technologies like Microservices Architecture, Vertical Slice Architecture, CQRS pattern, Domain Driven Design, Event Driven Architecture and using Postgres for write side and MongoDb.
 
 In developing this application I try to use new features in .NET 6 and C# 10 based on `Minimal APIs` and .Net Core.
 
@@ -84,17 +84,17 @@ High-level plan is represented in the table
 
 ## The Domain And Bounded Context - Service Boundary
 
-`Store Microservices` is a simple online store api sample that has the basic business scenario for online purchasing with some dedicated services. There are six possible `Bounded context` or `Service` for above business:
+`ECommerce Microservices` is a simple online ecommerce api sample that has the basic business scenario for online purchasing with some dedicated services. There are six possible `Bounded context` or `Service` for above business:
 
 - `Identity Service`: the Identity Service uses to authenticate and authorize users through a token. Also, this service is responsible for creating users and their corresponding roles and permission with using [.Net Core Identity](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity) and Jwt authentication and authorization. I will add also [Identity Server](https://github.com/DuendeSoftware/IdentityServer) in future for this service. Each of `Administrator`, `Customer` and `Supplier` are a `User`, actually a `IdentityUser`. To be a User, User Registration is required. Each User is assigned one or more User Role.
 Each User Role has set of Permissions. A Permission defines whether User can invoke a particular action or not.
 
-- `Catalog Service`: The Catalog Service presents the ability to add items to our store, It can be electronics, foods, books or anything else. Items can be grouped into categories and catalogs. A catalog is defined as a list of items that a company showcases online. the catalog is a collection of items, which can be grouped into categories. An item can be assigned to only one category or be direct child of a catalog without any category.
+- `Catalog Service`: The Catalog Service presents the ability to add items to our ecommerce, It can be electronics, foods, books or anything else. Items can be grouped into categories and catalogs. A catalog is defined as a list of items that a company showcases online. the catalog is a collection of items, which can be grouped into categories. An item can be assigned to only one category or be direct child of a catalog without any category.
 Buyer can browse the products list with supported filtering and sorting by product name and price. customer can see the detail of the product on the product list and in the detail page, can see a name, description, available product in the inventory,...
 
 - `Customers Service`: This service is responsible for managing our customers information, track the activities and subscribing to get notification for out of stock products
 
-- `Order Service`: The Orders Service main purpose is to store order details and manage orders created by users on client side. This service is not designed to be a full order processing system like ERP but serves as storage for customer orders details and can be synchronized with different external processing systems.
+- `Order Service`: The Orders Service main purpose is to ecommerce order details and manage orders created by users on client side. This service is not designed to be a full order processing system like ERP but serves as storage for customer orders details and can be synchronized with different external processing systems.
 Some of this service responsibilities are `Saving orders`, `Saving order drafts`, `Ability to view and manage fulfillment, packages`, `Change discounts`
 
 - `Payment Service`: The payment service is responsible for payment process of our customer with different payment process and managing and tracking our payment history
@@ -195,7 +195,7 @@ TODO
 4. Install Visual Studio 2022, Rider or VSCode.
 5. Install docker - [https://docs.docker.com/docker-for-windows/install/](https://docs.docker.com/docker-for-windows/install/).
 6. Make sure that you have ~10GB disk space.
-7. Clone Project [https://github.com/mehdihadeli/store-microservices-sample](https://github.com/mehdihadeli/Store-microservices), make sure that's compiling
+7. Clone Project [https://github.com/mehdihadeli/ecommerce-microservices-sample](https://github.com/mehdihadeli/ecommerce-microservices-sample), make sure that's compiling
 8. Open [store.sln](./Store.sln) solution.
 
 ## How to Run
@@ -319,4 +319,4 @@ The application is in development status. You are feel free to submit pull reque
 - [https://github.com/devmentors/Inflow-micro](https://github.com/devmentors/Inflow-micro)
 
 ## License
-The project is under [MIT license](https://github.com/mehdihadeli/store-microservices-sample/blob/main/LICENSE).
+The project is under [MIT license](https://github.com/mehdihadeli/ecommerce-microservices-sample/blob/main/LICENSE).

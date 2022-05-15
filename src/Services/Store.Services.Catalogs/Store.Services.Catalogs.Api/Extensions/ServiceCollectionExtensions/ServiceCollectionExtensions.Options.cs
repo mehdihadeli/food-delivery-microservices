@@ -1,6 +1,6 @@
-using Store.Services.Catalogs.Shared;
+using BuildingBlocks.Core.Web;
 
-namespace Catalogs.Api.Extensions.ServiceCollectionExtensions;
+namespace Store.Services.Catalogs.Api.Extensions.ServiceCollectionExtensions;
 
 public static partial class ServiceCollectionExtensions
 {

@@ -3,6 +3,7 @@ using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Event;
 using BuildingBlocks.Abstractions.CQRS.Event.Internal;
 using BuildingBlocks.Abstractions.Messaging;
+using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 
 namespace BuildingBlocks.Core.CQRS.Event;
 

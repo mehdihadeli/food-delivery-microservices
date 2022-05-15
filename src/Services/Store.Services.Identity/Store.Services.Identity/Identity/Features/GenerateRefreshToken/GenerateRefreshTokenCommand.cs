@@ -5,6 +5,7 @@ using Store.Services.Identity.Identity.Dtos;
 using Store.Services.Identity.Identity.Features.RefreshingToken;
 using Store.Services.Identity.Shared.Data;
 using Microsoft.EntityFrameworkCore;
+using Store.Services.Identity.Identity.Data;
 
 namespace Store.Services.Identity.Identity.Features.GenerateRefreshToken;
 

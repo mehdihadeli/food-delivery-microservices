@@ -2,9 +2,9 @@ using BuildingBlocks.Persistence.EfCore.Postgres;
 
 namespace Store.Services.Customers.Shared.Data;
 
-public class CatalogDbContextDesignFactory : DbContextDesignFactoryBase<CustomersDbContext>
+public class CustomerDbContextDesignFactory : DbContextDesignFactoryBase<CustomersDbContext>
 {
-    public CatalogDbContextDesignFactory() : base("CustomersServiceConnection")
+    public CustomerDbContextDesignFactory() : base("CustomersServiceConnection")
     {
     }
 }

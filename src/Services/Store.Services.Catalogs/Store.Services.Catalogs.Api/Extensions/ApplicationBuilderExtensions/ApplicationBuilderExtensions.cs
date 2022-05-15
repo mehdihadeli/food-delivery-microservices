@@ -1,4 +1,4 @@
-namespace Catalogs.Api.Extensions.ApplicationBuilderExtensions;
+namespace Store.Services.Catalogs.Api.Extensions.ApplicationBuilderExtensions;
 
 public static class ApplicationBuilderExtensions
 {

@@ -1,10 +1,10 @@
 using BuildingBlocks.Core.Domain.ValueObjects;
 using BuildingBlocks.Core.Persistence.EfCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Store.Services.Customers.Customers.Models;
 using Store.Services.Customers.Customers.ValueObjects;
 using Store.Services.Customers.Shared.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Store.Services.Customers.Customers.Data;
 

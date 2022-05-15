@@ -1,5 +1,5 @@
-using Store.Services.Customers.Customers.Models;
 using Microsoft.EntityFrameworkCore;
+using Store.Services.Customers.Customers.Models;
 
 namespace Store.Services.Customers.Shared.Contracts;
 

@@ -20,7 +20,7 @@ public class ProductEventMapper : IEventMapper
         return domainEvent switch
         {
             ProductCreated e =>
-                new Store.Services.Shared.Catalogs.Products.Events.Integration.ProductCreated(
+                new Services.Shared.Catalogs.Products.Events.Integration.ProductCreated(
                     e.Product.Id,
                     e.Product.Name,
                     e.Product.Category.Id,
@@ -30,7 +30,7 @@ public class ProductEventMapper : IEventMapper
                 Services.Shared.Catalogs.Products.Events.Integration.ProductStockDebited(
                     e.ProductId, e.NewStock.Available, e.DebitedQuantity),
             ProductStockReplenished e => new
-                Features.ReplenishingProductStock.Events.Integration.ProductStockReplenished(
+                Services.Shared.Catalogs.Products.Events.Integration.ProductStockReplenished(
                     e.ProductId, e.NewStock.Available, e.ReplenishedQuantity),
             _ => null
         };

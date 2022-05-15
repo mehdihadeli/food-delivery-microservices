@@ -1,6 +1,6 @@
 ﻿using Humanizer;
 using MassTransit;
-using Store.Services.Customers.Customers.Features.CreatingCustomer.Events.Integration;
+using RabbitMQ.Client;
 using Store.Services.Shared.Customers.Customers.Events.Integration;
 
 namespace Store.Services.Customers.Customers;
@@ -9,20 +9,14 @@ internal static class MassTransitExtensions
 {
     internal static void AddCustomerPublishers(this IRabbitMqBusFactoryConfigurator cfg)
     {
-    }
-
-    internal static void AddCustomerEndpoints(this IRabbitMqBusFactoryConfigurator cfg, IBusRegistrationContext context)
-    {
-        cfg.ReceiveEndpoint(nameof(CustomerCreated).Underscore() + ".customers", e =>
+        cfg.Message<CustomerCreated>(e =>
+            e.SetEntityName($"{nameof(CustomerCreated).Underscore()}.input_exchange")); // name of the primary exchange
+        cfg.Publish<CustomerCreated>(e => e.ExchangeType = ExchangeType.Direct); // primary exchange type
+        cfg.Send<CustomerCreated>(e =>
         {
-            e.RethrowFaultedMessages();
-            e.ConfigureConsumer<CustomerCreatedConsumer>(context);
+            // route by message type to binding fanout exchange (exchange to exchange binding)
+            e.UseRoutingKeyFormatter(context =>
+                context.Message.GetType().Name.Underscore());
         });
-    }
-
-    internal static void AddCustomerConsumers(this IBusRegistrationConfigurator cfg)
-    {
-        cfg.AddConsumer<CustomerCreatedConsumer>()
-            .Endpoint(e => { e.ConcurrentMessageLimit = 1; });
     }
 }

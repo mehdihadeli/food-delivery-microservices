@@ -1,8 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-  <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="6.3.1" />
-  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />

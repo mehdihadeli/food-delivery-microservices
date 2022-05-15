@@ -2,7 +2,6 @@ using Store.Services.Identity.Users.Features.GettingUerByEmail;
 using Store.Services.Identity.Users.Features.GettingUserById;
 using Store.Services.Identity.Users.Features.RegisteringUser;
 using Store.Services.Identity.Users.Features.UpdatingUserState;
-using Store.Services.Shared.Identity.Users.Events.Integration;
 using Humanizer;
 using MassTransit;
 using Microsoft.AspNetCore.Routing;

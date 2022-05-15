@@ -14,6 +14,8 @@ internal class CustomersConfigs : IModuleDefinition
     {
         services.AddScoped<IDataSeeder, CustomersDataSeeder>();
 
+        // services.AddScoped<CustomerCreatedConsumer>();
+
         return services;
     }
 

@@ -10,6 +10,7 @@ using Store.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Store.Services.Identity.Identity.Data;
 
 namespace Store.Services.Identity.Identity.Features.SendEmailVerificationCode;
 

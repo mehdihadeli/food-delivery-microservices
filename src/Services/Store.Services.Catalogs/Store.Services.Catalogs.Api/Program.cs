@@ -6,14 +6,15 @@ using BuildingBlocks.Security;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
+using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Extensions.ServiceCollectionExtensions;
-using Catalogs.Api.Extensions.ApplicationBuilderExtensions;
-using Catalogs.Api.Extensions.ServiceCollectionExtensions;
-using Store.Services.Catalogs;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Serilog;
 using Serilog.Events;
+using Store.Services.Catalogs;
+using Store.Services.Catalogs.Api.Extensions.ApplicationBuilderExtensions;
+using Store.Services.Catalogs.Api.Extensions.ServiceCollectionExtensions;
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
 // https://benfoster.io/blog/mvc-to-minimal-apis-aspnet-6/
@@ -52,7 +53,7 @@ builder.Host.AddCustomSerilog(
     config =>
     {
         config.WriteTo.File(
-            GetLogPath(builder.Environment, loggingOptions) ?? "../logs/customers-service.log",
+            Store.Services.Catalogs.Api.Program.GetLogPath(builder.Environment, loggingOptions) ?? "../logs/customers-service.log",
             outputTemplate: loggingOptions?.LogTemplate ??
                             "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}",
             rollingInterval: RollingInterval.Day,
@@ -73,7 +74,8 @@ builder.Services.AddCustomAuthorization(
         new(CatalogConstants.Role.User, new List<string> { CatalogConstants.Role.User })
     });
 
-builder.AddCatalogModuleServices();
+/*----------------- Module Services Setup ------------------*/
+builder.AddModulesServices();
 
 var app = builder.Build();
 
@@ -85,6 +87,7 @@ if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
 
     // Minimal Api not supported versioning in .net 6
     app.UseCustomSwagger();
+
     // ref: https://christian-schou.dk/how-to-make-api-documentation-using-swagger/
     app.UseReDoc(options =>
     {
@@ -92,9 +95,6 @@ if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
         options.SpecUrl = "/swagger/v1/swagger.json";
     });
 }
-
-
-ServiceActivator.Configure(app.Services);
 
 app.UseProblemDetails();
 
@@ -104,16 +104,19 @@ app.UseAppCors();
 
 app.UseSerilogRequestLogging();
 
-app.UseCustomHealthCheck();
-
-await app.ConfigureCatalogModule(environment, app.Logger);
+/*----------------- Module Middleware Setup ------------------*/
+await app.ConfigureModules();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapCatalogModuleEndpoints();
+/*----------------- Module Routes Setup ------------------*/
+app.MapModulesEndpoints();
+
+// automatic discover minimal endpoints
+app.MapEndpoints();
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -121,9 +124,11 @@ Log.Logger = new LoggerConfiguration()
 
 await app.RunAsync();
 
-
-public partial class Program
+namespace Store.Services.Catalogs.Api
 {
-    public static string? GetLogPath(IWebHostEnvironment env, LoggerOptions loggerOptions)
-        => env.IsDevelopment() ? loggerOptions.DevelopmentLogPath : loggerOptions.ProductionLogPath;
+    public partial class Program
+    {
+        public static string? GetLogPath(IWebHostEnvironment env, LoggerOptions loggerOptions)
+            => env.IsDevelopment() ? loggerOptions.DevelopmentLogPath : loggerOptions.ProductionLogPath;
+    }
 }

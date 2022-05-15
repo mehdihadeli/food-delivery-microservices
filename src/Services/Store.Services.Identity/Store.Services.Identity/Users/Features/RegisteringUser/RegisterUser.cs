@@ -1,12 +1,11 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Command;
-using BuildingBlocks.Abstractions.CQRS.Event;
 using BuildingBlocks.Abstractions.Messaging;
+using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Store.Services.Identity.Shared.Models;
 using Store.Services.Identity.Users.Dtos;
 using Store.Services.Shared.Identity.Users.Events.Integration;
-using FluentValidation;
-using Microsoft.AspNetCore.Identity;
 using UserState = Store.Services.Identity.Shared.Models.UserState;
 
 namespace Store.Services.Identity.Users.Features.RegisteringUser;

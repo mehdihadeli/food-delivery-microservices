@@ -1,9 +1,8 @@
-using BuildingBlocks.Abstractions.CQRS.Event.Internal;
 using BuildingBlocks.Core.Persistence.EfCore;
+using Microsoft.EntityFrameworkCore;
 using Store.Services.Customers.Customers.Models;
 using Store.Services.Customers.RestockSubscriptions.Models.Write;
 using Store.Services.Customers.Shared.Contracts;
-using Microsoft.EntityFrameworkCore;
 
 namespace Store.Services.Customers.Shared.Data;
 

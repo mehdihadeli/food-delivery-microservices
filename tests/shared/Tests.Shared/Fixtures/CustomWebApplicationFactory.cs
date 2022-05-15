@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 using Xunit.Abstractions;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Tests.Shared.Fixtures;
 
@@ -17,22 +19,44 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
     public ITestOutputHelper? OutputHelper { get; set; }
     public Action<IServiceCollection>? TestRegistrationServices { get; set; }
 
+    public ILogger Logger => Services.GetRequiredService<ILogger<CustomWebApplicationFactory<TEntryPoint>>>();
+    public void ClearOutputHelper() => OutputHelper = null;
+    public void SetOutputHelper(ITestOutputHelper value) => OutputHelper = value;
+
     public CustomWebApplicationFactory(Action<IServiceCollection>? testRegistrationServices = null)
     {
         TestRegistrationServices = testRegistrationServices ?? (collection => { });
     }
 
-    //https://github.com/dotnet/aspnetcore/issues/17707
+    // https://andrewlock.net/converting-integration-tests-to-net-core-3/
+    // https://andrewlock.net/exploring-dotnet-6-part-6-supporting-integration-tests-with-webapplicationfactory-in-dotnet-6/
+    // https://github.com/dotnet/aspnetcore/pull/33462
+    // https://github.com/dotnet/aspnetcore/issues/33846
     protected override IHost CreateHost(IHostBuilder builder)
     {
         builder.UseContentRoot(Directory.GetCurrentDirectory());
 
-        builder.ConfigureLogging(logging =>
+        builder.UseSerilog((_, _, loggerConfiguration) =>
         {
-            logging.ClearProviders(); // Remove other loggers
+            //https://github.com/jhquirino/Serilog.Sinks.Xunit2
             if (OutputHelper is { })
-                logging.AddXUnit(OutputHelper); // Use the ITestOutputHelper instance
+            {
+                loggerConfiguration.WriteTo.Xunit(OutputHelper);
+            }
+
+            loggerConfiguration.MinimumLevel.Is(LogEventLevel.Information)
+                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning);
         });
+
+        // builder.ConfigureLogging(logging =>
+        // {
+        //     //https://github.com/serilog/serilog-aspnetcore/issues/57#issuecomment-407569450
+        //     logging.ClearProviders(); // Remove other loggers
+        //
+        //     // https://github.com/martincostello/xunit-logging
+        //     if (OutputHelper is { })
+        //         logging.AddXUnit(OutputHelper); // Use the ITestOutputHelper instance
+        // });
 
         return base.CreateHost(builder);
     }
@@ -45,13 +69,12 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
         // //we could read env from our test launch setting or we can set it directly here
         builder.UseEnvironment("test");
 
+
         //The test app's builder.ConfigureTestServices callback is executed after the app's Startup.ConfigureServices code is executed.
         builder.ConfigureTestServices((services) =>
         {
-            services.RemoveAll(typeof(IHostedService));
-
+            // services.RemoveAll(typeof(IHostedService));
             services.AddHttpContextAccessor();
-
             TestRegistrationServices?.Invoke(services);
         });
 

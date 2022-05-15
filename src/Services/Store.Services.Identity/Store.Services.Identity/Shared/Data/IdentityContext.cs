@@ -1,11 +1,11 @@
 using System.Data;
 using BuildingBlocks.Abstractions.CQRS.Event.Internal;
 using BuildingBlocks.Abstractions.Persistence;
-using Store.Services.Identity.Shared.Models;
 using Humanizer;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Store.Services.Identity.Shared.Models;
 
 namespace Store.Services.Identity.Shared.Data;
 
@@ -21,6 +21,7 @@ public class IdentityContext : IdentityDbContext<ApplicationUser, ApplicationRol
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
         builder.ApplyConfigurationsFromAssembly(GetType().Assembly);
 
         // https://andrewlock.net/customising-asp-net-core-identity-ef-core-naming-conventions-for-postgresql/

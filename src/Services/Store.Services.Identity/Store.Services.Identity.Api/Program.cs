@@ -1,10 +1,8 @@
-using System.Reflection;
 using BuildingBlocks.Logging;
-using BuildingBlocks.Monitoring;
 using BuildingBlocks.Security;
-using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
+using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Extensions.ServiceCollectionExtensions;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -45,11 +43,11 @@ builder.AddCustomSwagger(builder.Configuration, typeof(IdentityRoot).Assembly);
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
 builder.Services.AddCustomJwtAuthentication(builder.Configuration);
+
 builder.Services.AddCustomAuthorization();
 
+/*----------------- Module Services Setup ------------------*/
 builder.AddIdentityModule();
 
 var app = builder.Build();
@@ -77,8 +75,7 @@ app.UseRouting();
 
 app.UseAppCors();
 
-app.UseCustomHealthCheck();
-
+/*----------------- Module Middleware Setup ------------------*/
 await app.ConfigureIdentityModule(environment, app.Logger);
 
 app.UseAuthentication();
@@ -86,7 +83,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+/*----------------- Module Routes Setup ------------------*/
 app.MapIdentityModuleEndpoints();
+
+// automatic discover minimal endpoints
+app.MapEndpoints();
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()

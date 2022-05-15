@@ -1,4 +1,3 @@
-using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Messaging;
 
 namespace Store.Services.Shared.Identity.Users.Events.Integration;

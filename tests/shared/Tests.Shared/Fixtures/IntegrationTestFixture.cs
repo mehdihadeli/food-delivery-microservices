@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.CQRS.Command;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Persistence.EfCore.Postgres;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +34,7 @@ public class IntegrationTestFixture<TEntryPoint, TDbContext> : IntegrationTestFi
 
                 await dbContext.Database.CommitTransactionAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 dbContext.Database?.RollbackTransactionAsync();
                 throw;
@@ -74,7 +75,8 @@ public class IntegrationTestFixture<TEntryPoint, TDbContext> : IntegrationTestFi
         => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TDbContext>()).AsTask());
 
     public Task ExecuteDbContextAsync(Func<TDbContext, ICommandProcessor, Task> action)
-        => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TDbContext>(), sp.GetRequiredService<ICommandProcessor>()));
+        => ExecuteScopeAsync(sp =>
+            action(sp.GetRequiredService<TDbContext>(), sp.GetRequiredService<ICommandProcessor>()));
 
     public Task<T> ExecuteDbContextAsync<T>(Func<TDbContext, Task<T>> action)
         => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TDbContext>()));
@@ -83,7 +85,8 @@ public class IntegrationTestFixture<TEntryPoint, TDbContext> : IntegrationTestFi
         => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TDbContext>()).AsTask());
 
     public Task<T> ExecuteDbContextAsync<T>(Func<TDbContext, ICommandProcessor, Task<T>> action)
-        => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TDbContext>(), sp.GetRequiredService<ICommandProcessor>()));
+        => ExecuteScopeAsync(sp =>
+            action(sp.GetRequiredService<TDbContext>(), sp.GetRequiredService<ICommandProcessor>()));
 
     public Task InsertAsync<T>(params T[] entities) where T : class
     {
@@ -186,7 +189,7 @@ public class IntegrationTestFixture<TEntryPoint> : IAsyncLifetime
 
     public IServiceProvider ServiceProvider => _factory.Services;
     public IConfiguration Configuration => _factory.Configuration;
-    public IBus Bus => ServiceProvider.GetRequiredService<IBus>();
+    public IBus Bus => ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<IBus>();
 
     private async Task ResetState()
     {
@@ -206,8 +209,8 @@ public class IntegrationTestFixture<TEntryPoint> : IAsyncLifetime
 
     public void SetOutputHelper(ITestOutputHelper outputHelper)
     {
-        var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
-        loggerFactory.AddXUnit(outputHelper);
+        // var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
+        // loggerFactory.AddXUnit(outputHelper);
         _factory.OutputHelper = outputHelper;
     }
 

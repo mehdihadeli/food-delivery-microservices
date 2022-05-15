@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Core.Messaging;
+using BuildingBlocks.Core.Messaging;
 
 namespace Store.Services.Shared.Catalogs.Products.Events.Integration;
 

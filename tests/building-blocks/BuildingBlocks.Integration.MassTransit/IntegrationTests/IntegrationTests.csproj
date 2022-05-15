@@ -7,10 +7,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Services\Store.Services.Catalogs\Store.Services.Catalogs.Api\Store.Services.Catalogs.Api.csproj" />
     <ProjectReference Include="..\..\..\..\src\Services\Store.Services.Customers\Store.Services.Customers.Api\Store.Services.Customers.Api.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Services\Store.Services.Customers\Store.Services.Customers\Store.Services.Customers.csproj" />
     <ProjectReference Include="..\..\..\..\src\Services\Store.Services.Identity\Store.Services.Identity.Api\Store.Services.Identity.Api.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Services\Store.Services.Identity\Store.Services.Identity\Store.Services.Identity.csproj" />
     <ProjectReference Include="..\..\..\shared\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
 

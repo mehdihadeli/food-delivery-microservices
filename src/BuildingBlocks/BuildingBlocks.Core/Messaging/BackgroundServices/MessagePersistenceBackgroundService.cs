@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Messaging;
+using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Types;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
 using Microsoft.Extensions.Hosting;

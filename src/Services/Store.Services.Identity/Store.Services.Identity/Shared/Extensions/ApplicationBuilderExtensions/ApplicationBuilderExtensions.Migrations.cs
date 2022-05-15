@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Store.Services.Identity.Identity.Data;
 
 namespace Store.Services.Identity.Shared.Extensions.ApplicationBuilderExtensions;
 

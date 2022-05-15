@@ -4,7 +4,7 @@ using BuildingBlocks.Validation;
 using Hellang.Middleware.ProblemDetails;
 using Newtonsoft.Json;
 
-namespace Catalogs.Api.Extensions.ServiceCollectionExtensions;
+namespace Store.Services.Catalogs.Api.Extensions.ServiceCollectionExtensions;
 
 public static partial class ServiceCollectionExtensions
 {

@@ -1,3 +1,4 @@
+using BuildingBlocks.Core.Web;
 using Store.Services.Customers.Shared;
 
 namespace Customers.Api.Extensions.ServiceCollectionExtensions;

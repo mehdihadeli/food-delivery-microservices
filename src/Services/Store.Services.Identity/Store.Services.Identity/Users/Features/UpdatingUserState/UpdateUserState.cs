@@ -4,11 +4,10 @@ using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Core.Exception;
 using Store.Services.Identity.Shared.Exceptions;
 using Store.Services.Identity.Shared.Models;
-using Store.Services.Shared.Identity.Users.Events.Integration;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using UserState = Store.Services.Identity.Shared.Models.UserState;
+using Store.Services.Identity.Users.Features.UpdatingUserState.Events.Integration;
 
 namespace Store.Services.Identity.Users.Features.UpdatingUserState;
 
@@ -66,8 +65,8 @@ internal class UpdateUserStateHandler : ICommandHandler<UpdateUserState>
 
         var userStateUpdated = new UserStateUpdated(
             request.UserId,
-            (Services.Shared.Identity.Users.Events.Integration.UserState)(int)previousState,
-            (Services.Shared.Identity.Users.Events.Integration.UserState)(int)request.State);
+            (UserState)(int)previousState,
+            (UserState)(int)request.State);
 
         await _bus.PublishAsync(userStateUpdated, null, cancellationToken);
 

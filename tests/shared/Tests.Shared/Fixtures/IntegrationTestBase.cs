@@ -23,13 +23,11 @@ public abstract class IntegrationTestBase<TEntryPoint, TDbContext> : Integration
 public abstract class IntegrationTestBase<TEntryPoint> : IClassFixture<IntegrationTestFixture<TEntryPoint>>
     where TEntryPoint : class
 {
-    protected CancellationTokenSource CancellationTokenSource { get; } = new(TimeSpan.FromSeconds(10));
+    protected CancellationTokenSource CancellationTokenSource { get; } = new(TimeSpan.FromSeconds(60));
     protected IServiceScope Scope { get; }
     protected IntegrationTestFixture<TEntryPoint> IntegrationTestFixture { get; }
 
-    protected ILogger<IntegrationTestBase<TEntryPoint>> Logger =>
-        Scope.ServiceProvider.GetRequiredService<ILogger<IntegrationTestBase<TEntryPoint>>>();
-
+    protected ILogger Logger { get; }
     protected CancellationToken CancellationToken => CancellationTokenSource.Token;
     protected TextWriter TextWriter => Scope.ServiceProvider.GetRequiredService<TextWriter>();
 
@@ -44,6 +42,7 @@ public abstract class IntegrationTestBase<TEntryPoint> : IClassFixture<Integrati
         IntegrationTestFixture = integrationTestFixture;
         Scope = integrationTestFixture.ServiceProvider.CreateScope();
         integrationTestFixture.SetOutputHelper(outputHelper);
+        Logger = Scope.ServiceProvider.GetRequiredService<ILogger<IntegrationTestFixture<TEntryPoint>>>();
 
         AdminClient = integrationTestFixture.CreateNewClient(services =>
         {

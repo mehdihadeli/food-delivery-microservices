@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Customers\Features\CreatingCustomer\Events\Integration" />
     <Folder Include="Identity\Features" />
-    <Folder Include="Products\Features" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,4 @@
-using System.Reflection;
-using BuildingBlocks.Core;
 using BuildingBlocks.Logging;
-using BuildingBlocks.Monitoring;
 using BuildingBlocks.Security;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
@@ -10,12 +7,11 @@ using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Extensions.ServiceCollectionExtensions;
 using Customers.Api.Extensions.ApplicationBuilderExtensions;
 using Customers.Api.Extensions.ServiceCollectionExtensions;
-using Store.Services.Customers;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Serilog;
 using Serilog.Events;
-using Store.Services.Customers.Shared.Data;
+using Store.Services.Customers;
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
 // https://benfoster.io/blog/mvc-to-minimal-apis-aspnet-6/
@@ -53,7 +49,7 @@ builder.Host.AddCustomSerilog(
     config =>
     {
         config.WriteTo.File(
-            Customers.Api.Program.GetLogPath(builder.Environment, loggingOptions) ?? "../logs/customers-service.log",
+            Program.GetLogPath(builder.Environment, loggingOptions) ?? "../logs/customers-service.log",
             outputTemplate: loggingOptions?.LogTemplate ??
                             "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}",
             rollingInterval: RollingInterval.Day,
@@ -64,16 +60,15 @@ builder.AddCustomSwagger(builder.Configuration, typeof(CustomersRoot).Assembly);
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
 builder.Services.AddCustomJwtAuthentication(builder.Configuration);
 builder.Services.AddCustomAuthorization(
     rolePolicies: new List<RolePolicy>
     {
-        new(CustomersConstants.Role.Admin, new List<string> { CustomersConstants.Role.Admin }),
-        new(CustomersConstants.Role.User, new List<string> { CustomersConstants.Role.User })
+        new(CustomersConstants.Role.Admin, new List<string> {CustomersConstants.Role.Admin}),
+        new(CustomersConstants.Role.User, new List<string> {CustomersConstants.Role.User})
     });
 
+/*----------------- Module Services Setup ------------------*/
 builder.AddModulesServices();
 
 var app = builder.Build();
@@ -86,6 +81,7 @@ if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
 
     // Minimal Api not supported versioning in .net 6
     app.UseCustomSwagger();
+
     // ref: https://christian-schou.dk/how-to-make-api-documentation-using-swagger/
     app.UseReDoc(options =>
     {
@@ -94,25 +90,22 @@ if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
     });
 }
 
-
-ServiceActivator.Configure(app.Services);
-
 app.UseProblemDetails();
-
-app.UseRouting();
-
-app.UseAppCors();
 
 app.UseSerilogRequestLogging();
 
-app.UseCustomHealthCheck();
+/*----------------- Module Middleware Setup ------------------*/
+await app.ConfigureModules();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-await app.ConfigureModules();
+app.UseRouting();
+app.UseAppCors();
 
 app.MapControllers();
+
+/*----------------- Module Routes Setup ------------------*/
 app.MapModulesEndpoints();
 
 // automatic discover minimal endpoints
@@ -124,11 +117,9 @@ Log.Logger = new LoggerConfiguration()
 
 await app.RunAsync();
 
-namespace Customers.Api
+
+public partial class Program
 {
-    public partial class Program
-    {
-        public static string? GetLogPath(IWebHostEnvironment env, LoggerOptions loggerOptions)
-            => env.IsDevelopment() ? loggerOptions.DevelopmentLogPath : loggerOptions.ProductionLogPath;
-    }
+    public static string? GetLogPath(IWebHostEnvironment env, LoggerOptions loggerOptions)
+        => env.IsDevelopment() ? loggerOptions.DevelopmentLogPath : loggerOptions.ProductionLogPath;
 }

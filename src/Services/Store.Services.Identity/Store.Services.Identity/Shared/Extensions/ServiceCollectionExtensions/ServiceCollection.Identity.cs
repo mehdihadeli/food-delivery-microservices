@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Store.Services.Identity.Identity.Data;
 
 namespace Store.Services.Identity.Shared.Extensions.ServiceCollectionExtensions;
 

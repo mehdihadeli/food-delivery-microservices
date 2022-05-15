@@ -2,19 +2,19 @@ using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Command;
 using BuildingBlocks.Abstractions.CQRS.Event.Internal;
 using BuildingBlocks.Abstractions.Messaging;
+using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Serialization;
+using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Types;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace BuildingBlocks.Core.Messaging.MessagePersistence.InMemory;
 
 public class InMemoryMessagePersistenceService : IMessagePersistenceService
 {
     private readonly ILogger<InMemoryMessagePersistenceService> _logger;
-    private readonly InMemoryMessagePersistenceContext _inMemoryMessagePersistenceContext;
+    private readonly InMemoryMessagePersistenceRepository _inMemoryMessagePersistenceRepository;
     private readonly IMessageSerializer _messageSerializer;
     private readonly IMediator _mediator;
     private readonly IBus _bus;
@@ -22,14 +22,14 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
 
     public InMemoryMessagePersistenceService(
         ILogger<InMemoryMessagePersistenceService> logger,
-        InMemoryMessagePersistenceContext inMemoryMessagePersistenceContext,
+        InMemoryMessagePersistenceRepository inMemoryMessagePersistenceRepository,
         IMessageSerializer messageSerializer,
         IMediator mediator,
         IBus bus,
         ISerializer serializer)
     {
         _logger = logger;
-        _inMemoryMessagePersistenceContext = inMemoryMessagePersistenceContext;
+        _inMemoryMessagePersistenceRepository = inMemoryMessagePersistenceRepository;
         _messageSerializer = messageSerializer;
         _mediator = mediator;
         _bus = bus;
@@ -64,7 +64,7 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
         IDomainNotificationEvent notification,
         CancellationToken cancellationToken = default)
     {
-        await _inMemoryMessagePersistenceContext.StoreMessages.AddAsync(
+        await _inMemoryMessagePersistenceRepository.AddAsync(
             new StoreMessage(
                 notification.EventId,
                 TypeMapper.GetTypeName(notification.GetType()),
@@ -94,15 +94,13 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
             id = Guid.NewGuid();
         }
 
-        await _inMemoryMessagePersistenceContext.StoreMessages.AddAsync(
+        await _inMemoryMessagePersistenceRepository.AddAsync(
             new StoreMessage(
                 id,
                 TypeMapper.GetTypeName(messageEnvelope.Message.GetType()),
                 _messageSerializer.Serialize(messageEnvelope),
                 deliveryType),
             cancellationToken);
-
-        await _inMemoryMessagePersistenceContext.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation(
             "Message with id: {MessageID} and delivery type: {DeliveryType} saved in persistence message store.",
@@ -115,8 +113,9 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
         MessageDeliveryType deliveryType,
         CancellationToken cancellationToken = default)
     {
-        var message = await _inMemoryMessagePersistenceContext.StoreMessages
-            .FirstOrDefaultAsync(x => x.Id == messageId && x.DeliveryType == deliveryType, cancellationToken);
+        var message = (await _inMemoryMessagePersistenceRepository
+                .GetByFilterAsync(x => x.Id == messageId && x.DeliveryType == deliveryType, cancellationToken))
+            .FirstOrDefault();
 
         if (message is null)
             return;
@@ -135,14 +134,12 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
                 await ProcessOutbox(message, cancellationToken);
                 break;
         }
-
-        await _inMemoryMessagePersistenceContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task ProcessAllAsync(CancellationToken cancellationToken = default)
     {
-        var messages = _inMemoryMessagePersistenceContext.StoreMessages
-            .Where(x => x.MessageStatus != MessageStatus.Processed);
+        var messages = await _inMemoryMessagePersistenceRepository
+            .GetByFilterAsync(x => x.MessageStatus != MessageStatus.Processed, cancellationToken);
 
         foreach (var message in messages)
         {
@@ -152,8 +149,7 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
 
     private async Task ProcessOutbox(StoreMessage message, CancellationToken cancellationToken)
     {
-        //TODO: Refactor to using message serializer
-        MessageEnvelope? messageEnvelope = JsonConvert.DeserializeObject<MessageEnvelope>(message.Data);
+        MessageEnvelope? messageEnvelope = _messageSerializer.Deserialize<MessageEnvelope>(message.Data, true);
 
         if (messageEnvelope is null || messageEnvelope.Message is null)
             return;
@@ -162,10 +158,11 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
             messageEnvelope.Message.ToString()!,
             TypeMapper.GetType(message.DataType));
 
-        if (data is IMessage integrationEvent)
+        if (data is IMessage)
         {
+            // we should pass a object type message or explicit our message type, not cast to IMessage (data is IMessage integrationEvent) because masstransit doesn't work with IMessage cast.
             await _bus.PublishAsync(
-                integrationEvent,
+                data,
                 messageEnvelope.Headers,
                 cancellationToken);
 
@@ -178,8 +175,7 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
 
     private async Task ProcessInternal(StoreMessage message, CancellationToken cancellationToken)
     {
-        //TODO: Refactor to using message serializer
-        MessageEnvelope? messageEnvelope = JsonConvert.DeserializeObject<MessageEnvelope>(message.Data);
+        MessageEnvelope? messageEnvelope = _messageSerializer.Deserialize<MessageEnvelope>(message.Data, true);
 
         if (messageEnvelope is null || messageEnvelope.Message is null)
             return;

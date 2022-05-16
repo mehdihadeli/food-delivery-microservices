@@ -3,7 +3,7 @@ services:
   gateway:
     build:
       context: ../../
-      dockerfile: src/ApiGateway/ECommerce.ApiGateway/Dockerfile
+      dockerfile: src/ApiGateway/Dockerfile
     container_name: ecommerce-gateway
     # restart: unless-stopped
     ports:
@@ -17,7 +17,7 @@ services:
       args:
         Version: "1"
       context: ../../
-      dockerfile: src/Services/ECommerce.Services.Catalogs/Dockerfile
+      dockerfile: src/Services/Catalogs/Dockerfile
     container_name: ecommerce-catalogs
     # restart: unless-stopped
     ports:
@@ -39,7 +39,7 @@ services:
       args:
         Version: "1"
       context: ../../
-      dockerfile: src/Services/ECommerce.Services.Identity/Dockerfile
+      dockerfile: src/Services/Identity/Dockerfile
     container_name: ecommerce-identity
     # restart: unless-stopped
     ports:
@@ -61,7 +61,7 @@ services:
       args:
         Version: "1"
       context: ../../
-      dockerfile: src/Services/ECommerce.Services.Customers/Dockerfile
+      dockerfile: src/Services/Customers/Dockerfile
     container_name: ecommerce-customers
     # restart: unless-stopped
     ports:
@@ -76,3 +76,8 @@ services:
       - mongo
     networks:
       - ecommerce
+
+networks:
+  ecommerce:
+    name: ecommerce
+    driver: bridge

@@ -3,13 +3,13 @@ services:
   gateway:
     build:
       context: ../../
-      dockerfile: src/ApiGateway/Store.ApiGateway/Dockerfile
-    container_name: store-gateway
+      dockerfile: src/ApiGateway/ECommerce.ApiGateway/Dockerfile
+    container_name: ecommerce-gateway
     # restart: unless-stopped
     ports:
       - ${GATEWAY_PORT}:80
     networks:
-      - store
+      - ecommerce
 
   catalogs:
     image: catalogs:${TAG}
@@ -17,8 +17,8 @@ services:
       args:
         Version: "1"
       context: ../../
-      dockerfile: src/Services/Store.Services.Catalogs/Dockerfile
-    container_name: store-catalogs
+      dockerfile: src/Services/ECommerce.Services.Catalogs/Dockerfile
+    container_name: ecommerce-catalogs
     # restart: unless-stopped
     ports:
       - ${CATALOGS_SVC_PORT}:80
@@ -31,7 +31,7 @@ services:
       - rabbitmq
       - mongo
     networks:
-      - store
+      - ecommerce
 
   identity:
     image: identity:${TAG}
@@ -39,8 +39,8 @@ services:
       args:
         Version: "1"
       context: ../../
-      dockerfile: src/Services/Store.Services.Identity/Dockerfile
-    container_name: store-identity
+      dockerfile: src/Services/ECommerce.Services.Identity/Dockerfile
+    container_name: ecommerce-identity
     # restart: unless-stopped
     ports:
       - ${IDENTITY_SVC_PORT}:80
@@ -53,7 +53,7 @@ services:
       - rabbitmq
       - mongo
     networks:
-      - store
+      - ecommerce
 
   customers:
     image: customers:${TAG}
@@ -61,8 +61,8 @@ services:
       args:
         Version: "1"
       context: ../../
-      dockerfile: src/Services/Store.Services.Customers/Dockerfile
-    container_name: store-customers
+      dockerfile: src/Services/ECommerce.Services.Customers/Dockerfile
+    container_name: ecommerce-customers
     # restart: unless-stopped
     ports:
       - ${CUSTOMERS_SVC_PORT}:80
@@ -75,4 +75,4 @@ services:
       - rabbitmq
       - mongo
     networks:
-      - store
+      - ecommerce

@@ -13,7 +13,7 @@ services:
       # volumes:
       #   - rabbitmq:/var/lib/rabbitmq
     networks:
-      - store
+      - ecommerce
 
     #######################################################
     #  mongo
@@ -28,7 +28,7 @@ services:
     ports: 
       - ${MONGO_PORT}:${MONGO_PORT}
     networks:
-      - store
+      - ecommerce
 
     #######################################################
     #  postgres
@@ -42,13 +42,13 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
-      - store
+      - ecommerce
 
     #######################################################
-    #  EventStoreDB
+    #  EventECommerceDB
     #######################################################
-  # eventstore.db:
-  #     image: eventstore/eventstore:21.2.0-buster-slim
+  # eventecommerce.db:
+  #     image: eventecommerce/eventecommerce:21.2.0-buster-slim
   #     restart: on-failure
   #     environment:
   #         - EVENTSTORE_CLUSTER_SIZE=1
@@ -64,11 +64,11 @@ services:
   #         - '2113:2113'
   #     volumes:
   #         - type: volume
-  #           source: eventstore-volume-data
-  #           target: /var/lib/eventstore
+  #           source: eventecommerce-volume-data
+  #           target: /var/lib/eventecommerce
   #         - type: volume
-  #           source: eventstore-volume-logs
-  #           target: /var/log/eventstore
+  #           source: eventecommerce-volume-logs
+  #           target: /var/log/eventecommerce
   #     networks:
   #         - esdb_network
 
@@ -208,12 +208,12 @@ services:
 #     pgadmin:
 
 networks:
-  store:
-    name: store
+  ecommerce:
+    name: ecommerce
   esdb_network:
     name: esdb_network
     driver: bridge
 
 volumes:
-    eventstore-volume-data:
-    eventstore-volume-logs:
+    eventecommerce-volume-data:
+    eventecommerce-volume-logs:

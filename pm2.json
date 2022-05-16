@@ -4,7 +4,7 @@
         "name": "api-gateway",
         "script": "dotnet",
         "args" : "run",
-        "cwd": "/src/ApiGateway/Store.ApiGateway/Store.ApiGateway/",
+        "cwd": "/src/ApiGateway/ECommerce.ApiGateway/ECommerce.ApiGateway/",
 		"autorestart": false
       }
     ]

@@ -1,15 +1,15 @@
 using Bogus;
-using Store.Services.Shared.Catalogs.Products.Events.Integration;
-using Store.Services.Shared.Identity.Users.Events.Integration;
+using ECommerce.Services.Shared.Catalogs.Products.Events.Integration;
+using ECommerce.Services.Shared.Identity.Users.Events.Integration;
 using Tests.Shared.Fixtures;
 using Xunit.Abstractions;
 
 namespace IntegrationTests;
 
-public class BusPublishTests_For_Identity : IntegrationTestBase<Store.Services.Identity.Api.Program>
+public class BusPublishTests_For_Identity : IntegrationTestBase<ECommerce.Services.Identity.Api.Program>
 {
     public BusPublishTests_For_Identity(
-        IntegrationTestFixture<Store.Services.Identity.Api.Program> integrationTestFixture,
+        IntegrationTestFixture<ECommerce.Services.Identity.Api.Program> integrationTestFixture,
         ITestOutputHelper outputHelper) :
         base(integrationTestFixture, outputHelper)
     {
@@ -30,10 +30,10 @@ public class BusPublishTests_For_Identity : IntegrationTestBase<Store.Services.I
     }
 }
 
-public class BusPublishTests_For_Catalogs : IntegrationTestBase<Store.Services.Catalogs.Api.Program>
+public class BusPublishTests_For_Catalogs : IntegrationTestBase<ECommerce.Services.Catalogs.Api.Program>
 {
     public BusPublishTests_For_Catalogs(
-        IntegrationTestFixture<Store.Services.Catalogs.Api.Program> integrationTestFixture,
+        IntegrationTestFixture<ECommerce.Services.Catalogs.Api.Program> integrationTestFixture,
         ITestOutputHelper outputHelper) :
         base(integrationTestFixture, outputHelper)
     {

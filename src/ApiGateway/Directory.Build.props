@@ -1,0 +1,13 @@
+<!-- https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build -->
+<Project>
+
+   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))"/>
+   
+    <ItemGroup>
+        <Using Include="System.Linq"/>
+        <Using Include="System"/>
+        <Using Include="Microsoft.Extensions.DependencyInjection"/>
+        <Using Include="Microsoft.AspNetCore.Mvc"/>
+        <Using Include="System.Collections.ObjectModel"/>
+    </ItemGroup>
+</Project>

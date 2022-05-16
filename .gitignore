@@ -350,7 +350,6 @@ MigrationBackup/
 .ionide/
 
 .idea
-.env
 .tye/
 .logs/
 .Log

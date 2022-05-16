@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
-    <ProjectReference Include="..\ECommerce.Services.Catalogs\ECommerce.Services.Catalogs.csproj" />
-  </ItemGroup>
-  
-</Project>

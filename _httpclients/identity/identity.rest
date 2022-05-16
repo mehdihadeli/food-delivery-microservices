@@ -10,7 +10,7 @@ GET {{identity-api}}
 
 ###
 # @name Login
-POST {{identity-api}}/api/v1/identity/login
+POST {{api-gateway}}/api/v1/identity/login
 accept: application/json
 Content-Type: application/json
 

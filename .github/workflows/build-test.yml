@@ -20,10 +20,10 @@ jobs:
       with:
         dotnet-version: 6.0.x
         include-prerelease: true
-    - name: Reecommerce dependencies
-      run: dotnet reecommerce
+    - name: Restore dependencies
+      run: dotnet restore
     - name: Build
-      run: dotnet build --no-reecommerce -c Release
+      run: dotnet build --no-restore -c Release
     - name: Test
       run: dotnet test -c Release --collect:"XPlat Code Coverage" --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --blame-hang --blame-hang-timeout 2m
     - name: Codecov

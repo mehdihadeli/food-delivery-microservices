@@ -1,28 +1,47 @@
-name: tye-shop
+# https://github.com/dotnet/tye/tree/main/docs
+# https://github.com/dotnet/tye/blob/main/docs/reference/schema.md#environment-variables
+# https://www.daveabrock.com/2020/08/19/microservices-with-tye-1/
+# https://www.daveabrock.com/2020/08/27/microservices-with-tye-2/
+# https://github.com/dotnet/tye/tree/main/samples
+# https://devblogs.microsoft.com/dotnet/introducing-project-tye/
+
+name: tye-ecomerce
+containerEngine: docker
 registry: mehdihadeli 
 
 services:
 
-- name: postgres
-  image: debezium/postgres
+- name: gateway
+  project: ./../../src/ApiGateway/ECommerce.ApiGateway/ApiGateway.csproj
   env_file:
     - .env
   bindings:
-    - port: 5432
-      connectionString: Server=${host};Port=${port};User Id=${env:POSTGRES_USER};Password=${env:POSTGRES_PASSWORD};
-  tags:
-    - inf
+  - port: 3000
 
-- name: identity-app
-  project: src/Identity/Identity.Api/Identity.Api.csproj
+- name: catalog-service
+  project: ./../../src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
+  env_file:
+    - .env
+  bindings:
+  - port: 4000
+
+- name: customers-service
+  project: ./../../src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
+  env_file:
+    - .env
+  bindings:
+  - port: 8000
+
+- name: identity-service
+  project: ./../../src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
   env_file:
     - .env
   bindings:
   - port: 7000
 
-- name: shop-api
-  project: src/Application/Shop.Api/Shop.Api.csproj
+- name: order-service
+  project: ./../../src/Services/Orders/ECommerce.Services.Orders.Api/ECommerce.Services.Orders.Api.csproj
   env_file:
     - .env
   bindings:
-  - port: 5000
+  - port: 9000

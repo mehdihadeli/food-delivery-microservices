@@ -1,10 +1,8 @@
 # 🛍️ ECommerece Microservices Sample
 
-`ECommerece Microservices` is a fictional online ecommerce sample, based on different software architecture and technologies like Microservices Architecture, Vertical Slice Architecture, CQRS pattern, Domain Driven Design, Event Driven Architecture and using Postgres for write side and MongoDb.
+> `ECommerece Microservices` is a fictional online ecommerce sample, based on different software architecture and technologies like Microservices Architecture, Vertical Slice Architecture, CQRS pattern, Domain Driven Design, Event Driven Architecture and using Postgres for write side and MongoDb for read side.
 
-In developing this application I try to use new features in .NET 6 and C# 10 based on `Minimal APIs` and .Net Core.
-
-This project is still `In-Progress` and I update it to the latest technologies continuously.
+This Application will port to `modular monolith` approcuh also, in [ecommerce-modular-monolith-sample](https://github.com/mehdihadeli/ecommerce-modular-monolith-sample) repository for comparing their differences.
 
 # ⭐ Support
 If you like feel free to ⭐ this repository, It helps out :)

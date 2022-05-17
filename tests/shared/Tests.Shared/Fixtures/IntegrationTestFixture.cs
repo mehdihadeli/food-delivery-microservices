@@ -1,13 +1,11 @@
 using BuildingBlocks.Abstractions.CQRS.Command;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Persistence.EfCore.Postgres;
-using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Respawn;
 using Respawn.Graph;
 using Xunit.Abstractions;
@@ -19,7 +17,7 @@ public class IntegrationTestFixture<TEntryPoint, TDbContext> : IntegrationTestFi
     where TDbContext : DbContext
     where TEntryPoint : class
 {
-    public async Task ExecuteDbContextAsync(Func<IServiceProvider, Task> action)
+    public async Task ExecuteDbContextWithTxAsync(Func<IServiceProvider, Task> action)
     {
         using var scope = ServiceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<TDbContext>();
@@ -42,7 +40,7 @@ public class IntegrationTestFixture<TEntryPoint, TDbContext> : IntegrationTestFi
         });
     }
 
-    public async Task<T> ExecuteDbContextAsync<T>(Func<IServiceProvider, Task<T>> action)
+    public async Task<T> ExecuteDbContextWithTxAsync<T>(Func<IServiceProvider, Task<T>> action)
     {
         using var scope = ServiceProvider.CreateScope();
         //https://weblogs.asp.net/dixin/entity-framework-core-and-linq-to-entities-7-data-changes-and-transactions
@@ -242,6 +240,18 @@ public class IntegrationTestFixture<TEntryPoint> : IAsyncLifetime
         var result = await action(scope.ServiceProvider);
 
         return result;
+    }
+
+    // Ref: https://tech.energyhelpline.com/in-memory-testing-with-masstransit/
+    public async Task WaitUntilConditionMetOrTimedOut(Func<bool> conditionToMet)
+    {
+        var timeoutExpired = false;
+        var startTime = DateTime.Now;
+        while (!conditionToMet() && !timeoutExpired)
+        {
+            await Task.Delay(100);
+            timeoutExpired = DateTime.Now - startTime > TimeSpan.FromSeconds(5);
+        }
     }
 
     public virtual async Task InitializeAsync()

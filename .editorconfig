@@ -241,7 +241,11 @@ dotnet_diagnostic.SA1615.severity = None
 # The <returns> tag within a C# element’s documentation header is empty.
 dotnet_diagnostic.SA1616.severity = None
 
+# An opening brace within a C# element is not spaced correctly.
+dotnet_diagnostic.SA1012.severity = Suggestion
 
+# A closing brace within a C# element is not spaced correctly.
+dotnet_diagnostic.SA1013.severity = Suggestion
 
 ##################################################################################
 ##

@@ -1,6 +1,6 @@
 <!-- https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build -->
 <Project>
-<Import Project=".\Packages.props" />
+  <Import Project=".\Packages.props"/>
 
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
@@ -8,7 +8,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  
+
+  <!-- https://endjin.com/blog/2022/01/raising-coding-standard-dotnet-analyzers -->
+  <PropertyGroup>
+    <AnalysisMode>Recommended</AnalysisMode>
+    <AnalysisModeGlobalization>None</AnalysisModeGlobalization>
+    <AnalysisModeSecurity>All</AnalysisModeSecurity>
+  </PropertyGroup>
+
   <PropertyGroup>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
@@ -25,7 +32,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-	  <PackageReference Include="Meziantou.Analyzer" Version="1.0.688" Condition="$(MSBuildProjectExtension) == '.csproj'" PrivateAssets="all">
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.688" Condition="$(MSBuildProjectExtension) == '.csproj'" PrivateAssets="all">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -35,27 +42,27 @@
       PrivateAssets="all"
       Condition="$(MSBuildProjectExtension) == '.csproj'"
     />
-	<PackageReference
+    <PackageReference
       Include="SonarAnalyzer.CSharp"
       Version="8.29.0.36737"
       PrivateAssets="all"
       Condition="$(MSBuildProjectExtension) == '.csproj'"
     />
-	
+
     <PackageReference
       Include="SerilogAnalyzer"
       Version="0.15.0"
       PrivateAssets="all"
       Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />  
-	
-	<PackageReference
+    />
+
+    <PackageReference
       Include="NetFabric.Hyperlinq.Analyzer"
       Version="2.0.4"
       PrivateAssets="all"
       Condition="$(MSBuildProjectExtension) == '.csproj'"
     />
-	
+
     <PackageReference
       Include="AspNetCoreAnalyzers"
       Version="0.3.0"
@@ -63,54 +70,54 @@
       Condition="$(MSBuildProjectExtension) == '.csproj'"
     />
 
-   <PackageReference
+    <PackageReference
       Include="SmartanAlyzers.ExceptionAnalyzer"
       Version="1.0.10"
       PrivateAssets="all"
       Condition="$(MSBuildProjectExtension) == '.csproj'"
     />
-	
-   <PackageReference
+
+    <PackageReference
       Include="Roslynator.Analyzers"
       Version="3.3.0"
       PrivateAssets="all"
       Condition="$(MSBuildProjectExtension) == '.csproj'"
     />
-	<PackageReference
+    <PackageReference
       Include="Roslynator.CodeAnalysis.Analyzers"
       Version="3.3.0"
       PrivateAssets="all"
       Condition="$(MSBuildProjectExtension) == '.csproj'"
     />
-	<PackageReference
+    <PackageReference
       Include="Roslynator.Formatting.Analyzers"
       Version="3.3.0"
       PrivateAssets="all"
       Condition="$(MSBuildProjectExtension) == '.csproj'"
     />
-   <PackageReference
+    <PackageReference
       Include="Microsoft.VisualStudio.Threading.Analyzers"
       Version="17.0.64"
       PrivateAssets="all"
       Condition="$(MSBuildProjectExtension) == '.csproj'"
     />
-   <PackageReference
+    <PackageReference
       Include="AsyncFixer"
       Version="1.5.1"
       PrivateAssets="all"
       Condition="$(MSBuildProjectExtension) == '.csproj'"
     />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design"  Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(AspNetCoreVersion)"/>
   </ItemGroup>
-  
-<ItemGroup>
-    <Using Include="System.Linq" />
-    <Using Include="System" />
-    <Using Include="Microsoft.Extensions.DependencyInjection" />
-	<Using Include="Microsoft.AspNetCore.Mvc"/>
+
+  <ItemGroup>
+    <Using Include="System.Linq"/>
+    <Using Include="System"/>
+    <Using Include="Microsoft.Extensions.DependencyInjection"/>
+    <Using Include="Microsoft.AspNetCore.Mvc"/>
     <Using Include="System.Collections.ObjectModel"/>
-</ItemGroup>
+  </ItemGroup>
 </Project>

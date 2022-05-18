@@ -15,8 +15,6 @@ public static class Extensions
     {
         Guard.Against.Null(services, nameof(services));
 
-        var options = config.GetOptions<InMemoryCacheOptions>(nameof(InMemoryCacheOptions));
-
         if (configureOptions is { })
         {
             services.Configure(configureOptions);

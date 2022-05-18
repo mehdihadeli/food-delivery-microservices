@@ -70,6 +70,7 @@ internal class SendEmailVerificationCodeCommandHandler : ICommandHandler<SendEma
         };
 
         await _context.Set<EmailVerificationCode>().AddAsync(emailVerificationCode, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         (string Email, string VerificationCode) model = (request.Email, verificationCode);
 

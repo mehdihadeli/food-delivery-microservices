@@ -1,5 +1,5 @@
 # "buildkit": false && Docker-Compose v1
-version: '3'
+version: '3.7'
 services:
   gateway:
     build:
@@ -23,14 +23,6 @@ services:
     # restart: unless-stopped
     ports:
       - ${CATALOGS_SVC_PORT}:80
-    depends_on:
-      - postgres
-      - rabbitmq
-      - mongo
-    links:
-      - postgres
-      - rabbitmq
-      - mongo
     env_file:
       - ../../.docker-envs/catalogs.env
     networks:
@@ -47,14 +39,6 @@ services:
     # restart: unless-stopped
     ports:
       - ${IDENTITY_SVC_PORT}:80
-    depends_on:
-      - postgres
-      - rabbitmq
-      - mongo
-    links:
-      - postgres
-      - rabbitmq
-      - mongo
     networks:
       - ecommerce
 
@@ -69,18 +53,10 @@ services:
     # restart: unless-stopped
     ports:
       - ${CUSTOMERS_SVC_PORT}:80
-    depends_on:
-      - postgres
-      - rabbitmq
-      - mongo
-    links:
-      - postgres
-      - rabbitmq
-      - mongo
     networks:
       - ecommerce
 
 networks:
   ecommerce:
-    name: ecommerce
-    driver: bridge
+    name: ecommerce-network
+    external: true

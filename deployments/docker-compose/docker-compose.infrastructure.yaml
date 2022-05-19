@@ -1,9 +1,9 @@
-version: '3'
+version: '3.7'
 
 networks:
   ecommerce:
-    name: ecommerce
-    driver: bridge
+    name: ecommerce-network
+    external: true
 
 volumes:
     eventecommerce-volume-data:

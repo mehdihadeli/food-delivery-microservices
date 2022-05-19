@@ -2,6 +2,8 @@ FROM mcr.microsoft.com/dotnet/sdk:latest as builder
 
 WORKDIR /src
 
+COPY ./.editorconfig ./
+
 COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Packages.props ./
@@ -39,8 +41,8 @@ COPY ./src/Services/Customers/ECommerce.Services.Customers/  ./Services/Customer
 COPY ./src/Services/Shared/  ./Services/Shared/
 
 # Build project with Release configuration
-# and no reecommerce, as we did it already
-RUN dotnet build -c Release --no-reecommerce  ./Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
+# and no restore, as we did it already
+RUN dotnet build -c Release --no-restore  ./Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
 
 WORKDIR /src/Services/Customers/ECommerce.Services.Customers.Api/
 # Publish project to output folder

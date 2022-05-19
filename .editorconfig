@@ -325,6 +325,9 @@ dotnet_diagnostic.MA0079.severity = Suggestion
 # MA0080: Use a cancellation token using .WithCancellation()
 dotnet_diagnostic.MA0080.severity = Suggestion
 
+## Type name should not match containing namespace
+dotnet_diagnostic.MA0049.severity = Suggestion
+
 ##################################################################################
 ## http://pihrt.net/Roslynator/Analyzers
 ## http://pihrt.net/Roslynator/Refactorings

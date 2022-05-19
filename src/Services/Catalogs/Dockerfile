@@ -2,6 +2,8 @@ FROM mcr.microsoft.com/dotnet/sdk:latest as builder
 
 WORKDIR /src
 
+COPY ./.editorconfig ./
+
 COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Packages.props ./

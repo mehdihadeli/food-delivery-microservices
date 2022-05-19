@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 as build-image
+FROM mcr.microsoft.com/dotnet/sdk:latest as builder
 
 WORKDIR /src
 
@@ -48,7 +48,7 @@ WORKDIR /src/Services/Orders/ECommerce.Services.Orders.Api/
 RUN ls
 RUN dotnet publish -c Release --no-build -o out
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:latest
 # Setup working directory for the project
 WORKDIR /app
 COPY --from=builder /src/Services/Orders/ECommerce.Services.Orders.Api/out  .

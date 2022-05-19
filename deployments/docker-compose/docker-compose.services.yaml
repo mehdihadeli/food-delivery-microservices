@@ -1,3 +1,4 @@
+# "buildkit": false && Docker-Compose v1
 version: '3'
 services:
   gateway:
@@ -22,14 +23,8 @@ services:
     # restart: unless-stopped
     ports:
       - ${CATALOGS_SVC_PORT}:80
-    depends_on:
-      - postgres
-      - rabbitmq
-      - mongo
-    links:
-      - postgres
-      - rabbitmq
-      - mongo
+    env_file:
+      - ../../.docker-envs/catalogs.env
     networks:
       - ecommerce
 

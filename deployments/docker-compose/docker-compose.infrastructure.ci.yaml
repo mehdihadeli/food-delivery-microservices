@@ -45,6 +45,7 @@ services:
     #######################################################
   postgres:
     image: postgres:11.1-alpine
+    container_name: postgres
     restart: on-failure
     ports:
       - '5432:5432'

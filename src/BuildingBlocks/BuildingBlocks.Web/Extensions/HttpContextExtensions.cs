@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using BuildingBlocks.Abstractions.CQRS.Query;
+using BuildingBlocks.Abstractions.CQRS.Queries;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

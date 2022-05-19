@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using BuildingBlocks.Abstractions.CQRS.Event;
+using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Abstractions.Domain;
 using Microsoft.EntityFrameworkCore;
 

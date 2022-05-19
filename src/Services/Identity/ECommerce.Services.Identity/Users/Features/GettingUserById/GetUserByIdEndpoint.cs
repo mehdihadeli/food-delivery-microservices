@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Query;
+using BuildingBlocks.Abstractions.CQRS.Queries;
 using ECommerce.Services.Identity.Users.Features.RegisteringUser;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

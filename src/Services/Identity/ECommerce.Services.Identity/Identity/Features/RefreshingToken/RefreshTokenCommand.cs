@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.CQRS.Command;
+using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Security.Jwt;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;

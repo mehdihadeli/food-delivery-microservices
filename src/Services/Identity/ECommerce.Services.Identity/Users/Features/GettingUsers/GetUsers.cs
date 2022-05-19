@@ -1,6 +1,6 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Query;
-using BuildingBlocks.Core.CQRS.Query;
+using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Core.CQRS.Queries;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Types;
 using ECommerce.Services.Identity.Shared.Models;

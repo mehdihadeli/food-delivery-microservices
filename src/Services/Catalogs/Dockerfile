@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 as build-image
+FROM mcr.microsoft.com/dotnet/sdk:latest as builder
 
 WORKDIR /src
 
@@ -39,8 +39,8 @@ COPY ./src/Services/Catalogs/ECommerce.Services.Catalogs/  ./Services/Catalogs/E
 COPY ./src/Services/Shared/  ./Services/Shared/
 
 # Build project with Release configuration
-# and no reecommerce, as we did it already
-RUN dotnet build -c Release --no-reecommerce  ./Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
+# and no restore, as we did it already
+RUN dotnet build -c Release --no-restore  ./Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
 
 WORKDIR /src/Services/Catalogs/ECommerce.Services.Catalogs.Api/
 # Publish project to output folder
@@ -48,7 +48,7 @@ WORKDIR /src/Services/Catalogs/ECommerce.Services.Catalogs.Api/
 RUN ls
 RUN dotnet publish -c Release --no-build -o out
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:latest
 # Setup working directory for the project
 WORKDIR /app
 COPY --from=builder /src/Services/Catalogs/ECommerce.Services.Catalogs.Api/out  .

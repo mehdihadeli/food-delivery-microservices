@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Abstractions.CQRS.Command;
+﻿using BuildingBlocks.Abstractions.CQRS.Commands;
 
 namespace BuildingBlocks.Abstractions.Scheduler;
 

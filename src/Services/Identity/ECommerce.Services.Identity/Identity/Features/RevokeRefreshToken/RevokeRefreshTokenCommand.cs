@@ -1,5 +1,5 @@
 using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.CQRS.Command;
+using BuildingBlocks.Abstractions.CQRS.Commands;
 using ECommerce.Services.Identity.Identity.Exceptions;
 using ECommerce.Services.Identity.Identity.Features.RefreshingToken;
 using ECommerce.Services.Identity.Shared.Data;

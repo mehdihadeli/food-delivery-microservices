@@ -1,5 +1,5 @@
 using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.CQRS.Command;
+using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Messaging;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;

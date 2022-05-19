@@ -1,5 +1,5 @@
 using System.Data;
-using BuildingBlocks.Abstractions.CQRS.Event.Internal;
+using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Persistence;
 using ECommerce.Services.Identity.Shared.Models;
 using Humanizer;

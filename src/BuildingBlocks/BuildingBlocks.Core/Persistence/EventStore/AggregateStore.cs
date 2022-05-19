@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.CQRS.Event;
+using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 using BuildingBlocks.Core.Domain;

@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using BuildingBlocks.Abstractions.CQRS.Event;
-using BuildingBlocks.Abstractions.CQRS.Event.Internal;
+using BuildingBlocks.Abstractions.CQRS.Events;
+using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Scheduler;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

@@ -1,11 +1,11 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Core;
-using BuildingBlocks.Abstractions.CQRS.Event;
+using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Serialization;
 using BuildingBlocks.Abstractions.Types;
-using BuildingBlocks.Core.CQRS.Event;
+using BuildingBlocks.Core.CQRS.Events;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.IdsGenerator;

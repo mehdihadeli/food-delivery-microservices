@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
-using BuildingBlocks.Abstractions.CQRS.Event.Internal;
+using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

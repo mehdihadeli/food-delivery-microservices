@@ -1,6 +1,6 @@
 using Ardalis.GuardClauses;
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Command;
+using BuildingBlocks.Abstractions.CQRS.Commands;
 using ECommerce.Services.Catalogs.Products.Features.CreatingProduct.Requests;
 
 namespace ECommerce.Services.Catalogs.Products.Features.CreatingProduct;

@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Event.Internal;
+using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 
 namespace BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 

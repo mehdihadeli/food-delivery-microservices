@@ -1,4 +1,3 @@
-using BuildingBlocks.Abstractions.CQRS.Event;
 using BuildingBlocks.Abstractions.Web.Module;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions;

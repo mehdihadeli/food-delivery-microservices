@@ -1,5 +1,5 @@
 using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.CQRS.Command;
+using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Core.Exception.Types;
 using ECommerce.Services.Identity.Identity.Features.VerifyEmail.Exceptions;
 using ECommerce.Services.Identity.Shared.Data;

@@ -1,7 +1,7 @@
 using Ardalis.GuardClauses;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using BuildingBlocks.Abstractions.CQRS.Query;
+using BuildingBlocks.Abstractions.CQRS.Queries;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using ECommerce.Services.Customers.RestockSubscriptions.Dtos;

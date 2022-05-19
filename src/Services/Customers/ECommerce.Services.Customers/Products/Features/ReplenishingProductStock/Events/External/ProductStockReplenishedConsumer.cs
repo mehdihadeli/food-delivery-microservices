@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Command;
+using BuildingBlocks.Abstractions.CQRS.Commands;
 using MassTransit;
 using ECommerce.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification;
 using ECommerce.Services.Shared.Catalogs.Products.Events.Integration;

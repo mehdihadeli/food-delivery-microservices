@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Command;
+using BuildingBlocks.Abstractions.CQRS.Commands;
 using MassTransit;
 using ECommerce.Services.Customers.Customers.Features.CreatingCustomer;
 using ECommerce.Services.Shared.Identity.Users.Events.Integration;

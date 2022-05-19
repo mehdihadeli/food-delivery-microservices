@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Event;
+using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using ECommerce.Services.Catalogs.Products.Data;
 using ECommerce.Services.Catalogs.Products.Features.CreatingProduct;

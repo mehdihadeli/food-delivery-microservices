@@ -1,6 +1,6 @@
 using Ardalis.GuardClauses;
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Query;
+using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Customers.Customers.Dtos;
 using ECommerce.Services.Customers.Customers.Exceptions.Application;

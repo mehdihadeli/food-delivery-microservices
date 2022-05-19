@@ -1,6 +1,6 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Command;
-using BuildingBlocks.Abstractions.CQRS.Query;
+using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.CQRS.Queries;
 using MediatR;
 
 namespace BuildingBlocks.Web;

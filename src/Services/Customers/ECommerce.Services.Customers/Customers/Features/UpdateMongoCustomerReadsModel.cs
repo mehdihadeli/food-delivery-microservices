@@ -1,7 +1,7 @@
 using Ardalis.GuardClauses;
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Command;
-using BuildingBlocks.Core.CQRS.Command;
+using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Core.CQRS.Commands;
 using ECommerce.Services.Customers.Customers.Models.Reads;
 using ECommerce.Services.Customers.Shared.Data;
 using MongoDB.Driver;

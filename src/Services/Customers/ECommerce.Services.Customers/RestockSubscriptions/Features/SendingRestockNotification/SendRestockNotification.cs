@@ -1,7 +1,7 @@
 using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.CQRS.Command;
+using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.CQRS.Command;
+using BuildingBlocks.Core.CQRS.Commands;
 using BuildingBlocks.Core.Exception;
 using BuildingBlocks.Email;
 using BuildingBlocks.Email.Options;

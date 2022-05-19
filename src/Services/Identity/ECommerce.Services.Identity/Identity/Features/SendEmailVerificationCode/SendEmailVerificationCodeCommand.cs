@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.CQRS.Command;
+using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Email;
 using ECommerce.Services.Identity.Shared.Data;

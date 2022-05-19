@@ -1,6 +1,6 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Query;
-using BuildingBlocks.Core.CQRS.Query;
+using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Core.CQRS.Queries;
 using BuildingBlocks.Core.Types;
 using BuildingBlocks.Persistence.Mongo;
 using MongoDB.Driver;

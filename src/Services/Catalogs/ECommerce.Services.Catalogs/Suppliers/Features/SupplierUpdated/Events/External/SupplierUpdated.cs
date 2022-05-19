@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Event;
+using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Core.Messaging;
 
 namespace ECommerce.Services.Catalogs.Suppliers.Features.SupplierUpdated.Events.External;

@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Query;
+using BuildingBlocks.Abstractions.CQRS.Queries;
 using Microsoft.AspNetCore.Http;
 
 namespace ECommerce.Services.Identity.Identity.Features.GetClaims;

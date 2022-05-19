@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.CQRS.Query;
+using BuildingBlocks.Core.CQRS.Queries;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProducts;
 

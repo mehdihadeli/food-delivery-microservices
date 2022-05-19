@@ -1,8 +1,8 @@
 using Ardalis.GuardClauses;
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Command;
-using BuildingBlocks.Abstractions.CQRS.Event.Internal;
-using BuildingBlocks.Core.CQRS.Event.Internal;
+using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Core.CQRS.Events.Internal;
 using ECommerce.Services.Customers.RestockSubscriptions.Models.Write;
 using ECommerce.Services.Customers.Shared.Data;
 

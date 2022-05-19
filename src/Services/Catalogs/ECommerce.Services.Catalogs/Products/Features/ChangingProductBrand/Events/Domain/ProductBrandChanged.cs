@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.CQRS.Event.Internal;
+using BuildingBlocks.Core.CQRS.Events.Internal;
 using ECommerce.Services.Catalogs.Brands;
 using ECommerce.Services.Catalogs.Products.ValueObjects;
 

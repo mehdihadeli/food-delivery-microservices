@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Query;
+using BuildingBlocks.Abstractions.CQRS.Queries;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingAvailableStockById;
 

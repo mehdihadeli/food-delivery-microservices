@@ -1,7 +1,7 @@
 using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.CQRS.Command;
-using BuildingBlocks.Abstractions.CQRS.Event.Internal;
-using BuildingBlocks.Core.CQRS.Event.Internal;
+using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Core.CQRS.Events.Internal;
 using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Customers.Customers.Exceptions.Application;
 using ECommerce.Services.Customers.RestockSubscriptions.Models.Write;

@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Command;
+using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using Microsoft.AspNetCore.Http;

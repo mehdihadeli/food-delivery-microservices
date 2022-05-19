@@ -1,6 +1,6 @@
-using BuildingBlocks.Abstractions.CQRS.Event.Internal;
+using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
-using BuildingBlocks.Core.CQRS.Event;
+using BuildingBlocks.Core.CQRS.Events;
 
 namespace BuildingBlocks.Core.Persistence.EventStore;
 

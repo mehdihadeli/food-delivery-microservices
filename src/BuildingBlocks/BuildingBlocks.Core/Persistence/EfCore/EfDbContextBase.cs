@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using System.Data;
 using System.Linq.Expressions;
 using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.CQRS.Event.Internal;
+using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Persistence.EfCore;

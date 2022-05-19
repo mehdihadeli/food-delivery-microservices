@@ -1,6 +1,6 @@
 using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.CQRS.Event.Internal;
-using BuildingBlocks.Core.CQRS.Event.Internal;
+using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Core.CQRS.Events.Internal;
 using ECommerce.Services.Catalogs.Categories;
 using ECommerce.Services.Catalogs.Shared.Contracts;
 using ECommerce.Services.Catalogs.Shared.Extensions;

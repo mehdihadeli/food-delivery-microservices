@@ -2,25 +2,25 @@
 # https://pm2.keymetrics.io/docs/usage/application-declaration/
 apps:
   - name: api-gateway
-    cwd: src\ApiGateway\ECommerce.ApiGateway\ECommerce.ApiGateway\
+    cwd: src\ApiGateway\ECommerce.ApiGateway
     script: dotnet
     args: run
     autorestart: false
 
   - name: catalogs-service
-    cwd: src\Services\ECommerce.Services.Catalogs\ECommerce.Services.Catalogs.Api\
+    cwd: src\Services\Catalogs\ECommerce.Services.Catalogs.Api
     script: dotnet 
     args: run
     autorestart: false
 
   - name: customers-service
-    cwd: src\Services\ECommerce.Services.Customers\ECommerce.Services.Customers.Api\
+    cwd: src\Services\Customers\ECommerce.Services.Customers.Api
     script: dotnet
     args: run
     autorestart: false
 
   - name: Identity-service
-    cwd: src\Services\ECommerce.Services.Identity\ECommerce.Services.Identity.Api\
+    cwd: src\Services\Identity\ECommerce.Services.Identity.Api
     script: dotnet
     args: run
     autorestart: false

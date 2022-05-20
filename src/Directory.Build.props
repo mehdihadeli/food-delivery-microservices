@@ -1,6 +1,5 @@
 <!-- https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build -->
 <Project>
-  <Import Project=".\Packages.props"/>
 
   <PropertyGroup>
     <LangVersion>latest</LangVersion>

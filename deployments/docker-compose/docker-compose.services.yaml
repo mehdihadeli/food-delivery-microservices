@@ -1,4 +1,3 @@
-# "buildkit": false && Docker-Compose v1
 version: '3.7'
 services:
   gateway:
@@ -56,6 +55,8 @@ services:
     networks:
       - ecommerce
 
+# https://docs.docker.com/compose/networking/
+# https://stackoverflow.com/questions/38088279/communication-between-multiple-docker-compose-projects
 networks:
   ecommerce:
     name: ecommerce-network

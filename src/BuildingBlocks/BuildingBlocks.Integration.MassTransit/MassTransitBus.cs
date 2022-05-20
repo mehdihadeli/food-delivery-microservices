@@ -195,7 +195,7 @@ public class MassTransitBus : IBus
 
         if (!meta.ContainsKey(MessageHeaders.MessageId))
         {
-            //TODO: Using snowflak id here
+            //TODO: Using snowflake id here
             var messageId = message.MessageId;
             meta.AddMessageId(messageId.ToString());
         }
@@ -217,7 +217,7 @@ public class MassTransitBus : IBus
 
         if (!meta.ContainsKey(MessageHeaders.MessageId))
         {
-            //TODO: Using snowflak id here
+            //TODO: Using snowflake id here
             var messageId = Guid.NewGuid();
             meta.AddMessageId(messageId.ToString());
         }

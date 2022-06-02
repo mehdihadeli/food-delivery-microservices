@@ -152,6 +152,7 @@ In this project I used [vertical slice architecture](https://jimmybogard.com/ver
 
 ![](./assets/vertical-slice-architecture.jpg)
 
+
 ![](./assets/vsa2.png)
 
 Also here I used [CQRS](https://www.eventecommerce.com/cqrs-pattern) for decompose my features to very small parts that makes our application:

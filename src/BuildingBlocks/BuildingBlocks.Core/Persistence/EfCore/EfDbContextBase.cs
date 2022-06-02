@@ -43,6 +43,7 @@ public abstract class EfDbContextBase :
         }
     }
 
+    // Ref: https://www.meziantou.net/entity-framework-core-soft-delete-using-query-filters.htm
     private static void AddingSofDeletes(ModelBuilder builder)
     {
         var types = builder.Model.GetEntityTypes().Where(x => x.ClrType.IsAssignableTo(typeof(IHaveSoftDelete)));
@@ -128,15 +129,15 @@ public abstract class EfDbContextBase :
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
-    // https://www.meziantou.net/entity-framework-core-generate-tracking-columns.htm
-    // https://www.meziantou.net/entity-framework-core-soft-delete-using-query-filters.htm
+    // Ref: https://www.meziantou.net/entity-framework-core-generate-tracking-columns.htm
+    // Ref: https://www.meziantou.net/entity-framework-core-soft-delete-using-query-filters.htm
     private void OnBeforeSaving()
     {
         var now = DateTime.Now;
 
         foreach (var entry in ChangeTracker.Entries<IHaveAggregate>())
         {
-            // http://www.kamilgrzybek.com/design/handling-concurrency-aggregate-pattern-and-ef-core/
+            // Ref: http://www.kamilgrzybek.com/design/handling-concurrency-aggregate-pattern-and-ef-core/
             var events = entry.Entity.GetUncommittedDomainEvents();
             if (events.Any())
             {

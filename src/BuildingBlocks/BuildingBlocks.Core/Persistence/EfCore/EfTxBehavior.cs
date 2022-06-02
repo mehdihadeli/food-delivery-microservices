@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.Json;
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Persistence;
@@ -8,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BuildingBlocks.Core.Persistence.EfCore;
 
+// Ref: https://github.com/thangchung/clean-architecture-dotnet/blob/main/src/N8T.Infrastructure.EfCore/TxBehavior.cs
 public class EfTxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull, IRequest<TResponse>
     where TResponse : notnull

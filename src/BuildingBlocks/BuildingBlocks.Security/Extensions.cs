@@ -26,20 +26,7 @@ public static class Extensions
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
 
-        var jwtOptions = configuration.GetOptions<JwtOptions>(nameof(JwtOptions));
-        Guard.Against.Null(jwtOptions, nameof(jwtOptions));
-
-        optionConfigurator?.Invoke(jwtOptions);
-
-        if (optionConfigurator is { })
-        {
-            services.Configure(nameof(JwtOptions), optionConfigurator);
-        }
-        else
-        {
-            services.AddOptions<JwtOptions>().Bind(configuration.GetSection(nameof(JwtOptions)))
-                .ValidateDataAnnotations();
-        }
+        var jwtOptions = AddJwt(services, configuration, optionConfigurator);
 
         // https://docs.microsoft.com/en-us/aspnet/core/security/authentication
         services.AddAuthentication(options =>
@@ -108,11 +95,33 @@ public static class Extensions
                 };
             });
 
-        services.AddTransient<IJwtService, JwtService>();
-
         return services;
     }
 
+    public static JwtOptions AddJwt(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        Action<JwtOptions>? optionConfigurator = null)
+    {
+        var jwtOptions = configuration.GetOptions<JwtOptions>(nameof(JwtOptions));
+        Guard.Against.Null(jwtOptions, nameof(jwtOptions));
+
+        optionConfigurator?.Invoke(jwtOptions);
+
+        if (optionConfigurator is { })
+        {
+            services.Configure(nameof(JwtOptions), optionConfigurator);
+        }
+        else
+        {
+            services.AddOptions<JwtOptions>().Bind(configuration.GetSection(nameof(JwtOptions)))
+                .ValidateDataAnnotations();
+        }
+
+        services.AddTransient<IJwtService, JwtService>();
+
+        return jwtOptions;
+    }
 
     public static IServiceCollection AddCustomAuthorization(
         this IServiceCollection services,

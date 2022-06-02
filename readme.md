@@ -1,8 +1,8 @@
 # 🛍️ ECommerece Microservices Sample
 
-> `ECommerece Microservices` is a fictional ecommerce sample, built with different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with uisng rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
+> `ECommerece Microservices` is a fictional ecommerce sample, built with different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
 
-This Application will port to `modular monolith` approcuh also, in [ecommerce-modular-monolith-sample](https://github.com/mehdihadeli/ecommerce-modular-monolith-sample) repository for comparing their differences.
+This Application will port to `modular monolith` approach also, in [ecommerce-modular-monolith-sample](https://github.com/mehdihadeli/ecommerce-modular-monolith-sample) repository for comparing their differences.
 
 # ⭐ Support
 If you like feel free to ⭐ this repository, It helps out :)
@@ -25,7 +25,7 @@ Thanks a bunch for supporting me!
   - [Using Tye](#using-tye)
   - [Using Kubernetes](#using-kubernetes)
 - [Contribution](#contribution)
-- [Project References](project-references)
+- [Project References](#project-references)
 - [License](#license)
 
 ## The Goals of This Project
@@ -180,7 +180,14 @@ Now we could all of these things beside each other and it decrease jumping and d
 
 Keeping such a split works great with CQRS. It segregates our operations and slices the application code vertically instead of horizontally. In Our CQRS pattern each command/query handler is a separate slice. This is where you can reduce coupling between layers. Each handler can be a separated code unit, even copy/pasted. Thanks to that, we can tune down the specific method to not follow general conventions (e.g. use custom SQL query or even different storage). In a traditional layered architecture, when we change the core generic mechanism in one layer, it can impact all methods.
 
-![](./assets/structure-tree.png)
+### High Level Structure
+
+![](./assets/level-structure.png)
+
+
+### Catalogs Service Structure
+
+![](./assets/catalog-service.png)
 
 ## Vertical Slice Flow
 TODO
@@ -194,7 +201,8 @@ TODO
 5. Install docker - [https://docs.docker.com/docker-for-windows/install/](https://docs.docker.com/docker-for-windows/install/).
 6. Make sure that you have ~10GB disk space.
 7. Clone Project [https://github.com/mehdihadeli/ecommerce-microservices-sample](https://github.com/mehdihadeli/ecommerce-microservices-sample), make sure that's compiling
-8. Open [ecommerce.sln](./ECommerce.sln) solution.
+8. Run the [docker-compose.infrastructure.yaml](deployments/docker-compose/docker-compose.infrastructure.yaml) file, for running prerequisites infrastructures with `docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d` command.
+9. Open [ecommerce.sln](./ECommerce.sln) solution.
 
 ## How to Run
 

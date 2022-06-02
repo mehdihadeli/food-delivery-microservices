@@ -125,11 +125,18 @@ csharp_space_between_square_brackets = false
 ## Microsoft Rules
 ##
 
-## CA1305
+# CA1305
 dotnet_diagnostic.CA1305.severity = None
 
-## CA1063: Implement IDisposable correctly
+# CA1063: Implement IDisposable correctly
 dotnet_diagnostic.CA1063.severity = None
+
+# CA2201: Do not raise reserved exception types
+dotnet_diagnostic.CA2201.severity = Suggestion
+
+# CA1848: Use the LoggerMessage delegates
+dotnet_diagnostic.CA1848.severity = Suggestion
+
 
 ##################################################################################
 ## https://github.com/DotNetAnalyzers/StyleCopAnalyzers/tree/master/documentation
@@ -248,45 +255,9 @@ dotnet_diagnostic.SA1012.severity = Suggestion
 dotnet_diagnostic.SA1013.severity = Suggestion
 
 ##################################################################################
-##
-## SonarAnalyzers.CSharp
-##
-
-# Update this method so that its implementation is not identical to 'blah'
-dotnet_diagnostic.S4144.severity = None
-
-# Update this implementation of 'ISerializable' to conform to the recommended serialization pattern
-dotnet_diagnostic.S3925.severity = None
-
-# Rename class 'IOCActivator' to match pascal case naming rules, consider using 'IocActivator'
-dotnet_diagnostic.S101.severity = None
-
-# Extract this nested code block into a separate method
-dotnet_diagnostic.S1199.severity = None
-
-# Remove unassigned auto-property 'Blah', or set its value
-dotnet_diagnostic.S3459.severity = None
-
-# Remove the unused private set accessor in property 'Version'
-dotnet_diagnostic.S1144.severity = None
-
-# Remove this commented out code
-dotnet_diagnostic.S125.severity = None
-
-# 'System.Exception' should not be thrown by user code
-dotnet_diagnostic.S112.severity = None
-
-dotnet_diagnostic.S3903.severity = None
-
-# S3881 IDisposable should be implemented correctly
-dotnet_diagnostic.S3881.severity = None
-
-##################################################################################
 ## https://github.com/meziantou/Meziantou.Analyzer/tree/main/docs
 ## Meziantou.Analyzer
-##
 
-#
 # MA0004: Use Task.ConfigureAwait(false)
 dotnet_diagnostic.MA0004.severity = Suggestion
 
@@ -325,9 +296,6 @@ dotnet_diagnostic.MA0079.severity = Suggestion
 # MA0080: Use a cancellation token using .WithCancellation()
 dotnet_diagnostic.MA0080.severity = Suggestion
 
-## Type name should not match containing namespace
-dotnet_diagnostic.MA0049.severity = Suggestion
-
 ##################################################################################
 ## http://pihrt.net/Roslynator/Analyzers
 ## http://pihrt.net/Roslynator/Refactorings
@@ -362,6 +330,12 @@ dotnet_diagnostic.RCS1046.severity = Suggestion
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#12-non-asynchronous-method-names-shouldnt-end-with-async
 # RCS1047: Non-asynchronous method name should not end with 'Async'.
 dotnet_diagnostic.RCS1047.severity = error
+
+# https://github.com/JosefPihrt/Roslynator/blob/master/docs/analyzers/RCS1174.md
+# RCS1174: Remove redundant async/await
+dotnet_diagnostic.RCS1174.severity = Suggestion
+
+
 
 ##################################################################################
 ## https://github.com/semihokur/asyncfixer
@@ -444,3 +418,12 @@ dotnet_diagnostic.AsyncifyInvocation.severity = error
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#8-synchronous-waits
 # AsyncifyVariable: Use Task Async
 dotnet_diagnostic.AsyncifyVariable.severity = error
+
+
+##################################################################################
+## https://github.com/cezarypiatek/ExceptionAnalyzer
+
+dotnet_diagnostic.EX001.severity = Suggestion
+
+
+

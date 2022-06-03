@@ -98,17 +98,17 @@ if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
 
 app.UseProblemDetails();
 
-app.UseRouting();
+app.UseSerilogRequestLogging();
 
+app.UseRouting();
 app.UseAppCors();
 
-app.UseSerilogRequestLogging();
+app.UseAuthentication();
+app.UseAuthorization();
 
 /*----------------- Module Middleware Setup ------------------*/
 await app.ConfigureModules();
 
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 

@@ -98,14 +98,15 @@ ServiceActivator.Configure(app.Services);
 app.UseProblemDetails();
 app.UseSerilogRequestLogging();
 
-/*----------------- Module Middleware Setup ------------------*/
-await app.ConfigureModules();
 
 app.UseRouting();
 app.UseAppCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+/*----------------- Module Middleware Setup ------------------*/
+await app.ConfigureModules();
 
 app.MapControllers();
 

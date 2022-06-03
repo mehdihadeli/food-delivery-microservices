@@ -72,14 +72,13 @@ if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
 app.UseProblemDetails();
 
 app.UseRouting();
-
 app.UseAppCors();
-
-/*----------------- Module Middleware Setup ------------------*/
-await app.ConfigureIdentityModule(environment, app.Logger);
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+/*----------------- Module Middleware Setup ------------------*/
+await app.ConfigureIdentityModule(environment, app.Logger);
 
 app.MapControllers();
 

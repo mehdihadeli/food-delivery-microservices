@@ -94,14 +94,14 @@ app.UseProblemDetails();
 
 app.UseSerilogRequestLogging();
 
-/*----------------- Module Middleware Setup ------------------*/
-await app.ConfigureModules();
+app.UseRouting();
+app.UseAppCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseRouting();
-app.UseAppCors();
+/*----------------- Module Middleware Setup ------------------*/
+await app.ConfigureModules();
 
 app.MapControllers();
 

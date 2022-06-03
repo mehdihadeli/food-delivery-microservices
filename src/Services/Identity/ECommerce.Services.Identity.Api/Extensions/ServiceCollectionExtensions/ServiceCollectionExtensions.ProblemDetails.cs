@@ -94,7 +94,10 @@ public static class ServiceCollectionExtensions
 
                 return pd;
             });
+
             x.MapToStatusCode<ArgumentNullException>(StatusCodes.Status400BadRequest);
+
+            x.MapStatusCode = context => new StatusCodeProblemDetails(context.Response.StatusCode);
         });
         return services;
     }

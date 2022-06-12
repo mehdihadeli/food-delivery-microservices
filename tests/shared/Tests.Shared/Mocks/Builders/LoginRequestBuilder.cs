@@ -1,6 +1,4 @@
-using Tests.Shared.Mocks;
-
-namespace Tests.Shared.Builders;
+namespace Tests.Shared.Mocks.Builders;
 
 public class LoginRequestBuilder
 {

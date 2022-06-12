@@ -1,17 +1,20 @@
 using System.Net.Http.Json;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Persistence.Mongo;
 using Microsoft.EntityFrameworkCore;
 using Tests.Shared.Mocks;
 using Xunit.Abstractions;
 
 namespace Tests.Shared.Fixtures;
 
-public class EndToEndTestBase<TEntryPoint> : IntegrationTestBase<TEntryPoint>
+
+public class EndToEndTestTestBase<TEntryPoint, TWContext, TRContext> :
+    IntegrationTestBase<TEntryPoint, TWContext, TRContext>
+    where TWContext : DbContext
+    where TRContext : MongoDbContext
     where TEntryPoint : class
 {
-    protected EndToEndTestBase(IntegrationTestFixture<TEntryPoint> integrationTestFixture,
-        ITestOutputHelper outputHelper)
-        : base(integrationTestFixture, outputHelper)
+    public EndToEndTestTestBase(IntegrationTestFixture<TEntryPoint, TWContext, TRContext> integrationTestFixture, ITestOutputHelper outputHelper) : base(integrationTestFixture, outputHelper)
     {
     }
 
@@ -56,16 +59,5 @@ public class EndToEndTestBase<TEntryPoint> : IntegrationTestBase<TEntryPoint>
             default:
                 return GuestClient;
         }
-    }
-}
-
-public class EndToEndTestBase<TEntryPoint, TDbContext> : EndToEndTestBase<TEntryPoint>
-    where TEntryPoint : class
-    where TDbContext : DbContext
-{
-    public EndToEndTestBase(IntegrationTestFixture<TEntryPoint, TDbContext> integrationTestFixture,
-        ITestOutputHelper outputHelper)
-        : base(integrationTestFixture, outputHelper)
-    {
     }
 }

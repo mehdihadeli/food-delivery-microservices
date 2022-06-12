@@ -5,4 +5,8 @@
     <ProjectReference Include="..\ECommerce.Services.Identity\ECommerce.Services.Identity.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="ECommerce.Services.Identity.IntegrationTests" />
+  </ItemGroup>
+
 </Project>

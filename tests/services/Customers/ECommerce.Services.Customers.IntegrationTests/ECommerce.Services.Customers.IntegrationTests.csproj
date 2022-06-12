@@ -7,8 +7,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Services\Identity\ECommerce.Services.Identity.Api\ECommerce.Services.Identity.Api.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Services\Identity\ECommerce.Services.Identity\ECommerce.Services.Identity.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Services\Customers\ECommerce.Services.Customers.Api\ECommerce.Services.Customers.Api.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Services\Customers\ECommerce.Services.Customers\ECommerce.Services.Customers.csproj" />
     <ProjectReference Include="..\..\..\shared\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
   

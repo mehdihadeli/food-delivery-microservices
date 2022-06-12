@@ -4,4 +4,9 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\ECommerce.Services.Orders\ECommerce.Services.Orders.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ECommerce.Services.Orders.IntegrationTests" />
+  </ItemGroup>
+
 </Project>

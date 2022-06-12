@@ -123,6 +123,23 @@ public static class ReflectionExtensions
         return awaitable;
     }
 
+    /// <summary>
+    /// Invoke a instance method member with return type <see cref="Task"/> or without return type.
+    /// </summary>
+    /// <param name="instanceObject"></param>
+    /// <param name="methodName"></param>
+    /// <param name="parameters"></param>
+    /// <returns></returns>
+    public static async Task InvokeMethodWithoutResultAsync(
+        this object instanceObject,
+        string methodName,
+        params object[] parameters)
+    {
+        dynamic awaitable = InvokeMethod(instanceObject, methodName, parameters);
+
+        await awaitable;
+    }
+
     // https://riptutorial.com/csharp/example/15938/creating-an-instance-of-a-type
     public static bool IsHaveAttribute(this PropertyInfo propertyInfo, Type attribute)
     {
@@ -183,9 +200,9 @@ public static class ReflectionExtensions
     {
         var methodInfo =
             typeof(ReflectionUtilities).GetMethod(nameof(CastTo), BindingFlags.Static | BindingFlags.Public);
-        var genericArguments = new[] { type };
+        var genericArguments = new[] {type};
         var genericMethodInfo = methodInfo?.MakeGenericMethod(genericArguments);
-        return genericMethodInfo?.Invoke(null, new[] { o });
+        return genericMethodInfo?.Invoke(null, new[] {o});
     }
 
     private static bool GenericParametersMatch(
@@ -289,21 +306,21 @@ public static class ReflectionExtensions
 
         var instanceArgument = Expression.Parameter(genericArguments[0]);
 
-        var argumentPairs = funcArgumentList.Zip(methodArgumentList, (s, d) => new { Source = s, Destination = d })
+        var argumentPairs = funcArgumentList.Zip(methodArgumentList, (s, d) => new {Source = s, Destination = d})
             .ToList();
         if (argumentPairs.All(a => a.Source == a.Destination))
         {
             // No need to do anything fancy, the types are the same
             var parameters = funcArgumentList.Select(Expression.Parameter).ToList();
             return Expression.Lambda<TResult>(Expression.Call(instanceArgument, methodInfo, parameters),
-                new[] { instanceArgument }.Concat(parameters)).Compile();
+                new[] {instanceArgument}.Concat(parameters)).Compile();
         }
 
-        var lambdaArgument = new List<ParameterExpression> { instanceArgument, };
+        var lambdaArgument = new List<ParameterExpression> {instanceArgument,};
 
         var type = methodInfo.DeclaringType;
         var instanceVariable = Expression.Variable(type);
-        var blockVariables = new List<ParameterExpression> { instanceVariable, };
+        var blockVariables = new List<ParameterExpression> {instanceVariable,};
         var blockExpressions = new List<Expression>
         {
             Expression.Assign(instanceVariable, Expression.ConvertChecked(instanceArgument, type))

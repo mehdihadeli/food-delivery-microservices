@@ -1,6 +1,6 @@
 namespace ECommerce.Services.Identity;
 
-public static class Constants
+public static class IdentityConstants
 {
     public static class Role
     {

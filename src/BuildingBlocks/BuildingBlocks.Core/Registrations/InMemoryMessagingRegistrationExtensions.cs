@@ -8,9 +8,9 @@ public static partial class InMemoryMessagingRegistrationExtensions
 {
     public static IServiceCollection AddInMemoryMessagePersistence(
         this IServiceCollection services,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
     {
-        services.AddSingleton<InMemoryMessagePersistenceRepository>();
+        services.Add<IMessagePersistenceRepository, InMemoryMessagePersistenceRepository>(serviceLifetime);
 
         services.Replace<IMessagePersistenceService, InMemoryMessagePersistenceService>(serviceLifetime);
 

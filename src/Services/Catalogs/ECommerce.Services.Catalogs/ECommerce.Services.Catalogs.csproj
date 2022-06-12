@@ -18,8 +18,6 @@
 
     <ItemGroup>
         <PackageReference Include="Ardalis.ApiEndpoints" Version="4.0.1" />
-        <PackageReference Include="Bogus" Version="34.0.1" />
-        <PackageReference Include="Dapper" Version="2.0.123" />
     </ItemGroup>
 
     <ItemGroup>
@@ -42,5 +40,9 @@
       <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Logging\BuildingBlocks.Logging.csproj" />
       <ProjectReference Include="..\..\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
     </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ECommerce.Services.Catalogs.IntegrationTests" />
+  </ItemGroup>
 
 </Project>

@@ -1,4 +1,3 @@
-using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Types;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
@@ -8,38 +7,51 @@ using Microsoft.Extensions.Options;
 
 namespace BuildingBlocks.Core.Messaging.BackgroundServices;
 
+// https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services
 public class MessagePersistenceBackgroundService : BackgroundService
 {
     private readonly ILogger<MessagePersistenceBackgroundService> _logger;
+    private readonly IServiceProvider _serviceProvider;
     private readonly MessagePersistenceOptions _options;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IMachineInstanceInfo _machineInstanceInfo;
+
+    private Task? _executingTask;
 
     public MessagePersistenceBackgroundService(
         ILogger<MessagePersistenceBackgroundService> logger,
         IOptions<MessagePersistenceOptions> options,
-        IServiceScopeFactory serviceScopeFactory,
+        IServiceProvider serviceProvider,
         IMachineInstanceInfo machineInstanceInfo)
     {
         _logger = logger;
+        _serviceProvider = serviceProvider;
         _options = options.Value;
-        _serviceScopeFactory = serviceScopeFactory;
         _machineInstanceInfo = machineInstanceInfo;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation(
             $"MessagePersistence Background Service is starting on client '{_machineInstanceInfo.ClientId}' and group '{_machineInstanceInfo.ClientGroup}'.");
 
-        await ProcessAsync(stoppingToken);
+        _executingTask = ProcessAsync(stoppingToken);
+
+        return _executingTask;
+    }
+
+    public override Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation(
+            $"MessagePersistence Background Service is stopping on client '{_machineInstanceInfo.ClientId}' and group '{_machineInstanceInfo.ClientGroup}'.");
+
+        return base.StopAsync(cancellationToken);
     }
 
     private async Task ProcessAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            using (var scope = _serviceScopeFactory.CreateScope())
+            await using (var scope = _serviceProvider.CreateAsyncScope())
             {
                 var service = scope.ServiceProvider.GetRequiredService<IMessagePersistenceService>();
                 await service.ProcessAllAsync(stoppingToken);
@@ -51,13 +63,5 @@ public class MessagePersistenceBackgroundService : BackgroundService
 
             await Task.Delay(delay, stoppingToken);
         }
-    }
-
-    public override async Task StopAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogInformation(
-            $"MessagePersistence Background Service is stopping on client '{_machineInstanceInfo.ClientId}' and group '{_machineInstanceInfo.ClientGroup}'.");
-
-        await base.StopAsync(cancellationToken);
     }
 }

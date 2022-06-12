@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
@@ -14,7 +15,7 @@ namespace BuildingBlocks.Core.Messaging.MessagePersistence.InMemory;
 public class InMemoryMessagePersistenceService : IMessagePersistenceService
 {
     private readonly ILogger<InMemoryMessagePersistenceService> _logger;
-    private readonly InMemoryMessagePersistenceRepository _inMemoryMessagePersistenceRepository;
+    private readonly IMessagePersistenceRepository _messagePersistenceRepository;
     private readonly IMessageSerializer _messageSerializer;
     private readonly IMediator _mediator;
     private readonly IBus _bus;
@@ -22,18 +23,25 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
 
     public InMemoryMessagePersistenceService(
         ILogger<InMemoryMessagePersistenceService> logger,
-        InMemoryMessagePersistenceRepository inMemoryMessagePersistenceRepository,
+        IMessagePersistenceRepository messagePersistenceRepository,
         IMessageSerializer messageSerializer,
         IMediator mediator,
         IBus bus,
         ISerializer serializer)
     {
         _logger = logger;
-        _inMemoryMessagePersistenceRepository = inMemoryMessagePersistenceRepository;
+        _messagePersistenceRepository = messagePersistenceRepository;
         _messageSerializer = messageSerializer;
         _mediator = mediator;
         _bus = bus;
         _serializer = serializer;
+    }
+
+    public Task<IReadOnlyList<StoreMessage>> GetByFilterAsync(
+        Expression<Func<StoreMessage, bool>>? predicate = null,
+        CancellationToken cancellationToken = default)
+    {
+        return _messagePersistenceRepository.GetByFilterAsync(predicate ?? (_ => true), cancellationToken);
     }
 
     public async Task AddPublishMessageAsync<TMessageEnvelope>(
@@ -64,7 +72,7 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
         IDomainNotificationEvent notification,
         CancellationToken cancellationToken = default)
     {
-        await _inMemoryMessagePersistenceRepository.AddAsync(
+        await _messagePersistenceRepository.AddAsync(
             new StoreMessage(
                 notification.EventId,
                 TypeMapper.GetTypeName(notification.GetType()),
@@ -94,7 +102,7 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
             id = Guid.NewGuid();
         }
 
-        await _inMemoryMessagePersistenceRepository.AddAsync(
+        await _messagePersistenceRepository.AddAsync(
             new StoreMessage(
                 id,
                 TypeMapper.GetTypeName(messageEnvelope.Message.GetType()),
@@ -113,14 +121,12 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
         MessageDeliveryType deliveryType,
         CancellationToken cancellationToken = default)
     {
-        var message = (await _inMemoryMessagePersistenceRepository
-                .GetByFilterAsync(x => x.Id == messageId && x.DeliveryType == deliveryType, cancellationToken))
+        var message = (await _messagePersistenceRepository.GetByFilterAsync(
+                x => x.Id == messageId && x.DeliveryType == deliveryType, cancellationToken))
             .FirstOrDefault();
 
         if (message is null)
             return;
-
-        message.ChangeState(MessageStatus.Processed);
 
         switch (deliveryType)
         {
@@ -134,11 +140,13 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
                 await ProcessOutbox(message, cancellationToken);
                 break;
         }
+
+        message.ChangeState(MessageStatus.Processed);
     }
 
     public async Task ProcessAllAsync(CancellationToken cancellationToken = default)
     {
-        var messages = await _inMemoryMessagePersistenceRepository
+        var messages = await _messagePersistenceRepository
             .GetByFilterAsync(x => x.MessageStatus != MessageStatus.Processed, cancellationToken);
 
         foreach (var message in messages)

@@ -54,7 +54,7 @@ internal class UpdateUserStateHandler : ICommandHandler<UpdateUserState>
             return Unit.Value;
         }
 
-        if (await _userManager.IsInRoleAsync(user, Constants.Role.Admin))
+        if (await _userManager.IsInRoleAsync(user, IdentityConstants.Role.Admin))
         {
             throw new UserStateCannotBeChangedException(request.State, request.UserId);
         }

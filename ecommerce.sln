@@ -116,6 +116,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MassTransit", "MassTransit"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Integration.MassTransit.IntegrationTests", "tests\building-blocks\MassTransit\BuildingBlocks.Integration.MassTransit.IntegrationTests\BuildingBlocks.Integration.MassTransit.IntegrationTests.csproj", "{4E908B16-4258-4B26-8A4C-4085A01AF4DB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Customers", "Customers", "{EE33219C-7696-48D8-B86C-BF3A2D6087B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Services.Customers.EndToEndTests", "tests\services\Customers\ECommerce.Services.Customers.EndToEndTests\ECommerce.Services.Customers.EndToEndTests.csproj", "{3BAFCE4C-5326-4880-B680-5B7AC2F14B57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Services.Customers.UnitTests", "tests\services\Customers\ECommerce.Services.Customers.UnitTests\ECommerce.Services.Customers.UnitTests.csproj", "{39703963-5D46-4B9F-BDCD-7371934ED5EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Services.Customers.IntegrationTests", "tests\services\Customers\ECommerce.Services.Customers.IntegrationTests\ECommerce.Services.Customers.IntegrationTests.csproj", "{364D684E-DF6D-4A8B-87D2-D2B7191E86B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +179,10 @@ Global
 		{FACF50A0-E9A6-4888-8295-45FF10E287B1} = {DE347392-CF8B-4DE6-AC18-E0C74674B40C}
 		{23204097-F83E-4FC3-98C5-316C07D5CC57} = {FACF50A0-E9A6-4888-8295-45FF10E287B1}
 		{4E908B16-4258-4B26-8A4C-4085A01AF4DB} = {23204097-F83E-4FC3-98C5-316C07D5CC57}
+		{EE33219C-7696-48D8-B86C-BF3A2D6087B1} = {A4BF5D18-D56C-4751-98A8-6F9B8315B9C0}
+		{3BAFCE4C-5326-4880-B680-5B7AC2F14B57} = {EE33219C-7696-48D8-B86C-BF3A2D6087B1}
+		{39703963-5D46-4B9F-BDCD-7371934ED5EC} = {EE33219C-7696-48D8-B86C-BF3A2D6087B1}
+		{364D684E-DF6D-4A8B-87D2-D2B7191E86B2} = {EE33219C-7696-48D8-B86C-BF3A2D6087B1}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -289,5 +301,17 @@ Global
 		{4E908B16-4258-4B26-8A4C-4085A01AF4DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E908B16-4258-4B26-8A4C-4085A01AF4DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E908B16-4258-4B26-8A4C-4085A01AF4DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BAFCE4C-5326-4880-B680-5B7AC2F14B57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BAFCE4C-5326-4880-B680-5B7AC2F14B57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BAFCE4C-5326-4880-B680-5B7AC2F14B57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BAFCE4C-5326-4880-B680-5B7AC2F14B57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39703963-5D46-4B9F-BDCD-7371934ED5EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39703963-5D46-4B9F-BDCD-7371934ED5EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39703963-5D46-4B9F-BDCD-7371934ED5EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39703963-5D46-4B9F-BDCD-7371934ED5EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{364D684E-DF6D-4A8B-87D2-D2B7191E86B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{364D684E-DF6D-4A8B-87D2-D2B7191E86B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{364D684E-DF6D-4A8B-87D2-D2B7191E86B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{364D684E-DF6D-4A8B-87D2-D2B7191E86B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

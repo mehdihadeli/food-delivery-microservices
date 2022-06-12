@@ -1,14 +1,14 @@
-﻿using Humanizer;
+﻿using ECommerce.Services.Customers.Users.Features.RegisteringUser.Events.External;
+using ECommerce.Services.Shared.Identity.Users.Events.Integration;
+using Humanizer;
 using MassTransit;
 using RabbitMQ.Client;
-using ECommerce.Services.Customers.Identity.Features.RegisteringUser.Events.External;
-using ECommerce.Services.Shared.Identity.Users.Events.Integration;
 
-namespace ECommerce.Services.Customers.Identity;
+namespace ECommerce.Services.Customers.Users;
 
 internal static class MassTransitExtensions
 {
-    internal static void AddIdentityEndpoints(this IRabbitMqBusFactoryConfigurator cfg, IBusRegistrationContext context)
+    internal static void AddUsersEndpoints(this IRabbitMqBusFactoryConfigurator cfg, IBusRegistrationContext context)
     {
         cfg.ReceiveEndpoint(nameof(UserRegistered).Underscore(), re =>
         {

@@ -15,4 +15,6 @@ public interface IMessagePersistenceRepository
     Task<StoreMessage?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<bool> RemoveAsync(StoreMessage storeMessage, CancellationToken cancellationToken = default);
+
+    Task CleanupMessages();
 }

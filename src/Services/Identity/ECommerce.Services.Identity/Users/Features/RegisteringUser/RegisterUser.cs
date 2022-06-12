@@ -57,8 +57,8 @@ internal class RegisterUserValidator : AbstractValidator<RegisterUser>
         RuleFor(v => v.Roles).Custom((roles, c) =>
         {
             if (roles != null &&
-                !roles.All(x => x.Contains(Constants.Role.Admin, StringComparison.Ordinal) ||
-                                x.Contains(Constants.Role.User, StringComparison.Ordinal)))
+                !roles.All(x => x.Contains(IdentityConstants.Role.Admin, StringComparison.Ordinal) ||
+                                x.Contains(IdentityConstants.Role.User, StringComparison.Ordinal)))
             {
                 c.AddFailure("Invalid roles.");
             }
@@ -95,7 +95,7 @@ internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserR
         var identityResult = await _userManager.CreateAsync(applicationUser, request.Password);
         var roleResult = await _userManager.AddToRolesAsync(
             applicationUser,
-            request.Roles ?? new List<string> {Constants.Role.User});
+            request.Roles ?? new List<string> {IdentityConstants.Role.User});
 
         if (!identityResult.Succeeded)
             throw new RegisterIdentityUserException(string.Join(',', identityResult.Errors.Select(e => e.Description)));
@@ -123,7 +123,7 @@ internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserR
             UserName = applicationUser.UserName,
             FirstName = applicationUser.FirstName,
             LastName = applicationUser.LastName,
-            Roles = request.Roles ?? new List<string> {Constants.Role.User},
+            Roles = request.Roles ?? new List<string> {IdentityConstants.Role.User},
             RefreshTokens = applicationUser?.RefreshTokens?.Select(x => x.Token),
             CreatedAt = request.CreatedAt,
             UserState = UserState.Active

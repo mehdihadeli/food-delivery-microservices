@@ -1,5 +1,5 @@
 using Duende.IdentityServer.Services;
-using Microsoft.AspNetCore.Builder;
+using ECommerce.Services.Identity.Identity;
 using ECommerce.Services.Identity.Identity.Services;
 using ECommerce.Services.Identity.Shared.Models;
 
@@ -17,8 +17,6 @@ public static partial class ServiceCollectionExtensions
 
     public static IServiceCollection AddCustomIdentityServer(this IServiceCollection services)
     {
-        services.AddScoped<IProfileService, IdentityProfileService>();
-
         services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
@@ -26,13 +24,13 @@ public static partial class ServiceCollectionExtensions
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
             })
-            .AddDeveloperSigningCredential() // This is for dev only scenarios when you don’t have a certificate to use.
             .AddInMemoryIdentityResources(IdentityServerConfig.IdentityResources)
             .AddInMemoryApiResources(IdentityServerConfig.ApiResources)
             .AddInMemoryApiScopes(IdentityServerConfig.ApiScopes)
             .AddInMemoryClients(IdentityServerConfig.Clients)
             .AddAspNetIdentity<ApplicationUser>()
-            .AddProfileService<IdentityProfileService>();
+            .AddProfileService<IdentityProfileService>()
+            .AddDeveloperSigningCredential(); // This is for dev only scenarios when you don’t have a certificate to use.;
 
         return services;
     }

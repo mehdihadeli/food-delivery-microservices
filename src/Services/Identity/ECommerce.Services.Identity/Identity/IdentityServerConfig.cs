@@ -2,7 +2,7 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using IdentityModel;
 
-namespace ECommerce.Services.Identity;
+namespace ECommerce.Services.Identity.Identity;
 
 // Ref: https://docs.duendesoftware.com/identityserver/v5/fundamentals/resources/api_resources/
 // https://docs.duendesoftware.com/identityserver/v5/fundamentals/resources/identity/

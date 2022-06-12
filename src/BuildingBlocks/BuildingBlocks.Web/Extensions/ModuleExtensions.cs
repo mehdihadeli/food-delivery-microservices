@@ -1,6 +1,7 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Web.Module;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 
@@ -11,6 +12,7 @@ public static class ModuleExtensions
     public static IServiceCollection AddModulesServices(
         this IServiceCollection services,
         IConfiguration configuration,
+        IWebHostEnvironment webHostEnvironment,
         params Assembly[] scanAssemblies)
     {
         var assemblies = scanAssemblies.Any() ? scanAssemblies : AppDomain.CurrentDomain.GetAssemblies();
@@ -31,11 +33,11 @@ public static class ModuleExtensions
 
         var rootModule = rootModules.SingleOrDefault();
         if (rootModule is { })
-            AddModulesDependency(services, configuration, rootModule);
+            AddModulesDependency(services, configuration, webHostEnvironment, rootModule);
 
         foreach (var module in childModules)
         {
-            AddModulesDependency(services, configuration, module);
+            AddModulesDependency(services, configuration, webHostEnvironment, module);
         }
 
         return services;
@@ -45,18 +47,26 @@ public static class ModuleExtensions
         this WebApplicationBuilder webApplicationBuilder,
         params Assembly[] scanAssemblies)
     {
-        return AddModulesServices(webApplicationBuilder.Services, webApplicationBuilder.Configuration, scanAssemblies);
+        return AddModulesServices(
+            webApplicationBuilder.Services,
+            webApplicationBuilder.Configuration,
+            webApplicationBuilder.Environment,
+            scanAssemblies);
     }
 
     public static IServiceCollection AddModuleServices<TModule>(this WebApplicationBuilder webApplicationBuilder)
         where TModule : class, IModuleDefinition
     {
-        return AddModuleServices<TModule>(webApplicationBuilder.Services, webApplicationBuilder.Configuration);
+        return AddModuleServices<TModule>(
+            webApplicationBuilder.Services,
+            webApplicationBuilder.Configuration,
+            webApplicationBuilder.Environment);
     }
 
     public static IServiceCollection AddModuleServices<TModule>(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IWebHostEnvironment webHostEnvironment)
         where TModule : class, IModuleDefinition
     {
         if (!typeof(TModule).IsAssignableTo(typeof(IModuleDefinition)))
@@ -65,7 +75,7 @@ public static class ModuleExtensions
                 $"{nameof(TModule)} must be implemented {nameof(IModuleDefinition)} or {nameof(IRootModuleDefinition)}");
         }
 
-        AddModulesDependency(services, configuration, typeof(TModule));
+        AddModulesDependency(services, configuration, webHostEnvironment, typeof(TModule));
 
         return services;
     }
@@ -73,10 +83,11 @@ public static class ModuleExtensions
     private static void AddModulesDependency(
         IServiceCollection services,
         IConfiguration configuration,
+        IWebHostEnvironment webHostEnvironment,
         Type module)
     {
         var instantiatedType = (IModuleDefinition)Activator.CreateInstance(module)!;
-        instantiatedType.AddModuleServices(services, configuration);
+        instantiatedType.AddModuleServices(services, configuration, webHostEnvironment);
 
         if (instantiatedType is IRootModuleDefinition rootInstantiateType)
             services.AddSingleton(rootInstantiateType);

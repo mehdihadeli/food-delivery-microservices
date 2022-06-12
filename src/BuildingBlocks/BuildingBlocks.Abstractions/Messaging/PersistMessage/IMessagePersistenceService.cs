@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 
@@ -10,6 +11,10 @@ namespace BuildingBlocks.Abstractions.Messaging.PersistMessage;
 // Ref: https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
 public interface IMessagePersistenceService
 {
+    Task<IReadOnlyList<StoreMessage>> GetByFilterAsync(
+        Expression<Func<StoreMessage, bool>>? predicate = null,
+        CancellationToken cancellationToken = default);
+
     Task AddPublishMessageAsync<TMessageEnvelope>(
         TMessageEnvelope messageEnvelope,
         CancellationToken cancellationToken = default)

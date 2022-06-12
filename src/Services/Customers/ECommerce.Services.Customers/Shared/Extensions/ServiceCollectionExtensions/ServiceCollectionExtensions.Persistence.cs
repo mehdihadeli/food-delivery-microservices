@@ -26,7 +26,7 @@ public static partial class ServiceCollectionExtensions
 
     private static void AddPostgresWriteStorage(IServiceCollection services, IConfiguration configuration)
     {
-        if (configuration.GetValue<bool>("PostgresOptions.UseInMemory"))
+        if (configuration.GetValue<bool>("PostgresOptions:UseInMemory"))
         {
             services.AddDbContext<CustomersDbContext>(options =>
                 options.UseInMemoryDatabase("ECommerce.Services.ECommerce.Services.Customers"));

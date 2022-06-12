@@ -11,8 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Customers\Features\CreatingCustomer\Events\Integration" />
-    <Folder Include="Identity\Features" />
+    <Folder Include="Users\Features" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +37,10 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Swagger\BuildingBlocks.Swagger.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Validation\BuildingBlocks.Validation.csproj" />
     <ProjectReference Include="..\..\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ECommerce.Services.Customers.IntegrationTests" />
   </ItemGroup>
 
 </Project>

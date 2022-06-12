@@ -26,7 +26,7 @@ public class IdentityProfileService : IProfileService
         var sub = context.Subject.GetSubjectId();
         var user = await _userManager.FindByIdAsync(sub);
         var roles = await _userManager.GetRolesAsync(user);
-        var isAdmin = roles.Contains(Constants.Role.Admin);
+        var isAdmin = roles.Contains(IdentityConstants.Role.Admin);
         var principal = await _claimsFactory.CreateAsync(user);
 
         var claims = principal.Claims.ToList();

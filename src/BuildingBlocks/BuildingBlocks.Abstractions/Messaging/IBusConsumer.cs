@@ -5,6 +5,17 @@ public interface IBusConsumer
     /// <summary>
     /// consume the message, with specified subscribeMethod.
     /// </summary>
+    /// <param name="handler">handler to execute the message.</param>
+    /// <param name="consumeBuilder"></param>
+    /// <typeparam name="TMessage">A type that implements the <see cref="IMessage"/>.</typeparam>
+    void Consume<TMessage>(
+        IMessageHandler<TMessage> handler,
+        Action<IConsumeConfigurationBuilder>? consumeBuilder = null)
+        where TMessage : class, IMessage;
+
+    /// <summary>
+    /// consume the message, with specified subscribeMethod.
+    /// </summary>
     /// <param name="subscribeMethod">The delegate handler to execute the message.</param>
     /// <param name="consumeBuilder"></param>
     /// <typeparam name="TMessage">A type that implements the <see cref="IMessage"/>.</typeparam>

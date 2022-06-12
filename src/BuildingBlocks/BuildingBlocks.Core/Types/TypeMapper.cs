@@ -4,10 +4,6 @@ using BuildingBlocks.Core.Utils;
 
 namespace BuildingBlocks.Core.Types;
 
-/// <summary>
-/// The TypeMapper maintains type names for current domain assemblies types with its corresponding types,
-/// so we avoid using CLR type names as types. This way, we can rename event classes without breaking deserialization.
-/// </summary>
 public static class TypeMapper
 {
     private static readonly ConcurrentDictionary<Type, string> TypeNameMap = new();

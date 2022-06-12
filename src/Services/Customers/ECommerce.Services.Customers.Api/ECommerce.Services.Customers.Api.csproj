@@ -1,8 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-  
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\ECommerce.Services.Customers\ECommerce.Services.Customers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ECommerce.Services.Customers.IntegrationTests" />
   </ItemGroup>
 
 </Project>

@@ -40,4 +40,8 @@
     <ProjectReference Include="..\..\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="ECommerce.Services.Identity.IntegrationTests" />
+  </ItemGroup>
+
 </Project>

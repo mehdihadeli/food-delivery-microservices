@@ -4,7 +4,13 @@ using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
 using MassTransit;
+using MassTransit.Configuration;
+using MassTransit.Testing;
+using MassTransit.Testing.Implementations;
+using MassTransit.Transports;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
 
 namespace BuildingBlocks.Integration.MassTransit;
@@ -14,6 +20,7 @@ public static class Extensions
     public static IServiceCollection AddCustomMassTransit(
         this IServiceCollection services,
         IConfiguration configuration,
+        IWebHostEnvironment env,
         Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureReceiveEndpoints = null,
         Action<IBusRegistrationConfigurator>? configureBusRegistration = null,
         bool autoConfigEndpoints = false)
@@ -22,7 +29,7 @@ public static class Extensions
 
         Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));
 
-        services.AddMassTransit(busRegistrationConfigurator =>
+        void ConfiguratorAction(IBusRegistrationConfigurator busRegistrationConfigurator)
         {
             configureBusRegistration?.Invoke(busRegistrationConfigurator);
 
@@ -74,7 +81,16 @@ public static class Extensions
 
                 configureReceiveEndpoints?.Invoke(context, cfg);
             });
-        });
+        }
+
+        if (env.IsEnvironment("test") == false)
+        {
+            services.AddMassTransit(ConfiguratorAction);
+        }
+        else
+        {
+            services.AddMassTransitTestHarness(ConfiguratorAction);
+        }
 
         services.AddTransient<IBus, MassTransitBus>();
 

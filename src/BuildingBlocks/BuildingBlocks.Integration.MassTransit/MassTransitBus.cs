@@ -142,6 +142,13 @@ public class MassTransitBus : IBus
                 : $"exchange:{exchangeOrTopic}";
     }
 
+    public void Consume<TMessage>(
+        IMessageHandler<TMessage> handler,
+        Action<IConsumeConfigurationBuilder>? consumeBuilder = null)
+        where TMessage : class, IMessage
+    {
+    }
+
     public Task Consume<TMessage>(
         Abstractions.Messaging.MessageHandler<TMessage> subscribeMethod,
         Action<IConsumeConfigurationBuilder>? consumeBuilder = null,

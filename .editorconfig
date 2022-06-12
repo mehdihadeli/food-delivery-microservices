@@ -137,6 +137,9 @@ dotnet_diagnostic.CA2201.severity = Suggestion
 # CA1848: Use the LoggerMessage delegates
 dotnet_diagnostic.CA1848.severity = Suggestion
 
+# CA1810: Initialize reference type static fields inline
+dotnet_diagnostic.CA1810.severity = Suggestion
+
 
 ##################################################################################
 ## https://github.com/DotNetAnalyzers/StyleCopAnalyzers/tree/master/documentation
@@ -383,7 +386,7 @@ dotnet_diagnostic.VSTHRD107.severity = error
 
 # https://cezarypiatek.github.io/post/async-analyzers-p1/#7-unobserved-result-of-asynchronous-method
 # VSTHRD110: Observe result of async calls
-dotnet_diagnostic.VSTHRD110.severity = error
+dotnet_diagnostic.VSTHRD110.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#8-synchronous-waits
 # VSTHRD002: Avoid problematic synchronous waits

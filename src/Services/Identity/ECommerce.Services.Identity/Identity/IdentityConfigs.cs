@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Persistence;
+using ECommerce.Services.Identity.Identity.Data;
 using ECommerce.Services.Identity.Identity.Features.GetClaims;
 using ECommerce.Services.Identity.Identity.Features.Login;
 using ECommerce.Services.Identity.Identity.Features.Logout;
@@ -6,15 +7,8 @@ using ECommerce.Services.Identity.Identity.Features.RefreshingToken;
 using ECommerce.Services.Identity.Identity.Features.RevokeRefreshToken;
 using ECommerce.Services.Identity.Identity.Features.SendEmailVerificationCode;
 using ECommerce.Services.Identity.Identity.Features.VerifyEmail;
-using ECommerce.Services.Identity.Shared.Data;
 using ECommerce.Services.Identity.Shared.Extensions.ServiceCollectionExtensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
-using ECommerce.Services.Identity.Identity.Data;
 
 namespace ECommerce.Services.Identity.Identity;
 
@@ -25,11 +19,15 @@ internal static class IdentityConfigs
 
     internal static IServiceCollection AddIdentityServices(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IWebHostEnvironment webHostEnvironment)
     {
-        services.AddScoped<IDataSeeder, IdentityDataSeeder>();
         services.AddCustomIdentity(configuration);
-        services.AddCustomIdentityServer();
+
+        services.AddScoped<IDataSeeder, IdentityDataSeeder>();
+
+        if (webHostEnvironment.IsEnvironment("test") == false)
+            services.AddCustomIdentityServer();
 
         return services;
     }
@@ -40,15 +38,15 @@ internal static class IdentityConfigs
             $"{IdentityPrefixUri}/user-role",
             [Authorize(
                 AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-                Roles = Constants.Role.User)]
-            () => new { Role = Constants.Role.User }).WithTags("Identity");
+                Roles = IdentityConstants.Role.User)]
+            () => new {Role = IdentityConstants.Role.User}).WithTags("Identity");
 
         endpoints.MapGet(
             $"{IdentityPrefixUri}/admin-role",
             [Authorize(
                 AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-                Roles = Constants.Role.Admin)]
-            () => new { Role = Constants.Role.Admin }).WithTags("Identity");
+                Roles = IdentityConstants.Role.Admin)]
+            () => new {Role = IdentityConstants.Role.Admin}).WithTags("Identity");
 
         endpoints.MapLoginUserEndpoint();
         endpoints.MapLogoutEndpoint();

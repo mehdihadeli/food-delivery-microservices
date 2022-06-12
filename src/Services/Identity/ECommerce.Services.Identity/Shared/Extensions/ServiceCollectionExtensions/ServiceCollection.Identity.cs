@@ -2,11 +2,8 @@ using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using ECommerce.Services.Identity.Shared.Data;
 using ECommerce.Services.Identity.Shared.Models;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using ECommerce.Services.Identity.Identity.Data;
 
 namespace ECommerce.Services.Identity.Shared.Extensions.ServiceCollectionExtensions;
 
@@ -27,10 +24,7 @@ public static partial class ServiceCollectionExtensions
         IConfiguration configuration,
         Action<IdentityOptions>? configure = null)
     {
-        // Problem with .net core identity - will override our default authentication scheme `JwtBearerDefaults.AuthenticationScheme` to unwanted `ECommerce.Services.Identity.Application` in `AddIdentity()` method .net identity
-        // https://github.com/IdentityServer/IdentityServer4/issues/1525
-
-        if (configuration.GetValue<bool>("PostgresOptions.UseInMemory"))
+        if (configuration.GetValue<bool>("PostgresOptions:UseInMemory"))
         {
             services.AddDbContext<IdentityContext>(options =>
                 options.UseInMemoryDatabase("Shop.Services.ECommerce.Services.Identity"));
@@ -43,6 +37,8 @@ public static partial class ServiceCollectionExtensions
             services.AddPostgresDbContext<IdentityContext>(configuration);
         }
 
+        // Problem with .net core identity - will override our default authentication scheme `JwtBearerDefaults.AuthenticationScheme` to unwanted `ECommerce.Services.Identity.Application` in `AddIdentity()` method .net identity
+        // https://github.com/IdentityServer/IdentityServer4/issues/1525
         // https://github.com/IdentityServer/IdentityServer4/issues/1525
         // some dependencies will add here if not registered before
         services.AddIdentity<ApplicationUser, ApplicationRole>(options =>

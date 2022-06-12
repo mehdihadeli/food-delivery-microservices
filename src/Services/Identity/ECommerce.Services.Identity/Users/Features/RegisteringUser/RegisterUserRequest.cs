@@ -8,5 +8,5 @@ public record RegisterUserRequest(
     string Password,
     string ConfirmPassword)
 {
-    public IEnumerable<string> Roles { get; init; } = new List<string> { Constants.Role.User };
+    public IEnumerable<string> Roles { get; init; } = new List<string> { IdentityConstants.Role.User };
 }

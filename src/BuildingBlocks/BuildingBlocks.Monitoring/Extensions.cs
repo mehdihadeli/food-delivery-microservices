@@ -18,9 +18,9 @@ public static class Extensions
         this IServiceCollection services,
         Action<IHealthChecksBuilder>? healthChecksBuilder = null)
     {
-        using var serviceProvider = services.BuildServiceProvider();
-
-        var healCheckBuilder = services.AddHealthChecks().ForwardToPrometheus();
+        var healCheckBuilder =
+            services.AddHealthChecks()
+                .ForwardToPrometheus();
 
         healthChecksBuilder?.Invoke(healCheckBuilder);
 
@@ -91,7 +91,6 @@ public static class Extensions
                 writer.WriteEndObject();
             }
 
-            writer.WriteEndObject();
             writer.WriteEndObject();
         }
 

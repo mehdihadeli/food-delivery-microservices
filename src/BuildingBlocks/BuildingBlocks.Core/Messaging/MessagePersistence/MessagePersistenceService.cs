@@ -5,24 +5,23 @@ using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Serialization;
-using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Types;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace BuildingBlocks.Core.Messaging.MessagePersistence.InMemory;
+namespace BuildingBlocks.Core.Messaging.MessagePersistence;
 
-public class InMemoryMessagePersistenceService : IMessagePersistenceService
+public class MessagePersistenceService : IMessagePersistenceService
 {
-    private readonly ILogger<InMemoryMessagePersistenceService> _logger;
+    private readonly ILogger<MessagePersistenceService> _logger;
     private readonly IMessagePersistenceRepository _messagePersistenceRepository;
     private readonly IMessageSerializer _messageSerializer;
     private readonly IMediator _mediator;
     private readonly IBus _bus;
     private readonly ISerializer _serializer;
 
-    public InMemoryMessagePersistenceService(
-        ILogger<InMemoryMessagePersistenceService> logger,
+    public MessagePersistenceService(
+        ILogger<MessagePersistenceService> logger,
         IMessagePersistenceRepository messagePersistenceRepository,
         IMessageSerializer messageSerializer,
         IMediator mediator,
@@ -142,6 +141,7 @@ public class InMemoryMessagePersistenceService : IMessagePersistenceService
         }
 
         message.ChangeState(MessageStatus.Processed);
+        await _messagePersistenceRepository.UpdateAsync(message, cancellationToken);
     }
 
     public async Task ProcessAllAsync(CancellationToken cancellationToken = default)

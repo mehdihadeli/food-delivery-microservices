@@ -8,6 +8,7 @@ using BuildingBlocks.Core.Registrations;
 using BuildingBlocks.Email;
 using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Logging;
+using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.Monitoring;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Validation;
@@ -55,7 +56,7 @@ public static partial class ServiceCollectionExtensions
                     .AddScoped(typeof(IPipelineBehavior<,>), typeof(EfTxBehavior<,>));
             });
 
-        services.AddInMemoryMessagePersistence();
+        services.AddPostgresMessagePersistence(configuration);
 
         services.AddCustomMassTransit(
             configuration,

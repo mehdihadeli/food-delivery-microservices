@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Configuration;
 
-namespace BuildingBlocks.Core.Persistence.EfCore;
+namespace BuildingBlocks.Core.Web;
 
-public static class EfConfigurationHelper
+public static class ConfigurationHelper
 {
     public static IConfiguration GetConfiguration(string? basePath = null)
     {

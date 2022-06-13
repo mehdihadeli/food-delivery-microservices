@@ -128,8 +128,6 @@ public class UserRegisteredTests : IntegrationTestBase<Program, CustomersDbConte
 
         var existsCustomer = await IntegrationTestFixture.ExecuteReadContextAsync(async ctx =>
         {
-            var s = ctx.Customers.AsQueryable().FirstOrDefault();
-
             var res = await ctx.Customers.AsQueryable().AnyAsync(x => x.Email == _userRegistered.Email.ToLower());
 
             return res;

@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Persistence.EfCore;
+using BuildingBlocks.Core.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -8,32 +8,30 @@ namespace BuildingBlocks.Persistence.EfCore.Postgres;
 public abstract class DbContextDesignFactoryBase<TDbContext> : IDesignTimeDbContextFactory<TDbContext>
     where TDbContext : DbContext
 {
-    private readonly string _connectionStringName;
+    private readonly string _connectionStringSection;
 
-    protected DbContextDesignFactoryBase(string connectionStringName)
+    protected DbContextDesignFactoryBase(string connectionStringSection)
     {
-        _connectionStringName = connectionStringName;
+        _connectionStringSection = connectionStringSection;
     }
 
     public TDbContext CreateDbContext(string[] args)
     {
         Console.WriteLine($"BaseDirectory: {AppContext.BaseDirectory}");
-        Console.WriteLine($"ConnectionStringName: {_connectionStringName}");
 
-        var connString = EfConfigurationHelper.GetConfiguration(AppContext.BaseDirectory)
-            ?.GetConnectionString(_connectionStringName);
+        var configuration = ConfigurationHelper.GetConfiguration(AppContext.BaseDirectory);
+        var connectionStringSectionValue = configuration.GetValue<string>(_connectionStringSection);
 
-        if (string.IsNullOrWhiteSpace(connString))
+        if (string.IsNullOrWhiteSpace(connectionStringSectionValue))
         {
-            throw new InvalidOperationException(
-                $"Could not find a connection string named '{connString}'.");
+            throw new InvalidOperationException($"Could not find a value for {_connectionStringSection} section.");
         }
 
-        Console.WriteLine($"Connection String: {connString}");
+        Console.WriteLine($"ConnectionString  section value is : {connectionStringSectionValue}");
 
         var optionsBuilder = new DbContextOptionsBuilder<TDbContext>()
             .UseNpgsql(
-                connString,
+                connectionStringSectionValue,
                 sqlOptions =>
                 {
                     sqlOptions.MigrationsAssembly(GetType().Assembly.FullName);
@@ -41,7 +39,6 @@ public abstract class DbContextDesignFactoryBase<TDbContext> : IDesignTimeDbCont
                 }
             ).UseSnakeCaseNamingConvention();
 
-        Console.WriteLine(connString);
         return (TDbContext)Activator.CreateInstance(typeof(TDbContext), optionsBuilder.Options);
     }
 }

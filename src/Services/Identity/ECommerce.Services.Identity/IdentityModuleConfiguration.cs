@@ -54,6 +54,8 @@ public class IdentityModuleConfiguration : IRootModuleDefinition
         await app.ApplyDatabaseMigrations(app.Logger);
         await app.SeedData(app.Logger, app.Environment);
 
+        await app.UseInfrastructure(app.Logger);
+
         return app;
     }
 }

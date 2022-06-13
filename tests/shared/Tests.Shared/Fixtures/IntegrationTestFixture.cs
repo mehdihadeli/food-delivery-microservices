@@ -314,7 +314,13 @@ public class IntegrationTestFixture<TEntryPoint> : IAsyncLifetime
                     x.DeliveryType == MessageDeliveryType.Outbox &&
                     TypeMapper.GetTypeName(typeof(TMessage)) == x.DataType);
 
-                return filter.Any(x => x.MessageStatus == MessageStatus.Processed);
+                var res = filter.Any(x => x.MessageStatus == MessageStatus.Processed);
+
+                if (res is true)
+                {
+
+                }
+                return res;
             });
         });
     }

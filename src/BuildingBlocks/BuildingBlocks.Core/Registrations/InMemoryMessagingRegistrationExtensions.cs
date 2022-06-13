@@ -4,15 +4,11 @@ using BuildingBlocks.Core.Messaging.MessagePersistence.InMemory;
 
 namespace BuildingBlocks.Core.Registrations;
 
-public static partial class InMemoryMessagingRegistrationExtensions
+public static class InMemoryMessagingRegistrationExtensions
 {
-    public static IServiceCollection AddInMemoryMessagePersistence(
-        this IServiceCollection services,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+    public static IServiceCollection AddInMemoryMessagePersistence(this IServiceCollection services)
     {
-        services.Add<IMessagePersistenceRepository, InMemoryMessagePersistenceRepository>(serviceLifetime);
-
-        services.Replace<IMessagePersistenceService, InMemoryMessagePersistenceService>(serviceLifetime);
+        services.ReplaceScoped<IMessagePersistenceRepository, InMemoryMessagePersistenceRepository>();
 
         return services;
     }

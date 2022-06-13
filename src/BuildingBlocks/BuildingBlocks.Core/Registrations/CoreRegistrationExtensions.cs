@@ -11,6 +11,7 @@ using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Messaging.BackgroundServices;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
+using BuildingBlocks.Core.Messaging.MessagePersistence.InMemory;
 using BuildingBlocks.Core.Serialization;
 using BuildingBlocks.Core.Types;
 using Microsoft.Extensions.Configuration;
@@ -77,15 +78,15 @@ public static class CoreRegistrationExtensions
     {
         AddMessagingMediator(services, serviceLifetime, assembliesToScan);
 
-        AddPersistenceMessage(services, configuration, serviceLifetime);
+        AddPersistenceMessage(services, configuration);
     }
 
     private static void AddPersistenceMessage(
         IServiceCollection services,
-        IConfiguration configuration,
-        ServiceLifetime serviceLifetime)
+        IConfiguration configuration)
     {
-        services.Add<IMessagePersistenceService, NullMessagePersistenceService>(serviceLifetime);
+        services.AddScoped<IMessagePersistenceService, MessagePersistenceService>();
+        services.AddScoped<IMessagePersistenceRepository, NullPersistenceRepository>();
         services.AddHostedService<MessagePersistenceBackgroundService>();
         services.AddOptions<MessagePersistenceOptions>()
             .Bind(configuration.GetSection(nameof(MessagePersistenceOptions)))

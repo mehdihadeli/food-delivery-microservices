@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using ECommerce.Services.Customers.Shared.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Customers.Shared.Extensions.ApplicationBuilderExtensions;
 

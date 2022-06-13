@@ -3,13 +3,11 @@ using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit.Abstractions;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Messaging.BackgroundServices;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Persistence.Mongo;
-using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mongo2Go;
@@ -21,14 +19,14 @@ using Tests.Shared.Mocks.Builders;
 
 namespace Tests.Shared.Fixtures;
 
-public abstract class IntegrationTestCore<TEntryPoint> : IAsyncLifetime
+public abstract class IntegrationTestCore<TEntryPoint> : XunitContextBase, IAsyncLifetime
     where TEntryPoint : class
 {
     private readonly Checkpoint _checkpoint;
     private readonly MongoDbRunner _mongoRunner;
 
     public IntegrationTestCore(IntegrationTestFixture<TEntryPoint> integrationTestFixture,
-        ITestOutputHelper outputHelper)
+        ITestOutputHelper outputHelper) : base(outputHelper)
     {
         CancellationTokenSource = new(TimeSpan.FromSeconds(Timeout));
         integrationTestFixture.Timeout = Timeout;

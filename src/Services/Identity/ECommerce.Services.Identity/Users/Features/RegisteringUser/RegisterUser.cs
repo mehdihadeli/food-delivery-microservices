@@ -1,6 +1,7 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Messaging;
+using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using ECommerce.Services.Identity.Shared.Models;
@@ -70,13 +71,14 @@ internal class RegisterUserValidator : AbstractValidator<RegisterUser>
 // https://www.youtube.com/watch?v=PrJIMTZsbDw
 internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserResult>
 {
-    private readonly IBus _bus;
+    private readonly IMessagePersistenceService _messagePersistenceService;
 
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public RegisterUserHandler(UserManager<ApplicationUser> userManager, IBus bus)
+    public RegisterUserHandler(UserManager<ApplicationUser> userManager,
+        IMessagePersistenceService messagePersistenceService)
     {
-        _bus = bus;
+        _messagePersistenceService = messagePersistenceService;
         _userManager = Guard.Against.Null(userManager, nameof(userManager));
     }
 
@@ -103,18 +105,19 @@ internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserR
         if (!roleResult.Succeeded)
             throw new RegisterIdentityUserException(string.Join(',', roleResult.Errors.Select(e => e.Description)));
 
+
+        var userRegistered = new UserRegistered(
+            applicationUser.Id,
+            applicationUser.Email,
+            applicationUser.UserName,
+            applicationUser.FirstName,
+            applicationUser.LastName,
+            request.Roles);
+
         // publish our integration event and save to outbox should do in same transaction of our business logic actions. we could use TxBehaviour or ITxDbContextExecutes interface
         // This service is not DDD, so we couldn't use DomainEventPublisher to publish mapped integration events
-        await _bus.PublishAsync(
-            new UserRegistered(
-                applicationUser.Id,
-                applicationUser.Email,
-                applicationUser.UserName,
-                applicationUser.FirstName,
-                applicationUser.LastName,
-                request.Roles),
-            null,
-            cancellationToken);
+        await _messagePersistenceService.AddPublishMessageAsync(
+            new MessageEnvelope<UserRegistered>(userRegistered, new Dictionary<string, object?>()), cancellationToken);
 
         return new RegisterUserResult(new IdentityUserDto
         {

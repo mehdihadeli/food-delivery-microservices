@@ -124,6 +124,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Services.Customer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Services.Customers.IntegrationTests", "tests\services\Customers\ECommerce.Services.Customers.IntegrationTests\ECommerce.Services.Customers.IntegrationTests.csproj", "{364D684E-DF6D-4A8B-87D2-D2B7191E86B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Messaging.Persistence.Postgres", "src\BuildingBlocks\BuildingBlocks.Messaging.Persistence.Postgres\BuildingBlocks.Messaging.Persistence.Postgres.csproj", "{C2BCB097-4748-47ED-A5CD-C76E3E7A65C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -183,6 +185,7 @@ Global
 		{3BAFCE4C-5326-4880-B680-5B7AC2F14B57} = {EE33219C-7696-48D8-B86C-BF3A2D6087B1}
 		{39703963-5D46-4B9F-BDCD-7371934ED5EC} = {EE33219C-7696-48D8-B86C-BF3A2D6087B1}
 		{364D684E-DF6D-4A8B-87D2-D2B7191E86B2} = {EE33219C-7696-48D8-B86C-BF3A2D6087B1}
+		{C2BCB097-4748-47ED-A5CD-C76E3E7A65C3} = {FB247B5A-5299-4FFE-BE54-B7E1472D4A2E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -313,5 +316,9 @@ Global
 		{364D684E-DF6D-4A8B-87D2-D2B7191E86B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{364D684E-DF6D-4A8B-87D2-D2B7191E86B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{364D684E-DF6D-4A8B-87D2-D2B7191E86B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2BCB097-4748-47ED-A5CD-C76E3E7A65C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2BCB097-4748-47ED-A5CD-C76E3E7A65C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2BCB097-4748-47ED-A5CD-C76E3E7A65C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2BCB097-4748-47ED-A5CD-C76E3E7A65C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

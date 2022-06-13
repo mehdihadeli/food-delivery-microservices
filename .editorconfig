@@ -257,6 +257,9 @@ dotnet_diagnostic.SA1012.severity = Suggestion
 # A closing brace within a C# element is not spaced correctly.
 dotnet_diagnostic.SA1013.severity = Suggestion
 
+# A call to an instance member of the local class or a base class is not prefixed with 'this.', within a C# code file.
+dotnet_diagnostic.SA1101.severity = None
+
 ##################################################################################
 ## https://github.com/meziantou/Meziantou.Analyzer/tree/main/docs
 ## Meziantou.Analyzer

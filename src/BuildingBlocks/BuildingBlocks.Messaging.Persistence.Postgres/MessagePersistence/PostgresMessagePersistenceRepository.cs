@@ -27,11 +27,23 @@ public class PostgresMessagePersistenceRepository : IMessagePersistenceRepositor
 
     public async Task UpdateAsync(StoreMessage storeMessage, CancellationToken cancellationToken = default)
     {
-        _persistenceDbContext.StoreMessages.Attach(storeMessage);
-        var entry = _persistenceDbContext.Entry(storeMessage);
-        entry.State = EntityState.Modified;
+        _persistenceDbContext.StoreMessages.Update(storeMessage);
 
         await _persistenceDbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task ChangeStateAsync(
+        Guid messageId,
+        MessageStatus status,
+        CancellationToken cancellationToken = default)
+    {
+        var message = await _persistenceDbContext.StoreMessages
+            .FirstOrDefaultAsync(x => x.Id == messageId, cancellationToken);
+        if (message is { })
+        {
+            message.ChangeState(status);
+            await _persistenceDbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 
     public async Task<IReadOnlyList<StoreMessage>> GetAllAsync(CancellationToken cancellationToken = default)

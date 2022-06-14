@@ -15,6 +15,11 @@ public class NullPersistenceRepository : IMessagePersistenceRepository
         return Task.CompletedTask;
     }
 
+    public Task ChangeStateAsync(Guid messageId, MessageStatus status, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
     public Task<IReadOnlyList<StoreMessage>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return new Task<IReadOnlyList<StoreMessage>>(null);

@@ -140,8 +140,7 @@ public class MessagePersistenceService : IMessagePersistenceService
                 break;
         }
 
-        message.ChangeState(MessageStatus.Processed);
-        await _messagePersistenceRepository.UpdateAsync(message, cancellationToken);
+        await _messagePersistenceRepository.ChangeStateAsync(message.Id, MessageStatus.Processed, cancellationToken);
     }
 
     public async Task ProcessAllAsync(CancellationToken cancellationToken = default)

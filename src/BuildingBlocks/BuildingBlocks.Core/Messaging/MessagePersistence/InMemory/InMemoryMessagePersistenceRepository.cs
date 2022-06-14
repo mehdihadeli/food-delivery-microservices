@@ -29,6 +29,18 @@ public class InMemoryMessagePersistenceRepository : IMessagePersistenceRepositor
         return Task.CompletedTask;
     }
 
+    public Task ChangeStateAsync(Guid messageId, MessageStatus status, CancellationToken cancellationToken = default)
+    {
+        _messages.TryGetValue(messageId, out StoreMessage? message);
+
+        if (message is { })
+        {
+            message.ChangeState(status);
+        }
+
+        return Task.CompletedTask;
+    }
+
     public Task<IReadOnlyList<StoreMessage>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var result = _messages.Select(x => x.Value).ToImmutableList();

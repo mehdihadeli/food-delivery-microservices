@@ -11,8 +11,12 @@ using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.Monitoring;
 using BuildingBlocks.Persistence.EfCore.Postgres;
+using BuildingBlocks.Persistence.Mongo;
 using BuildingBlocks.Validation;
 using ECommerce.Services.Catalogs.Products;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using MongoDB.Driver;
 
 namespace ECommerce.Services.Catalogs.Shared.Extensions.ServiceCollectionExtensions;
 
@@ -54,12 +58,21 @@ public static partial class ServiceCollectionExtensions
         services.AddMonitoring(healthChecksBuilder =>
         {
             var postgresOptions = configuration.GetOptions<PostgresOptions>(nameof(PostgresOptions));
-            Guard.Against.Null(postgresOptions, nameof(postgresOptions));
+            var rabbitMqOptions = configuration.GetOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
 
-            healthChecksBuilder.AddNpgSql(
-                postgresOptions.ConnectionString,
-                name: "CatalogsService-Postgres-Check",
-                tags: new[] {"catalogs-postgres"});
+            Guard.Against.Null(postgresOptions, nameof(postgresOptions));
+            Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));
+
+            healthChecksBuilder
+                .AddNpgSql(
+                    postgresOptions.ConnectionString,
+                    name: "CatalogsService-Postgres-Check",
+                    tags: new[] {"postgres", "infra", "database", "catalogs-service"})
+                .AddRabbitMQ(
+                    rabbitMqOptions.ConnectionString,
+                    name: "CatalogsService-RabbitMQ-Check",
+                    timeout: TimeSpan.FromSeconds(3),
+                    tags: new[] {"rabbitmq", "infra", "bus", "catalogs-service"});
         });
 
         services.AddCustomValidators(Assembly.GetExecutingAssembly());

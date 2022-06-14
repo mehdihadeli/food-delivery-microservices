@@ -9,8 +9,10 @@ using Prometheus;
 
 namespace BuildingBlocks.Monitoring;
 
+// https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks
 // https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks
 // https://nikiforovall.github.io/dotnet/aspnetcore/coding-stories/2021/07/25/add-health-checks-to-aspnetcore.html
+// https://code-maze.com/health-checks-aspnetcore/
 // https://github.com/prometheus-net/prometheus-net
 public static class Extensions
 {
@@ -28,7 +30,11 @@ public static class Extensions
         services.AddHealthChecksUI(setup =>
         {
             setup.SetEvaluationTimeInSeconds(60); // time in seconds between check
-            setup.AddHealthCheckEndpoint("Basic Health Check", "/healthz");
+            setup.AddHealthCheckEndpoint("All Checks", "/healthz");
+            setup.AddHealthCheckEndpoint("Infra", "/health/infra");
+            setup.AddHealthCheckEndpoint("Bus", "/health/bus");
+            setup.AddHealthCheckEndpoint("Database", "/health/database");
+            setup.AddHealthCheckEndpoint("Downstream Services", "/health/downstream-services");
         }).AddInMemoryStorage();
 
         return services;
@@ -51,12 +57,33 @@ public static class Extensions
                         [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable,
                     },
                 })
-            .UseHealthChecks("/health",
+            .UseHealthChecks("/health/infra",
                 new HealthCheckOptions
                 {
-                    Predicate = (check) => !check.Tags.Contains("services"),
+                    Predicate = check => check.Tags.Contains("infra"),
                     AllowCachingResponses = false,
-                    ResponseWriter = WriteResponseAsync,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+                })
+            .UseHealthChecks("/health/bus",
+                new HealthCheckOptions
+                {
+                    Predicate = check => check.Tags.Contains("bus"),
+                    AllowCachingResponses = false,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+                })
+            .UseHealthChecks("/health/database",
+                new HealthCheckOptions
+                {
+                    Predicate = check => check.Tags.Contains("database"),
+                    AllowCachingResponses = false,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+                })
+            .UseHealthChecks("/health/downstream-services",
+                new HealthCheckOptions
+                {
+                    Predicate = check => check.Tags.Contains("downstream-services"),
+                    AllowCachingResponses = false,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
                 })
             .UseHealthChecks("/health/ready",
                 new HealthCheckOptions

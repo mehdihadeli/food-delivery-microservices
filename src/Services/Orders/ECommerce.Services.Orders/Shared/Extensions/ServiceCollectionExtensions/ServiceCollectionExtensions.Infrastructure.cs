@@ -30,12 +30,21 @@ public static partial class ServiceCollectionExtensions
         services.AddMonitoring(healthChecksBuilder =>
         {
             var postgresOptions = configuration.GetOptions<PostgresOptions>(nameof(PostgresOptions));
-            Guard.Against.Null(postgresOptions, nameof(postgresOptions));
+            var rabbitMqOptions = configuration.GetOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
 
-            healthChecksBuilder.AddNpgSql(
-                postgresOptions.ConnectionString,
-                name: "Orders-Postgres-Check",
-                tags: new[] {"orders-postgres"});
+            Guard.Against.Null(postgresOptions, nameof(postgresOptions));
+            Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));
+
+            healthChecksBuilder
+                .AddNpgSql(
+                    postgresOptions.ConnectionString,
+                    name: "OrdersService-Postgres-Check",
+                    tags: new[] {"postgres", "database", "infra", "orders-service"})
+                .AddRabbitMQ(
+                    rabbitMqOptions.ConnectionString,
+                    name: "OrdersService-RabbitMQ-Check",
+                    timeout: TimeSpan.FromSeconds(3),
+                    tags: new[] {"rabbitmq", "bus", "infra", "orders-service"});
         });
 
         services.AddEmailService(configuration);

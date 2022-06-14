@@ -52,7 +52,8 @@
     <PackageReference Update="AspNetCore.HealthChecks.UI.SQLite.Storage" Version="$(AspNetCoreHealthCheckVersion)"/>
     <PackageReference Update="AspNetCore.HealthChecks.Rabbitmq" Version="$(AspNetCoreHealthCheckVersion)"/>
     <PackageReference Update="AspNetCore.HealthChecks.NpgSql" Version="$(AspNetCoreHealthCheckVersion)"/>
-    <PackageReference Update="AspNetCore.HealthChecks.EventECommerce" Version="5.0.1"/>
+    <PackageReference Update="AspNetCore.HealthChecks.Uris" Version="$(AspNetCoreHealthCheckVersion)"/>
+    <PackageReference Update="AspNetCore.HealthChecks.EventStore" Version="5.0.1"/>
   </ItemGroup>
 
   <ItemGroup>

@@ -40,6 +40,13 @@ static void RegisterServices(WebApplicationBuilder builder)
         }
     });
 
+    // https://www.michaco.net/blog/EnvironmentVariablesAndConfigurationInASPNETCoreApps#environment-variables-and-configuration
+    // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#non-prefixed-environment-variables
+    builder.Configuration.AddEnvironmentVariables("ecommerce_customers_env_");
+
+    // https://github.com/tonerdo/dotnet-env
+    DotNetEnv.Env.TraversePath().Load();
+
     builder.Services.AddControllers(options =>
             options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer())))
         .AddNewtonsoftJson(options =>

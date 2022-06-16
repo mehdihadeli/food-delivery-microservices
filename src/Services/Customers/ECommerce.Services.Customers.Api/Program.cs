@@ -12,6 +12,9 @@ using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Serilog;
 using Serilog.Events;
+using Spectre.Console;
+
+AnsiConsole.Write(new FigletText("Customers Service").Centered().Color(Color.Blue));
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
 // https://benfoster.io/blog/mvc-to-minimal-apis-aspnet-6/

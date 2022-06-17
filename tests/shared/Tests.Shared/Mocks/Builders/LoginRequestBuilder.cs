@@ -1,5 +1,6 @@
 namespace Tests.Shared.Mocks.Builders;
 
+// https://josef.codes/using-records-when-implementing-the-builder-pattern-in-c-sharp/
 public class LoginRequestBuilder
 {
     private string _userNameOrEmail = Constants.Users.Admin.UserName;

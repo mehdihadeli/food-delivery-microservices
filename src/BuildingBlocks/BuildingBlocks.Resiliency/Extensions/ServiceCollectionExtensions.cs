@@ -6,7 +6,7 @@ using Scrutor;
 
 namespace BuildingBlocks.Resiliency.Extensions;
 
-public static class Extensions
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMediaterRetryPolicy(
         IServiceCollection services,

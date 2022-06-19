@@ -59,8 +59,9 @@ services:
   #  eventstore-db
   #######################################################
   eventstore:
-    image: eventstore/
+    image: eventstore/eventstore:latest
     container_name: eventstore
+    restart: on-failure
     environment:
       - EVENTSTORE_CLUSTER_SIZE=1
       - EVENTSTORE_RUN_PROJECTIONS=All
@@ -74,7 +75,8 @@ services:
     ports:
       - "1113:1113"
       - "2113:2113"
-    restart: on-failure
+    networks:
+      - ecommerce
 
 #   #######################################################
 #   #  Redis

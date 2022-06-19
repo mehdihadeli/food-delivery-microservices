@@ -12,6 +12,9 @@ using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Serilog;
 using Serilog.Events;
+using Spectre.Console;
+
+AnsiConsole.Write(new FigletText("Customers Service").Centered().Color(Color.Blue));
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
 // https://benfoster.io/blog/mvc-to-minimal-apis-aspnet-6/
@@ -39,6 +42,13 @@ static void RegisterServices(WebApplicationBuilder builder)
             c.ValidateScopes = true;
         }
     });
+
+    // https://www.michaco.net/blog/EnvironmentVariablesAndConfigurationInASPNETCoreApps#environment-variables-and-configuration
+    // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#non-prefixed-environment-variables
+    builder.Configuration.AddEnvironmentVariables("ecommerce_customers_env_");
+
+    // https://github.com/tonerdo/dotnet-env
+    DotNetEnv.Env.TraversePath().Load();
 
     builder.Services.AddControllers(options =>
             options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer())))

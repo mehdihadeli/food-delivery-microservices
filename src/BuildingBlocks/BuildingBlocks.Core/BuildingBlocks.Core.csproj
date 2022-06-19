@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Bogus" Version="34.0.2" />
+    <PackageReference Include="DotNetEnv" Version="2.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
@@ -35,6 +36,7 @@
     <PackageReference Include="Nito.AsyncEx.Tasks" Version="5.1.2" />
     <PackageReference Include="Scrutor" Version="4.1.0" />
     <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Spectre.Console" Version="0.44.0" />
     <PackageReference Include="SqlStreamStore" Version="1.2.1-alpha.3" />
     <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
     <PackageReference Include="System.Interactive.Async" Version="6.0.1" />

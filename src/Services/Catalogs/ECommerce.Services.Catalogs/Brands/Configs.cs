@@ -1,18 +1,27 @@
 using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Catalogs.Brands.Data;
 
 namespace ECommerce.Services.Catalogs.Brands;
 
-internal static class Configs
+internal class Configs : IModuleConfiguration
 {
-    internal static IServiceCollection AddBrandsServices(this IServiceCollection services)
+    public IServiceCollection AddModuleServices(
+        IServiceCollection services,
+        IConfiguration configuration,
+        IWebHostEnvironment webHostEnvironment)
     {
         services.AddScoped<IDataSeeder, BrandDataSeeder>();
 
         return services;
     }
 
-    internal static IEndpointRouteBuilder MapBrandsEndpoints(this IEndpointRouteBuilder endpoints)
+    public Task<WebApplication> ConfigureModule(WebApplication app)
+    {
+        return Task.FromResult(app);
+    }
+
+    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
         return endpoints;
     }

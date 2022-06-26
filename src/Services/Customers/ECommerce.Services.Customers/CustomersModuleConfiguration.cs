@@ -1,18 +1,16 @@
 using BuildingBlocks.Abstractions.Web.Module;
 using BuildingBlocks.Core;
 using BuildingBlocks.Monitoring;
-using ECommerce.Services.Customers.Customers;
-using ECommerce.Services.Customers.RestockSubscriptions;
 using ECommerce.Services.Customers.Shared.Extensions.ApplicationBuilderExtensions;
 using ECommerce.Services.Customers.Shared.Extensions.ServiceCollectionExtensions;
 
 namespace ECommerce.Services.Customers;
 
-public class CustomersModuleConfiguration : IRootModuleDefinition
+public class CustomersModuleConfiguration : ISharedModulesConfiguration
 {
     public const string CustomerModulePrefixUri = "api/v1/customers";
 
-    public IServiceCollection AddModuleServices(
+    public IServiceCollection AddSharedModuleServices(
         IServiceCollection services,
         IConfiguration configuration,
         IWebHostEnvironment webHostEnvironment)
@@ -21,15 +19,10 @@ public class CustomersModuleConfiguration : IRootModuleDefinition
 
         services.AddStorage(configuration);
 
-        // Add Sub Modules Services
-        services.AddCustomersServices(configuration, webHostEnvironment);
-
-        services.AddRestockSubscriptionsServices(configuration, webHostEnvironment);
-
         return services;
     }
 
-    public async Task<WebApplication> ConfigureModule(WebApplication app)
+    public async Task<WebApplication> ConfigureSharedModule(WebApplication app)
     {
         ServiceActivator.Configure(app.Services);
 
@@ -44,7 +37,7 @@ public class CustomersModuleConfiguration : IRootModuleDefinition
         return app;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public IEndpointRouteBuilder MapSharedModuleEndpoints(IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet("/", (HttpContext context) =>
         {
@@ -54,11 +47,6 @@ public class CustomersModuleConfiguration : IRootModuleDefinition
 
             return $"Customers Service Apis, RequestId: {requestId}";
         }).ExcludeFromDescription();
-
-        // Add Sub Modules Endpoints
-        endpoints.MapCustomersEndpoints();
-
-        endpoints.MapRestockSubscriptionsEndpoints();
 
         return endpoints;
     }

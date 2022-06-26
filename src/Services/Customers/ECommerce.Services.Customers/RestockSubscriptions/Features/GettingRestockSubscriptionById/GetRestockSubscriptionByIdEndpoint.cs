@@ -4,7 +4,7 @@ using BuildingBlocks.Abstractions.Web.MinimalApi;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionById;
 
-public class GetRestockSubscriptionByIdEndpoint : IMinimalEndpointDefinition
+public class GetRestockSubscriptionByIdEndpoint : IMinimalEndpointConfiguration
 {
     public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {

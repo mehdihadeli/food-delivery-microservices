@@ -4,7 +4,7 @@ using BuildingBlocks.Abstractions.Web.MinimalApi;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime;
 
-public class DeleteRestockSubscriptionByTimeEndpoint : IMinimalEndpointDefinition
+public class DeleteRestockSubscriptionByTimeEndpoint : IMinimalEndpointConfiguration
 {
     public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {

@@ -5,13 +5,14 @@ using Microsoft.Extensions.Configuration;
 
 namespace BuildingBlocks.Abstractions.Web.Module;
 
-public interface IModuleDefinition
+public interface ISharedModulesConfiguration
 {
-    IServiceCollection AddModuleServices(
+    IServiceCollection AddSharedModuleServices(
         IServiceCollection services,
         IConfiguration configuration,
         IWebHostEnvironment webHostEnvironment);
 
-    IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints);
-    Task<WebApplication> ConfigureModule(WebApplication app);
+    Task<WebApplication> ConfigureSharedModule(WebApplication app);
+
+    IEndpointRouteBuilder MapSharedModuleEndpoints(IEndpointRouteBuilder endpoints);
 }

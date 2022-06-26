@@ -302,7 +302,12 @@ dotnet_diagnostic.MA0079.severity = Suggestion
 # MA0080: Use a cancellation token using .WithCancellation()
 dotnet_diagnostic.MA0080.severity = Suggestion
 
+# MA0047 - Declare types in namespaces
+# https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0047.md
 dotnet_diagnostic.MA0047.severity = Suggestion
+
+# MA0015 - Specify the parameter name in ArgumentException
+dotnet_diagnostic.MA0015.severity = Suggestion
 
 ##################################################################################
 ## http://pihrt.net/Roslynator/Analyzers

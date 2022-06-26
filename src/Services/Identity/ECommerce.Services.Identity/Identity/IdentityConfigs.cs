@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Identity.Identity.Data;
 using ECommerce.Services.Identity.Identity.Features.GetClaims;
 using ECommerce.Services.Identity.Identity.Features.Login;
@@ -12,13 +13,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ECommerce.Services.Identity.Identity;
 
-internal static class IdentityConfigs
+internal class IdentityConfigs : IModuleConfiguration
 {
     public const string Tag = "Identity";
     public const string IdentityPrefixUri = $"{IdentityModuleConfiguration.IdentityModulePrefixUri}";
 
-    internal static IServiceCollection AddIdentityServices(
-        this IServiceCollection services,
+    public IServiceCollection AddModuleServices(
+        IServiceCollection services,
         IConfiguration configuration,
         IWebHostEnvironment webHostEnvironment)
     {
@@ -32,7 +33,12 @@ internal static class IdentityConfigs
         return services;
     }
 
-    internal static IEndpointRouteBuilder MapIdentityEndpoints(this IEndpointRouteBuilder endpoints)
+    public Task<WebApplication> ConfigureModule(WebApplication app)
+    {
+        return Task.FromResult(app);
+    }
+
+    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet(
             $"{IdentityPrefixUri}/user-role",

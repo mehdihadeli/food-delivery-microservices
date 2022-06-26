@@ -17,27 +17,24 @@ public static class ModuleExtensions
     {
         var assemblies = scanAssemblies.Any() ? scanAssemblies : AppDomain.CurrentDomain.GetAssemblies();
 
-        var modules = assemblies.SelectMany(x => x.GetTypes()).Where(t =>
+        var modulesConfiguration = assemblies.SelectMany(x => x.GetTypes()).Where(t =>
             t.IsClass && !t.IsAbstract && !t.IsGenericType && !t.IsInterface
             && t.GetConstructor(Type.EmptyTypes) != null
-            && typeof(IModuleDefinition).IsAssignableFrom(t)).ToList();
+            && typeof(IModuleConfiguration).IsAssignableFrom(t)).ToList();
 
-        var rootModules = modules.Where(x => x.IsAssignableTo(typeof(IRootModuleDefinition))).ToList();
-        var childModules = modules.Where(x => x.IsAssignableTo(typeof(IRootModuleDefinition)) == false).ToList();
+        var sharedModulesConfiguration = assemblies.SelectMany(x => x.GetTypes()).Where(t =>
+            t.IsClass && !t.IsAbstract && !t.IsGenericType && !t.IsInterface
+            && t.GetConstructor(Type.EmptyTypes) != null
+            && typeof(ISharedModulesConfiguration).IsAssignableFrom(t)).ToList();
 
-        if (rootModules.Count > 1)
+        foreach (var sharedModule in sharedModulesConfiguration)
         {
-            throw new System.Exception(
-                "Can't define more than one `IRootModuleDefinition` or RootModule in the current app domain.");
+            AddModulesDependencyInjection(services, configuration, webHostEnvironment, sharedModule);
         }
 
-        var rootModule = rootModules.SingleOrDefault();
-        if (rootModule is { })
-            AddModulesDependency(services, configuration, webHostEnvironment, rootModule);
-
-        foreach (var module in childModules)
+        foreach (var module in modulesConfiguration)
         {
-            AddModulesDependency(services, configuration, webHostEnvironment, module);
+            AddModulesDependencyInjection(services, configuration, webHostEnvironment, module);
         }
 
         return services;
@@ -54,56 +51,38 @@ public static class ModuleExtensions
             scanAssemblies);
     }
 
-    public static IServiceCollection AddModuleServices<TModule>(this WebApplicationBuilder webApplicationBuilder)
-        where TModule : class, IModuleDefinition
-    {
-        return AddModuleServices<TModule>(
-            webApplicationBuilder.Services,
-            webApplicationBuilder.Configuration,
-            webApplicationBuilder.Environment);
-    }
-
-    public static IServiceCollection AddModuleServices<TModule>(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment)
-        where TModule : class, IModuleDefinition
-    {
-        if (!typeof(TModule).IsAssignableTo(typeof(IModuleDefinition)))
-        {
-            throw new ArgumentException(
-                $"{nameof(TModule)} must be implemented {nameof(IModuleDefinition)} or {nameof(IRootModuleDefinition)}");
-        }
-
-        AddModulesDependency(services, configuration, webHostEnvironment, typeof(TModule));
-
-        return services;
-    }
-
-    private static void AddModulesDependency(
+    private static void AddModulesDependencyInjection(
         IServiceCollection services,
         IConfiguration configuration,
         IWebHostEnvironment webHostEnvironment,
         Type module)
     {
-        var instantiatedType = (IModuleDefinition)Activator.CreateInstance(module)!;
-        instantiatedType.AddModuleServices(services, configuration, webHostEnvironment);
-
-        if (instantiatedType is IRootModuleDefinition rootInstantiateType)
-            services.AddSingleton(rootInstantiateType);
-        else
+        if (module.IsAssignableTo(typeof(IModuleConfiguration)))
+        {
+            var instantiatedType = (IModuleConfiguration)Activator.CreateInstance(module)!;
+            instantiatedType.AddModuleServices(services, configuration, webHostEnvironment);
             services.AddSingleton(instantiatedType);
+        }
+
+        if (module.IsAssignableTo(typeof(ISharedModulesConfiguration)))
+        {
+            var instantiatedType = (ISharedModulesConfiguration)Activator.CreateInstance(module)!;
+            instantiatedType.AddSharedModuleServices(services, configuration, webHostEnvironment);
+            services.AddSingleton(instantiatedType);
+        }
     }
 
     public static async Task<WebApplication> ConfigureModules(this WebApplication app)
     {
-        var childModules = app.Services.GetServices<IModuleDefinition>();
-        var rootModule = app.Services.GetService<IRootModuleDefinition>();
+        var moduleConfigurations = app.Services.GetServices<IModuleConfiguration>();
+        var sharedModulesConfigurations = app.Services.GetServices<ISharedModulesConfiguration>();
 
-        if (rootModule is { })
-            await rootModule.ConfigureModule(app);
+        foreach (var sharedModule in sharedModulesConfigurations)
+        {
+            await sharedModule.ConfigureSharedModule(app);
+        }
 
-        foreach (var module in childModules)
+        foreach (var module in moduleConfigurations)
         {
             await module.ConfigureModule(app);
         }
@@ -111,39 +90,20 @@ public static class ModuleExtensions
         return app;
     }
 
-    public static async Task<WebApplication> ConfigureModule<TModule>(
-        this WebApplication app)
-        where TModule : class, IModuleDefinition
+    public static IEndpointRouteBuilder MapModulesEndpoints(this IEndpointRouteBuilder builder)
     {
-        var module = app.Services.GetRequiredService<TModule>();
-        await module.ConfigureModule(app);
+        var modules = builder.ServiceProvider.GetServices<IModuleConfiguration>();
+        var sharedModules = builder.ServiceProvider.GetServices<ISharedModulesConfiguration>();
 
-        return app;
-    }
-
-    public static IEndpointRouteBuilder MapModulesEndpoints(
-        this IEndpointRouteBuilder builder,
-        params Assembly[] scanAssemblies)
-    {
-        var modules = builder.ServiceProvider.GetServices<IModuleDefinition>();
-        var rootModule = builder.ServiceProvider.GetService<IRootModuleDefinition>();
-
-        if (rootModule is { })
-            rootModule.MapEndpoints(builder);
+        foreach (var module in sharedModules)
+        {
+            module.MapSharedModuleEndpoints(builder);
+        }
 
         foreach (var module in modules)
         {
             module.MapEndpoints(builder);
         }
-
-        return builder;
-    }
-
-    public static IEndpointRouteBuilder MapModuleEndpoints<TModule>(this IEndpointRouteBuilder builder)
-        where TModule : class, IModuleDefinition
-    {
-        var module = builder.ServiceProvider.GetRequiredService<TModule>();
-        module.MapEndpoints(builder);
 
         return builder;
     }

@@ -1,20 +1,28 @@
 using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Catalogs.Categories.Data;
 
 namespace ECommerce.Services.Catalogs.Categories;
 
-internal static class Configs
+internal class Configs : IModuleConfiguration
 {
-    internal static IServiceCollection AddCategoriesServices(this IServiceCollection services)
+    public IServiceCollection AddModuleServices(
+        IServiceCollection services,
+        IConfiguration configuration,
+        IWebHostEnvironment webHostEnvironment)
     {
         services.AddScoped<IDataSeeder, CategoryDataSeeder>();
 
         return services;
     }
 
-    internal static IEndpointRouteBuilder MapCategoriesEndpoints(this IEndpointRouteBuilder endpoints)
+    public Task<WebApplication> ConfigureModule(WebApplication app)
     {
+        return Task.FromResult(app);
+    }
 
+    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    {
         return endpoints;
     }
 }

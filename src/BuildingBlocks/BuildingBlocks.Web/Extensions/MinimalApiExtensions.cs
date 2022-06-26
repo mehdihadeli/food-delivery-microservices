@@ -21,11 +21,11 @@ public static class MinimalApiExtensions
         var endpoints = assemblies.SelectMany(x => x.GetTypes()).Where(t =>
             t.IsClass && !t.IsAbstract && !t.IsGenericType && !t.IsInterface
             && t.GetConstructor(Type.EmptyTypes) != null
-            && typeof(IMinimalEndpointDefinition).IsAssignableFrom(t)).ToList();
+            && typeof(IMinimalEndpointConfiguration).IsAssignableFrom(t)).ToList();
 
         foreach (var endpoint in endpoints)
         {
-            var instantiatedType = (IMinimalEndpointDefinition)Activator.CreateInstance(endpoint)!;
+            var instantiatedType = (IMinimalEndpointConfiguration)Activator.CreateInstance(endpoint)!;
             instantiatedType.MapEndpoint(builder);
         }
 

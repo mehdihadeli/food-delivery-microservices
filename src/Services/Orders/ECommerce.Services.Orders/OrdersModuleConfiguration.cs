@@ -5,11 +5,11 @@ using ECommerce.Services.Orders.Shared.Extensions.ServiceCollectionExtensions;
 
 namespace ECommerce.Services.Customers;
 
-public class OrdersModuleConfiguration : IRootModuleDefinition
+public class OrdersModuleConfiguration : ISharedModulesConfiguration
 {
     public const string OrderModulePrefixUri = "api/v1/orders";
 
-    public IServiceCollection AddModuleServices(
+    public IServiceCollection AddSharedModuleServices(
         IServiceCollection services,
         IConfiguration configuration,
         IWebHostEnvironment webHostEnvironment)
@@ -18,11 +18,10 @@ public class OrdersModuleConfiguration : IRootModuleDefinition
 
         services.AddStorage(configuration);
 
-        // Add Sub Modules Services
         return services;
     }
 
-    public async Task<WebApplication> ConfigureModule(WebApplication app)
+    public async Task<WebApplication> ConfigureSharedModule(WebApplication app)
     {
         if (app.Environment.IsEnvironment("test") == false)
             app.UseMonitoring();
@@ -35,7 +34,7 @@ public class OrdersModuleConfiguration : IRootModuleDefinition
         return app;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public IEndpointRouteBuilder MapSharedModuleEndpoints(IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet("/", (HttpContext context) =>
         {
@@ -46,7 +45,6 @@ public class OrdersModuleConfiguration : IRootModuleDefinition
             return $"Orders Service Apis, RequestId: {requestId}";
         }).ExcludeFromDescription();
 
-        // Add Sub Modules Endpoints
         return endpoints;
     }
 }

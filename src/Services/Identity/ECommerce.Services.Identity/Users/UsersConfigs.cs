@@ -1,28 +1,30 @@
+using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Identity.Users.Features.GettingUerByEmail;
 using ECommerce.Services.Identity.Users.Features.GettingUserById;
 using ECommerce.Services.Identity.Users.Features.RegisteringUser;
 using ECommerce.Services.Identity.Users.Features.UpdatingUserState;
-using Humanizer;
-using MassTransit;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
-using RabbitMQ.Client;
 
 namespace ECommerce.Services.Identity.Users;
 
-internal static class UsersConfigs
+internal class UsersConfigs : IModuleConfiguration
 {
     public const string Tag = "Users";
     public const string UsersPrefixUri = $"{IdentityModuleConfiguration.IdentityModulePrefixUri}/users";
 
-    internal static IServiceCollection AddUsersServices(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    public IServiceCollection AddModuleServices(
+        IServiceCollection services,
+        IConfiguration configuration,
+        IWebHostEnvironment webHostEnvironment)
     {
         return services;
     }
 
-    internal static IEndpointRouteBuilder MapUsersEndpoints(this IEndpointRouteBuilder endpoints)
+    public Task<WebApplication> ConfigureModule(WebApplication app)
+    {
+        return Task.FromResult(app);
+    }
+
+    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
         endpoints.MapRegisterNewUserEndpoint();
         endpoints.MapUpdateUserStateEndpoint();

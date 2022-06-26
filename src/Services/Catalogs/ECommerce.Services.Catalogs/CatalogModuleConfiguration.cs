@@ -1,20 +1,30 @@
 using BuildingBlocks.Abstractions.Web.Module;
 using BuildingBlocks.Core;
 using BuildingBlocks.Monitoring;
-using ECommerce.Services.Catalogs.Brands;
-using ECommerce.Services.Catalogs.Categories;
-using ECommerce.Services.Catalogs.Products;
 using ECommerce.Services.Catalogs.Shared.Extensions.ApplicationBuilderExtensions;
 using ECommerce.Services.Catalogs.Shared.Extensions.ServiceCollectionExtensions;
-using ECommerce.Services.Catalogs.Suppliers;
 
 namespace ECommerce.Services.Catalogs;
 
-public class CatalogModuleConfiguration : IRootModuleDefinition
+public class CatalogModuleConfiguration : ISharedModulesConfiguration
 {
     public const string CatalogModulePrefixUri = "api/v1/catalogs";
 
-    public IServiceCollection AddModuleServices(
+    public IEndpointRouteBuilder MapSharedModuleEndpoints(IEndpointRouteBuilder endpoints)
+    {
+        endpoints.MapGet("/", (HttpContext context) =>
+        {
+            var requestId = context.Request.Headers.TryGetValue("X-Request-Id", out var requestIdHeader)
+                ? requestIdHeader.FirstOrDefault()
+                : string.Empty;
+
+            return $"Catalogs Service Apis, RequestId: {requestId}";
+        }).ExcludeFromDescription();
+
+        return endpoints;
+    }
+
+    public IServiceCollection AddSharedModuleServices(
         IServiceCollection services,
         IConfiguration configuration,
         IWebHostEnvironment webHostEnvironment)
@@ -23,17 +33,10 @@ public class CatalogModuleConfiguration : IRootModuleDefinition
 
         services.AddStorage(configuration);
 
-        // Add Sub Modules Services
-        services.AddBrandsServices();
-        services.AddCategoriesServices();
-        services.AddSuppliersServices();
-
-        services.AddProductsServices();
-
         return services;
     }
 
-    public async Task<WebApplication> ConfigureModule(WebApplication app)
+    public async Task<WebApplication> ConfigureSharedModule(WebApplication app)
     {
         ServiceActivator.Configure(app.Services);
 
@@ -46,22 +49,5 @@ public class CatalogModuleConfiguration : IRootModuleDefinition
         await app.UseInfrastructure(app.Logger);
 
         return app;
-    }
-
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
-    {
-        endpoints.MapGet("/", (HttpContext context) =>
-        {
-            var requestId = context.Request.Headers.TryGetValue("X-Request-Id", out var requestIdHeader)
-                ? requestIdHeader.FirstOrDefault()
-                : string.Empty;
-
-            return $"Catalogs Service Apis, RequestId: {requestId}";
-        }).ExcludeFromDescription();
-
-        // Add Sub Modules Endpoints
-        endpoints.MapProductsEndpoints();
-
-        return endpoints;
     }
 }

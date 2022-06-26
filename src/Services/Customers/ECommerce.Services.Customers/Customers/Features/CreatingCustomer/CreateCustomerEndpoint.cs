@@ -4,7 +4,7 @@ using BuildingBlocks.Abstractions.Web.MinimalApi;
 
 namespace ECommerce.Services.Customers.Customers.Features.CreatingCustomer;
 
-public class CreateCustomerEndpoint : IMinimalEndpointDefinition
+public class CreateCustomerEndpoint : IMinimalEndpointConfiguration
 {
     public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {

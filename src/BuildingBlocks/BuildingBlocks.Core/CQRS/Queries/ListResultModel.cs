@@ -1,4 +1,4 @@
-namespace BuildingBlocks.Core.Types;
+namespace BuildingBlocks.Core.CQRS.Queries;
 
 public record ListResultModel<T>(List<T> Items, long TotalItems, int Page, int PageSize)
     where T : notnull

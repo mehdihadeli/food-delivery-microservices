@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using BuildingBlocks.Abstractions.CQRS;
+using BuildingBlocks.Core.CQRS.Queries;
 using BuildingBlocks.Core.Linq;
 using BuildingBlocks.Core.Types;
 using Microsoft.EntityFrameworkCore;

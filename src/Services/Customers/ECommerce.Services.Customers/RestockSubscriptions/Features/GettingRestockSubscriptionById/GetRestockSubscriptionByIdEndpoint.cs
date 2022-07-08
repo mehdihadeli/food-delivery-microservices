@@ -30,8 +30,12 @@ public class GetRestockSubscriptionByIdEndpoint : IMinimalEndpointConfiguration
     {
         Guard.Against.Null(id, nameof(id));
 
-        var result = await queryProcessor.SendAsync(new GetRestockSubscriptionById(id), cancellationToken);
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(GetRestockSubscriptionByIdEndpoint)))
+        using (Serilog.Context.LogContext.PushProperty("RestockSubscriptionId", id))
+        {
+            var result = await queryProcessor.SendAsync(new GetRestockSubscriptionById(id), cancellationToken);
 
-        return Results.Ok(result);
+            return Results.Ok(result);
+        }
     }
 }

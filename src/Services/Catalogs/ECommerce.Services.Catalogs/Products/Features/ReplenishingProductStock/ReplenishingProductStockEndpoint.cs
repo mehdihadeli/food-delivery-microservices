@@ -28,8 +28,12 @@ public static class ReplenishingProductStockEndpoint
         ICommandProcessor commandProcessor,
         CancellationToken cancellationToken)
     {
-        await commandProcessor.SendAsync(new ReplenishingProductStock(productId, quantity), cancellationToken);
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(ReplenishingProductStockEndpoint)))
+        using (Serilog.Context.LogContext.PushProperty("ProductId", productId))
+        {
+            await commandProcessor.SendAsync(new ReplenishingProductStock(productId, quantity), cancellationToken);
 
-        return Results.NoContent();
+            return Results.NoContent();
+        }
     }
 }

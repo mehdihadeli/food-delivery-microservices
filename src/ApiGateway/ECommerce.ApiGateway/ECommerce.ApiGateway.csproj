@@ -12,5 +12,9 @@
     <PackageReference Include="Serilog.Sinks.SpectreConsole" Version="0.1.1" />
     <PackageReference Include="Yarp.ReverseProxy" Version="1.0.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Logging\BuildingBlocks.Logging.csproj" />
+  </ItemGroup>
   
 </Project>

@@ -8,7 +8,7 @@ using Serilog.Sinks.SpectreConsole;
 
 namespace BuildingBlocks.Logging;
 
-public static class Extensions
+public static class RegistrationExtensions
 {
     public static IHostBuilder AddCustomSerilog(
         this IHostBuilder builder,

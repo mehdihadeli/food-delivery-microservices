@@ -6,7 +6,7 @@ namespace ECommerce.Services.Catalogs.Products.Features.UpdatingProduct;
 // PUT api/v1/catalog/products/{id}
 public static class UpdateProductEndpoint
 {
-    internal static IEndpointRouteBuilder MapCreateProductsEndpoint(this IEndpointRouteBuilder endpoints)
+    internal static IEndpointRouteBuilder MapUpdateProductEndpoint(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost(
                 $"{ProductsConfigs.ProductsPrefixUri}/{{id}}",
@@ -44,8 +44,12 @@ public static class UpdateProductEndpoint
             request.BrandId,
             request.Description);
 
-        await commandProcessor.SendAsync(command, cancellationToken);
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(UpdateProductEndpoint)))
+        using (Serilog.Context.LogContext.PushProperty("ProductId", command.Id))
+        {
+            await commandProcessor.SendAsync(command, cancellationToken);
 
-        return Results.NoContent();
+            return Results.NoContent();
+        }
     }
 }

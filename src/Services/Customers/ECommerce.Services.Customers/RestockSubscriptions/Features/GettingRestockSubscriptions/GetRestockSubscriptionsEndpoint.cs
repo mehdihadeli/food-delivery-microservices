@@ -26,7 +26,7 @@ public class GetRestockSubscriptionsEndpoint : EndpointBaseAsync
         Summary = "Get Restock Subscriptions.",
         Description = "Get Restock Subscriptions.",
         OperationId = "GetRestockSubscriptions",
-        Tags = new[] { RestockSubscriptionsConfigs.Tag })]
+        Tags = new[] {RestockSubscriptionsConfigs.Tag})]
     [Authorize(Roles = CustomersConstants.Role.Admin)]
     public override async Task<ActionResult<GetRestockSubscriptionsResult>> HandleAsync(
         [FromQuery] GetRestockSubscriptionsRequest? request,
@@ -34,20 +34,23 @@ public class GetRestockSubscriptionsEndpoint : EndpointBaseAsync
     {
         Guard.Against.Null(request, nameof(request));
 
-        var result = await _queryProcessor.SendAsync(
-            new GetRestockSubscriptions
-            {
-                Page = request.Page,
-                Sorts = request.Sorts,
-                PageSize = request.PageSize,
-                Filters = request.Filters,
-                Includes = request.Includes,
-                Emails = request.Emails,
-                From = request.From,
-                To = request.To
-            },
-            cancellationToken);
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(GetRestockSubscriptionsEndpoint)))
+        {
+            var result = await _queryProcessor.SendAsync(
+                new GetRestockSubscriptions
+                {
+                    Page = request.Page,
+                    Sorts = request.Sorts,
+                    PageSize = request.PageSize,
+                    Filters = request.Filters,
+                    Includes = request.Includes,
+                    Emails = request.Emails,
+                    From = request.From,
+                    To = request.To
+                },
+                cancellationToken);
 
-        return Ok(result);
+            return Ok(result);
+        }
     }
 }

@@ -1,6 +1,7 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using SerilogTimings;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime;
 
@@ -21,7 +22,7 @@ public class DeleteRestockSubscriptionByTimeEndpoint : IMinimalEndpointConfigura
 
     [Authorize(Roles = CustomersConstants.Role.Admin)]
     private static async Task<IResult> DeleteRestockSubscriptionByTime(
-        [FromBody]DeleteRestockSubscriptionByTimeRequest request,
+        [FromBody] DeleteRestockSubscriptionByTimeRequest request,
         ICommandProcessor commandProcessor,
         CancellationToken cancellationToken)
     {
@@ -29,7 +30,10 @@ public class DeleteRestockSubscriptionByTimeEndpoint : IMinimalEndpointConfigura
 
         var command = new DeleteRestockSubscriptionsByTime(request.From, request.To);
 
-        await commandProcessor.SendAsync(command, cancellationToken);
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(DeleteRestockSubscriptionByTimeEndpoint)))
+        {
+            await commandProcessor.SendAsync(command, cancellationToken);
+        }
 
         return Results.NoContent();
     }

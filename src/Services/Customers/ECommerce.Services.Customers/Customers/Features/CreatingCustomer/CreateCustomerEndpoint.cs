@@ -1,6 +1,7 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using SerilogTimings;
 
 namespace ECommerce.Services.Customers.Customers.Features.CreatingCustomer;
 
@@ -28,8 +29,14 @@ public class CreateCustomerEndpoint : IMinimalEndpointConfiguration
 
         var command = new CreateCustomer(request.Email);
 
-        var result = await commandProcessor.SendAsync(command, cancellationToken);
+        // https://github.com/serilog/serilog/wiki/Enrichment
+        // https://dotnetdocs.ir/Post/34/categorizing-logs-with-serilog-in-aspnet-core
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(CreateCustomerEndpoint)))
+        using (Serilog.Context.LogContext.PushProperty("CustomerId", command.Id))
+        {
+            var result = await commandProcessor.SendAsync(command, cancellationToken);
 
-        return Results.Created($"{CustomersConfigs.CustomersPrefixUri}/{result.CustomerId}", result);
+            return Results.Created($"{CustomersConfigs.CustomersPrefixUri}/{result.CustomerId}", result);
+        }
     }
 }

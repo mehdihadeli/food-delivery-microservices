@@ -30,8 +30,14 @@ public class GetCustomerByIdEndpointEndpoint : IMinimalEndpointConfiguration
     {
         Guard.Against.Null(id, nameof(id));
 
-        var result = await queryProcessor.SendAsync(new GetCustomerById(id), cancellationToken);
+        // https://github.com/serilog/serilog/wiki/Enrichment
+        // https://dotnetdocs.ir/Post/34/categorizing-logs-with-serilog-in-aspnet-core
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(GetCustomerByIdEndpointEndpoint)))
+        using (Serilog.Context.LogContext.PushProperty("CustomerId", id))
+        {
+            var result = await queryProcessor.SendAsync(new GetCustomerById(id), cancellationToken);
 
-        return Results.Ok(result);
+            return Results.Ok(result);
+        }
     }
 }

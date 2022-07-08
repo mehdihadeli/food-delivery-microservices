@@ -33,18 +33,20 @@ public class GetProductsEndpoint : EndpointBaseAsync
     {
         Guard.Against.Null(request, nameof(request));
 
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(GetProductsEndpoint)))
+        {
+            var result = await _queryProcessor.SendAsync(
+                new GetProducts
+                {
+                    Page = request.Page,
+                    Sorts = request.Sorts,
+                    PageSize = request.PageSize,
+                    Filters = request.Filters,
+                    Includes = request.Includes,
+                },
+                cancellationToken);
 
-        var result = await _queryProcessor.SendAsync(
-            new GetProducts
-            {
-                Page = request.Page,
-                Sorts = request.Sorts,
-                PageSize = request.PageSize,
-                Filters = request.Filters,
-                Includes = request.Includes,
-            },
-            cancellationToken);
-
-        return Ok(result);
+            return Ok(result);
+        }
     }
 }

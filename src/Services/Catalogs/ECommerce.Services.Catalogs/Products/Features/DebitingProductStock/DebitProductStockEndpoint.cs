@@ -28,8 +28,12 @@ public static class DebitProductStockEndpoint
         ICommandProcessor commandProcessor,
         CancellationToken cancellationToken)
     {
-        await commandProcessor.SendAsync(new DebitProductStock(productId, quantity), cancellationToken);
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(DebitProductStockEndpoint)))
+        using (Serilog.Context.LogContext.PushProperty("ProductId", productId))
+        {
+            await commandProcessor.SendAsync(new DebitProductStock(productId, quantity), cancellationToken);
 
-        return Results.NoContent();
+            return Results.NoContent();
+        }
     }
 }

@@ -1,6 +1,8 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime;
+using SerilogTimings;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription;
 
@@ -29,10 +31,14 @@ public class CreateRestockSubscriptionEndpoint : IMinimalEndpointConfiguration
 
         var command = new CreateRestockSubscription(request.CustomerId, request.ProductId, request.Email);
 
-        var result = await commandProcessor.SendAsync(command, cancellationToken);
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(CreateRestockSubscriptionEndpoint)))
+        using (Serilog.Context.LogContext.PushProperty("RestockSubscriptionId", command.Id))
+        {
+            var result = await commandProcessor.SendAsync(command, cancellationToken);
 
-        return Results.Created(
-            $"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}/{result.RestockSubscription.Id}",
-            result);
+            return Results.Created(
+                $"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}/{result.RestockSubscription.Id}",
+                result);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using SerilogTimings;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription;
 
@@ -26,8 +27,12 @@ public class DeleteRestockSubscriptionEndpoint : IMinimalEndpointConfiguration
     {
         var command = new DeleteRestockSubscription(id);
 
-        await commandProcessor.SendAsync(command, cancellationToken);
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(DeleteRestockSubscriptionEndpoint)))
+        using (Serilog.Context.LogContext.PushProperty("RestockSubscriptionId", command.Id))
+        {
+            await commandProcessor.SendAsync(command, cancellationToken);
 
-        return Results.NoContent();
+            return Results.NoContent();
+        }
     }
 }

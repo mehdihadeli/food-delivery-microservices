@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace BuildingBlocks.Logging;
 
@@ -20,32 +21,45 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         CancellationToken cancellationToken,
         RequestHandlerDelegate<TResponse> next)
     {
-        const string prefix = nameof(LoggingBehavior<TRequest, TResponse>);
-
-        _logger.LogInformation(
-            "[{Prefix}] Handle request={X-RequestData} and response={X-ResponseData}",
-            prefix,
-            typeof(TRequest).Name,
-            typeof(TResponse).Name);
-
-        var timer = new Stopwatch();
-        timer.Start();
-
-        var response = await next();
-
-        timer.Stop();
-        var timeTaken = timer.Elapsed;
-        if (timeTaken.Seconds > 3)
+        // https://dotnetdocs.ir/Post/34/categorizing-logs-with-serilog-in-aspnet-core
+        using (Serilog.Context.LogContext.PushProperty("Request Object", JsonConvert.SerializeObject(request)))
         {
-            _logger.LogWarning(
-                "[{Perf-Possible}] The request {X-RequestData} took {TimeTaken} seconds.",
+            const string prefix = nameof(LoggingBehavior<TRequest, TResponse>);
+
+            _logger.LogInformation(
+                "[{Prefix}] Handle request={X-RequestData} and response={X-ResponseData}",
                 prefix,
                 typeof(TRequest).Name,
-                timeTaken.Seconds);
-        }
+                typeof(TResponse).Name);
 
-        _logger.LogInformation("[{Prefix}] Handled {X-RequestData}", prefix, typeof(TRequest).Name);
-        return response;
+            var timer = new Stopwatch();
+            timer.Start();
+
+            var response = await next();
+
+            timer.Stop();
+            var timeTaken = timer.Elapsed;
+            if (timeTaken.Seconds > 3)
+            {
+                _logger.LogWarning(
+                    "[{Perf-Possible}] The request {X-RequestData} took {TimeTaken} seconds.",
+                    prefix,
+                    typeof(TRequest).Name,
+                    timeTaken.Seconds);
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "[{Perf-Possible}] The request {X-RequestData} took {TimeTaken} seconds.",
+                    prefix,
+                    typeof(TRequest).Name,
+                    timeTaken.Seconds);
+            }
+
+            _logger.LogInformation("[{Prefix}] Handled {X-RequestData}", prefix, typeof(TRequest).Name);
+
+            return response;
+        }
     }
 }
 

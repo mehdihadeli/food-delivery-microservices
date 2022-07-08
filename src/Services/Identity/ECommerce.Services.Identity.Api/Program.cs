@@ -5,6 +5,7 @@ using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Extensions.ServiceCollectionExtensions;
+using BuildingBlocks.Web.Middlewares;
 using ECommerce.Services.Identity;
 using ECommerce.Services.Identity.Api.Extensions.ApplicationBuilderExtensions;
 using ECommerce.Services.Identity.Api.Extensions.ServiceCollectionExtensions;
@@ -113,7 +114,8 @@ static async Task ConfigureApplication(WebApplication app)
     }
 
     app.UseProblemDetails();
-    app.UseSerilogRequestLogging();
+    app.UseSerilogRequestLogging(opts => opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest);
+    app.UseRequestLogContextMiddleware();
 
     app.UseRouting();
     app.UseAppCors();

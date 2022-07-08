@@ -26,10 +26,13 @@ public static class GetProductsViewEndpoint
         int page = 1,
         int pageSize = 20)
     {
-        var result = await queryProcessor.SendAsync(
-            new GetProductsView { Page = page, PageSize = pageSize },
-            cancellationToken);
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(GetProductsViewEndpoint)))
+        {
+            var result = await queryProcessor.SendAsync(
+                new GetProductsView {Page = page, PageSize = pageSize},
+                cancellationToken);
 
-        return Results.Ok(result);
+            return Results.Ok(result);
+        }
     }
 }

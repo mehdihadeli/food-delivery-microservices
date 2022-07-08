@@ -31,8 +31,12 @@ public static class CreateProductEndpoint
         Guard.Against.Null(request, nameof(request));
 
         var command = mapper.Map<CreateProduct>(request);
-        var result = await commandProcessor.SendAsync(command, cancellationToken);
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(CreateProductEndpoint)))
+        using (Serilog.Context.LogContext.PushProperty("ProductId", command.Id))
+        {
+            var result = await commandProcessor.SendAsync(command, cancellationToken);
 
-        return Results.CreatedAtRoute("GetProductById", new { id = result.Product.Id }, result);
+            return Results.CreatedAtRoute("GetProductById", new {id = result.Product.Id}, result);
+        }
     }
 }

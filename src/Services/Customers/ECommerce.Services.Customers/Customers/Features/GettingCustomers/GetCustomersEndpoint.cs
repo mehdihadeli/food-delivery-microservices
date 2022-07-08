@@ -33,17 +33,22 @@ public class GetCustomersEndpoint : EndpointBaseAsync
     {
         Guard.Against.Null(request, nameof(request));
 
-        var result = await _queryProcessor.SendAsync(
-            new GetCustomers
-            {
-                Filters = request.Filters,
-                Includes = request.Includes,
-                Page = request.Page,
-                Sorts = request.Sorts,
-                PageSize = request.PageSize
-            },
-            cancellationToken);
+        // https://github.com/serilog/serilog/wiki/Enrichment
+        // https://dotnetdocs.ir/Post/34/categorizing-logs-with-serilog-in-aspnet-core
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(GetCustomersEndpoint)))
+        {
+            var result = await _queryProcessor.SendAsync(
+                new GetCustomers
+                {
+                    Filters = request.Filters,
+                    Includes = request.Includes,
+                    Page = request.Page,
+                    Sorts = request.Sorts,
+                    PageSize = request.PageSize
+                },
+                cancellationToken);
 
-        return Ok(result);
+            return Ok(result);
+        }
     }
 }

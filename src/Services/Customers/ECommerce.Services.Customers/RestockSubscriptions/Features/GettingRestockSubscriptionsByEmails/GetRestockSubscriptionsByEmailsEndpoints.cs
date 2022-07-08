@@ -34,8 +34,12 @@ public class GetRestockSubscriptionsByEmailsEndpoints : EndpointBaseSync
     {
         Guard.Against.Null(request, nameof(request));
 
-        var result = _queryProcessor.SendAsync(new GetRestockSubscriptionsByEmails(request.Emails));
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(GetRestockSubscriptionsByEmailsEndpoints)))
+        using (Serilog.Context.LogContext.PushProperty("Emails", request.Emails))
+        {
+            var result = _queryProcessor.SendAsync(new GetRestockSubscriptionsByEmails(request.Emails));
 
-        return Ok(result);
+            return Ok(result);
+        }
     }
 }

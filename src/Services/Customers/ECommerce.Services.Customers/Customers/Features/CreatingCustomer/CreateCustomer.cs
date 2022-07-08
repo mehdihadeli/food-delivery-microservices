@@ -47,6 +47,8 @@ public class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCusto
 
     public async Task<CreateCustomerResult> Handle(CreateCustomer command, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Creating customer");
+
         Guard.Against.Null(command, nameof(command));
 
         if (_customersDbContext.Customers.Any(x => x.Email == command.Email))

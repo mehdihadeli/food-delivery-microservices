@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using BuildingBlocks.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SpectreConsole;
@@ -43,7 +44,7 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging(opts => opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest);
 
 app.MapGet("/", async (HttpContext context) =>
 {

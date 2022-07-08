@@ -7,6 +7,7 @@ using ECommerce.Services.Catalogs.Products.Features.DebitingProductStock;
 using ECommerce.Services.Catalogs.Products.Features.GettingProductById;
 using ECommerce.Services.Catalogs.Products.Features.GettingProductsView;
 using ECommerce.Services.Catalogs.Products.Features.ReplenishingProductStock;
+using ECommerce.Services.Catalogs.Products.Features.UpdatingProduct;
 
 namespace ECommerce.Services.Catalogs.Products;
 
@@ -34,6 +35,7 @@ internal class ProductsConfigs : IModuleConfiguration
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
         return endpoints.MapCreateProductsEndpoint()
+            .MapUpdateProductEndpoint()
             .MapDebitProductStockEndpoint()
             .MapReplenishProductStockEndpoint()
             .MapGetProductByIdEndpoint()

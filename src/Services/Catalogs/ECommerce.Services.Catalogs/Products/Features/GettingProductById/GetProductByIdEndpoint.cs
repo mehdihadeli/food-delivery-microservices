@@ -30,8 +30,12 @@ public static class GetProductByIdEndpoint
     {
         Guard.Against.Null(id, nameof(id));
 
-        var result = await queryProcessor.SendAsync(new GetProductById(id), cancellationToken);
+        using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(GetProductByIdEndpoint)))
+        using (Serilog.Context.LogContext.PushProperty("ProductId", id))
+        {
+            var result = await queryProcessor.SendAsync(new GetProductById(id), cancellationToken);
 
-        return Results.Ok(result);
+            return Results.Ok(result);
+        }
     }
 }

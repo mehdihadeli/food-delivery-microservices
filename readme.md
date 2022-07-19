@@ -1,4 +1,4 @@
-# 🛍️ ECommerece Microservices Sample
+# 🛍️ ECommerece Microservices
 [![.NET](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml/badge.svg?branch=main&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml)
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod&style=flat-square&color=ff69b4)](https://gitpod.io/#https://github.com/mehdihadeli/ecommerce-microservices-sample)
 

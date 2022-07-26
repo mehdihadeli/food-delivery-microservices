@@ -472,3 +472,8 @@ The application is in development status. You are feel free to submit pull reque
 
 ## License
 The project is under [MIT license](https://github.com/mehdihadeli/ecommerce-microservices-sample/blob/main/LICENSE).
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=mehdihadeli/ecommerce-microservices&type=Date)](https://star-history.com/#mehdihadeli/ecommerce-microservices&Date)
+

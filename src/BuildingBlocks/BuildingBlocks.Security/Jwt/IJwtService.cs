@@ -5,7 +5,7 @@ namespace BuildingBlocks.Security.Jwt;
 
 public interface IJwtService
 {
-    string GenerateJwtToken(
+    GenerateTokenResult GenerateJwtToken(
         string userName,
         string email,
         string userId,

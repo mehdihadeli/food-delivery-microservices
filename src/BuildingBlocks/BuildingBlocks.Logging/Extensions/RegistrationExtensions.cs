@@ -41,24 +41,20 @@ public static class RegistrationExtensions
 
             if (context.HostingEnvironment.IsDevelopment())
             {
-                loggerConfiguration.WriteTo.SpectreConsole(
+                loggerConfiguration.WriteTo.Async(writeTo => writeTo.SpectreConsole(
                     loggerOptions?.LogTemplate ??
                     "{Timestamp:HH:mm:ss} [{Level:u4}] {Message:lj}{NewLine}{Exception}",
-                    level);
+                    level));
             }
             else
             {
                 if (!string.IsNullOrEmpty(loggerOptions?.ElasticSearchUrl))
-                    loggerConfiguration.WriteTo.Elasticsearch(loggerOptions.ElasticSearchUrl);
+                    loggerConfiguration.WriteTo.Async(writeTo => writeTo.Elasticsearch(loggerOptions.ElasticSearchUrl));
+
                 if (!string.IsNullOrEmpty(loggerOptions?.SeqUrl))
                 {
-                    loggerConfiguration.WriteTo.Seq(loggerOptions.SeqUrl);
+                    loggerConfiguration.WriteTo.Async(writeTo => writeTo.Seq(loggerOptions.SeqUrl));
                 }
-
-                loggerConfiguration.WriteTo.SpectreConsole(
-                    loggerOptions?.LogTemplate ??
-                    "{Timestamp:HH:mm:ss} [{Level:u4}] {Message:lj}{NewLine}{Exception}",
-                    level);
             }
         });
     }

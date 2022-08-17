@@ -1,4 +1,5 @@
 using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Security;
 using BuildingBlocks.Validation;
 using Hellang.Middleware.ProblemDetails;
 using Newtonsoft.Json;
@@ -82,6 +83,8 @@ public static class ServiceCollectionExtensions
                 Detail = ex.Message,
                 Type = "https://somedomain/application-error"
             });
+            x.Map<ForbiddenException>(ex => new ForbiddenProblemDetails(ex.Message));
+            x.Map<UnAuthorizedException>(ex => new UnauthorizedProblemDetails(ex.Message));
             x.Map<IdentityException>(ex =>
             {
                 var pd = new ProblemDetails

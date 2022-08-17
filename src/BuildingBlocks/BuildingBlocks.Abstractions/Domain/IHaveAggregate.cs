@@ -4,7 +4,6 @@ namespace BuildingBlocks.Abstractions.Domain;
 
 public interface IHaveAggregate : IHaveAggregateVersion
 {
-
     /// <summary>
     /// Does the aggregate have change that have not been committed to storage
     /// </summary>

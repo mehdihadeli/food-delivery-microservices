@@ -8,6 +8,7 @@ public class ApplicationUser : IdentityUser<Guid>
     public string LastName { get; set; }
     public DateTime? LastLoggedInAt { get; set; }
     public ICollection<RefreshToken> RefreshTokens { get; set; }
+    public ICollection<AccessToken> AccessTokens { get; set; }
     public UserState UserState { get; set; }
     public DateTime CreatedAt { get; set; }
 }

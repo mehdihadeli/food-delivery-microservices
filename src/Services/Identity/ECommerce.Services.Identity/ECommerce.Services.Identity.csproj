@@ -45,4 +45,8 @@
     <InternalsVisibleTo Include="ECommerce.Services.Identity.IntegrationTests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Shared\Data\Migrations" />
+  </ItemGroup>
+
 </Project>

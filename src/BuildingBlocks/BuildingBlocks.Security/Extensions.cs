@@ -67,9 +67,7 @@ public static class Extensions
                     {
                         if (context.Exception is SecurityTokenExpiredException)
                         {
-                            throw new IdentityException(
-                                "The Token is expired.",
-                                statusCode: HttpStatusCode.Unauthorized);
+                            throw new UnAuthorizedException("The Token is expired.");
                         }
 
                         throw new IdentityException(
@@ -89,9 +87,7 @@ public static class Extensions
                         return Task.CompletedTask;
                     },
                     OnForbidden = _ =>
-                        throw new IdentityException(
-                            "You are not authorized to access this resource.",
-                            statusCode: HttpStatusCode.Forbidden)
+                        throw new ForbiddenException("You are not authorized to access this resource.")
                 };
             });
 

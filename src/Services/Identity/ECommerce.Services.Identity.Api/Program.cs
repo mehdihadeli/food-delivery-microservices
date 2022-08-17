@@ -9,6 +9,7 @@ using BuildingBlocks.Web.Middlewares;
 using ECommerce.Services.Identity;
 using ECommerce.Services.Identity.Api.Extensions.ApplicationBuilderExtensions;
 using ECommerce.Services.Identity.Api.Extensions.ServiceCollectionExtensions;
+using ECommerce.Services.Identity.Api.Middlewares;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Serilog;
@@ -61,6 +62,8 @@ static void RegisterServices(WebApplicationBuilder builder)
     builder.AddCompression();
 
     builder.AddCustomProblemDetails();
+
+    builder.Services.AddSingleton<RevokeAccessTokenMiddleware>();
 
     builder.Host.AddCustomSerilog(
         optionsBuilder =>
@@ -122,6 +125,7 @@ static async Task ConfigureApplication(WebApplication app)
 
     app.UseAuthentication();
     app.UseAuthorization();
+    app.UseRevokeAccessTokenMiddleware();
 
     /*----------------- Module Middleware Setup ------------------*/
     await app.ConfigureModules();

@@ -2,7 +2,7 @@ namespace BuildingBlocks.Security;
 
 public class ForbiddenProblemDetails : ProblemDetails
 {
-    public ForbiddenProblemDetails(string details = null)
+    public ForbiddenProblemDetails(string? details = null)
     {
         Title = "Forbidden";
         Detail = details;

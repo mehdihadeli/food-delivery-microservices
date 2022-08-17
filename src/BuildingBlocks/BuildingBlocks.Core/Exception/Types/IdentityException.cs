@@ -4,7 +4,10 @@ namespace BuildingBlocks.Core.Exception.Types;
 
 public class IdentityException : CustomException
 {
-    public IdentityException(string message, List<string> errors = default, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+    public IdentityException(
+        string message,
+        HttpStatusCode statusCode = HttpStatusCode.BadRequest,
+        params string[] errors)
         : base(message, statusCode, errors)
     {
     }

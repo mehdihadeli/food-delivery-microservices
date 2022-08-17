@@ -48,4 +48,6 @@ public class ProductDataSeeder : IDataSeeder
         await _dbContext.Products.AddRangeAsync(products);
         await _dbContext.SaveChangesAsync();
     }
+
+    public int Order => 4;
 }

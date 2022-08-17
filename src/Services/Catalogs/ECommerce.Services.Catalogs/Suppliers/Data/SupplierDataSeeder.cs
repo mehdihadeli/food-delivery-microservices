@@ -31,4 +31,6 @@ public class SupplierDataSeeder : IDataSeeder
 
         await _dbContext.SaveChangesAsync();
     }
+
+    public int Order => 2;
 }

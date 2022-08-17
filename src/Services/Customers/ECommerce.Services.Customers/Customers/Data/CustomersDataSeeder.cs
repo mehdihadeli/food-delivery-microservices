@@ -8,4 +8,6 @@ public class CustomersDataSeeder : IDataSeeder
     {
         return Task.CompletedTask;
     }
+
+    public int Order => 1;
 }

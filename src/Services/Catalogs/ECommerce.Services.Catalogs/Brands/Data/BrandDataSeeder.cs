@@ -33,4 +33,6 @@ public class BrandDataSeeder : IDataSeeder
         await _context.Brands.AddRangeAsync(brands);
         await _context.SaveChangesAsync();
     }
+
+    public int Order => 3;
 }

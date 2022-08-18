@@ -15,7 +15,7 @@ Thanks a bunch for supporting me!
 
 # Table of Contents
 
-- [The Goals of This Project](#the-goals-of-this-project)
+- [Features](#features)
 - [Plan](#plan)
 - [Technologies - Libraries](#technologies---libraries)
 - [The Domain and Bounded Context - Service Boundary](#the-domain-and-bounded-context---service-boundary)
@@ -32,34 +32,50 @@ Thanks a bunch for supporting me!
 - [Project References](#project-references)
 - [License](#license)
 
-## The Goals of This Project
+## Features
+✅ Using `Vertical Slice Architecture` as a high level architecture
 
-- The `Microservices Architecture` with `Domain Driven Design (DDD)` implementation.
-- Correct separation of bounded contexts for each microservice.
-- Communications between bounded contexts through asynchronous `Message Broker` with using `RabbitMQ` with some autonomous services.
-- Simple `CQRS` implementation and `Event Driven Architecture` with using Postgres for `Write Side` and MongoDB and Elastic Search for `Read Side`. For syncing Read Side and Write Side in parts without event sourcing I use [Internal Processing](https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing) and for syncing data in Event Sourcing parts, I will use [EventECommerce Projections](https://developers.eventecommerce.com/server/v5/projections.html#introduction-to-projections) or [Marten Projections](https://martendb.io/events/projections/).
-- Implementing various type of testing like `Unit Testing`,  `Integration Testing` and `End-To-End Testing`.
-- Using [Inbox Pattern](https://event-driven.io/en/outbox_inbox_patterns_and_delivery_guarantees_explained/) for guaranty message [Idempotency](https://www.enterpriseintegrationpatterns.com/patterns/messaging/IdempotentReceiver.html) for receiver microservice and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/) pattern and using [Outbox Pattern](https://event-driven.io/en/outbox_inbox_patterns_and_delivery_guarantees_explained/) for ensuring about any message lost and [At-Least one Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/) rule.
-- Using `Best Practice` and `New Technologies` and `Design Patterns`.
-- Using `Event Storming` for extracting data model and bounded context (using Miro).
-- Using Docker-Compose, Helm and Kubernetes for our deployment mechanism and Also using Terraform as infrastructure as a code.
-- Using Istio and Service Mesh for our microservices
+✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit 
+
+✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
+
+✅ Using `Event Sourcing` in `Audit Based` services like Orders, Payment 
+
+✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
+
+✅ Using `CQRS Pattern` on top of `MediatR` library
+
+✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
+
+✅ Using `Inbox Pattern` for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in reciver side and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/)
+
+✅ Using `Minimal APIs` for handling requests
+
+✅ Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
+
+✅ Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
+
+✅ Using docker and `docker-compose` for deployment
+
+🚧 Using `Helm` and `Kubernetes` for deployment
+
+🚧 Using `OpenTelemetry` for collection `Metrics` and `Distributed Tracing`
 
 ## Plan
 > This project is in progress, New features will be added over time.
 
 High-level plan is represented in the table
 
-| Feature | Status |
-| ------- | ------ |
-| Building Blocks | Completed ✔️ |
-| API Gateway | Completed ✔️ |
-| Identity Service | Completed ✔️ |
-| Customer Service | Completed ✔️ |
-| Catalog Service | Completed ✔️ |
-| Order Service |  In Progress 👷‍|
-| Shipping Service | Not Started 🚩 |
-| Payment Service | Not Started 🚩 |
+| Feature | Architecture Pattern | Status |  
+| ------- | ------ | ------ |
+| Building Blocks  | | Completed ✔️ |
+| API Gateway | | Completed ✔️ |
+| Identity Service | Data Centeric Architecture (CRUD) | Completed ✔️ |
+| Customer Service | Domain Driven Design | Completed ✔️ |
+| Catalog Service | Domain Driven Design |Completed ✔️ |
+| Order Service | Event Sourccing, Domain Driven Design | In Progress 👷‍|
+| Shipping Service | Domain Driven Design | Not Started 🚩 |
+| Payment Service | Event Sourccing, Domain Driven Design | Not Started 🚩 |
 
 ## Technologies - Libraries
 

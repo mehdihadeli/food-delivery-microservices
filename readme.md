@@ -1,8 +1,6 @@
 <p align="center">
   <img src="assets/header.png">
   <h1 align="center">
-  ECommerece Microservices
-    <br>
     <a href="https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/build-test.yml"><img alt="build-status" src="https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/build-test.yml/badge.svg?branch=main&style=flat-square" /></a>
     <a href="https://github.com/mehdihadeli/ecommerce-microservices" ><img alt="gitpod" src="https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod&style=flat-square&color=ff69b4" /></a>
   </h1>

@@ -57,6 +57,8 @@ Thanks a bunch for supporting me!
 
 ✅ Using docker and `docker-compose` for deployment
 
+✅ Using [Microsoft Tye](https://github.com/dotnet/tye) for deployment
+
 🚧 Using `Helm` and `Kubernetes` for deployment
 
 🚧 Using `OpenTelemetry` for collection `Metrics` and `Distributed Tracing`

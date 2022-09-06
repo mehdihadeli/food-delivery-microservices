@@ -57,6 +57,12 @@ static void RegisterServices(WebApplicationBuilder builder)
         .AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+    // https://www.talkingdotnet.com/disable-automatic-model-state-validation-in-asp-net-core-2-1/
+    builder.Services.Configure<ApiBehaviorOptions>(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true;
+    });
+
     builder.Services.AddApplicationOptions(builder.Configuration);
     var loggingOptions = builder.Configuration.GetSection(nameof(LoggerOptions)).Get<LoggerOptions>();
 

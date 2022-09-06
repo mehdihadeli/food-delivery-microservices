@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
@@ -9,11 +10,11 @@
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Security\BuildingBlocks.Security.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.17.0" />
-    <PackageReference Include="Hypothesist" Version="2.0.30" />
-    <PackageReference Include="Hypothesist.MassTransit" Version="2.0.30" />
-    <PackageReference Include="MassTransit" Version="8.0.0" />
-    <PackageReference Include="Verify.Xunit" Version="17.1.4" />
-    <PackageReference Include="XunitContext" Version="3.2.3" />
+    <PackageReference Include="AutoFixture" />
+    <PackageReference Include="Hypothesist" />
+    <PackageReference Include="Hypothesist.MassTransit" />
+    <PackageReference Include="MassTransit" />
+    <PackageReference Include="Verify.Xunit" />
+    <PackageReference Include="XunitContext" />
   </ItemGroup>
 </Project>

@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build -->
 <Project>
 
@@ -31,86 +32,36 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.688" Condition="$(MSBuildProjectExtension) == '.csproj'" PrivateAssets="all">
+    <PackageReference Include="Meziantou.Analyzer" Condition="$(MSBuildProjectExtension) == '.csproj'" PrivateAssets="all">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference
-      Include="StyleCop.Analyzers"
-      Version="1.2.0-beta.354"
-      PrivateAssets="all"
-      Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />
+    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
 
-    <PackageReference
-      Include="SerilogAnalyzer"
-      Version="0.15.0"
-      PrivateAssets="all"
-      Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />
+    <PackageReference Include="SerilogAnalyzer" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
 
-    <PackageReference
-      Include="NetFabric.Hyperlinq.Analyzer"
-      Version="2.0.4"
-      PrivateAssets="all"
-      Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />
+    <PackageReference Include="NetFabric.Hyperlinq.Analyzer" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
 
-    <PackageReference
-      Include="AspNetCoreAnalyzers"
-      Version="0.3.0"
-      PrivateAssets="all"
-      Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />
+    <PackageReference Include="AspNetCoreAnalyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
 
-    <PackageReference
-      Include="SmartanAlyzers.ExceptionAnalyzer"
-      Version="1.0.10"
-      PrivateAssets="all"
-      Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />
+    <PackageReference Include="SmartanAlyzers.ExceptionAnalyzer" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
 
-    <PackageReference
-      Include="Roslynator.Analyzers"
-      Version="3.3.0"
-      PrivateAssets="all"
-      Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />
-    <PackageReference
-      Include="Roslynator.CodeAnalysis.Analyzers"
-      Version="3.3.0"
-      PrivateAssets="all"
-      Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />
-    <PackageReference
-      Include="Roslynator.Formatting.Analyzers"
-      Version="3.3.0"
-      PrivateAssets="all"
-      Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />
-    <PackageReference
-      Include="Microsoft.VisualStudio.Threading.Analyzers"
-      Version="17.0.64"
-      PrivateAssets="all"
-      Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />
-    <PackageReference
-      Include="AsyncFixer"
-      Version="1.5.1"
-      PrivateAssets="all"
-      Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />
+    <PackageReference Include="Roslynator.Analyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
+    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
+    <PackageReference Include="Roslynator.Formatting.Analyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
+    <PackageReference Include="AsyncFixer" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(AspNetCoreVersion)"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="System.Linq"/>
-    <Using Include="System"/>
-    <Using Include="Microsoft.Extensions.DependencyInjection"/>
-    <Using Include="Microsoft.AspNetCore.Mvc"/>
-    <Using Include="System.Collections.ObjectModel"/>
+    <Using Include="System.Linq" />
+    <Using Include="System" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.AspNetCore.Mvc" />
+    <Using Include="System.Collections.ObjectModel" />
   </ItemGroup>
 </Project>

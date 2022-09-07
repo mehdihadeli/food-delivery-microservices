@@ -2,7 +2,7 @@
   <Import Project=".\Packages.props" />
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-	<CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+	<CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AspNetCore.HealthChecks.EventStore" Version="5.0.1" />

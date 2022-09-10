@@ -36,8 +36,10 @@ public static class RegistrationExtensions
                 ? logLevel
                 : LogEventLevel.Information;
 
-            loggerConfiguration.MinimumLevel.Override("Microsoft.AspNetCore", level);
-            loggerConfiguration.MinimumLevel.Is(level);
+            // https://andrewlock.net/using-serilog-aspnetcore-in-asp-net-core-3-reducing-log-verbosity/
+            loggerConfiguration.MinimumLevel.Is(level)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning); // Filter out ASP.NET Core infrastructure logs that are Information and below
 
             if (context.HostingEnvironment.IsDevelopment())
             {

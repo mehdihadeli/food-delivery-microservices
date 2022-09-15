@@ -1,3 +1,4 @@
+//https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools
 {
   "version": 1,
   "isRoot": true,
@@ -12,6 +13,12 @@
       "version": "8.3.838",
       "commands": [
         "altcover"
+      ]
+    },
+    "minver-cli": {
+      "version": "4.2.0",
+      "commands": [
+        "minver"
       ]
     }
   }

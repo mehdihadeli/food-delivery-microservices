@@ -2,7 +2,7 @@
 
 [![.NET](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml/badge.svg?branch=main&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml)
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-Open%20in%20Gitpod-blue?logo=gitpod&style=flat-square&color=ff69b4)](https://gitpod.io/#https://github.com/mehdihadeli/ecommerce-microservices-sample)
-[![Open VsCode](https://img.shields.io/static/v1?label=VsCode&message=Open%20in%20VsCode&color=blueviolet&logo=visualstudiocode)](https://vscode.dev/https://github.com/mehdihadeli/ecommerce-microservices)
+[![GitHub Dev](https://img.shields.io/static/v1?label=GitHub&message=Open%20in%20GitHub%20Dev&color=blueviolet&logo=GitHub)](https://github.dev/mehdihadeli/ecommerce-microservices)
 [![Open in Remote - Containers](https://img.shields.io/static/v1?label=VsCode&message=Open%20Remote%20-%20Containers&color=orange&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/mehdihadeli/ecommerce-microservices)
 
 

@@ -1,7 +1,11 @@
 # 🛍️ ECommerece Microservices Sample
 
 [![.NET](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml/badge.svg?branch=main&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml)
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod&style=flat-square&color=ff69b4)](https://gitpod.io/#https://github.com/mehdihadeli/ecommerce-microservices-sample)
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-Open%20in%20Gitpod-blue?logo=gitpod&style=flat-square&color=ff69b4)](https://gitpod.io/#https://github.com/mehdihadeli/ecommerce-microservices-sample)
+[![Open VsCode](https://img.shields.io/static/v1?label=VsCode&message=Open%20in%20VsCode&color=blueviolet&logo=visualstudiocode)](https://vscode.dev/https://github.com/mehdihadeli/ecommerce-microservices)
+[![Open in Remote - Containers](https://img.shields.io/static/v1?label=VsCode&message=Open%20Remote%20-%20Containers&color=orange&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/mehdihadeli/ecommerce-microservices)
+
+
 
 > `ECommerece Microservices` is a fictional ecommerce sample, built with different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
 

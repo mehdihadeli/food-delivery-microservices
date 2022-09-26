@@ -1,5 +1,5 @@
-using MassTransit;
 using ECommerce.Services.Shared.Customers.Customers.Events.Integration;
+using MassTransit;
 
 namespace ECommerce.Services.Orders.Customers.Features.CreatingCustomer.Events.External;
 

@@ -3,7 +3,7 @@ using ECommerce.Services.Customers.Customers.Features.CreatingCustomer;
 using ECommerce.Services.Shared.Identity.Users.Events.Integration;
 using MassTransit;
 
-namespace ECommerce.Services.Customers.Users.Features.RegisteringUser.Events.External;
+namespace ECommerce.Services.Customers.Users.Features.RegisteringUser.Events.Integration.External;
 
 public class UserRegisteredConsumer : IConsumer<UserRegistered>
 {

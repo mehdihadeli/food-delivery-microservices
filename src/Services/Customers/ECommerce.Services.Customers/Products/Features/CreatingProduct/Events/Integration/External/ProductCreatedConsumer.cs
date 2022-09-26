@@ -1,7 +1,7 @@
-using MassTransit;
 using ECommerce.Services.Shared.Catalogs.Products.Events.Integration;
+using MassTransit;
 
-namespace ECommerce.Services.Customers.Products.Features.CreatingProduct.Events.External;
+namespace ECommerce.Services.Customers.Products.Features.CreatingProduct.Events.Integration.External;
 
 public class ProductCreatedConsumer : IConsumer<ProductCreated>
 {

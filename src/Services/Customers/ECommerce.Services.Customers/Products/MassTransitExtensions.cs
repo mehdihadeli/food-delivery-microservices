@@ -1,8 +1,8 @@
-﻿using Humanizer;
+﻿using ECommerce.Services.Customers.Products.Features.CreatingProduct.Events.Integration.External;
+using ECommerce.Services.Customers.Products.Features.ReplenishingProductStock.Events.Integration.External;
+using Humanizer;
 using MassTransit;
 using RabbitMQ.Client;
-using ECommerce.Services.Customers.Products.Features.CreatingProduct.Events.External;
-using ECommerce.Services.Customers.Products.Features.ReplenishingProductStock.Events.External;
 using ECommerce.Services.Shared.Catalogs.Products.Events.Integration;
 
 namespace ECommerce.Services.Customers.Products;

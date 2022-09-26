@@ -29,7 +29,7 @@ public class DefaultSerializer : ISerializer
     }
 
 
-    protected JsonSerializerSettings? CreateSerializerSettings(bool camelCase = true, bool indented = false)
+    protected static JsonSerializerSettings CreateSerializerSettings(bool camelCase = true, bool indented = false)
     {
         var settings = new JsonSerializerSettings {ContractResolver = new ContractResolverWithPrivate()};
 

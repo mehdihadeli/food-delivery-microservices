@@ -1,5 +1,6 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.245.0/containers/ubuntu
+// https://github.com/microsoft/vscode-remote-try-dotnetcore/blob/main/.devcontainer/devcontainer.json
 {
 	"name": "Ubuntu",
 	"build": {
@@ -11,6 +12,7 @@
 		}
 	},
 	"extensions": [
+	    "ms-dotnettools.csharp",
 		"mutantdino.resourcemonitor",
 		"humao.rest-client",
 		"hashicorp.hcl"

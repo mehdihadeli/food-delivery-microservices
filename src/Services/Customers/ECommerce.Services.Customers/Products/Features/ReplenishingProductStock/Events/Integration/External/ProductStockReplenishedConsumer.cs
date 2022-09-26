@@ -1,9 +1,9 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
-using MassTransit;
 using ECommerce.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification;
 using ECommerce.Services.Shared.Catalogs.Products.Events.Integration;
+using MassTransit;
 
-namespace ECommerce.Services.Customers.Products.Features.ReplenishingProductStock.Events.External;
+namespace ECommerce.Services.Customers.Products.Features.ReplenishingProductStock.Events.Integration.External;
 
 public class ProductStockReplenishedConsumer : IConsumer<ProductStockReplenished>
 {

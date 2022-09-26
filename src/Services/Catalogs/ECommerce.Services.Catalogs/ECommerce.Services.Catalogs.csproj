@@ -12,9 +12,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Suppliers\Features\SupplierCreated\Events" />
-        <Folder Include="Suppliers\Features\SupplierDeleted\Events" />
-        <Folder Include="Suppliers\Features\SupplierUpdated\Events" />
+        <Folder Include="Suppliers\Features\SupplierCreated\Events\Integration" />
+        <Folder Include="Suppliers\Features\SupplierDeleted\Events\Integration" />
+        <Folder Include="Suppliers\Features\SupplierUpdated\Events\Integration" />
     </ItemGroup>
 
     <ItemGroup>

@@ -36,35 +36,21 @@ Thanks a bunch for supporting me!
 - [License](#license)
 
 ## Features
-✅ Using `Vertical Slice Architecture` as a high level architecture
-
-✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit 
-
-✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
-
-✅ Using `Event Sourcing` in `Audit Based` services like Orders, Payment 
-
-✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
-
-✅ Using `CQRS Pattern` on top of `MediatR` library
-
-✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
-
-✅ Using `Inbox Pattern` for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in reciver side and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/)
-
-✅ Using `Minimal APIs` for handling requests
-
-✅ Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
-
-✅ Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
-
-✅ Using docker and `docker-compose` for deployment
-
-✅ Using [Microsoft Tye](https://github.com/dotnet/tye) for deployment
-
-🚧 Using `Helm` and `Kubernetes` for deployment
-
-🚧 Using `OpenTelemetry` for collection `Metrics` and `Distributed Tracing`
+- ✅ Using `Vertical Slice Architecture` as a high level architecture
+- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit 
+- ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
+- ✅ Using `Event Sourcing` in `Audit Based` services like Orders, Payment 
+- ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
+- ✅ Using `CQRS Pattern` on top of `MediatR` library
+- ✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
+- ✅ Using `Inbox Pattern` for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in reciver side and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/)
+- ✅ Using `Minimal APIs` for handling requests
+- ✅ Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
+- ✅ Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
+- ✅ Using docker and `docker-compose` for deployment
+- ✅ Using [Microsoft Tye](https://github.com/dotnet/tye) for deployment
+- 🚧 Using `Helm` and `Kubernetes` for deployment
+- 🚧 Using `OpenTelemetry` for collection `Metrics` and `Distributed Tracing`
 
 ## Plan
 > This project is in progress, New features will be added over time.

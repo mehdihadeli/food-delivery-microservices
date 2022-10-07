@@ -3,7 +3,7 @@ using BuildingBlocks.Monitoring;
 using ECommerce.Services.Orders.Shared.Extensions.ApplicationBuilderExtensions;
 using ECommerce.Services.Orders.Shared.Extensions.ServiceCollectionExtensions;
 
-namespace ECommerce.Services.Customers;
+namespace ECommerce.Services.Orders.Shared;
 
 public class OrdersModuleConfiguration : ISharedModulesConfiguration
 {

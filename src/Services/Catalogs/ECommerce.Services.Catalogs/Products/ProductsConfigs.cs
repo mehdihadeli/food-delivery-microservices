@@ -8,6 +8,7 @@ using ECommerce.Services.Catalogs.Products.Features.GettingProductById;
 using ECommerce.Services.Catalogs.Products.Features.GettingProductsView;
 using ECommerce.Services.Catalogs.Products.Features.ReplenishingProductStock;
 using ECommerce.Services.Catalogs.Products.Features.UpdatingProduct;
+using ECommerce.Services.Catalogs.Shared;
 
 namespace ECommerce.Services.Catalogs.Products;
 

@@ -1,14 +1,28 @@
 using BuildingBlocks.Abstractions.Web.Module;
 using BuildingBlocks.Core;
 using BuildingBlocks.Monitoring;
-using ECommerce.Services.Customers.Shared.Extensions.ApplicationBuilderExtensions;
-using ECommerce.Services.Customers.Shared.Extensions.ServiceCollectionExtensions;
+using ECommerce.Services.Catalogs.Shared.Extensions.ApplicationBuilderExtensions;
+using ECommerce.Services.Catalogs.Shared.Extensions.ServiceCollectionExtensions;
 
-namespace ECommerce.Services.Customers;
+namespace ECommerce.Services.Catalogs.Shared;
 
-public class CustomersModuleConfiguration : ISharedModulesConfiguration
+public class CatalogModuleConfiguration : ISharedModulesConfiguration
 {
-    public const string CustomerModulePrefixUri = "api/v1/customers";
+    public const string CatalogModulePrefixUri = "api/v1/catalogs";
+
+    public IEndpointRouteBuilder MapSharedModuleEndpoints(IEndpointRouteBuilder endpoints)
+    {
+        endpoints.MapGet("/", (HttpContext context) =>
+        {
+            var requestId = context.Request.Headers.TryGetValue("X-Request-Id", out var requestIdHeader)
+                ? requestIdHeader.FirstOrDefault()
+                : string.Empty;
+
+            return $"Catalogs Service Apis, RequestId: {requestId}";
+        }).ExcludeFromDescription();
+
+        return endpoints;
+    }
 
     public IServiceCollection AddSharedModuleServices(
         IServiceCollection services,
@@ -35,19 +49,5 @@ public class CustomersModuleConfiguration : ISharedModulesConfiguration
         await app.UseInfrastructure(app.Logger);
 
         return app;
-    }
-
-    public IEndpointRouteBuilder MapSharedModuleEndpoints(IEndpointRouteBuilder endpoints)
-    {
-        endpoints.MapGet("/", (HttpContext context) =>
-        {
-            var requestId = context.Request.Headers.TryGetValue("X-Request-Id", out var requestIdHeader)
-                ? requestIdHeader.FirstOrDefault()
-                : string.Empty;
-
-            return $"Customers Service Apis, RequestId: {requestId}";
-        }).ExcludeFromDescription();
-
-        return endpoints;
     }
 }

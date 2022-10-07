@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Web.Module;
+using ECommerce.Services.Customers.Shared;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions;
 

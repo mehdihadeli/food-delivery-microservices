@@ -3,7 +3,7 @@ using BuildingBlocks.Monitoring;
 using ECommerce.Services.Identity.Shared.Extensions.ApplicationBuilderExtensions;
 using ECommerce.Services.Identity.Shared.Extensions.ServiceCollectionExtensions;
 
-namespace ECommerce.Services.Identity;
+namespace ECommerce.Services.Identity.Shared;
 
 public class IdentityModuleConfiguration : ISharedModulesConfiguration
 {

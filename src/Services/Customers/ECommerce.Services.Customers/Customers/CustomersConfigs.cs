@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Customers.Customers.Data;
+using ECommerce.Services.Customers.Shared;
 
 namespace ECommerce.Services.Customers.Customers;
 

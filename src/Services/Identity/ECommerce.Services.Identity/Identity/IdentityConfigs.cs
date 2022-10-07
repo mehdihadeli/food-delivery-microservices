@@ -9,6 +9,7 @@ using ECommerce.Services.Identity.Identity.Features.RevokingAccessToken;
 using ECommerce.Services.Identity.Identity.Features.RevokingRefreshToken;
 using ECommerce.Services.Identity.Identity.Features.SendingEmailVerificationCode;
 using ECommerce.Services.Identity.Identity.Features.VerifyingEmail;
+using ECommerce.Services.Identity.Shared;
 using ECommerce.Services.Identity.Shared.Extensions.ServiceCollectionExtensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 

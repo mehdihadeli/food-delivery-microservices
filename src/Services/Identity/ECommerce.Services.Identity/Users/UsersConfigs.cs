@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Web.Module;
+using ECommerce.Services.Identity.Shared;
 using ECommerce.Services.Identity.Users.Features.GettingUerByEmail;
 using ECommerce.Services.Identity.Users.Features.GettingUserById;
 using ECommerce.Services.Identity.Users.Features.RegisteringUser;

@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using ECommerce.Services.Catalogs.Shared;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProductsView;
 

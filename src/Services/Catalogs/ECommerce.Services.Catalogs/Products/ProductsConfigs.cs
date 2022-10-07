@@ -15,7 +15,7 @@ namespace ECommerce.Services.Catalogs.Products;
 internal class ProductsConfigs : IModuleConfiguration
 {
     public const string Tag = "Product";
-    public const string ProductsPrefixUri = $"{CatalogModuleConfiguration.CatalogModulePrefixUri}/products";
+    public const string ProductsPrefixUri = $"{SharedModulesConfiguration.CatalogModulePrefixUri}/products";
 
     public IServiceCollection AddModuleServices(
         IServiceCollection services,

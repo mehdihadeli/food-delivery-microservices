@@ -8,7 +8,7 @@ namespace ECommerce.Services.Customers.Customers;
 internal class CustomersConfigs : IModuleConfiguration
 {
     public const string Tag = "Customers";
-    public const string CustomersPrefixUri = $"{CustomersModuleConfiguration.CustomerModulePrefixUri}";
+    public const string CustomersPrefixUri = $"{SharedModulesConfiguration.CustomerModulePrefixUri}";
 
     public IServiceCollection AddModuleServices(
         IServiceCollection services,

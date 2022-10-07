@@ -10,7 +10,7 @@ namespace ECommerce.Services.Identity.Users;
 internal class UsersConfigs : IModuleConfiguration
 {
     public const string Tag = "Users";
-    public const string UsersPrefixUri = $"{IdentityModuleConfiguration.IdentityModulePrefixUri}/users";
+    public const string UsersPrefixUri = $"{SharedModulesConfiguration.IdentityModulePrefixUri}/users";
 
     public IServiceCollection AddModuleServices(
         IServiceCollection services,

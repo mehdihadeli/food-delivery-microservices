@@ -18,7 +18,7 @@ namespace ECommerce.Services.Identity.Identity;
 internal class IdentityConfigs : IModuleConfiguration
 {
     public const string Tag = "Identity";
-    public const string IdentityPrefixUri = $"{IdentityModuleConfiguration.IdentityModulePrefixUri}";
+    public const string IdentityPrefixUri = $"{SharedModulesConfiguration.IdentityModulePrefixUri}";
 
     public IServiceCollection AddModuleServices(
         IServiceCollection services,

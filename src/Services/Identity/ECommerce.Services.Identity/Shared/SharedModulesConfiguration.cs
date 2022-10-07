@@ -1,13 +1,13 @@
 using BuildingBlocks.Abstractions.Web.Module;
 using BuildingBlocks.Monitoring;
-using ECommerce.Services.Orders.Shared.Extensions.ApplicationBuilderExtensions;
-using ECommerce.Services.Orders.Shared.Extensions.ServiceCollectionExtensions;
+using ECommerce.Services.Identity.Shared.Extensions.ApplicationBuilderExtensions;
+using ECommerce.Services.Identity.Shared.Extensions.ServiceCollectionExtensions;
 
-namespace ECommerce.Services.Orders.Shared;
+namespace ECommerce.Services.Identity.Shared;
 
-public class OrdersModuleConfiguration : ISharedModulesConfiguration
+public class SharedModulesConfiguration : ISharedModulesConfiguration
 {
-    public const string OrderModulePrefixUri = "api/v1/orders";
+    public const string IdentityModulePrefixUri = "api/v1/identity";
 
     public IServiceCollection AddSharedModuleServices(
         IServiceCollection services,
@@ -16,15 +16,16 @@ public class OrdersModuleConfiguration : ISharedModulesConfiguration
     {
         services.AddInfrastructure(configuration, webHostEnvironment);
 
-        services.AddStorage(configuration);
-
         return services;
     }
 
     public async Task<WebApplication> ConfigureSharedModule(WebApplication app)
     {
         if (app.Environment.IsEnvironment("test") == false)
+        {
             app.UseMonitoring();
+            app.UseIdentityServer();
+        }
 
         await app.ApplyDatabaseMigrations(app.Logger);
         await app.SeedData(app.Logger, app.Environment);
@@ -42,7 +43,7 @@ public class OrdersModuleConfiguration : ISharedModulesConfiguration
                 ? requestIdHeader.FirstOrDefault()
                 : string.Empty;
 
-            return $"Orders Service Apis, RequestId: {requestId}";
+            return $"Identity Service Apis, RequestId: {requestId}";
         }).ExcludeFromDescription();
 
         return endpoints;

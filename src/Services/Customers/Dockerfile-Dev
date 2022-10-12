@@ -7,7 +7,7 @@ COPY ./.editorconfig ./
 COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Packages.props ./
-COPY ./src/Services/Identity/Directory.Build.props ./Services/Identity/
+COPY ./src/Services/Customers/Directory.Build.props ./Services/Customers/
 
 # TODO: Using wildcard to copy all files in the directory.
 COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
@@ -25,41 +25,18 @@ COPY ./src/BuildingBlocks/BuildingBlocks.Swagger/BuildingBlocks.Swagger.csproj .
 COPY ./src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj ./BuildingBlocks/BuildingBlocks.Validation/
 COPY ./src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj ./BuildingBlocks/BuildingBlocks.Web/
 
-COPY ./src/Services/Identity/ECommerce.Services.Identity/ECommerce.Services.Identity.csproj ./Services/Identity/ECommerce.Services.Identity/
-COPY ./src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj ./Services/Identity/ECommerce.Services.Identity.Api/
-COPY ./src/Services/Shared/ECommerce.Services.Shared/ECommerce.Services.Shared.csproj ./Services/Shared/ECommerce.Services.Shared/
-
 RUN ls
-
-# restore nuget packages
-RUN dotnet restore ./Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
-COPY ./src/Services/Identity/ECommerce.Services.Identity.Api/  ./Services/Identity/ECommerce.Services.Identity.Api/
-COPY ./src/Services/Identity/ECommerce.Services.Identity/  ./Services/Identity/ECommerce.Services.Identity/
+COPY ./src/Services/Customers/ECommerce.Services.Customers.Api/  ./Services/Customers/ECommerce.Services.Customers.Api/
+COPY ./src/Services/Customers/ECommerce.Services.Customers/  ./Services/Customers/ECommerce.Services.Customers/
 COPY ./src/Services/Shared/  ./Services/Shared/
 
-# Build project with Release configuration
-# and no restore, as we did it already
-RUN dotnet build -c Release --no-restore  ./Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
-
-WORKDIR /src/Services/Identity/ECommerce.Services.Identity.Api/
-# Publish project to output folder
-# and no build, as we did it already
-RUN ls
-RUN dotnet publish -c Release --no-build -o out
-
-FROM mcr.microsoft.com/dotnet/aspnet:latest
-# Setup working directory for the project
-WORKDIR /app
-COPY --from=builder /src/Services/Identity/ECommerce.Services.Identity.Api/out  .
+WORKDIR /src/Services/Customers/ECommerce.Services.Customers.Api/
 
 #https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
 #https://swimburger.net/blog/dotnet/how-to-get-aspdotnet-core-server-urls
-#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilat
+#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
 
-EXPOSE 80
-ENV ASPNETCORE_URLS http://*:80
-ENV ASPNETCORE_ENVIRONMENT docker
-ENTRYPOINT ["dotnet", "ECommerce.Services.Identity.Api.dll"]
+RUN dotnet watch run  ECommerce.Services.Customers.Api.csproj --launch-profile Customers.Api.LiveRecompilation

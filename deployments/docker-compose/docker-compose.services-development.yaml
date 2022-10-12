@@ -1,0 +1,80 @@
+#ref: https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
+version: '3.7'
+services:
+  gateway-dev:
+    build:
+      context: ../../
+      dockerfile: src/ApiGateway/Dockerfile-Dev
+    container_name: ecommerce-gateway-dev-live-recompilation
+    # restart: unless-stopped
+    ports:
+      - ${GATEWAY_PORT}:3000
+    networks:
+      - ecommerce
+
+  catalogs-dev:
+    image: catalogs-dev:${TAG}
+    build:
+      args:
+        Version: "1"
+      context: ../../
+      dockerfile: src/Services/Catalogs/Dockerfile-Dev
+    container_name: ecommerce-catalogs-dev-live-recompilation
+    # restart: unless-stopped
+    ports:
+      - ${CATALOGS_SVC_PORT}:4000
+    env_file:
+      - ../../.docker-envs/catalogs.env
+    volumes:
+      - ../../src/Services/Catalogs:/
+    networks:
+      - ecommerce
+
+  identity-dev:
+    image: identity-dev:${TAG}
+    build:
+      args:
+        Version: "1"
+      context: ../../
+      dockerfile: src/Services/Identity/Dockerfile-Dev
+    container_name: ecommerce-identity-dev-live-recompilation
+    # restart: unless-stopped
+    ports:
+      - ${IDENTITY_SVC_PORT}:7000
+    networks:
+      - ecommerce
+
+  customers-dev:
+    image: customers-dev:${TAG}
+    build:
+      args:
+        Version: "1"
+      context: ../../
+      dockerfile: src/Services/Customers/Dockerfile-Dev
+    container_name: ecommerce-customers-dev-live-recompilation
+    # restart: unless-stopped
+    ports:
+      - ${CUSTOMERS_SVC_PORT}:8000
+    networks:
+      - ecommerce
+
+  orders-dev:
+    image: orders-dev:${TAG}
+    build:
+      args:
+        Version: "1"
+      context: ../../
+      dockerfile: src/Services/orders/Dockerfile-Dev
+    container_name: ecommerce-orders-dev-live-recompilation
+    # restart: unless-stopped
+    ports:
+      - ${CUSTOMERS_SVC_PORT}:9000
+    networks:
+      - ecommerce
+      
+# https://docs.docker.com/compose/networking/
+# https://stackoverflow.com/questions/38088279/communication-between-multiple-docker-compose-projects
+networks:
+  ecommerce:
+    name: ecommerce-network
+    external: true

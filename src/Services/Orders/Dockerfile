@@ -54,6 +54,11 @@ FROM mcr.microsoft.com/dotnet/aspnet:latest
 # Setup working directory for the project
 WORKDIR /app
 COPY --from=builder /src/Services/Orders/ECommerce.Services.Orders.Api/out  .
+
+#https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
+#https://swimburger.net/blog/dotnet/how-to-get-aspdotnet-core-server-urls
+#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilat
+
 EXPOSE 80
 ENV ASPNETCORE_URLS http://*:80
 ENV ASPNETCORE_ENVIRONMENT docker

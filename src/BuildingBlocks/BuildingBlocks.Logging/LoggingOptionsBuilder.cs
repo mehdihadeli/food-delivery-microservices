@@ -35,15 +35,9 @@ public class LoggingOptionsBuilder
         return this;
     }
 
-    public LoggingOptionsBuilder SetDevelopmentLogPath(string developmentLogPath)
+    public LoggingOptionsBuilder SetLogPath(string logPath)
     {
-        _options.DevelopmentLogPath = developmentLogPath;
-        return this;
-    }
-
-    public LoggingOptionsBuilder SetProductionLogPath(string productionLogPath)
-    {
-        _options.ProductionLogPath = productionLogPath;
+        _options.LogPath = logPath;
         return this;
     }
 

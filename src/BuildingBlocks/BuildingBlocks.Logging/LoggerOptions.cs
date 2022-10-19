@@ -6,6 +6,5 @@ public class LoggerOptions
     public string? SeqUrl { get; set; }
     public string? ElasticSearchUrl { get; set; }
     public string? LogTemplate { get; set; }
-    public string? DevelopmentLogPath { get; set; }
-    public string? ProductionLogPath { get; set; }
+    public string? LogPath { get; set; }
 }

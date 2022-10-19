@@ -73,16 +73,6 @@ static void RegisterServices(WebApplicationBuilder builder)
         {
             optionsBuilder
                 .SetLevel(LogEventLevel.Information);
-        },
-        config =>
-        {
-            config.WriteTo.File(
-                GetLogPath(builder.Environment, loggingOptions) ??
-                "../logs/customers-service.log",
-                outputTemplate: loggingOptions?.LogTemplate ??
-                                "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}",
-                rollingInterval: RollingInterval.Day,
-                rollOnFileSizeLimit: true);
         });
 
     builder.AddCustomSwagger(builder.Configuration, typeof(CatalogRoot).Assembly);
@@ -150,6 +140,4 @@ static async Task ConfigureApplication(WebApplication app)
 
 public partial class Program
 {
-    public static string? GetLogPath(IWebHostEnvironment env, LoggerOptions loggerOptions)
-        => env.IsDevelopment() ? loggerOptions.DevelopmentLogPath : loggerOptions.ProductionLogPath;
 }

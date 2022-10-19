@@ -39,7 +39,9 @@ public static class RegistrationExtensions
             // https://andrewlock.net/using-serilog-aspnetcore-in-asp-net-core-3-reducing-log-verbosity/
             loggerConfiguration.MinimumLevel.Is(level)
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning); // Filter out ASP.NET Core infrastructure logs that are Information and below
+                .MinimumLevel
+                // Filter out ASP.NET Core infrastructure logs that are Information and below
+                .Override("Microsoft.AspNetCore", LogEventLevel.Warning);
 
             if (context.HostingEnvironment.IsDevelopment())
             {
@@ -57,6 +59,16 @@ public static class RegistrationExtensions
                 {
                     loggerConfiguration.WriteTo.Async(writeTo => writeTo.Seq(loggerOptions.SeqUrl));
                 }
+            }
+
+            if (!string.IsNullOrEmpty(loggerOptions?.LogPath))
+            {
+                loggerConfiguration.WriteTo.File(
+                    loggerOptions.LogPath,
+                    outputTemplate: loggerOptions.LogTemplate ??
+                                    "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}",
+                    rollingInterval: RollingInterval.Day,
+                    rollOnFileSizeLimit: true);
             }
         });
     }

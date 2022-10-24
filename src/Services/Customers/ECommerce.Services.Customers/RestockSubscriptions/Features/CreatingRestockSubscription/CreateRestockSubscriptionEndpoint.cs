@@ -1,16 +1,15 @@
 using Ardalis.GuardClauses;
+using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime;
-using SerilogTimings;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription;
 
-public class CreateRestockSubscriptionEndpoint : IMinimalEndpointConfiguration
+public class CreateRestockSubscriptionEndpoint : ICommandMinimalEndpoint<CreateRestockSubscriptionRequest, IResult>
 {
     public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapPost(RestockSubscriptionsConfigs.RestockSubscriptionsUrl, CreateRestockSubscription)
+        builder.MapPost(RestockSubscriptionsConfigs.RestockSubscriptionsUrl, HandleAsync)
             .AllowAnonymous()
             .WithTags(RestockSubscriptionsConfigs.Tag)
             .Produces<CreateRestockSubscriptionResult>(StatusCodes.Status201Created)
@@ -22,9 +21,11 @@ public class CreateRestockSubscriptionEndpoint : IMinimalEndpointConfiguration
         return builder;
     }
 
-    private static async Task<IResult> CreateRestockSubscription(
+    public async Task<IResult> HandleAsync(
+        HttpContext context,
         CreateRestockSubscriptionRequest request,
         ICommandProcessor commandProcessor,
+        IMapper mapper,
         CancellationToken cancellationToken)
     {
         Guard.Against.Null(request, nameof(request));

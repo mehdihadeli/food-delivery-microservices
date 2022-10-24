@@ -86,6 +86,9 @@ static void RegisterServices(WebApplicationBuilder builder)
             new(CustomersConstants.Role.User, new List<string> {CustomersConstants.Role.User})
         });
 
+    // register endpoints
+    builder.AddMinimalEndpoints();
+
     /*----------------- Module Services Setup ------------------*/
     builder.AddModulesServices();
 }
@@ -128,8 +131,8 @@ static async Task ConfigureApplication(WebApplication app)
     /*----------------- Module Routes Setup ------------------*/
     app.MapModulesEndpoints();
 
-    // automatic discover minimal endpoints
-    app.MapEndpoints();
+    // map registered minimal endpoints
+    app.MapMinimalEndpoints();
 
     Log.Logger = new LoggerConfiguration()
         .WriteTo.Console()

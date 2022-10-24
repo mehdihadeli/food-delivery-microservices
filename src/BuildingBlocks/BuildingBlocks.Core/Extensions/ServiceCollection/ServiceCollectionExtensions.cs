@@ -56,6 +56,40 @@ public static partial class ServiceCollectionExtensions
         return services.Replace(ServiceDescriptor.Singleton(implementationFactory));
     }
 
+    /// <summary>
+    /// Adds a new transient registration to the service collection only when no existing registration of the same service type and implementation type exists.
+    /// In contrast to TryAddTransient, which only checks the service type.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="serviceType"></param>
+    /// <param name="implementationType"></param>
+    public static void TryAddTransientExact(this IServiceCollection services, Type serviceType, Type implementationType)
+    {
+        if (services.Any(reg => reg.ServiceType == serviceType && reg.ImplementationType == implementationType))
+        {
+            return;
+        }
+
+        services.AddTransient(serviceType, implementationType);
+    }
+
+    /// <summary>
+    /// Adds a new scope registration to the service collection only when no existing registration of the same service type and implementation type exists.
+    /// In contrast to TryAddScope, which only checks the service type.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="serviceType"></param>
+    /// <param name="implementationType"></param>
+    public static void TryAddScopeExact(this IServiceCollection services, Type serviceType, Type implementationType)
+    {
+        if (services.Any(reg => reg.ServiceType == serviceType && reg.ImplementationType == implementationType))
+        {
+            return;
+        }
+
+        services.AddScoped(serviceType, implementationType);
+    }
+
     public static IServiceCollection Add<TService, TImplementation>(
         this IServiceCollection services,
         Func<IServiceProvider, TImplementation> implementationFactory,

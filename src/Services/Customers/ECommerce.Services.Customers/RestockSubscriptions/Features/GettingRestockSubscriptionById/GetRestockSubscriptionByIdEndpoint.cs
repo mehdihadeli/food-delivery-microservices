@@ -1,16 +1,16 @@
 using Ardalis.GuardClauses;
+using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionById;
 
-public class GetRestockSubscriptionByIdEndpoint : IMinimalEndpointConfiguration
+public class GetRestockSubscriptionByIdEndpoint : IQueryMinimalEndpoint<long, IResult>
 {
     public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder.MapGet(
-                $"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}/{{id}}",
-                GetRestockSubscriptionById)
+                $"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}/{{id}}", HandleAsync)
             .WithTags(RestockSubscriptionsConfigs.Tag)
             .RequireAuthorization(CustomersConstants.Role.Admin)
             .Produces<GetRestockSubscriptionByIdResult>(StatusCodes.Status200OK)
@@ -23,9 +23,11 @@ public class GetRestockSubscriptionByIdEndpoint : IMinimalEndpointConfiguration
         return builder;
     }
 
-    private static async Task<IResult> GetRestockSubscriptionById(
+    public async Task<IResult> HandleAsync(
+        HttpContext context,
         long id,
         IQueryProcessor queryProcessor,
+        IMapper mapper,
         CancellationToken cancellationToken)
     {
         Guard.Against.Null(id, nameof(id));

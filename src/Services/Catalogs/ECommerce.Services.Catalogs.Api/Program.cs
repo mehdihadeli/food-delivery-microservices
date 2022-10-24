@@ -131,7 +131,7 @@ static async Task ConfigureApplication(WebApplication app)
     app.MapModulesEndpoints();
 
     // automatic discover minimal endpoints
-    app.MapEndpoints();
+    app.MapMinimalEndpoints();
 
     Log.Logger = new LoggerConfiguration()
         .WriteTo.Console()

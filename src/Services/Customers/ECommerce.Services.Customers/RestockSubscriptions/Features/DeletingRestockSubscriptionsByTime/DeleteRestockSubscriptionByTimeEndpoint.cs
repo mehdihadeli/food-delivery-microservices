@@ -1,15 +1,16 @@
 using Ardalis.GuardClauses;
+using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using SerilogTimings;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime;
 
-public class DeleteRestockSubscriptionByTimeEndpoint : IMinimalEndpointConfiguration
+public class DeleteRestockSubscriptionByTimeEndpoint :
+    ICommandMinimalEndpoint<DeleteRestockSubscriptionByTimeRequest, IResult>
 {
     public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapDelete($"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}", DeleteRestockSubscriptionByTime)
+        builder.MapDelete($"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}", HandleAsync)
             .WithTags(RestockSubscriptionsConfigs.Tag)
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)
@@ -21,9 +22,11 @@ public class DeleteRestockSubscriptionByTimeEndpoint : IMinimalEndpointConfigura
     }
 
     [Authorize(Roles = CustomersConstants.Role.Admin)]
-    private static async Task<IResult> DeleteRestockSubscriptionByTime(
+    public async Task<IResult> HandleAsync(
+        HttpContext context,
         [FromBody] DeleteRestockSubscriptionByTimeRequest request,
         ICommandProcessor commandProcessor,
+        IMapper mapper,
         CancellationToken cancellationToken)
     {
         Guard.Against.Null(request, nameof(request));

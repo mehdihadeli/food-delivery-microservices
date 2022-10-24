@@ -125,7 +125,7 @@ csharp_space_between_square_brackets = false
 ## Microsoft Rules
 ##
 
-# CA1305
+# CA1305: Specify IFormatProvider
 dotnet_diagnostic.CA1305.severity = None
 
 # CA1063: Implement IDisposable correctly
@@ -139,6 +139,9 @@ dotnet_diagnostic.CA1848.severity = Suggestion
 
 # CA1810: Initialize reference type static fields inline
 dotnet_diagnostic.CA1810.severity = Suggestion
+
+# CA1725: Parameter names should match base declaration
+dotnet_diagnostic.CA1725.severity = Suggestion
 
 
 ##################################################################################
@@ -438,5 +441,7 @@ dotnet_diagnostic.AsyncifyVariable.severity = error
 
 dotnet_diagnostic.EX001.severity = Suggestion
 
-
-
+#################################################################################
+# IDE0073: File header
+dotnet_diagnostic.IDE0073.severity = none
+file_header_template = Licensed under the MIT license.

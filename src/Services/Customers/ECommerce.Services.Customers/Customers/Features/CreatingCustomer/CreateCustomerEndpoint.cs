@@ -5,7 +5,7 @@ using SerilogTimings;
 
 namespace ECommerce.Services.Customers.Customers.Features.CreatingCustomer;
 
-public class CreateCustomerEndpoint : IMinimalEndpointConfiguration
+public class CreateCustomerEndpoint : IMinimalEndpoint
 {
     public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {

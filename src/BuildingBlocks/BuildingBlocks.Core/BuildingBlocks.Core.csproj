@@ -29,7 +29,6 @@
 
   <ItemGroup>
     <PackageReference Include="Hellang.Middleware.ProblemDetails" />
-    <PackageReference Include="AutoMapper" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="IdGen" />
     <PackageReference Include="Newtonsoft.Json" />

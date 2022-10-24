@@ -1,14 +1,14 @@
+using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using SerilogTimings;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription;
 
-public class DeleteRestockSubscriptionEndpoint : IMinimalEndpointConfiguration
+public class DeleteRestockSubscriptionEndpoint : ICommandMinimalEndpoint<long, IResult>
 {
     public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapDelete($"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}/{{id}}", DeleteRestockSubscription)
+        builder.MapDelete($"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}/{{id}}", HandleAsync)
             .RequireAuthorization(CustomersConstants.Role.Admin)
             .WithTags(RestockSubscriptionsConfigs.Tag)
             .Produces(StatusCodes.Status204NoContent)
@@ -20,9 +20,11 @@ public class DeleteRestockSubscriptionEndpoint : IMinimalEndpointConfiguration
         return builder;
     }
 
-    private static async Task<IResult> DeleteRestockSubscription(
+    public async Task<IResult> HandleAsync(
+        HttpContext context,
         long id,
         ICommandProcessor commandProcessor,
+        IMapper mapper,
         CancellationToken cancellationToken)
     {
         var command = new DeleteRestockSubscription(id);

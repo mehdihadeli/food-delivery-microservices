@@ -1,32 +1,54 @@
-using System.Reflection;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Scrutor;
 
 namespace BuildingBlocks.Web.Extensions;
 
 public static class MinimalApiExtensions
 {
+    public static IServiceCollection AddMinimalEndpoints(
+        this WebApplicationBuilder applicationBuilder,
+        ServiceLifetime lifetime = ServiceLifetime.Scoped)
+    {
+        applicationBuilder.Services.Scan(scan => scan
+            .FromAssemblies(AppDomain.CurrentDomain.GetAssemblies())
+            .AddClasses(classes => classes.AssignableTo(typeof(IMinimalEndpoint)))
+            .UsingRegistrationStrategy(RegistrationStrategy.Append)
+            .As<IMinimalEndpoint>()
+            .WithLifetime(lifetime));
+
+        return applicationBuilder.Services;
+    }
+
+    public static IServiceCollection AddMinimalEndpoints(
+        this IServiceCollection services,
+        ServiceLifetime lifetime = ServiceLifetime.Scoped)
+    {
+        services.Scan(scan => scan
+            .FromAssemblies(AppDomain.CurrentDomain.GetAssemblies())
+            .AddClasses(classes => classes.AssignableTo(typeof(IMinimalEndpoint)))
+            .UsingRegistrationStrategy(RegistrationStrategy.Append)
+            .As<IMinimalEndpoint>()
+            .WithLifetime(lifetime));
+
+        return services;
+    }
+
     /// <summary>
-    /// Automatically discover minimal endpoints definitions from assemblies
+    /// Map registered minimal apis.
     /// </summary>
     /// <param name="builder"></param>
-    /// <param name="scanAssemblies"></param>
     /// <returns></returns>
-    public static IEndpointRouteBuilder MapEndpoints(
-        this IEndpointRouteBuilder builder,
-        params Assembly[] scanAssemblies)
+    public static IEndpointRouteBuilder MapMinimalEndpoints(this IEndpointRouteBuilder builder)
     {
-        var assemblies = scanAssemblies.Any() ? scanAssemblies : AppDomain.CurrentDomain.GetAssemblies();
+        var scope = builder.ServiceProvider.CreateScope();
 
-        var endpoints = assemblies.SelectMany(x => x.GetTypes()).Where(t =>
-            t.IsClass && !t.IsAbstract && !t.IsGenericType && !t.IsInterface
-            && t.GetConstructor(Type.EmptyTypes) != null
-            && typeof(IMinimalEndpointConfiguration).IsAssignableFrom(t)).ToList();
+        var endpoints = scope.ServiceProvider.GetServices<IMinimalEndpoint>();
 
         foreach (var endpoint in endpoints)
         {
-            var instantiatedType = (IMinimalEndpointConfiguration)Activator.CreateInstance(endpoint)!;
-            instantiatedType.MapEndpoint(builder);
+            endpoint.MapEndpoint(builder);
         }
 
         return builder;

@@ -4,7 +4,7 @@ using BuildingBlocks.Abstractions.Web.MinimalApi;
 
 namespace ECommerce.Services.Customers.Customers.Features.GettingCustomerById;
 
-public class GetCustomerByIdEndpointEndpoint : IMinimalEndpointConfiguration
+public class GetCustomerByIdEndpointEndpoint : IMinimalEndpoint
 {
     public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {

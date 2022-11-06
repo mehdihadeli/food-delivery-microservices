@@ -6,6 +6,9 @@ WORKDIR /src
 COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Packages.props ./
+COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
+COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
+COPY ./src/BuildingBlocks/BuildingBlocks.Logging/BuildingBlocks.Logging.csproj ./BuildingBlocks/BuildingBlocks.Logging/
 COPY ./src/ApiGateway/Directory.Build.props ./ApiGateway/
 COPY ./src/ApiGateway/ECommerce.ApiGateway/ECommerce.ApiGateway.csproj ./ApiGateway/ECommerce.ApiGateway/
 
@@ -14,6 +17,10 @@ RUN dotnet restore ./ApiGateway/ECommerce.ApiGateway/ECommerce.ApiGateway.csproj
 
 # Copy project files
 COPY ./src/ApiGateway/ECommerce.ApiGateway/  ./ApiGateway/ECommerce.ApiGateway/
+COPY ./src/BuildingBlocks/ ./BuildingBlocks/
+COPY ./src/Services/Catalogs/ECommerce.Services.Catalogs.Api/  ./Services/Catalogs/ECommerce.Services.Catalogs.Api/
+COPY ./src/Services/Catalogs/ECommerce.Services.Catalogs/  ./Services/Catalogs/ECommerce.Services.Catalogs/
+COPY ./src/Services/Shared/  ./Services/Shared/
 
 # Build project with Release configuration
 # and no restore, as we did it already

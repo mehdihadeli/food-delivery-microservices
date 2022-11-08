@@ -5,25 +5,25 @@
     <!--https://github.com/dotnet/aspnetcore/issues/19481-->
     <!--https://docs.microsoft.com/en-us/aspnet/core/fundamentals/metapackage-app-->
     <!--https://docs.microsoft.com/en-us/aspnet/core/fundamentals/target-aspnetcore-->
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
-    <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions"/>
+    <PackageReference Include="Microsoft.DotNet.PlatformAbstractions"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions"/>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
+    <PackageReference Include="Microsoft.Extensions.Options"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" />
-    <PackageReference Include="Ardalis.GuardClauses" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" />
-    <PackageReference Include="MongoDB.Driver" />
+    <PackageReference Include="AutoMapper"/>
+    <PackageReference Include="Ardalis.GuardClauses"/>
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection"/>
+    <PackageReference Include="MongoDB.Driver"/>
   </ItemGroup>
 
 </Project>

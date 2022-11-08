@@ -1,12 +1,12 @@
 <Project>
 
-<PropertyGroup>
-  <AspNetCoreVersion>6.0.1</AspNetCoreVersion>
-  <AspNetCoreHealthCheckVersion>6.0.1</AspNetCoreHealthCheckVersion>
-  <MicrosoftConfigurationVersion>6.0.0</MicrosoftConfigurationVersion>
-  <MicrosoftDependencyInjectionVersion>6.0.0</MicrosoftDependencyInjectionVersion>
-  <MicrosoftLoggingVersion>6.0.0</MicrosoftLoggingVersion>
-  <MassTransitVersion>8.0.0</MassTransitVersion>
-</PropertyGroup>
+  <PropertyGroup>
+    <AspNetCoreVersion>6.0.1</AspNetCoreVersion>
+    <AspNetCoreHealthCheckVersion>6.0.1</AspNetCoreHealthCheckVersion>
+    <MicrosoftConfigurationVersion>6.0.0</MicrosoftConfigurationVersion>
+    <MicrosoftDependencyInjectionVersion>6.0.0</MicrosoftDependencyInjectionVersion>
+    <MicrosoftLoggingVersion>6.0.0</MicrosoftLoggingVersion>
+    <MassTransitVersion>8.0.0</MassTransitVersion>
+  </PropertyGroup>
 
 </Project>

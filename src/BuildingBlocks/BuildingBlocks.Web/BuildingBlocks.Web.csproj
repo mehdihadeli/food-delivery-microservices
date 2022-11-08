@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
@@ -8,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
-    <PackageReference Include="MinimalApis.Extensions" Version="0.5.0-pre.20220321.15" />
+    <PackageReference Include="MinimalApis.Extensions" />
   </ItemGroup>
 
   <ItemGroup>

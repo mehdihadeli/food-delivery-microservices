@@ -19,7 +19,7 @@ public class JwtService : IJwtService
         _jwtOptions = jwtOptions.Value;
     }
 
-    public string GenerateJwtToken(
+    public GenerateTokenResult GenerateJwtToken(
         string userName,
         string email,
         string userId,
@@ -82,17 +82,18 @@ public class JwtService : IJwtService
         SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
         SigningCredentials signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
+        var expireTime = now.AddSeconds(_jwtOptions.TokenLifeTimeSecond == 0 ? 300 : _jwtOptions.TokenLifeTimeSecond);
         var jwt = new JwtSecurityToken(
             _jwtOptions.Issuer,
             _jwtOptions.Audience,
             notBefore: now,
             claims: jwtClaims,
-            expires: now.AddSeconds(_jwtOptions.TokenLifeTimeSecond == 0 ? 36000 : _jwtOptions.TokenLifeTimeSecond),
+            expires: expireTime,
             signingCredentials: signingCredentials);
 
         var token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-        return token;
+        return new GenerateTokenResult(token, expireTime);
     }
 
     public ClaimsPrincipal? GetPrincipalFromToken(string token)

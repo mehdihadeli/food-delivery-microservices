@@ -74,7 +74,7 @@ public class MessagePersistenceService : IMessagePersistenceService
         await _messagePersistenceRepository.AddAsync(
             new StoreMessage(
                 notification.EventId,
-                TypeMapper.GetTypeName(notification.GetType()),
+                TypeMapper.GetFullTypeName(notification.GetType()), // same process so we use full type name
                 _serializer.Serialize(notification),
                 MessageDeliveryType.Internal),
             cancellationToken);
@@ -104,13 +104,13 @@ public class MessagePersistenceService : IMessagePersistenceService
         await _messagePersistenceRepository.AddAsync(
             new StoreMessage(
                 id,
-                TypeMapper.GetTypeName(messageEnvelope.Message.GetType()),
+                TypeMapper.GetFullTypeName(messageEnvelope.Message.GetType()), // because each service has its own persistence and same process (outbox,inbox), full name message type but in microservices we should just use type name for message
                 _messageSerializer.Serialize(messageEnvelope),
                 deliveryType),
             cancellationToken);
 
         _logger.LogInformation(
-            "Message with id: {MessageID} and delivery type: {DeliveryType} saved in persistence message store.",
+            "Message with id: {MessageID} and delivery type: {DeliveryType} saved in persistence message store",
             id,
             deliveryType.ToString());
     }
@@ -120,7 +120,8 @@ public class MessagePersistenceService : IMessagePersistenceService
         MessageDeliveryType deliveryType,
         CancellationToken cancellationToken = default)
     {
-        var message = (await _messagePersistenceRepository.GetByFilterAsync(
+        var message =
+            (await _messagePersistenceRepository.GetByFilterAsync(
                 x => x.Id == messageId && x.DeliveryType == deliveryType, cancellationToken))
             .FirstOrDefault();
 
@@ -174,7 +175,7 @@ public class MessagePersistenceService : IMessagePersistenceService
                 cancellationToken);
 
             _logger.LogInformation(
-                "Message with id: {MessageId} and delivery type: {DeliveryType} processed from the persistence message store.",
+                "Message with id: {MessageId} and delivery type: {DeliveryType} processed from the persistence message store",
                 message.Id,
                 message.DeliveryType);
         }
@@ -196,7 +197,7 @@ public class MessagePersistenceService : IMessagePersistenceService
             await _mediator.Publish(domainNotificationEvent, cancellationToken);
 
             _logger.LogInformation(
-                "Domain-Notification with id: {EventID} and delivery type: {DeliveryType} processed from the persistence message store.",
+                "Domain-Notification with id: {EventID} and delivery type: {DeliveryType} processed from the persistence message store",
                 message.Id,
                 message.DeliveryType);
         }
@@ -206,7 +207,7 @@ public class MessagePersistenceService : IMessagePersistenceService
             await _mediator.Send(internalCommand, cancellationToken);
 
             _logger.LogInformation(
-                "InternalCommand with id: {EventID} and delivery type: {DeliveryType} processed from the persistence message store.",
+                "InternalCommand with id: {EventID} and delivery type: {DeliveryType} processed from the persistence message store",
                 message.Id,
                 message.DeliveryType);
         }

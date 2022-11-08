@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Web.Module;
+using ECommerce.Services.Customers.Shared;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions;
 
@@ -7,7 +8,7 @@ public class RestockSubscriptionsConfigs:IModuleConfiguration
     public const string Tag = "RestockSubscriptions";
 
     public const string RestockSubscriptionsUrl =
-        $"{CustomersModuleConfiguration.CustomerModulePrefixUri}/restock-subscriptions";
+        $"{SharedModulesConfiguration.CustomerModulePrefixUri}/restock-subscriptions";
 
     public IServiceCollection AddModuleServices(
         IServiceCollection services,

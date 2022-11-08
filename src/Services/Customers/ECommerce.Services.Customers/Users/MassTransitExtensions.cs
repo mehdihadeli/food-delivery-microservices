@@ -1,4 +1,4 @@
-﻿using ECommerce.Services.Customers.Users.Features.RegisteringUser.Events.External;
+﻿using ECommerce.Services.Customers.Users.Features.RegisteringUser.Events.Integration.External;
 using ECommerce.Services.Shared.Identity.Users.Events.Integration;
 using Humanizer;
 using MassTransit;

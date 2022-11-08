@@ -15,7 +15,6 @@ public class RefreshToken
     public DateTime? RevokedAt { get; set; }
     public ApplicationUser ApplicationUser { get; set; }
 
-
     public static string GetRefreshToken()
     {
         var randomNumber = new byte[32];

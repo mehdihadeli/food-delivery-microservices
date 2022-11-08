@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using BuildingBlocks.Abstractions.Serialization;
+using BuildingBlocks.Core.Serialization.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using JsonConverter = Newtonsoft.Json.JsonConverter;
@@ -29,7 +30,7 @@ public class DefaultSerializer : ISerializer
     }
 
 
-    protected JsonSerializerSettings? CreateSerializerSettings(bool camelCase = true, bool indented = false)
+    protected static JsonSerializerSettings CreateSerializerSettings(bool camelCase = true, bool indented = false)
     {
         var settings = new JsonSerializerSettings {ContractResolver = new ContractResolverWithPrivate()};
 
@@ -41,6 +42,8 @@ public class DefaultSerializer : ISerializer
         // for handling private constructor
         settings.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
         settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+        settings.Converters.Add(new DateOnlyConverter());
 
         return settings;
     }

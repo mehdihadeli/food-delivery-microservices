@@ -26,7 +26,6 @@ public static class Extensions
 
         healthChecksBuilder?.Invoke(healCheckBuilder);
 
-        //// health check ui has problem with .net 6
         services.AddHealthChecksUI(setup =>
         {
             setup.SetEvaluationTimeInSeconds(60); // time in seconds between check

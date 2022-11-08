@@ -312,7 +312,7 @@ public class IntegrationTestFixture<TEntryPoint> : IAsyncLifetime
 
                 var filter = await messagePersistenceService.GetByFilterAsync(x =>
                     x.DeliveryType == MessageDeliveryType.Outbox &&
-                    TypeMapper.GetTypeName(typeof(TMessage)) == x.DataType);
+                    TypeMapper.GetFullTypeName(typeof(TMessage)) == x.DataType);
 
                 var res = filter.Any(x => x.MessageStatus == MessageStatus.Processed);
 
@@ -337,7 +337,7 @@ public class IntegrationTestFixture<TEntryPoint> : IAsyncLifetime
 
                 var filter = await messagePersistenceService.GetByFilterAsync(x =>
                     x.DeliveryType == MessageDeliveryType.Internal &&
-                    TypeMapper.GetTypeName(typeof(TInternalCommand)) == x.DataType);
+                    TypeMapper.GetFullTypeName(typeof(TInternalCommand)) == x.DataType);
 
                 var res = filter.Any(x => x.MessageStatus == MessageStatus.Processed);
 

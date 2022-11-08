@@ -1,6 +1,7 @@
 using BuildingBlocks.Core.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 
 namespace BuildingBlocks.Persistence.EfCore.Postgres;

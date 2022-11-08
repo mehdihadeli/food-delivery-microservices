@@ -3,6 +3,7 @@ using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
+using BuildingBlocks.Validation;
 using MassTransit;
 using MassTransit.Configuration;
 using MassTransit.Testing;
@@ -65,7 +66,8 @@ public static class Extensions
                 });
 
                 // https://masstransit-project.com/usage/exceptions.html#retry
-                // cfg.UseMessageRetry(r => r.Interval(3, 3));
+                // https://markgossa.com/2022/06/masstransit-exponential-back-off.html
+                cfg.UseMessageRetry(r => AddRetryConfiguration(r));
 
                 // cfg.UseInMemoryOutbox();
 
@@ -95,5 +97,17 @@ public static class Extensions
         services.AddTransient<IBus, MassTransitBus>();
 
         return services;
+    }
+
+    private static IRetryConfigurator AddRetryConfiguration(IRetryConfigurator retryConfigurator)
+    {
+        retryConfigurator.Exponential(
+            3,
+            TimeSpan.FromMilliseconds(200),
+            TimeSpan.FromMinutes(120),
+            TimeSpan.FromMilliseconds(200))
+            .Ignore<ValidationException>(); // don't retry if we have invalid data and message goes to _error queue masstransit
+
+        return retryConfigurator;
     }
 }

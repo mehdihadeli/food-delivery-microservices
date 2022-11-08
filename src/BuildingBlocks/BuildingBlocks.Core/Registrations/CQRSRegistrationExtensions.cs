@@ -19,10 +19,10 @@ public static class CQRSRegistrationExtensions
         this IServiceCollection services,
         Assembly[]? assemblies = null,
         ServiceLifetime serviceLifetime = ServiceLifetime.Transient,
-        Action<IServiceCollection>? doMoreActions = null)
+        params Type[] pipelines)
     {
         services.AddMediatR(
-            assemblies ?? new[] { Assembly.GetCallingAssembly() },
+            assemblies ?? new[] {Assembly.GetCallingAssembly()},
             x =>
             {
                 switch (serviceLifetime)
@@ -39,6 +39,11 @@ public static class CQRSRegistrationExtensions
                 }
             });
 
+        foreach (var pipeline in pipelines)
+        {
+            services.TryAddTransientExact(typeof(IPipelineBehavior<,>), pipeline);
+        }
+
         services.Add<ICommandProcessor, CommandProcessor>(serviceLifetime)
             .Add<IQueryProcessor, QueryProcessor>(serviceLifetime)
             .Add<IEventProcessor, EventProcessor>(serviceLifetime)
@@ -47,8 +52,6 @@ public static class CQRSRegistrationExtensions
             .Add<IDomainNotificationEventPublisher, DomainNotificationEventPublisher>(serviceLifetime);
 
         services.AddScoped<IDomainEventsAccessor, NullDomainEventsAccessor>();
-
-        doMoreActions?.Invoke(services);
 
         return services;
     }

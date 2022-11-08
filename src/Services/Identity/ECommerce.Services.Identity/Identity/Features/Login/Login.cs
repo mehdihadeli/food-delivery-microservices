@@ -1,12 +1,16 @@
 using Ardalis.GuardClauses;
+using BuildingBlocks.Abstractions.Caching;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Exception;
+using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Utils;
 using BuildingBlocks.Security.Jwt;
 using ECommerce.Services.Identity.Identity.Exceptions;
-using ECommerce.Services.Identity.Identity.Features.GenerateJwtToken;
-using ECommerce.Services.Identity.Identity.Features.GenerateRefreshToken;
+using ECommerce.Services.Identity.Identity.Features.GeneratingJwtToken;
+using ECommerce.Services.Identity.Identity.Features.GeneratingRefreshToken;
+using ECommerce.Services.Identity.Shared.Data;
 using ECommerce.Services.Identity.Shared.Exceptions;
 using ECommerce.Services.Identity.Shared.Models;
 using FluentValidation;
@@ -31,10 +35,12 @@ internal class LoginHandler : ICommandHandler<Login, LoginResponse>
 {
     private readonly ICommandProcessor _commandProcessor;
     private readonly IJwtService _jwtService;
+    private readonly ICacheManager _cacheManager;
     private readonly JwtOptions _jwtOptions;
     private readonly ILogger<LoginHandler> _logger;
     private readonly IQueryProcessor _queryProcessor;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IdentityContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public LoginHandler(
@@ -42,15 +48,19 @@ internal class LoginHandler : ICommandHandler<Login, LoginResponse>
         ICommandProcessor commandProcessor,
         IQueryProcessor queryProcessor,
         IJwtService jwtService,
+        ICacheManager cacheManager,
         IOptions<JwtOptions> jwtOptions,
         SignInManager<ApplicationUser> signInManager,
+        IdentityContext context,
         ILogger<LoginHandler> logger)
     {
         _userManager = userManager;
         _commandProcessor = commandProcessor;
         _queryProcessor = queryProcessor;
         _jwtService = jwtService;
+        _cacheManager = cacheManager;
         _signInManager = signInManager;
+        _context = context;
         _jwtOptions = jwtOptions.Value;
         _logger = logger;
     }
@@ -101,15 +111,33 @@ internal class LoginHandler : ICommandHandler<Login, LoginResponse>
                 new GenerateJwtTokenCommand(identityUser, refreshToken.Token),
                 cancellationToken);
 
+        if (string.IsNullOrWhiteSpace(accessToken.Token))
+            throw new AppException("Generate access token failed.");
+
         _logger.LogInformation("User with ID: {ID} has been authenticated", identityUser.Id);
 
+        if (_jwtOptions.CheckRevokedAccessTokens)
+        {
+            await _context.Set<AccessToken>().AddAsync(
+                new AccessToken
+                {
+                    UserId = identityUser.Id,
+                    Token = accessToken.Token,
+                    CreatedAt = DateTime.Now,
+                    ExpiredAt = accessToken.ExpireAt,
+                    CreatedByIp = IpUtilities.GetIpAddress()
+                },
+                cancellationToken);
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
         // we can don't return value from command and get token from a short term session in our request with `TokenStorageService`
-        return new LoginResponse(identityUser, accessToken, refreshToken.Token);
+        return new LoginResponse(identityUser, accessToken.Token, refreshToken.Token);
     }
 }
 
 public class LoginResponse
-
 {
     public LoginResponse(ApplicationUser user, string accessToken, string refreshToken)
     {

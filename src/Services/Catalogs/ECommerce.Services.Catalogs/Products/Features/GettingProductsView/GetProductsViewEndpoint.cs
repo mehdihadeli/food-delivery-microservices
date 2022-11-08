@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using ECommerce.Services.Catalogs.Shared;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProductsView;
 
@@ -8,7 +9,7 @@ public static class GetProductsViewEndpoint
     internal static IEndpointRouteBuilder MapGetProductsViewEndpoint(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet(
-                $"{CatalogModuleConfiguration.CatalogModulePrefixUri}/products-view/{{page}}/{{pageSize}}",
+                $"{SharedModulesConfiguration.CatalogModulePrefixUri}/products-view/{{page}}/{{pageSize}}",
                 GetProductsView)
             .WithTags(ProductsConfigs.Tag)
             // .RequireAuthorization()

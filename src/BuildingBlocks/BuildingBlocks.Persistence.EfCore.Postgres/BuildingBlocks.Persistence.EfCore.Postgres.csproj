@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
@@ -5,10 +6,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Dapper" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-    <PackageReference Include="FluentMigrator.Extensions.Postgres" Version="3.3.2" />
-    <PackageReference Include="FluentMigrator.Runner.Postgres" Version="3.3.2" />
-    <PackageReference Include="SqlKata" Version="2.3.7" />
+    <PackageReference Include="FluentMigrator.Extensions.Postgres" />
+    <PackageReference Include="FluentMigrator.Runner.Postgres" />
+    <PackageReference Include="SqlKata" />
   </ItemGroup>
 </Project>

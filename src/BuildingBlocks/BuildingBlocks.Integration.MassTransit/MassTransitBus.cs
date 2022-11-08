@@ -235,7 +235,7 @@ public class MassTransitBus : IBus
         }
 
         meta.AddMessageName(message.GetType().Name.Underscore());
-        meta.AddMessageType(TypeMapper.GetTypeName(message.GetType()));
+        meta.AddMessageType(TypeMapper.GetTypeName(message.GetType())); // out of process message should have just type name instead of type full name
         meta.AddCreatedUnixTime(DateTimeExtensions.ToUnixTimeSecond(DateTime.Now));
         return meta;
     }

@@ -8,8 +8,7 @@ namespace BuildingBlocks.Core.Domain;
 
 public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
 {
-    [NonSerialized]
-    private readonly ConcurrentQueue<IDomainEvent> _uncommittedDomainEvents = new();
+    [NonSerialized] private readonly ConcurrentQueue<IDomainEvent> _uncommittedDomainEvents = new();
 
     private const long NewAggregateVersion = 0;
 
@@ -49,7 +48,6 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
             throw new BusinessRuleValidationException(rule);
         }
     }
-
 }
 
 public abstract class Aggregate<TIdentity, TId> : Aggregate<TIdentity>

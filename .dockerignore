@@ -24,3 +24,5 @@
 **/out/
 LICENSE
 README.md
+local/data/
+portainer-data/

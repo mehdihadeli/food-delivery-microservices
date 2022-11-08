@@ -9,6 +9,7 @@ using BuildingBlocks.Web.Middlewares;
 using ECommerce.Services.Identity;
 using ECommerce.Services.Identity.Api.Extensions.ApplicationBuilderExtensions;
 using ECommerce.Services.Identity.Api.Extensions.ServiceCollectionExtensions;
+using ECommerce.Services.Identity.Api.Middlewares;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Serilog;
@@ -56,25 +57,24 @@ static void RegisterServices(WebApplicationBuilder builder)
         .AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+    // https://www.talkingdotnet.com/disable-automatic-model-state-validation-in-asp-net-core-2-1/
+    builder.Services.Configure<ApiBehaviorOptions>(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true;
+    });
+
     var loggingOptions = builder.Configuration.GetSection(nameof(LoggerOptions)).Get<LoggerOptions>();
 
     builder.AddCompression();
 
     builder.AddCustomProblemDetails();
 
+    builder.Services.AddSingleton<RevokeAccessTokenMiddleware>();
+
     builder.Host.AddCustomSerilog(
         optionsBuilder =>
         {
             optionsBuilder.SetLevel(LogEventLevel.Information);
-        },
-        config =>
-        {
-            config.WriteTo.File(
-                GetLogPath(builder.Environment, loggingOptions) ?? "../logs/customers-service.log",
-                outputTemplate: loggingOptions?.LogTemplate ??
-                                "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}",
-                rollingInterval: RollingInterval.Day,
-                rollOnFileSizeLimit: true);
         });
 
     builder.AddCustomSwagger(builder.Configuration, typeof(IdentityRoot).Assembly);
@@ -122,6 +122,7 @@ static async Task ConfigureApplication(WebApplication app)
 
     app.UseAuthentication();
     app.UseAuthorization();
+    app.UseRevokeAccessTokenMiddleware();
 
     /*----------------- Module Middleware Setup ------------------*/
     await app.ConfigureModules();
@@ -132,7 +133,7 @@ static async Task ConfigureApplication(WebApplication app)
     app.MapModulesEndpoints();
 
     // automatic discover minimal endpoints
-    app.MapEndpoints();
+    app.MapMinimalEndpoints();
 
     Log.Logger = new LoggerConfiguration()
         .WriteTo.Console()
@@ -141,6 +142,4 @@ static async Task ConfigureApplication(WebApplication app)
 
 public partial class Program
 {
-    public static string? GetLogPath(IWebHostEnvironment env, LoggerOptions loggerOptions)
-        => env.IsDevelopment() ? loggerOptions.DevelopmentLogPath : loggerOptions.ProductionLogPath;
 }

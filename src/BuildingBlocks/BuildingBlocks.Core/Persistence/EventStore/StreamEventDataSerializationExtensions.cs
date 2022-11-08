@@ -54,7 +54,7 @@ public static class StreamEventDataSerializationExtensions
         return new StreamEventData
         {
             EventId = Guid.NewGuid(),
-            EventType = TypeMapper.GetTypeNameByObject(@event),
+            EventType = TypeMapper.GetFullTypeNameByObject(@event),
             Data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(@event)),
             Metadata = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metadata ?? new object())),
             ContentType = "application/json"

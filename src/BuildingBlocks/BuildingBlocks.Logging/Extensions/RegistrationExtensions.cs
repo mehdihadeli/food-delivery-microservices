@@ -36,29 +36,39 @@ public static class RegistrationExtensions
                 ? logLevel
                 : LogEventLevel.Information;
 
-            loggerConfiguration.MinimumLevel.Override("Microsoft.AspNetCore", level);
-            loggerConfiguration.MinimumLevel.Is(level);
+            // https://andrewlock.net/using-serilog-aspnetcore-in-asp-net-core-3-reducing-log-verbosity/
+            loggerConfiguration.MinimumLevel.Is(level)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .MinimumLevel
+                // Filter out ASP.NET Core infrastructure logs that are Information and below
+                .Override("Microsoft.AspNetCore", LogEventLevel.Warning);
 
             if (context.HostingEnvironment.IsDevelopment())
             {
-                loggerConfiguration.WriteTo.SpectreConsole(
+                loggerConfiguration.WriteTo.Async(writeTo => writeTo.SpectreConsole(
                     loggerOptions?.LogTemplate ??
                     "{Timestamp:HH:mm:ss} [{Level:u4}] {Message:lj}{NewLine}{Exception}",
-                    level);
+                    level));
             }
             else
             {
                 if (!string.IsNullOrEmpty(loggerOptions?.ElasticSearchUrl))
-                    loggerConfiguration.WriteTo.Elasticsearch(loggerOptions.ElasticSearchUrl);
+                    loggerConfiguration.WriteTo.Async(writeTo => writeTo.Elasticsearch(loggerOptions.ElasticSearchUrl));
+
                 if (!string.IsNullOrEmpty(loggerOptions?.SeqUrl))
                 {
-                    loggerConfiguration.WriteTo.Seq(loggerOptions.SeqUrl);
+                    loggerConfiguration.WriteTo.Async(writeTo => writeTo.Seq(loggerOptions.SeqUrl));
                 }
+            }
 
-                loggerConfiguration.WriteTo.SpectreConsole(
-                    loggerOptions?.LogTemplate ??
-                    "{Timestamp:HH:mm:ss} [{Level:u4}] {Message:lj}{NewLine}{Exception}",
-                    level);
+            if (!string.IsNullOrEmpty(loggerOptions?.LogPath))
+            {
+                loggerConfiguration.WriteTo.File(
+                    loggerOptions.LogPath,
+                    outputTemplate: loggerOptions.LogTemplate ??
+                                    "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}",
+                    rollingInterval: RollingInterval.Day,
+                    rollOnFileSizeLimit: true);
             }
         });
     }

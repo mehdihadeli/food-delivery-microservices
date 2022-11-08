@@ -1,6 +1,7 @@
 # https://github.com/Huachao/vscode-restclient
 @catalog-api=http://localhost:4000
 @api-gateway=http://localhost:3000
+@identity-api=https://localhost:7001
 @contentType = application/json
 @product_id = 1
 

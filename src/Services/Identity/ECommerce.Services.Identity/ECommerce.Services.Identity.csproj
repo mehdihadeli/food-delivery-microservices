@@ -1,10 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="Ardalis.ApiEndpoints" Version="4.0.1" />
-    <PackageReference Include="Duende.IdentityServer" Version="6.0.0" />
-    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="6.0.0" />
-    <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="6.0.0" />
+    <PackageReference Include="Ardalis.ApiEndpoints" />
+    <PackageReference Include="Duende.IdentityServer" />
+    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" />
+    <PackageReference Include="Duende.IdentityServer.EntityFramework" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -43,6 +44,10 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="ECommerce.Services.Identity.IntegrationTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Shared\Data\Migrations" />
   </ItemGroup>
 
 </Project>

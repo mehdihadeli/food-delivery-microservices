@@ -1,13 +1,15 @@
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Identity.Identity.Data;
-using ECommerce.Services.Identity.Identity.Features.GetClaims;
+using ECommerce.Services.Identity.Identity.Features.GettingClaims;
 using ECommerce.Services.Identity.Identity.Features.Login;
 using ECommerce.Services.Identity.Identity.Features.Logout;
 using ECommerce.Services.Identity.Identity.Features.RefreshingToken;
-using ECommerce.Services.Identity.Identity.Features.RevokeRefreshToken;
-using ECommerce.Services.Identity.Identity.Features.SendEmailVerificationCode;
-using ECommerce.Services.Identity.Identity.Features.VerifyEmail;
+using ECommerce.Services.Identity.Identity.Features.RevokingAccessToken;
+using ECommerce.Services.Identity.Identity.Features.RevokingRefreshToken;
+using ECommerce.Services.Identity.Identity.Features.SendingEmailVerificationCode;
+using ECommerce.Services.Identity.Identity.Features.VerifyingEmail;
+using ECommerce.Services.Identity.Shared;
 using ECommerce.Services.Identity.Shared.Extensions.ServiceCollectionExtensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
@@ -16,7 +18,7 @@ namespace ECommerce.Services.Identity.Identity;
 internal class IdentityConfigs : IModuleConfiguration
 {
     public const string Tag = "Identity";
-    public const string IdentityPrefixUri = $"{IdentityModuleConfiguration.IdentityModulePrefixUri}";
+    public const string IdentityPrefixUri = $"{SharedModulesConfiguration.IdentityModulePrefixUri}";
 
     public IServiceCollection AddModuleServices(
         IServiceCollection services,
@@ -60,6 +62,7 @@ internal class IdentityConfigs : IModuleConfiguration
         endpoints.MapSendVerifyEmailEndpoint();
         endpoints.MapRefreshTokenEndpoint();
         endpoints.MapRevokeTokenEndpoint();
+        endpoints.MapRevokeAccessTokenEndpoint();
         endpoints.MapGetClaimsEndpoint();
 
         return endpoints;

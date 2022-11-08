@@ -1,13 +1,14 @@
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Customers.Customers.Data;
+using ECommerce.Services.Customers.Shared;
 
 namespace ECommerce.Services.Customers.Customers;
 
 internal class CustomersConfigs : IModuleConfiguration
 {
     public const string Tag = "Customers";
-    public const string CustomersPrefixUri = $"{CustomersModuleConfiguration.CustomerModulePrefixUri}";
+    public const string CustomersPrefixUri = $"{SharedModulesConfiguration.CustomerModulePrefixUri}";
 
     public IServiceCollection AddModuleServices(
         IServiceCollection services,

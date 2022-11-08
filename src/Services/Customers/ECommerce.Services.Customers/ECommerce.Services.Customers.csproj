@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -11,11 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Products\Features\CreatingProduct\Events\Integration" />
+    <Folder Include="Products\Features\ReplenishingProductStock\Events\Integration" />
     <Folder Include="Users\Features" />
+    <Folder Include="Users\Features\RegisteringUser\Events\Integration" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ardalis.ApiEndpoints" Version="4.0.1" />
+    <PackageReference Include="Ardalis.ApiEndpoints" />
   </ItemGroup>
 
   <ItemGroup>

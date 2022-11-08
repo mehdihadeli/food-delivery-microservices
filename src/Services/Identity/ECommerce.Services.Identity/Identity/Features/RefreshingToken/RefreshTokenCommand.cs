@@ -2,14 +2,13 @@ using System.Security.Claims;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Security.Jwt;
-using FluentValidation;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.JsonWebTokens;
 using ECommerce.Services.Identity.Identity.Exceptions;
-using ECommerce.Services.Identity.Identity.Features.GenerateJwtToken;
-using ECommerce.Services.Identity.Identity.Features.GenerateRefreshToken;
+using ECommerce.Services.Identity.Identity.Features.GeneratingJwtToken;
+using ECommerce.Services.Identity.Identity.Features.GeneratingRefreshToken;
 using ECommerce.Services.Identity.Shared.Exceptions;
 using ECommerce.Services.Identity.Shared.Models;
+using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 
 namespace ECommerce.Services.Identity.Identity.Features.RefreshingToken;
@@ -70,7 +69,7 @@ internal class RefreshTokenHandler : ICommandHandler<RefreshTokenCommand, Refres
             await _commandProcessor.SendAsync(
                 new GenerateJwtTokenCommand(identityUser, refreshToken.Token), cancellationToken);
 
-        return new RefreshTokenResult(identityUser, accessToken, refreshToken.Token);
+        return new RefreshTokenResult(identityUser, accessToken.Token, refreshToken.Token);
     }
 }
 

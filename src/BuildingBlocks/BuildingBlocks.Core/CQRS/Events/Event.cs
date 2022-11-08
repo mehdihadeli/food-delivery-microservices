@@ -13,5 +13,5 @@ public abstract record Event : IEvent
 
     public DateTimeOffset TimeStamp { get; protected set; } = DateTimeOffset.Now;
 
-    public string EventType => TypeMapper.GetTypeName(GetType());
+    public string EventType => TypeMapper.GetFullTypeName(GetType());
 }

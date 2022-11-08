@@ -21,6 +21,8 @@ public class IdentityDataSeeder : IDataSeeder
         await SeedUsers();
     }
 
+    public int Order => 1;
+
     private async Task SeedRoles()
     {
         if (!await _roleManager.RoleExistsAsync(ApplicationRole.Admin.Name))

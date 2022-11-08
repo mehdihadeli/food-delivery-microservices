@@ -17,7 +17,7 @@ public static partial class ApplicationBuilderExtensions
             using var serviceScope = app.ApplicationServices.CreateScope();
             var seeders = serviceScope.ServiceProvider.GetServices<IDataSeeder>();
 
-            foreach (var seeder in seeders)
+            foreach (var seeder in seeders.OrderBy(x => x.Order))
             {
                 logger.LogInformation("Seeding '{Seed}' started...", seeder.GetType().Name);
                 await seeder.SeedAllAsync();

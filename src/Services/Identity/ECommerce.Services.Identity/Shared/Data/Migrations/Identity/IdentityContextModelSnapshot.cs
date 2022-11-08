@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using ECommerce.Services.Identity.Identity.Data;
 
 #nullable disable
 
@@ -22,6 +21,48 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.AccessToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedByIp")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("created_by_ip");
+
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expired_at");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("token");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_access_tokens");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_access_tokens_user_id");
+
+                    b.HasIndex("Token", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_access_tokens_token_user_id");
+
+                    b.ToTable("access_tokens", (string)null);
+                });
 
             modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.ApplicationRole", b =>
                 {
@@ -290,36 +331,6 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                     b.ToTable("refresh_tokens", (string)null);
                 });
 
-            modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.UserOldPassword", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("password_hash");
-
-                    b.Property<DateTime>("SetAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("set_at");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_user_old_passwords");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_user_old_passwords_user_id");
-
-                    b.ToTable("user_old_passwords", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
@@ -450,6 +461,18 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                     b.ToTable("asp_net_user_tokens", (string)null);
                 });
 
+            modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.AccessToken", b =>
+                {
+                    b.HasOne("ECommerce.Services.Identity.Shared.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("AccessTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_access_tokens_asp_net_users_user_id");
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.RefreshToken", b =>
                 {
                     b.HasOne("ECommerce.Services.Identity.Shared.Models.ApplicationUser", "ApplicationUser")
@@ -460,18 +483,6 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                         .HasConstraintName("fk_refresh_tokens_asp_net_users_user_id");
 
                     b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.UserOldPassword", b =>
-                {
-                    b.HasOne("ECommerce.Services.Identity.Shared.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_old_passwords_asp_net_users_user_id");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -533,9 +544,11 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
 
             modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("AccessTokens");
+
                     b.Navigation("RefreshTokens");
                 });
-#pragma warning reecommerce 612, 618
+#pragma warning restore 612, 618
         }
     }
 }

@@ -25,4 +25,6 @@ public class CategoryDataSeeder : IDataSeeder
         });
         await _dbContext.SaveChangesAsync();
     }
+
+    public int Order => 1;
 }

@@ -1,7 +1,4 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 
 namespace ECommerce.Services.Identity.Identity.Features.Login;
 
@@ -14,6 +11,7 @@ public static class LoginEndpoint
             .WithTags(IdentityConfigs.Tag)
             .Produces<LoginResponse>()
             .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status400BadRequest)
             .WithDisplayName("Login User.");
 

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using BuildingBlocks.Abstractions.Serialization;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -10,10 +11,12 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     where TResponse : notnull
 {
     private readonly ILogger<LoggingBehavior<TRequest, TResponse>> _logger;
+    private readonly ISerializer _serializer;
 
-    public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger)
+    public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger, ISerializer serializer)
     {
         _logger = logger;
+        _serializer = serializer;
     }
 
     public async Task<TResponse> Handle(
@@ -22,7 +25,7 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         RequestHandlerDelegate<TResponse> next)
     {
         // https://dotnetdocs.ir/Post/34/categorizing-logs-with-serilog-in-aspnet-core
-        using (Serilog.Context.LogContext.PushProperty("Request Object", JsonConvert.SerializeObject(request)))
+        using (Serilog.Context.LogContext.PushProperty("Request Object", _serializer.Serialize(request)))
         {
             const string prefix = nameof(LoggingBehavior<TRequest, TResponse>);
 

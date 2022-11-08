@@ -32,7 +32,9 @@ public class MessagePersistenceBackgroundService : BackgroundService
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation(
-            $"MessagePersistence Background Service is starting on client '{_machineInstanceInfo.ClientId}' and group '{_machineInstanceInfo.ClientGroup}'.");
+            "MessagePersistence Background Service is starting on client '{@ClientId}' and group '{@ClientGroup}'",
+            _machineInstanceInfo.ClientId,
+            _machineInstanceInfo.ClientGroup);
 
         _executingTask = ProcessAsync(stoppingToken);
 
@@ -42,7 +44,9 @@ public class MessagePersistenceBackgroundService : BackgroundService
     public override Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation(
-            $"MessagePersistence Background Service is stopping on client '{_machineInstanceInfo.ClientId}' and group '{_machineInstanceInfo.ClientGroup}'.");
+            "MessagePersistence Background Service is stopping on client '{@ClientId}' and group '{@ClientGroup}'",
+            _machineInstanceInfo.ClientId,
+            _machineInstanceInfo.ClientGroup);
 
         return base.StopAsync(cancellationToken);
     }

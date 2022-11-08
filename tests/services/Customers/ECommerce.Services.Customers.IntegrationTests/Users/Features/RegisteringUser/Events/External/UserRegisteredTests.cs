@@ -3,7 +3,7 @@ using ECommerce.Services.Customers.Customers.Features;
 using ECommerce.Services.Customers.Shared.Clients.Identity;
 using ECommerce.Services.Customers.Shared.Clients.Identity.Dtos;
 using ECommerce.Services.Customers.Shared.Data;
-using ECommerce.Services.Customers.Users.Features.RegisteringUser.Events.External;
+using ECommerce.Services.Customers.Users.Features.RegisteringUser.Events.Integration.External;
 using ECommerce.Services.Shared.Customers.Customers.Events.Integration;
 using ECommerce.Services.Shared.Identity.Users.Events.Integration;
 using Microsoft.EntityFrameworkCore;

@@ -81,18 +81,12 @@ public static partial class ServiceCollectionExtensions
 
         services.AddEmailService(configuration);
 
-        services.AddCqrs(
-            doMoreActions: s =>
-            {
-                s.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>))
-                    .AddScoped(typeof(IStreamPipelineBehavior<,>), typeof(StreamRequestValidationBehavior<,>))
-                    .AddScoped(typeof(IStreamPipelineBehavior<,>), typeof(StreamLoggingBehavior<,>))
-                    .AddScoped(typeof(IStreamPipelineBehavior<,>), typeof(StreamCachingBehavior<,>))
-                    .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
-                    .AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>))
-                    .AddScoped(typeof(IPipelineBehavior<,>), typeof(InvalidateCachingBehavior<,>))
-                    .AddScoped(typeof(IPipelineBehavior<,>), typeof(EfTxBehavior<,>));
-            });
+        services.AddCqrs(pipelines: new[]
+        {
+            typeof(RequestValidationBehavior<,>), typeof(StreamRequestValidationBehavior<,>),
+            typeof(StreamLoggingBehavior<,>), typeof(StreamCachingBehavior<,>), typeof(LoggingBehavior<,>),
+            typeof(CachingBehavior<,>), typeof(InvalidateCachingBehavior<,>), typeof(EfTxBehavior<,>)
+        });
 
         services.AddPostgresMessagePersistence(configuration);
 

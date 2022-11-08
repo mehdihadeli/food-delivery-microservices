@@ -6,6 +6,7 @@ COPY ./.editorconfig ./
 
 COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
+COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
 COPY ./src/Services/Orders/Directory.Build.props ./Services/Orders/
 

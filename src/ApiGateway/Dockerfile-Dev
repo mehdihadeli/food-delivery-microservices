@@ -5,7 +5,9 @@ WORKDIR /src
 
 COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
+COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
+
 COPY ./src/ApiGateway/Directory.Build.props ./ApiGateway/
 COPY ./src/ApiGateway/ECommerce.ApiGateway/ECommerce.ApiGateway.csproj ./ApiGateway/ECommerce.ApiGateway/
 

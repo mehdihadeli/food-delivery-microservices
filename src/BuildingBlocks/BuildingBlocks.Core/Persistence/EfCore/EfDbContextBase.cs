@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq.Expressions;
-using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Persistence;
@@ -18,7 +17,6 @@ public abstract class EfDbContextBase :
     IDomainEventContext
 {
     // private readonly IDomainEventPublisher _domainEventPublisher;
-
     private IDbContextTransaction? _currentTransaction;
 
     protected EfDbContextBase(DbContextOptions options) : base(options)
@@ -33,7 +31,7 @@ public abstract class EfDbContextBase :
         AddingVersioning(modelBuilder);
     }
 
-    private void AddingVersioning(ModelBuilder builder)
+    private static void AddingVersioning(ModelBuilder builder)
     {
         var types = builder.Model.GetEntityTypes().Where(x => x.ClrType.IsAssignableTo(typeof(IHaveAggregateVersion)));
         foreach (var entityType in types)
@@ -56,7 +54,7 @@ public abstract class EfDbContextBase :
             var parameter = Expression.Parameter(entityType.ClrType);
 
             // EF.Property<bool>(TEntity, "IsDeleted")
-            var propertyMethodInfo = typeof(EF).GetMethod("Property").MakeGenericMethod(typeof(bool));
+            var propertyMethodInfo = typeof(EF).GetMethod("Property")?.MakeGenericMethod(typeof(bool));
             var isDeletedProperty = Expression.Call(propertyMethodInfo, parameter, Expression.Constant("IsDeleted"));
 
             // EF.Property<bool>(TEntity, "IsDeleted") == false
@@ -111,83 +109,7 @@ public abstract class EfDbContextBase :
 
     public Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<bool>(true);
-    }
-
-    public override int SaveChanges(bool acceptAllChangesOnSuccess)
-    {
-        OnBeforeSaving();
-
-        return base.SaveChanges(acceptAllChangesOnSuccess);
-    }
-
-    public override Task<int> SaveChangesAsync(
-        bool acceptAllChangesOnSuccess,
-        CancellationToken cancellationToken = default)
-    {
-        OnBeforeSaving();
-        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-    }
-
-    // Ref: https://www.meziantou.net/entity-framework-core-generate-tracking-columns.htm
-    // Ref: https://www.meziantou.net/entity-framework-core-soft-delete-using-query-filters.htm
-    private void OnBeforeSaving()
-    {
-        var now = DateTime.Now;
-
-        foreach (var entry in ChangeTracker.Entries<IHaveAggregate>())
-        {
-            // Ref: http://www.kamilgrzybek.com/design/handling-concurrency-aggregate-pattern-and-ef-core/
-            var events = entry.Entity.GetUncommittedDomainEvents();
-            if (events.Any())
-            {
-                entry.CurrentValues[nameof(IHaveAggregateVersion.OriginalVersion)] = entry.Entity.OriginalVersion + 1;
-            }
-        }
-
-        // var userId = GetCurrentUser(); // TODO: Get current user
-        foreach (var entry in ChangeTracker.Entries<IHaveAudit>())
-        {
-            switch (entry.State)
-            {
-                case EntityState.Modified:
-                    entry.CurrentValues[nameof(IHaveAudit.LastModified)] = now;
-                    entry.CurrentValues[nameof(IHaveAudit.LastModifiedBy)] = 1;
-                    break;
-                case EntityState.Added:
-                    entry.CurrentValues[nameof(IHaveAudit.Created)] = now;
-                    entry.CurrentValues[nameof(IHaveAudit.CreatedBy)] = 1;
-                    break;
-            }
-        }
-
-        foreach (var entry in ChangeTracker.Entries<IHaveCreator>())
-        {
-            if (entry.State == EntityState.Added)
-            {
-                entry.CurrentValues[nameof(IHaveCreator.Created)] = now;
-                entry.CurrentValues[nameof(IHaveCreator.CreatedBy)] = 1;
-            }
-        }
-
-        foreach (var entry in ChangeTracker.Entries())
-        {
-            switch (entry.State)
-            {
-                case EntityState.Added:
-                    if (entry.Entity is IHaveSoftDelete)
-                        entry.CurrentValues["IsDeleted"] = false;
-                    break;
-                case EntityState.Deleted:
-                    if (entry.Entity is IHaveSoftDelete)
-                    {
-                        entry.State = EntityState.Modified;
-                        Entry(entry.Entity).CurrentValues["IsDeleted"] = true;
-                    }
-
-                    break;
-            }
-        }
+        return Task.FromResult(true);
     }
 
     public Task RetryOnExceptionAsync(Func<Task> operation)

@@ -6,6 +6,7 @@ using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Persistence.EfCore;
 using BuildingBlocks.Core.Persistence.EfCore;
+using BuildingBlocks.Core.Persistence.EfCore.Interceptors;
 using Core.Persistence.Postgres;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,8 @@ public static class ServiceCollectionExtensions
                 sqlOptions.MigrationsAssembly((migrationAssembly ?? typeof(TDbContext).Assembly).GetName().Name);
                 sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
             }).UseSnakeCaseNamingConvention();
+
+            options.AddInterceptors(new AuditInterceptor(), new SoftDeleteInterceptor(), new ConcurrencyInterceptor());
 
             builder?.Invoke(options);
         });

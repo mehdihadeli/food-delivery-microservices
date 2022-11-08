@@ -443,5 +443,5 @@ dotnet_diagnostic.EX001.severity = Suggestion
 
 #################################################################################
 # IDE0073: File header
-dotnet_diagnostic.IDE0073.severity = none
-file_header_template = Licensed under the MIT license.
+# dotnet_diagnostic.IDE0073.severity = none
+# file_header_template = Licensed under the MIT license.

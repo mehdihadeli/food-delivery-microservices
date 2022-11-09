@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Core.Domain.Exceptions;
@@ -8,7 +11,8 @@ namespace BuildingBlocks.Core.Domain;
 
 public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
 {
-    [NonSerialized] private readonly ConcurrentQueue<IDomainEvent> _uncommittedDomainEvents = new();
+    [NonSerialized]
+    private readonly ConcurrentQueue<IDomainEvent> _uncommittedDomainEvents = new();
 
     private const long NewAggregateVersion = 0;
 
@@ -34,6 +38,13 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
     public IReadOnlyList<IDomainEvent> GetUncommittedDomainEvents()
     {
         return _uncommittedDomainEvents.ToImmutableList();
+    }
+
+    public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
+    {
+        var events = _uncommittedDomainEvents.ToImmutableList();
+        MarkUncommittedDomainEventAsCommitted();
+        return events;
     }
 
     public void MarkUncommittedDomainEventAsCommitted()

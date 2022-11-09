@@ -14,14 +14,17 @@ public class ConcurrencyInterceptor : SaveChangesInterceptor
     {
         if (eventData.Context == null) return base.SavingChangesAsync(eventData, result, cancellationToken);
 
-        foreach (var entry in eventData.Context.ChangeTracker.Entries<IHaveAggregate>())
+        foreach (var entry in eventData.Context.ChangeTracker.Entries<IHaveDomainEvents>())
         {
             // Ref: http://www.kamilgrzybek.com/design/handling-concurrency-aggregate-pattern-and-ef-core/
             var events = entry.Entity.GetUncommittedDomainEvents();
             if (events.Any())
             {
-                entry.CurrentValues[nameof(IHaveAggregateVersion.OriginalVersion)] =
-                    entry.Entity.OriginalVersion + 1;
+                if (entry.Entity is IHaveAggregateVersion av)
+                {
+                    entry.CurrentValues[nameof(IHaveAggregateVersion.OriginalVersion)] =
+                        av.OriginalVersion + 1;
+                }
             }
         }
 

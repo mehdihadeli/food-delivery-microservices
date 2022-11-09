@@ -125,7 +125,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.ApiGateway", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Integration.MassTransit.IntegrationTests", "tests\BuildingBlocks\MassTransit\BuildingBlocks.Integration.MassTransit.IntegrationTests\BuildingBlocks.Integration.MassTransit.IntegrationTests.csproj", "{E796E951-7E05-4407-99CB-7EC54CDD46D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Core", "src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj", "{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Core", "src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj", "{57835E0A-2E48-4994-B3A5-B05FCEB1477C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Messaging.Persistence.Postgres",
 "src\BuildingBlocks\BuildingBlocks.Messaging.Persistence.Postgres\BuildingBlocks.Messaging.Persistence.Postgres.csproj",
@@ -191,7 +191,7 @@ Global
 		{C2BCB097-4748-47ED-A5CD-C76E3E7A65C3} = {FB247B5A-5299-4FFE-BE54-B7E1472D4A2E}
 		{77E45A0D-E20F-4779-9AB6-E9EC96D9C5E0} = {B9EFF5EA-4AD3-477D-8932-A9D114EEA824}
 		{E796E951-7E05-4407-99CB-7EC54CDD46D8} = {23204097-F83E-4FC3-98C5-316C07D5CC57}
-		{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6} = {FB247B5A-5299-4FFE-BE54-B7E1472D4A2E}
+		{57835E0A-2E48-4994-B3A5-B05FCEB1477C} = {FB247B5A-5299-4FFE-BE54-B7E1472D4A2E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -326,9 +326,9 @@ Global
 		{E796E951-7E05-4407-99CB-7EC54CDD46D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E796E951-7E05-4407-99CB-7EC54CDD46D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E796E951-7E05-4407-99CB-7EC54CDD46D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57835E0A-2E48-4994-B3A5-B05FCEB1477C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57835E0A-2E48-4994-B3A5-B05FCEB1477C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57835E0A-2E48-4994-B3A5-B05FCEB1477C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57835E0A-2E48-4994-B3A5-B05FCEB1477C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

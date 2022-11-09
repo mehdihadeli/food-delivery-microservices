@@ -86,6 +86,14 @@ public abstract class EventSourcedAggregate<TId> : Entity<TId>, IEventSourcedAgg
         return _uncommittedDomainEvents.ToImmutableList();
     }
 
+    public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
+    {
+        var events = _uncommittedDomainEvents.ToImmutableList();
+        MarkUncommittedDomainEventAsCommitted();
+
+        return events;
+    }
+
     public void MarkUncommittedDomainEventAsCommitted()
     {
         _uncommittedDomainEvents.Clear();
@@ -100,5 +108,4 @@ public abstract class EventSourcedAggregate<TId> : Entity<TId>, IEventSourcedAgg
             throw new BusinessRuleValidationException(rule);
         }
     }
-
 }

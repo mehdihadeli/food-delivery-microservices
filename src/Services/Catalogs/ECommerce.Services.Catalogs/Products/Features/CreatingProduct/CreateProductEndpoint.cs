@@ -1,7 +1,9 @@
 using Ardalis.GuardClauses;
+using Asp.Versioning.Conventions;
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using ECommerce.Services.Catalogs.Products.Features.CreatingProduct.Requests;
+using ECommerce.Services.Catalogs.Shared;
 
 namespace ECommerce.Services.Catalogs.Products.Features.CreatingProduct;
 
@@ -17,7 +19,12 @@ public static class CreateProductEndpoint
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("CreateProduct")
-            .WithDisplayName("Create a new product.");
+            .WithDisplayName("Create a new product.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+
+            // .IsApiVersionNeutral()
+            // .MapToApiVersion(1.0)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }

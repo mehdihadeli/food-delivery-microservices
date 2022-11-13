@@ -1,8 +1,7 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using ECommerce.Services.Identity.Shared;
 using ECommerce.Services.Identity.Users.Features.RegisteringUser;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 
 namespace ECommerce.Services.Identity.Users.Features.GettingUerByEmail;
 
@@ -19,7 +18,9 @@ public static class GetUserByEmailEndpoint
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("GetUserByEmail")
-            .WithDisplayName("Get User by email.");
+            .WithDisplayName("Get User by email.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }

@@ -74,6 +74,7 @@ static void RegisterServices(WebApplicationBuilder builder)
             optionsBuilder.SetLevel(LogEventLevel.Information);
         });
 
+    builder.Services.AddCustomVersioning();
     builder.AddCustomSwagger(builder.Configuration, typeof(CustomersRoot).Assembly);
 
     builder.Services.AddHttpContextAccessor();
@@ -100,16 +101,7 @@ static async Task ConfigureApplication(WebApplication app)
     if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
     {
         app.UseDeveloperExceptionPage();
-
-        // Minimal Api not supported versioning in .net 6
         app.UseCustomSwagger();
-
-        // ref: https://christian-schou.dk/how-to-make-api-documentation-using-swagger/
-        app.UseReDoc(options =>
-        {
-            options.DocumentTitle = "Customers Service ReDoc";
-            options.SpecUrl = "/swagger/v1/swagger.json";
-        });
     }
 
     app.UseProblemDetails();
@@ -126,6 +118,7 @@ static async Task ConfigureApplication(WebApplication app)
     /*----------------- Module Middleware Setup ------------------*/
     await app.ConfigureModules();
 
+    // https://learn.microsoft.com/en-us/aspnet/core/diagnostics/asp0014
     app.MapControllers();
 
     /*----------------- Module Routes Setup ------------------*/

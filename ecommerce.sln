@@ -125,6 +125,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Core", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Messaging.Persistence.Postgres", "src\BuildingBlocks\BuildingBlocks.Messaging.Persistence.Postgres\BuildingBlocks.Messaging.Persistence.Postgres.csproj", "{BF962BA1-50F3-4714-A932-8DA76066F0AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.OpenTelemetry", "src\BuildingBlocks\BuildingBlocks.OpenTelemetry\BuildingBlocks.OpenTelemetry.csproj", "{E26DC756-4A91-4644-8867-F0EDB2F1E38B}"
+EndProject
 
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -186,6 +188,7 @@ Global
 		{E796E951-7E05-4407-99CB-7EC54CDD46D8} = {23204097-F83E-4FC3-98C5-316C07D5CC57}
 		{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6} = {FB247B5A-5299-4FFE-BE54-B7E1472D4A2E}
 		{BF962BA1-50F3-4714-A932-8DA76066F0AD} = {FB247B5A-5299-4FFE-BE54-B7E1472D4A2E}
+		{E26DC756-4A91-4644-8867-F0EDB2F1E38B} = {FB247B5A-5299-4FFE-BE54-B7E1472D4A2E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -320,5 +323,9 @@ Global
 		{BF962BA1-50F3-4714-A932-8DA76066F0AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF962BA1-50F3-4714-A932-8DA76066F0AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF962BA1-50F3-4714-A932-8DA76066F0AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E26DC756-4A91-4644-8867-F0EDB2F1E38B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E26DC756-4A91-4644-8867-F0EDB2F1E38B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E26DC756-4A91-4644-8867-F0EDB2F1E38B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E26DC756-4A91-4644-8867-F0EDB2F1E38B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

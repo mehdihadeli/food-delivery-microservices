@@ -1,4 +1,6 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using ECommerce.Services.Catalogs.Shared;
 
 namespace ECommerce.Services.Catalogs.Products.Features.DebitingProductStock;
 
@@ -17,7 +19,9 @@ public static class DebitProductStockEndpoint
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("DebitProductStock")
-            .WithDisplayName("Debit product stock");
+            .WithDisplayName("Debit product stock")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }

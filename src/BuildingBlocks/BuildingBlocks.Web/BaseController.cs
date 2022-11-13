@@ -2,6 +2,7 @@ using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BuildingBlocks.Web;
 

@@ -1,4 +1,6 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using ECommerce.Services.Identity.Shared;
 
 namespace ECommerce.Services.Identity.Identity.Features.VerifyingEmail;
 
@@ -14,7 +16,9 @@ public static class VerifyEmailEndpoint
             .Produces(StatusCodes.Status409Conflict)
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithDisplayName("Verify Email.");
+            .WithDisplayName("Verify Email.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }
@@ -24,7 +28,7 @@ public static class VerifyEmailEndpoint
         ICommandProcessor commandProcessor,
         CancellationToken cancellationToken)
     {
-        var command = new VerifyEmailCommand(request.Email, request.Code);
+        var command = new VerifyEmail(request.Email, request.Code);
 
         await commandProcessor.SendAsync(command, cancellationToken);
 

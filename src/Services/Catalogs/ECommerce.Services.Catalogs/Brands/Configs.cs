@@ -6,14 +6,11 @@ namespace ECommerce.Services.Catalogs.Brands;
 
 internal class Configs : IModuleConfiguration
 {
-    public IServiceCollection AddModuleServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment)
+    public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
-        services.AddScoped<IDataSeeder, BrandDataSeeder>();
+        builder.Services.AddScoped<IDataSeeder, BrandDataSeeder>();
 
-        return services;
+        return builder;
     }
 
     public Task<WebApplication> ConfigureModule(WebApplication app)

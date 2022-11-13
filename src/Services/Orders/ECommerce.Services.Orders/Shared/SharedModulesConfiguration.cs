@@ -1,24 +1,24 @@
+using Asp.Versioning;
+using Asp.Versioning.Builder;
 using BuildingBlocks.Abstractions.Web.Module;
 using BuildingBlocks.Monitoring;
 using ECommerce.Services.Orders.Shared.Extensions.ApplicationBuilderExtensions;
-using ECommerce.Services.Orders.Shared.Extensions.ServiceCollectionExtensions;
+using ECommerce.Services.Orders.Shared.Extensions.WebApplicationBuilderExtensions;
 
 namespace ECommerce.Services.Orders.Shared;
 
 public class SharedModulesConfiguration : ISharedModulesConfiguration
 {
-    public const string OrderModulePrefixUri = "api/v1/orders";
+    public const string OrderModulePrefixUri = "api/v{version:apiVersion}/orders";
+    public static ApiVersionSet VersionSet { get; private set; } = default!;
 
-    public IServiceCollection AddSharedModuleServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment)
+    public WebApplicationBuilder AddSharedModuleServices(WebApplicationBuilder builder)
     {
-        services.AddInfrastructure(configuration, webHostEnvironment);
+        builder.AddInfrastructure();
 
-        services.AddStorage(configuration);
+        builder.AddStorage();
 
-        return services;
+        return builder;
     }
 
     public async Task<WebApplication> ConfigureSharedModule(WebApplication app)
@@ -36,6 +36,16 @@ public class SharedModulesConfiguration : ISharedModulesConfiguration
 
     public IEndpointRouteBuilder MapSharedModuleEndpoints(IEndpointRouteBuilder endpoints)
     {
+        var v1 = new ApiVersion(1, 0);
+        var v2 = new ApiVersion(2, 0);
+        var v3 = new ApiVersion(3, 0);
+
+        VersionSet = endpoints.NewApiVersionSet()
+            .HasApiVersion(v1)
+            .HasApiVersion(v2)
+            .HasApiVersion(v3)
+            .Build();
+
         endpoints.MapGet("/", (HttpContext context) =>
         {
             var requestId = context.Request.Headers.TryGetValue("X-Request-Id", out var requestIdHeader)

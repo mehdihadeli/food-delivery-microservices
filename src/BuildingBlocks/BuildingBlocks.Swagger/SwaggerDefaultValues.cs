@@ -1,17 +1,23 @@
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace BuildingBlocks.Swagger;
 
+// https://github.com/dotnet/aspnet-api-versioning/blob/93bd8dc7582ec14c8ec97997c01cfe297b085e17/examples/AspNetCore/WebApi/MinimalOpenApiExample/SwaggerDefaultValues.cs
+
+/// <summary>
+/// Represents the OpenAPI/Swashbuckle operation filter used to document information provided, but not used.
+/// </summary>
+/// <remarks>This <see cref="IOperationFilter"/> is only required due to bugs in the <see cref="SwaggerGenerator"/>.
+/// Once they are fixed and published, this class can be removed.</remarks>
 public class SwaggerDefaultValues : IOperationFilter
 {
+    /// <inheritdoc />
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
         var apiDescription = context.ApiDescription;
-
-        operation.Deprecated |= apiDescription.IsDeprecated();
 
         // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/1752#issue-663991077
         foreach (var responseType in context.ApiDescription.SupportedResponseTypes)
@@ -22,12 +28,17 @@ public class SwaggerDefaultValues : IOperationFilter
 
             foreach (var contentType in response.Content.Keys)
             {
-                if (responseType.ApiResponseFormats.All(x => x.MediaType != contentType))
+                if (!responseType.ApiResponseFormats.Any(x => x.MediaType == contentType))
+                {
                     response.Content.Remove(contentType);
+                }
             }
         }
 
-        if (operation.Parameters == null) return;
+        if (operation.Parameters == null)
+        {
+            return;
+        }
 
         // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/412
         // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/413
@@ -35,16 +46,18 @@ public class SwaggerDefaultValues : IOperationFilter
         {
             var description = apiDescription.ParameterDescriptions.First(p => p.Name == parameter.Name);
 
-            if (parameter.Description == null) parameter.Description = description.ModelMetadata?.Description;
+            if (parameter.Description == null)
+            {
+                parameter.Description = description.ModelMetadata?.Description;
+            }
 
-            if (parameter.Schema.Default == null && description.DefaultValue != null)
+            if (parameter.Schema.Default == null &&
+                description.DefaultValue != null &&
+                description.DefaultValue is not DBNull &&
+                description.ModelMetadata is ModelMetadata modelMetadata)
             {
                 // REF: https://github.com/Microsoft/aspnet-api-versioning/issues/429#issuecomment-605402330
-                var json = JsonConvert.SerializeObject(
-                    description.DefaultValue,
-                    description.ModelMetadata
-                    .ModelType,
-                    new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+                var json = JsonSerializer.Serialize(description.DefaultValue, modelMetadata.ModelType);
                 parameter.Schema.Default = OpenApiAnyFactory.CreateFromJson(json);
             }
 

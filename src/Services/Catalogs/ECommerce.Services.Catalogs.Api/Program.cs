@@ -75,6 +75,7 @@ static void RegisterServices(WebApplicationBuilder builder)
                 .SetLevel(LogEventLevel.Information);
         });
 
+    builder.Services.AddCustomVersioning();
     builder.AddCustomSwagger(builder.Configuration, typeof(CatalogRoot).Assembly);
 
     builder.Services.AddHttpContextAccessor();
@@ -98,16 +99,7 @@ static async Task ConfigureApplication(WebApplication app)
     if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
     {
         app.UseDeveloperExceptionPage();
-
-        // Minimal Api not supported versioning in .net 6
         app.UseCustomSwagger();
-
-        // ref: https://christian-schou.dk/how-to-make-api-documentation-using-swagger/
-        app.UseReDoc(options =>
-        {
-            options.DocumentTitle = "Catalogs Service ReDoc";
-            options.SpecUrl = "/swagger/v1/swagger.json";
-        });
     }
 
     app.UseProblemDetails();
@@ -124,7 +116,7 @@ static async Task ConfigureApplication(WebApplication app)
     /*----------------- Module Middleware Setup ------------------*/
     await app.ConfigureModules();
 
-
+    // https://learn.microsoft.com/en-us/aspnet/core/diagnostics/asp0014
     app.MapControllers();
 
     /*----------------- Module Routes Setup ------------------*/
@@ -132,6 +124,11 @@ static async Task ConfigureApplication(WebApplication app)
 
     // automatic discover minimal endpoints
     app.MapMinimalEndpoints();
+
+    // Configure the prometheus endpoint for scraping metrics
+    // NOTE: This should only be exposed on an internal port!
+    // .RequireHost("*:9100");
+    app.MapPrometheusScrapingEndpoint();
 
     Log.Logger = new LoggerConfiguration()
         .WriteTo.Console()

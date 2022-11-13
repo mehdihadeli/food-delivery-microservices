@@ -1,7 +1,8 @@
 using Ardalis.GuardClauses;
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using SerilogTimings;
+using ECommerce.Services.Customers.Shared;
 
 namespace ECommerce.Services.Customers.Customers.Features.CreatingCustomer;
 
@@ -15,7 +16,9 @@ public class CreateCustomerEndpoint : IMinimalEndpoint
             .Produces<CreateCustomerResult>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("CreateCustomer")
-            .WithDisplayName("Register New Customer.");
+            .WithDisplayName("Register New Customer.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return builder;
     }

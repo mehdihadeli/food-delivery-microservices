@@ -1,8 +1,6 @@
 using System.Reflection;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -30,20 +28,6 @@ public static class Extensions
         Assembly assembly,
         bool useApiVersioning = false)
     {
-        if (useApiVersioning)
-        {
-            services.AddVersionedApiExplorer(options =>
-            {
-                // add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
-                // note: the specified format code will format the version as "'v'major[.minor][-status]"
-                options.GroupNameFormat = "'v'VVV";
-
-                // note: this option is only necessary when versioning by url segment. the SubstitutionFormat
-                // can also be used to control the format of the API version in route templates
-                options.SubstituteApiVersionInUrl = true;
-            });
-        }
-
         // swagger docs for route to code style --> works in .net 6
         // https://dotnetthoughts.net/openapi-support-for-aspnetcore-minimal-webapi/
         // https://jaliyaudagedara.blogspot.com/2021/07/net-6-preview-6-introducing-openapi.html
@@ -58,6 +42,8 @@ public static class Extensions
             options =>
             {
                 options.OperationFilter<SwaggerDefaultValues>();
+                options.OperationFilter<ApiVersionOperationFilter>();
+
                 var xmlFile = XmlCommentsFilePath(assembly);
                 if (File.Exists(xmlFile)) options.IncludeXmlComments(xmlFile);
 
@@ -87,7 +73,7 @@ public static class Extensions
                     {
                         new OpenApiSecurityScheme
                         {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
+                            Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "Bearer"},
                             Scheme = "oauth2",
                             Name = "Bearer",
                             In = ParameterLocation.Header
@@ -108,59 +94,9 @@ public static class Extensions
                         Array.Empty<string>()
                     }
                 });
-
-                if (useApiVersioning)
-                {
-                    // Grouping endpoints by version and ApiExplorer group name.
-                    options.DocInclusionPredicate((documentName, apiDescription) =>
-                    {
-                        var actionApiVersionModel = apiDescription.ActionDescriptor
-                            .GetApiVersionModel(ApiVersionMapping.Explicit | ApiVersionMapping.Implicit);
-
-                        var apiExplorerSettingsAttribute =
-                            (ApiExplorerSettingsAttribute)apiDescription.ActionDescriptor
-                                .EndpointMetadata.FirstOrDefault(x =>
-                                    x.GetType() == typeof(ApiExplorerSettingsAttribute))!;
-
-                        if (apiExplorerSettingsAttribute == null) return true;
-
-                        if (actionApiVersionModel.DeclaredApiVersions.Any())
-                        {
-                            return actionApiVersionModel.DeclaredApiVersions.Any(v =>
-                                $"v{v.MajorVersion}" == documentName);
-                        }
-
-                        return actionApiVersionModel.ImplementedApiVersions.Any(v =>
-                            $"v{v.MajorVersion}" == documentName);
-                    });
-
-                    // Adding all the available versions.
-                    var apiVersionDescriptionProvider = services.BuildServiceProvider()
-                        .GetService<IApiVersionDescriptionProvider>();
-
-                    if (apiVersionDescriptionProvider != null)
-                    {
-                        foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
-                        {
-                            var openApiInfo = new OpenApiInfo
-                            {
-                                Title = $"{description.GroupName} API",
-                                Version = description.ApiVersion.ToString(),
-                                Description = $"{description.GroupName} API description."
-                            };
-
-                            if (description.IsDeprecated)
-                                openApiInfo.Description += " This API version has been deprecated.";
-
-                            options.SwaggerDoc(description.GroupName, openApiInfo);
-                        }
-                    }
-                }
-
-                // Adding swagger data annotation support with [SwaggerOperation] attribute.
-                options.EnableAnnotations();
             });
 
+        services.Configure<SwaggerGeneratorOptions>(o => o.InferSecuritySchemes = true);
 
         return services;
 
@@ -172,13 +108,9 @@ public static class Extensions
         }
     }
 
-    /// <summary>
-    ///     Register Swagger endpoints.
-    ///     Hint: Minimal Api not supported api versioning in .Net6.
-    /// </summary>
     public static IApplicationBuilder UseCustomSwagger(
         this IApplicationBuilder app,
-        IApiVersionDescriptionProvider provider = null)
+        IApiVersionDescriptionProvider? provider = null)
     {
         app.UseSwagger();
         app.UseSwaggerUI(

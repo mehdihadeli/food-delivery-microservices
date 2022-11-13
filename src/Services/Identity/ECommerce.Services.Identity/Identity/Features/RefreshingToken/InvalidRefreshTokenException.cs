@@ -5,7 +5,7 @@ namespace ECommerce.Services.Identity.Identity.Features.RefreshingToken;
 
 public class InvalidRefreshTokenException : BadRequestException
 {
-    public InvalidRefreshTokenException(RefreshToken? refreshToken) : base($"refresh token {refreshToken?.Token} is invalid!")
+    public InvalidRefreshTokenException(Shared.Models.RefreshToken? refreshToken) : base($"refresh token {refreshToken?.Token} is invalid!")
     {
     }
 }

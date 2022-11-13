@@ -10,7 +10,7 @@ using ECommerce.Services.Identity.Identity.Features.RevokingRefreshToken;
 using ECommerce.Services.Identity.Identity.Features.SendingEmailVerificationCode;
 using ECommerce.Services.Identity.Identity.Features.VerifyingEmail;
 using ECommerce.Services.Identity.Shared;
-using ECommerce.Services.Identity.Shared.Extensions.ServiceCollectionExtensions;
+using ECommerce.Services.Identity.Shared.Extensions.WebApplicationBuilderExtensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ECommerce.Services.Identity.Identity;
@@ -20,19 +20,16 @@ internal class IdentityConfigs : IModuleConfiguration
     public const string Tag = "Identity";
     public const string IdentityPrefixUri = $"{SharedModulesConfiguration.IdentityModulePrefixUri}";
 
-    public IServiceCollection AddModuleServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment)
+    public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
-        services.AddCustomIdentity(configuration);
+        builder.AddCustomIdentity();
 
-        services.AddScoped<IDataSeeder, IdentityDataSeeder>();
+        builder.Services.AddScoped<IDataSeeder, IdentityDataSeeder>();
 
-        if (webHostEnvironment.IsEnvironment("test") == false)
-            services.AddCustomIdentityServer();
+        if (builder.Environment.IsEnvironment("test") == false)
+            builder.AddCustomIdentityServer();
 
-        return services;
+        return builder;
     }
 
     public Task<WebApplication> ConfigureModule(WebApplication app)

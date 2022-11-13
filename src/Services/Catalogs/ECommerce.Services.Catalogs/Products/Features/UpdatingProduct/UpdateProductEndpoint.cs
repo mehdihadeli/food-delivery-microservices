@@ -1,5 +1,7 @@
 using Ardalis.GuardClauses;
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using ECommerce.Services.Catalogs.Shared;
 
 namespace ECommerce.Services.Catalogs.Products.Features.UpdatingProduct;
 
@@ -16,7 +18,9 @@ public static class UpdateProductEndpoint
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("UpdateProduct")
-            .WithDisplayName("Update a product.");
+            .WithDisplayName("Update a product.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }

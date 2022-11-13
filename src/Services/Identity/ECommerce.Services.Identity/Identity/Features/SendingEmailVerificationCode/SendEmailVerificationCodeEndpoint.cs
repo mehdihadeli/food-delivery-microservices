@@ -1,4 +1,6 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using ECommerce.Services.Identity.Shared;
 
 namespace ECommerce.Services.Identity.Identity.Features.SendingEmailVerificationCode;
 
@@ -14,7 +16,9 @@ public static class SendEmailVerificationCodeEndpoint
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status409Conflict)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithDisplayName("Send Email Verification Code.");
+            .WithDisplayName("Send Email Verification Code.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }
@@ -24,7 +28,7 @@ public static class SendEmailVerificationCodeEndpoint
         ICommandProcessor commandProcessor,
         CancellationToken cancellationToken)
     {
-        var command = new SendEmailVerificationCodeCommand(request.Email);
+        var command = new SendEmailVerificationCode(request.Email);
 
         var result = await commandProcessor.SendAsync(command, cancellationToken);
 

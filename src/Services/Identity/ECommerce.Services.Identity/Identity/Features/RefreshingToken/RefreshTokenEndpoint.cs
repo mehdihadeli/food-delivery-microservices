@@ -1,7 +1,6 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
+using ECommerce.Services.Identity.Shared;
+using Asp.Versioning.Conventions;
 
 namespace ECommerce.Services.Identity.Identity.Features.RefreshingToken;
 
@@ -12,10 +11,12 @@ public static class RefreshTokenEndpoint
         endpoints.MapPost($"{IdentityConfigs.IdentityPrefixUri}/refresh-token", RefreshToken)
             .WithTags(IdentityConfigs.Tag)
             .RequireAuthorization()
-            .Produces<RefreshTokenResult>()
+            .Produces<RefreshTokenResponse>()
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithDisplayName("Refresh Token.");
+            .WithDisplayName("Refresh Token.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }
@@ -25,7 +26,7 @@ public static class RefreshTokenEndpoint
         ICommandProcessor commandProcessor,
         CancellationToken cancellationToken)
     {
-        var command = new RefreshTokenCommand(request.AccessToken, request.RefreshToken);
+        var command = new RefreshToken(request.AccessToken, request.RefreshToken);
 
         var result = await commandProcessor.SendAsync(command, cancellationToken);
 

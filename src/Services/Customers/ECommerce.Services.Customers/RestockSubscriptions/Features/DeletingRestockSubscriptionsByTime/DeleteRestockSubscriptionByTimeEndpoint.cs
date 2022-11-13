@@ -1,7 +1,9 @@
 using Ardalis.GuardClauses;
+using Asp.Versioning.Conventions;
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using ECommerce.Services.Customers.Shared;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime;
 
@@ -16,7 +18,9 @@ public class DeleteRestockSubscriptionByTimeEndpoint :
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized)
             .WithName("DeleteRestockSubscriptionByTime")
-            .WithDisplayName("Delete RestockSubscriptions by time range.");
+            .WithDisplayName("Delete RestockSubscriptions by time range.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return builder;
     }

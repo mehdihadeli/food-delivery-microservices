@@ -7,10 +7,7 @@ namespace BuildingBlocks.Abstractions.Web.Module;
 
 public interface ISharedModulesConfiguration
 {
-    IServiceCollection AddSharedModuleServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment);
+    WebApplicationBuilder AddSharedModuleServices(WebApplicationBuilder builder);
 
     Task<WebApplication> ConfigureSharedModule(WebApplication app);
 

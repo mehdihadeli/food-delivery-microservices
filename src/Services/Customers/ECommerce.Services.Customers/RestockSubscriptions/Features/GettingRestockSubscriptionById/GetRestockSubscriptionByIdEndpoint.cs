@@ -1,7 +1,9 @@
 using Ardalis.GuardClauses;
+using Asp.Versioning.Conventions;
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using ECommerce.Services.Customers.Shared;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionById;
 
@@ -18,7 +20,9 @@ public class GetRestockSubscriptionByIdEndpoint : IQueryMinimalEndpoint<long, IR
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetRestockSubscriptionById")
-            .WithDisplayName("Get RestockSubscription By Id.");
+            .WithDisplayName("Get RestockSubscription By Id.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return builder;
     }

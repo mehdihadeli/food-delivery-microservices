@@ -1,4 +1,6 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using ECommerce.Services.Catalogs.Shared;
 
 namespace ECommerce.Services.Catalogs.Products.Features.ReplenishingProductStock;
 
@@ -17,7 +19,9 @@ public static class ReplenishingProductStockEndpoint
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("ReplenishProductStock")
-            .WithDisplayName("Replenish product stock");
+            .WithDisplayName("Replenish product stock")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }

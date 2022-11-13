@@ -2,7 +2,7 @@
 <!-- https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build -->
 <Project>
   <PropertyGroup>
-      <TargetFramework>net6.0</TargetFramework>
+      <TargetFramework>net7.0</TargetFramework>
       <LangVersion>latest</LangVersion>
       <Nullable>enable</Nullable>
       <ImplicitUsings>enable</ImplicitUsings>
@@ -30,11 +30,11 @@
     <PackageReference Include="MartinCostello.Logging.XUnit" />
     <PackageReference Include="xunit.analyzers" />
   </ItemGroup>
-  
+
  <ItemGroup Label="Implicit usings">
     <Using Include="FluentAssertions" />
     <Using Include="NSubstitute" />
     <Using Include="Xunit" />
   </ItemGroup>
-  
+
 </Project>

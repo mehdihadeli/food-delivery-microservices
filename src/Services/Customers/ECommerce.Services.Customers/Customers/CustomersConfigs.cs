@@ -10,14 +10,10 @@ internal class CustomersConfigs : IModuleConfiguration
     public const string Tag = "Customers";
     public const string CustomersPrefixUri = $"{SharedModulesConfiguration.CustomerModulePrefixUri}";
 
-    public IServiceCollection AddModuleServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment)
+    public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
-        services.AddScoped<IDataSeeder, CustomersDataSeeder>();
-
-        return services;
+        builder.Services.AddScoped<IDataSeeder, CustomersDataSeeder>();
+        return builder;
     }
 
     public Task<WebApplication> ConfigureModule(WebApplication app)

@@ -1,6 +1,8 @@
 using Ardalis.GuardClauses;
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using ECommerce.Services.Customers.Shared;
 
 namespace ECommerce.Services.Customers.Customers.Features.GettingCustomerById;
 
@@ -18,7 +20,9 @@ public class GetCustomerByIdEndpointEndpoint : IMinimalEndpoint
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetCustomerById")
-            .WithDisplayName("Get Customer By Id.");
+            .WithDisplayName("Get Customer By Id.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return builder;
     }

@@ -1,8 +1,7 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using ECommerce.Services.Identity.Shared;
 using ECommerce.Services.Identity.Users.Features.RegisteringUser;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 
 namespace ECommerce.Services.Identity.Users.Features.GettingUserById;
 
@@ -17,7 +16,9 @@ public static class GetUserByIdEndpoint
             .Produces<RegisterUserResult>(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("GetUserById")
-            .WithDisplayName("Get User by Id.");
+            .WithDisplayName("Get User by Id.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }

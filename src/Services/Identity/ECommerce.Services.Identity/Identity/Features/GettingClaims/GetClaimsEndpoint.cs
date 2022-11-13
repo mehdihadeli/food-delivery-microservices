@@ -1,4 +1,6 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using ECommerce.Services.Identity.Shared;
 
 namespace ECommerce.Services.Identity.Identity.Features.GettingClaims;
 
@@ -9,9 +11,11 @@ public static class GetClaimsEndpoint
         endpoints.MapGet($"{IdentityConfigs.IdentityPrefixUri}/claims", GetClaims)
             .WithTags(IdentityConfigs.Tag)
             .RequireAuthorization()
-            .Produces<GetClaimsQueryResult>()
+            .Produces<GetClaimsResponse>()
             .Produces(StatusCodes.Status401Unauthorized)
-            .WithDisplayName("Get User claims");
+            .WithDisplayName("Get User claims")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }
@@ -19,7 +23,7 @@ public static class GetClaimsEndpoint
     private static async Task<IResult> GetClaims(
         IQueryProcessor queryProcessor, CancellationToken cancellationToken)
     {
-        var result = await queryProcessor.SendAsync(new GetClaimsQuery(), cancellationToken);
+        var result = await queryProcessor.SendAsync(new GetClaims(), cancellationToken);
 
         return Results.Ok(result);
     }

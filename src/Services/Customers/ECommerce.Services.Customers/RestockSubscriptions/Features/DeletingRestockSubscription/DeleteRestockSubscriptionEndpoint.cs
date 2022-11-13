@@ -1,6 +1,8 @@
+using Asp.Versioning.Conventions;
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using ECommerce.Services.Customers.Shared;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription;
 
@@ -15,7 +17,9 @@ public class DeleteRestockSubscriptionEndpoint : ICommandMinimalEndpoint<long, I
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized)
             .WithName("DeleteRestockSubscription")
-            .WithDisplayName("Delete RestockSubscription for Customer.");
+            .WithDisplayName("Delete RestockSubscription for Customer.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return builder;
     }

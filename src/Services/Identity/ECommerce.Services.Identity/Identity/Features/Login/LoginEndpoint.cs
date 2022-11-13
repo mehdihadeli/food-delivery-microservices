@@ -1,4 +1,6 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using ECommerce.Services.Identity.Shared;
 
 namespace ECommerce.Services.Identity.Identity.Features.Login;
 
@@ -13,13 +15,15 @@ public static class LoginEndpoint
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithDisplayName("Login User.");
+            .WithDisplayName("Login User.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }
 
     private static async Task<IResult> LoginUser(
-        LoginUserRequest request,
+        LoginRequest request,
         ICommandProcessor commandProcessor,
         CancellationToken cancellationToken)
     {

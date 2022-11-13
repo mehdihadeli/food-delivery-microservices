@@ -17,15 +17,12 @@ internal class ProductsConfigs : IModuleConfiguration
     public const string Tag = "Product";
     public const string ProductsPrefixUri = $"{SharedModulesConfiguration.CatalogModulePrefixUri}/products";
 
-    public IServiceCollection AddModuleServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment)
+    public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
-        services.AddScoped<IDataSeeder, ProductDataSeeder>();
-        services.AddSingleton<IEventMapper, ProductEventMapper>();
+        builder.Services.AddScoped<IDataSeeder, ProductDataSeeder>();
+        builder.Services.AddSingleton<IEventMapper, ProductEventMapper>();
 
-        return services;
+        return builder;
     }
 
     public Task<WebApplication> ConfigureModule(WebApplication app)

@@ -1,5 +1,7 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Core.Extensions;
+using ECommerce.Services.Identity.Shared;
 
 namespace ECommerce.Services.Identity.Identity.Features.RevokingAccessToken;
 
@@ -11,7 +13,9 @@ public static class RevokeAccessTokenEndpoint
             .WithTags(IdentityConfigs.Tag)
             .RequireAuthorization(IdentityConstants.Role.User)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithDisplayName("Revoke Current User Access Token From the Header.");
+            .WithDisplayName("Revoke Current User Access Token From the Header.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }
@@ -32,7 +36,7 @@ public static class RevokeAccessTokenEndpoint
             token = request.AccessToken;
         }
 
-        var command = new RevokeAccessTokenCommand(token, httpContext.User.Identity!.Name!);
+        var command = new RevokeAccessToken(token, httpContext.User.Identity!.Name!);
 
         var result = await commandProcessor.SendAsync(command, cancellationToken);
 

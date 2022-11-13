@@ -9,10 +9,8 @@ namespace BuildingBlocks.Web.Extensions;
 
 public static class ModuleExtensions
 {
-    public static IServiceCollection AddModulesServices(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment,
+    public static WebApplicationBuilder AddModulesServices(
+        this WebApplicationBuilder webApplicationBuilder,
         params Assembly[] scanAssemblies)
     {
         var assemblies = scanAssemblies.Any() ? scanAssemblies : AppDomain.CurrentDomain.GetAssemblies();
@@ -29,46 +27,33 @@ public static class ModuleExtensions
 
         foreach (var sharedModule in sharedModulesConfiguration)
         {
-            AddModulesDependencyInjection(services, configuration, webHostEnvironment, sharedModule);
+            AddModulesDependencyInjection(webApplicationBuilder, sharedModule);
         }
 
         foreach (var module in modulesConfiguration)
         {
-            AddModulesDependencyInjection(services, configuration, webHostEnvironment, module);
+            AddModulesDependencyInjection(webApplicationBuilder, module);
         }
 
-        return services;
-    }
-
-    public static IServiceCollection AddModulesServices(
-        this WebApplicationBuilder webApplicationBuilder,
-        params Assembly[] scanAssemblies)
-    {
-        return AddModulesServices(
-            webApplicationBuilder.Services,
-            webApplicationBuilder.Configuration,
-            webApplicationBuilder.Environment,
-            scanAssemblies);
+        return webApplicationBuilder;
     }
 
     private static void AddModulesDependencyInjection(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment,
+        WebApplicationBuilder webApplicationBuilder,
         Type module)
     {
         if (module.IsAssignableTo(typeof(IModuleConfiguration)))
         {
             var instantiatedType = (IModuleConfiguration)Activator.CreateInstance(module)!;
-            instantiatedType.AddModuleServices(services, configuration, webHostEnvironment);
-            services.AddSingleton(instantiatedType);
+            instantiatedType.AddModuleServices(webApplicationBuilder);
+            webApplicationBuilder.Services.AddSingleton(instantiatedType);
         }
 
         if (module.IsAssignableTo(typeof(ISharedModulesConfiguration)))
         {
             var instantiatedType = (ISharedModulesConfiguration)Activator.CreateInstance(module)!;
-            instantiatedType.AddSharedModuleServices(services, configuration, webHostEnvironment);
-            services.AddSingleton(instantiatedType);
+            instantiatedType.AddSharedModuleServices(webApplicationBuilder);
+            webApplicationBuilder.Services.AddSingleton(instantiatedType);
         }
     }
 

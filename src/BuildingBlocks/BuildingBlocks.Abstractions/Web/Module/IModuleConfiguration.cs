@@ -7,10 +7,7 @@ namespace BuildingBlocks.Abstractions.Web.Module;
 
 public interface IModuleConfiguration
 {
-    IServiceCollection AddModuleServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment);
+    WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder);
 
     Task<WebApplication> ConfigureModule(WebApplication app);
 

@@ -1,7 +1,6 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
+using ECommerce.Services.Identity.Shared;
 
 namespace ECommerce.Services.Identity.Users.Features.RegisteringUser;
 
@@ -14,7 +13,9 @@ public static class RegisterUserEndpoint
             .WithTags(UsersConfigs.Tag)
             .Produces<RegisterUserResult>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithDisplayName("Register New user.");
+            .WithDisplayName("Register New user.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }

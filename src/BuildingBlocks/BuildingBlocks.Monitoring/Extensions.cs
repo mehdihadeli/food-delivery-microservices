@@ -44,7 +44,8 @@ public static class Extensions
         app.UseHttpMetrics();
         app.UseGrpcMetrics();
 
-        app.UseHealthChecks("/healthz",
+        app.UseHealthChecks(
+                "/healthz",
                 new HealthCheckOptions
                 {
                     Predicate = _ => true,
@@ -56,35 +57,40 @@ public static class Extensions
                         [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable,
                     },
                 })
-            .UseHealthChecks("/health/infra",
+            .UseHealthChecks(
+                "/health/infra",
                 new HealthCheckOptions
                 {
                     Predicate = check => check.Tags.Contains("infra"),
                     AllowCachingResponses = false,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
                 })
-            .UseHealthChecks("/health/bus",
+            .UseHealthChecks(
+                "/health/bus",
                 new HealthCheckOptions
                 {
                     Predicate = check => check.Tags.Contains("bus"),
                     AllowCachingResponses = false,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
                 })
-            .UseHealthChecks("/health/database",
+            .UseHealthChecks(
+                "/health/database",
                 new HealthCheckOptions
                 {
                     Predicate = check => check.Tags.Contains("database"),
                     AllowCachingResponses = false,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
                 })
-            .UseHealthChecks("/health/downstream-services",
+            .UseHealthChecks(
+                "/health/downstream-services",
                 new HealthCheckOptions
                 {
                     Predicate = check => check.Tags.Contains("downstream-services"),
                     AllowCachingResponses = false,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
                 })
-            .UseHealthChecks("/health/ready",
+            .UseHealthChecks(
+                "/health/ready",
                 new HealthCheckOptions
                 {
                     Predicate = _ => true, AllowCachingResponses = false, ResponseWriter = WriteResponseAsync,

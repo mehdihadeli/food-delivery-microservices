@@ -10,12 +10,9 @@ public class RestockSubscriptionsConfigs:IModuleConfiguration
     public const string RestockSubscriptionsUrl =
         $"{SharedModulesConfiguration.CustomerModulePrefixUri}/restock-subscriptions";
 
-    public IServiceCollection AddModuleServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment)
+    public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
-        return services;
+        return builder;
     }
 
     public Task<WebApplication> ConfigureModule(WebApplication app)

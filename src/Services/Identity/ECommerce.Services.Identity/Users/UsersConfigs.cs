@@ -12,12 +12,9 @@ internal class UsersConfigs : IModuleConfiguration
     public const string Tag = "Users";
     public const string UsersPrefixUri = $"{SharedModulesConfiguration.IdentityModulePrefixUri}/users";
 
-    public IServiceCollection AddModuleServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment)
+    public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
-        return services;
+        return builder;
     }
 
     public Task<WebApplication> ConfigureModule(WebApplication app)

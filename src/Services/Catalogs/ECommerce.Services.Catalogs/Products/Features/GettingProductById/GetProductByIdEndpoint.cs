@@ -1,5 +1,7 @@
 using Ardalis.GuardClauses;
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using ECommerce.Services.Catalogs.Shared;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProductById;
 
@@ -18,7 +20,9 @@ public static class GetProductByIdEndpoint
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetProductById")
-            .WithDisplayName("Get product By Id.");
+            .WithDisplayName("Get product By Id.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }

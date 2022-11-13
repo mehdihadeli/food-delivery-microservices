@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace BuildingBlocks.Security;
 
 public class ForbiddenProblemDetails : ProblemDetails

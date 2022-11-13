@@ -4,52 +4,29 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
+
   <ItemGroup>
-    <PackageVersion Include="AspNetCore.HealthChecks.EventStore" Version="5.0.1"/>
     <PackageVersion Include="AspNetCore.HealthChecks.MongoDb" Version="$(AspNetCoreHealthCheckVersion)"/>
     <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="$(AspNetCoreHealthCheckVersion)"/>
     <PackageVersion Include="AspNetCore.HealthChecks.Rabbitmq" Version="$(AspNetCoreHealthCheckVersion)"/>
-    <PackageVersion Include="AspNetCore.HealthChecks.UI" Version="$(AspNetCoreHealthCheckVersion)"/>
-    <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="$(AspNetCoreHealthCheckVersion)"/>
-    <PackageVersion Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="$(AspNetCoreHealthCheckVersion)"/>
-    <PackageVersion Include="AspNetCore.HealthChecks.UI.SQLite.Storage" Version="$(AspNetCoreHealthCheckVersion)"/>
-    <PackageVersion Include="AspNetCore.HealthChecks.Uris" Version="$(AspNetCoreHealthCheckVersion)"/>
-    <PackageVersion Include="AspNetCoreAnalyzers" Version="0.3.0"/>
-    <PackageVersion Include="AsyncFixer" Version="1.5.1"/>
-    <PackageVersion Include="AutoMapper" Version="11.0.1"/>
-    <PackageVersion Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0"/>
-    <PackageVersion Include="Bogus" Version="34.0.2"/>
-    <PackageVersion Include="Dapper" Version="2.0.123"/>
-    <PackageVersion Include="DotNetEnv" Version="2.3.0"/>
-    <PackageVersion Include="EFCore.NamingConventions" Version="6.0.0"/>
-    <PackageVersion Include="FluentMigrator.Extensions.Postgres" Version="3.3.2"/>
-    <PackageVersion Include="FluentMigrator.Runner.Postgres" Version="3.3.2"/>
-    <PackageVersion Include="FluentValidation.AspNetCore" Version="10.4.0"/>
-    <PackageVersion Include="Hellang.Middleware.ProblemDetails" Version="6.4.0"/>
-    <PackageVersion Include="Humanizer" Version="2.14.1"/>
-    <PackageVersion Include="Humanizer.Core" Version="2.14.1"/>
-    <PackageVersion Include="IdGen" Version="3.0.0"/>
-    <PackageVersion Include="MailKit" Version="3.1.1"/>
-    <PackageVersion Include="MassTransit" Version="$(MassTransitVersion)"/>
-    <PackageVersion Include="MassTransit.RabbitMQ" Version="$(MassTransitVersion)"/>
-    <PackageVersion Include="McMaster.NETCore.Plugins" Version="1.4.0"/>
-    <PackageVersion Include="Meziantou.Analyzer" Version="1.0.688"/>
+    <PackageVersion Include="AspNetCore.HealthChecks.UI" Version="$(AspNetCoreHealthCheckUIVersion)"/>
+    <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="$(AspNetCoreHealthCheckUIVersion)"/>
+    <PackageVersion Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="$(AspNetCoreHealthCheckUIVersion)"/>
+    <PackageVersion Include="AspNetCore.HealthChecks.UI.SQLite.Storage" Version="$(AspNetCoreHealthCheckUIVersion)"/>
+    <PackageVersion Include="AspNetCore.HealthChecks.Uris" Version="6.0.3"/>
+    <PackageVersion Include="AspNetCore.HealthChecks.EventStore" Version="$(AspNetCoreHealthCheckVersion)"/>
+    <PackageVersion Include="prometheus-net.AspNetCore" Version="7.0.0"/>
+    <PackageVersion Include="prometheus-net.AspNetCore.Grpc" Version="7.0.0"/>
+    <PackageVersion Include="prometheus-net.AspNetCore.HealthChecks" Version="7.0.0"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="Microsoft.AspNetCore.Http" Version="2.2.2"/>
     <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0"/>
-    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreVersion)"/>
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0"/>
     <PackageVersion Include="Microsoft.AspNetCore.ResponseCompression" Version="2.2.0"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(AspNetCoreVersion)"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="$(AspNetCoreVersion)"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(AspNetCoreVersion)"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(AspNetCoreVersion)"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(AspNetCoreVersion)"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational.Design" Version="$(AspNetCoreVersion)"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(AspNetCoreVersion)"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftConfigurationVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftConfigurationVersion)"/>
@@ -59,9 +36,9 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftConfigurationVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftDependencyInjectionVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.DiagnosticAdapter" Version="3.1.22"/>
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(AspNetCoreHealthCheckVersion)"/>
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="6.0.0"/>
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0"/>
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Http.Polly" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(MicrosoftLoggingVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftLoggingVersion)"/>
@@ -71,21 +48,28 @@
     <PackageVersion Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0"/>
     <PackageVersion Include="Microsoft.Tye.Extensions.Configuration" Version="0.10.0-alpha.21420.1"/>
     <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.0.64"/>
-    <PackageVersion Include="MinimalApis.Extensions" Version="0.5.0-pre.20220321.15"/>
-    <PackageVersion Include="NetFabric.Hyperlinq.Analyzer" Version="2.0.4"/>
-    <PackageVersion Include="Newtonsoft.Json" Version="13.0.1"/>
-    <PackageVersion Include="Nito.AsyncEx" Version="5.1.2"/>
-    <PackageVersion Include="Nito.AsyncEx.Context" Version="5.1.2"/>
-    <PackageVersion Include="Nito.AsyncEx.Tasks" Version="5.1.2"/>
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.2"/>
-    <PackageVersion Include="prometheus-net.AspNetCore" Version="5.0.2"/>
-    <PackageVersion Include="prometheus-net.AspNetCore.Grpc" Version="5.0.2"/>
-    <PackageVersion Include="prometheus-net.AspNetCore.HealthChecks" Version="5.0.2"/>
-    <PackageVersion Include="Roslynator.Analyzers" Version="3.3.0"/>
-    <PackageVersion Include="Roslynator.CodeAnalysis.Analyzers" Version="3.3.0"/>
-    <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="3.3.0"/>
-    <PackageVersion Include="Scrutor" Version="4.1.0"/>
-    <PackageVersion Include="SendGrid" Version="9.25.3"/>
+    <PackageVersion Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Asp.Versioning.Http" Version="6.2.1"/>
+    <PackageVersion Include="Asp.Versioning.Mvc" Version="6.2.1"/>
+    <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="6.2.1"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational.Design" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="EFCore.NamingConventions" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspNetCoreVersion)"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageVersion Include="Serilog" Version="2.10.0"/>
     <PackageVersion Include="Serilog.AspNetCore" Version="4.1.0"/>
     <PackageVersion Include="Serilog.Enrichers.CorrelationId" Version="3.0.1"/>
@@ -102,30 +86,87 @@
     <PackageVersion Include="Serilog.Sinks.SpectreConsole" Version="0.1.1"/>
     <PackageVersion Include="SerilogAnalyzer" Version="0.15.0"/>
     <PackageVersion Include="SerilogTimings" Version="3.0.0"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="OpenTelemetry" Version="$(OpenTelemetry)" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(OpenTelemetry)"/>
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs" Version="$(OpenTelemetry)" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="$(OpenTelemetry)" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Jaeger" Version="$(OpenTelemetry)" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="$(OpenTelemetry)" />
+    <PackageVersion Include="OpenTelemetry.Api" Version="$(OpenTelemetry)"/>
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9.9" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.0.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9.9" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9.9" />
+    <PackageVersion Include="OpenTelemetry.Contrib.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta2" />
+    <PackageVersion Include="OpenTelemetry.Contrib.Instrumentation.MassTransit" Version="1.0.0-beta2" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.EventCounters" Version="1.0.0-alpha.2" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.MassTransit" Version="1.0.0-beta.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="AspNetCoreAnalyzers" Version="0.3.0"/>
+    <PackageVersion Include="AsyncFixer" Version="1.5.1"/>
+    <PackageVersion Include="Meziantou.Analyzer" Version="1.0.688"/>
+    <PackageVersion Include="Roslynator.Analyzers" Version="3.3.0"/>
+    <PackageVersion Include="Roslynator.CodeAnalysis.Analyzers" Version="3.3.0"/>
+    <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="3.3.0"/>
+    <PackageVersion Include="Nito.AsyncEx" Version="5.1.2"/>
+    <PackageVersion Include="Nito.AsyncEx.Context" Version="5.1.2"/>
+    <PackageVersion Include="Nito.AsyncEx.Tasks" Version="5.1.2"/>
     <PackageVersion Include="SmartanAlyzers.ExceptionAnalyzer" Version="1.0.10"/>
+    <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.354"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="MassTransit" Version="$(MassTransitVersion)"/>
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="$(MassTransitVersion)"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+    <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="6.4.0"/>
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(AspNetCoreVersion)"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="AutoMapper" Version="11.0.1"/>
+    <PackageVersion Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0"/>
+    <PackageVersion Include="Bogus" Version="34.0.2"/>
+    <PackageVersion Include="Dapper" Version="2.0.123"/>
+    <PackageVersion Include="DotNetEnv" Version="2.3.0"/>
+    <PackageVersion Include="FluentMigrator.Extensions.Postgres" Version="3.3.2"/>
+    <PackageVersion Include="FluentMigrator.Runner.Postgres" Version="3.3.2"/>
+    <PackageVersion Include="FluentValidation.AspNetCore" Version="10.4.0"/>
+    <PackageVersion Include="Hellang.Middleware.ProblemDetails" Version="6.4.0"/>
+    <PackageVersion Include="Humanizer" Version="2.14.1"/>
+    <PackageVersion Include="Humanizer.Core" Version="2.14.1"/>
+    <PackageVersion Include="IdGen" Version="3.0.0"/>
+    <PackageVersion Include="MailKit" Version="3.1.1"/>
+    <PackageVersion Include="McMaster.NETCore.Plugins" Version="1.4.0"/>
+    <PackageVersion Include="MinimalApis.Extensions" Version="0.5.0-pre.20220321.15"/>
+    <PackageVersion Include="NetFabric.Hyperlinq.Analyzer" Version="2.0.4"/>
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.1"/>
+    <PackageVersion Include="Scrutor" Version="4.1.0"/>
+    <PackageVersion Include="SendGrid" Version="9.25.3"/>
     <PackageVersion Include="Spectre.Console" Version="0.44.0"/>
     <PackageVersion Include="SqlKata" Version="2.3.7"/>
     <PackageVersion Include="SqlStreamStore" Version="1.2.1-alpha.3"/>
-    <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.354"/>
-    <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="6.3.0"/>
-    <PackageVersion Include="Swashbuckle.AspNetCore.ReDoc" Version="6.3.1"/>
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.3.0"/>
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.3.0"/>
     <PackageVersion Include="System.Interactive.Async" Version="6.0.1"/>
     <PackageVersion Include="System.Reactive" Version="5.0.0"/>
     <PackageVersion Include="System.Reactive.Linq" Version="5.0.0"/>
     <PackageVersion Include="MongoDB.Driver" Version="2.17.1"/>
     <PackageVersion Include="Ardalis.GuardClauses" Version="4.0.1"/>
-    <PackageVersion Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6"/>
     <PackageVersion Include="MediatR" Version="10.0.0"/>
     <PackageVersion Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.0"/>
-    <PackageVersion Include="OpenTelemetry.Api" Version="1.3.0"/>
     <PackageVersion Include="Duende.BFF.Yarp" Version="1.2.3"/>
     <PackageVersion Include="Yarp.ReverseProxy" Version="1.1.1"/>
     <PackageVersion Include="Ardalis.ApiEndpoints" Version="4.0.1"/>
     <PackageVersion Include="Duende.IdentityServer" Version="6.1.5"/>
     <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="6.1.5"/>
     <PackageVersion Include="Duende.IdentityServer.EntityFramework" Version="6.1.5"/>
-
   </ItemGroup>
+
 </Project>

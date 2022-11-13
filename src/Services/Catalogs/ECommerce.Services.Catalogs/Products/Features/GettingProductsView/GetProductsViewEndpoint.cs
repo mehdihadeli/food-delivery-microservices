@@ -1,3 +1,4 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using ECommerce.Services.Catalogs.Shared;
 
@@ -16,7 +17,12 @@ public static class GetProductsViewEndpoint
             .Produces<GetProductsViewResult>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithDisplayName("Get products.");
+            .WithDisplayName("Get products.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+
+            // .IsApiVersionNeutral()
+            // .MapToApiVersion(1.0)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }

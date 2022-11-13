@@ -1,4 +1,6 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using ECommerce.Services.Identity.Shared;
 
 namespace ECommerce.Services.Identity.Identity.Features.RevokingRefreshToken;
 
@@ -12,7 +14,9 @@ public static class RevokeRefreshTokenEndpoint
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithDisplayName("Revoke refresh token.");
+            .WithDisplayName("Revoke refresh token.")
+            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }
@@ -22,7 +26,7 @@ public static class RevokeRefreshTokenEndpoint
         ICommandProcessor commandProcessor,
         CancellationToken cancellationToken)
     {
-        var command = new RevokeRefreshTokenCommand(request.RefreshToken);
+        var command = new RevokeRefreshToken(request.RefreshToken);
 
         await commandProcessor.SendAsync(command, cancellationToken);
 

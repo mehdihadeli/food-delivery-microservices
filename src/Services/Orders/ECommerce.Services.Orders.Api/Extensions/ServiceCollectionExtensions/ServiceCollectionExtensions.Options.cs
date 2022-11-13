@@ -2,13 +2,13 @@ using BuildingBlocks.Core.Web;
 
 namespace ECommerce.Services.Orders.Api.Extensions.ServiceCollectionExtensions;
 
-public static partial class ServiceCollectionExtensions
+internal static partial class WebApplicationBuilderExtensions
 {
-    public static IServiceCollection AddApplicationOptions(this IServiceCollection services, IConfiguration configuration)
+    public static WebApplicationBuilder AddApplicationOptions(this WebApplicationBuilder builder)
     {
-        services.AddOptions<AppOptions>().Bind(configuration.GetSection(nameof(AppOptions)))
+        builder.Services.AddOptions<AppOptions>().Bind(builder.Configuration.GetSection(nameof(AppOptions)))
             .ValidateDataAnnotations();
 
-        return services;
+        return builder;
     }
 }

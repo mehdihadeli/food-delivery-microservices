@@ -1,17 +1,30 @@
+using Asp.Versioning;
+using Asp.Versioning.Builder;
 using BuildingBlocks.Abstractions.Web.Module;
 using BuildingBlocks.Core;
 using BuildingBlocks.Monitoring;
 using ECommerce.Services.Catalogs.Shared.Extensions.ApplicationBuilderExtensions;
-using ECommerce.Services.Catalogs.Shared.Extensions.ServiceCollectionExtensions;
+using ECommerce.Services.Catalogs.Shared.Extensions.WebApplicationBuilderExtensions;
 
 namespace ECommerce.Services.Catalogs.Shared;
 
 public class SharedModulesConfiguration : ISharedModulesConfiguration
 {
-    public const string CatalogModulePrefixUri = "api/v1/catalogs";
+    public const string CatalogModulePrefixUri = "api/v{version:apiVersion}/catalogs";
+    public static ApiVersionSet VersionSet { get; private set; } = default!;
 
     public IEndpointRouteBuilder MapSharedModuleEndpoints(IEndpointRouteBuilder endpoints)
     {
+        var v1 = new ApiVersion(1, 0);
+        var v2 = new ApiVersion(2, 0);
+        var v3 = new ApiVersion(3, 0);
+
+        VersionSet = endpoints.NewApiVersionSet()
+            .HasApiVersion(v1)
+            .HasApiVersion(v2)
+            .HasApiVersion(v3)
+            .Build();
+
         endpoints.MapGet("/", (HttpContext context) =>
         {
             var requestId = context.Request.Headers.TryGetValue("X-Request-Id", out var requestIdHeader)
@@ -24,16 +37,13 @@ public class SharedModulesConfiguration : ISharedModulesConfiguration
         return endpoints;
     }
 
-    public IServiceCollection AddSharedModuleServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment)
+    public WebApplicationBuilder AddSharedModuleServices(WebApplicationBuilder builder)
     {
-        services.AddInfrastructure(configuration, webHostEnvironment);
+        builder.AddInfrastructure();
 
-        services.AddStorage(configuration);
+        builder.AddStorage();
 
-        return services;
+        return builder;
     }
 
     public async Task<WebApplication> ConfigureSharedModule(WebApplication app)

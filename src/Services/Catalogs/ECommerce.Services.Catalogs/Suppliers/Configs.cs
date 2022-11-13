@@ -6,14 +6,11 @@ namespace ECommerce.Services.Catalogs.Suppliers;
 
 internal class Configs : IModuleConfiguration
 {
-    public IServiceCollection AddModuleServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment)
+    public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
-        services.AddScoped<IDataSeeder, SupplierDataSeeder>();
+        builder.Services.AddScoped<IDataSeeder, SupplierDataSeeder>();
 
-        return services;
+        return builder;
     }
 
     public Task<WebApplication> ConfigureModule(WebApplication app)

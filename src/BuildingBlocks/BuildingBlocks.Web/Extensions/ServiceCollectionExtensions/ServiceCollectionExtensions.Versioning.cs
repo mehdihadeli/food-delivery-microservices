@@ -28,7 +28,7 @@ public static partial class ServiceCollectionExtensions
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.DefaultApiVersion = new ApiVersion(1, 0);
 
-                // // Defines how an API version is read from the current HTTP request
+                // Defines how an API version is read from the current HTTP request
                 options.ApiVersionReader = ApiVersionReader.Combine(
                     new HeaderApiVersionReader("api-version"),
                     new UrlSegmentApiVersionReader());

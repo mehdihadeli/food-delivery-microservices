@@ -132,7 +132,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageVersion Include="AutoMapper" Version="11.0.1"/>
+    <PackageVersion Include="AutoMapper" Version="11.0.0"/>
     <PackageVersion Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0"/>
     <PackageVersion Include="Bogus" Version="34.0.2"/>
     <PackageVersion Include="Dapper" Version="2.0.123"/>
@@ -159,14 +159,18 @@
     <PackageVersion Include="System.Reactive.Linq" Version="5.0.0"/>
     <PackageVersion Include="MongoDB.Driver" Version="2.17.1"/>
     <PackageVersion Include="Ardalis.GuardClauses" Version="4.0.1"/>
-    <PackageVersion Include="MediatR" Version="10.0.0"/>
-    <PackageVersion Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.0"/>
+    <PackageVersion Include="MediatR" Version="11.0.0"/>
+    <PackageVersion Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0"/>
     <PackageVersion Include="Duende.BFF.Yarp" Version="1.2.3"/>
     <PackageVersion Include="Yarp.ReverseProxy" Version="1.1.1"/>
     <PackageVersion Include="Ardalis.ApiEndpoints" Version="4.0.1"/>
-    <PackageVersion Include="Duende.IdentityServer" Version="6.1.5"/>
-    <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="6.1.5"/>
-    <PackageVersion Include="Duende.IdentityServer.EntityFramework" Version="6.1.5"/>
+    <PackageVersion Include="Ardalis.ApiEndpoints.Swashbuckle" Version="4.0.1"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="Duende.IdentityServer" Version="6.1.7"/>
+    <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="6.1.7"/>
+    <PackageVersion Include="Duende.IdentityServer.EntityFramework" Version="6.1.7"/>
   </ItemGroup>
 
 </Project>

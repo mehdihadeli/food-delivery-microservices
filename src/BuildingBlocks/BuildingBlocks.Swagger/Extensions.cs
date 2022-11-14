@@ -1,23 +1,18 @@
 using System.Reflection;
-using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace BuildingBlocks.Swagger;
-
 public static class Extensions
 {
     // https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/README.md
-    public static WebApplicationBuilder AddCustomSwagger(
-        this WebApplicationBuilder builder,
-        IConfiguration configuration,
-        Assembly assembly)
+    // https://github.com/dotnet/aspnet-api-versioning/tree/88323136a97a59fcee24517a514c1a445530c7e2/examples/AspNetCore/WebApi/MinimalOpenApiExample
+    public static WebApplicationBuilder AddCustomSwagger(this WebApplicationBuilder builder, Assembly assembly)
     {
-        builder.Services.AddCustomSwagger(configuration, assembly);
+        builder.Services.AddCustomSwagger(builder.Configuration, assembly);
 
         return builder;
     }
@@ -25,18 +20,14 @@ public static class Extensions
     public static IServiceCollection AddCustomSwagger(
         this IServiceCollection services,
         IConfiguration configuration,
-        Assembly assembly,
-        bool useApiVersioning = false)
+        Assembly assembly)
     {
-        // swagger docs for route to code style --> works in .net 6
-        // https://dotnetthoughts.net/openapi-support-for-aspnetcore-minimal-webapi/
-        // https://jaliyaudagedara.blogspot.com/2021/07/net-6-preview-6-introducing-openapi.html
+        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi
         services.AddEndpointsApiExplorer();
 
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         services.AddOptions<SwaggerOptions>().Bind(configuration.GetSection(nameof(SwaggerOptions)))
             .ValidateDataAnnotations();
-
-        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         services.AddSwaggerGen(
             options =>
@@ -94,41 +85,43 @@ public static class Extensions
                         Array.Empty<string>()
                     }
                 });
+
+                options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+
+                ////https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/467
+                // options.OperationFilter<TagByApiExplorerSettingsOperationFilter>();
+                // options.OperationFilter<TagBySwaggerOperationFilter>();
+
+                // Enables Swagger annotations (SwaggerOperationAttribute, SwaggerParameterAttribute etc.)
+                options.EnableAnnotations();
             });
 
         services.Configure<SwaggerGeneratorOptions>(o => o.InferSecuritySchemes = true);
 
-        return services;
-
         static string XmlCommentsFilePath(Assembly assembly)
         {
-            var basePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            var basePath = Path.GetDirectoryName(assembly.Location);
             var fileName = assembly.GetName().Name + ".xml";
             return Path.Combine(basePath, fileName);
         }
+
+        return services;
     }
 
-    public static IApplicationBuilder UseCustomSwagger(
-        this IApplicationBuilder app,
-        IApiVersionDescriptionProvider? provider = null)
+    public static IApplicationBuilder UseCustomSwagger(this WebApplication app)
     {
         app.UseSwagger();
         app.UseSwaggerUI(
             options =>
             {
-                options.DocExpansion(DocExpansion.None);
-                if (provider is null)
+                var descriptions = app.DescribeApiVersions();
+
+                // build a swagger endpoint for each discovered API version
+                foreach (var description in descriptions)
                 {
-                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "API");
-                }
-                else
-                {
-                    foreach (var description in provider.ApiVersionDescriptions)
-                    {
-                        options.SwaggerEndpoint(
-                            $"/swagger/{description.GroupName}/swagger.json",
-                            description.GroupName.ToUpperInvariant());
-                    }
+                    var url = $"/swagger/{description.GroupName}/swagger.json";
+                    var name = description.GroupName.ToUpperInvariant();
+                    options.SwaggerEndpoint(url, name);
                 }
             });
 

@@ -41,7 +41,7 @@ internal class DebitProductStockHandler : ICommandHandler<DebitProductStock>
             await _catalogDbContext.Products.SingleOrDefaultAsync(x => x.Id == command.ProductId, cancellationToken);
 
         await _catalogDbContext.SaveChangesAsync(cancellationToken);
-        Guard.Against.NotFound(product, new ProductNotFoundException(command.ProductId));
+        Guard.Against.NotFound(product, new ProductCustomNotFoundException(command.ProductId));
         product!.DebitStock(command.Quantity);
 
         await _catalogDbContext.SaveChangesAsync(cancellationToken);

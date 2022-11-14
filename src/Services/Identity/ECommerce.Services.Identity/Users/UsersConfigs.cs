@@ -1,3 +1,4 @@
+using Asp.Versioning.Builder;
 using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Identity.Shared;
 using ECommerce.Services.Identity.Users.Features.GettingUerByEmail;
@@ -11,6 +12,7 @@ internal class UsersConfigs : IModuleConfiguration
 {
     public const string Tag = "Users";
     public const string UsersPrefixUri = $"{SharedModulesConfiguration.IdentityModulePrefixUri}/users";
+    public static ApiVersionSet VersionSet { get; private set; } = default!;
 
     public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
@@ -24,6 +26,8 @@ internal class UsersConfigs : IModuleConfiguration
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
+        VersionSet = endpoints.NewApiVersionSet(Tag).Build();
+
         endpoints.MapRegisterNewUserEndpoint();
         endpoints.MapUpdateUserStateEndpoint();
         endpoints.MapGetUserByIdEndpoint();

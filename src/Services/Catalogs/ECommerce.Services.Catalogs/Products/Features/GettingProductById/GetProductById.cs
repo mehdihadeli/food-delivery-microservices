@@ -9,7 +9,7 @@ using ECommerce.Services.Catalogs.Shared.Extensions;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProductById;
 
-public record GetProductById(long Id) : IQuery<GetProductByIdResult>;
+public record GetProductById(long Id) : IQuery<GetProductByIdResponse>;
 
 internal class GetProductByIdValidator : AbstractValidator<GetProductById>
 {
@@ -21,7 +21,7 @@ internal class GetProductByIdValidator : AbstractValidator<GetProductById>
     }
 }
 
-public class GetProductByIdHandler : IQueryHandler<GetProductById, GetProductByIdResult>
+public class GetProductByIdHandler : IQueryHandler<GetProductById, GetProductByIdResponse>
 {
     private readonly ICatalogDbContext _catalogDbContext;
     private readonly IMapper _mapper;
@@ -32,17 +32,15 @@ public class GetProductByIdHandler : IQueryHandler<GetProductById, GetProductByI
         _mapper = mapper;
     }
 
-    public async Task<GetProductByIdResult> Handle(GetProductById query, CancellationToken cancellationToken)
+    public async Task<GetProductByIdResponse> Handle(GetProductById query, CancellationToken cancellationToken)
     {
         Guard.Against.Null(query, nameof(query));
 
         var product = await _catalogDbContext.FindProductByIdAsync(query.Id);
-        Guard.Against.NotFound(product, new ProductNotFoundException(query.Id));
+        Guard.Against.NotFound(product, new ProductCustomNotFoundException(query.Id));
 
         var productsDto = _mapper.Map<ProductDto>(product);
 
-        return new GetProductByIdResult(productsDto);
+        return new GetProductByIdResponse(productsDto);
     }
 }
-
-public record GetProductByIdResult(ProductDto Product);

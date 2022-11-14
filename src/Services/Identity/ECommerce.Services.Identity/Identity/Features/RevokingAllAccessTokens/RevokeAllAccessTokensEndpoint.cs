@@ -16,7 +16,7 @@ public static class RevokeAllAccessTokensEndpoint
             .Produces<bool>()
             .Produces(StatusCodes.Status400BadRequest)
             .WithDisplayName("Revoke Current User Access Token From the Header.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(IdentityConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return endpoints;

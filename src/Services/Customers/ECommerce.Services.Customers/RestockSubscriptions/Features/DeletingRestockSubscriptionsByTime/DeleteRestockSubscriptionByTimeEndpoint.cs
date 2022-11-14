@@ -19,7 +19,7 @@ public class DeleteRestockSubscriptionByTimeEndpoint :
             .Produces(StatusCodes.Status401Unauthorized)
             .WithName("DeleteRestockSubscriptionByTime")
             .WithDisplayName("Delete RestockSubscriptions by time range.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(RestockSubscriptionsConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return builder;

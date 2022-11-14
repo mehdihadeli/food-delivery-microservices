@@ -24,7 +24,6 @@
     <PackageReference Include="Microsoft.Extensions.Http.Polly" />
     <PackageReference Include="OpenTelemetry.Api" />
     <PackageReference Include="EFCore.NamingConventions" />
-
   </ItemGroup>
 
   <ItemGroup>

@@ -19,7 +19,7 @@ public static class GetUserByEmailEndpoint
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("GetUserByEmail")
             .WithDisplayName("Get User by email.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(UsersConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return endpoints;

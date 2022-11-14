@@ -17,7 +17,7 @@ public static class GetUserByIdEndpoint
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("GetUserById")
             .WithDisplayName("Get User by Id.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(UsersConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return endpoints;

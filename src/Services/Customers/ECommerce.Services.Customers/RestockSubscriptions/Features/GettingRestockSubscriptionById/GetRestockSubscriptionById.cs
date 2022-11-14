@@ -44,7 +44,7 @@ internal class GetRestockSubscriptionByIdHandler
                 .Where(x => x.IsDeleted == false)
                 .SingleOrDefaultAsync(x => x.RestockSubscriptionId == query.Id, cancellationToken: cancellationToken);
 
-        Guard.Against.NotFound(restockSubscription, new RestockSubscriptionNotFoundException(query.Id));
+        Guard.Against.NotFound(restockSubscription, new RestockSubscriptionCustomNotFoundException(query.Id));
 
         var subscriptionDto = _mapper.Map<RestockSubscriptionDto>(restockSubscription);
 

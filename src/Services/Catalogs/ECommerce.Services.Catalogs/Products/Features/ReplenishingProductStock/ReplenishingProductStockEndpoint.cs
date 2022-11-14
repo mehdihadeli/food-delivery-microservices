@@ -1,6 +1,7 @@
 using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using ECommerce.Services.Catalogs.Shared;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Catalogs.Products.Features.ReplenishingProductStock;
 
@@ -13,14 +14,17 @@ public static class ReplenishingProductStockEndpoint
                 $"{ProductsConfigs.ProductsPrefixUri}/{{productId}}/replenish-stock",
                 ReplenishProductStock)
             .RequireAuthorization()
-            .WithTags(ProductsConfigs.Tag)
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)
+            .WithTags(ProductsConfigs.Tag)
+            .WithMetadata(new SwaggerOperationAttribute(
+                "Replenishing ProductStock Products ",
+                "Replenishing ProductStock Products"))
             .WithName("ReplenishProductStock")
             .WithDisplayName("Replenish product stock")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(ProductsConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return endpoints;

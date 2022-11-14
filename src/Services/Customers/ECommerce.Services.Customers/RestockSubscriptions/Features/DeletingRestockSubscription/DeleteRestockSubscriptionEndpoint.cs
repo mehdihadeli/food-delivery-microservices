@@ -18,7 +18,7 @@ public class DeleteRestockSubscriptionEndpoint : ICommandMinimalEndpoint<long, I
             .Produces(StatusCodes.Status401Unauthorized)
             .WithName("DeleteRestockSubscription")
             .WithDisplayName("Delete RestockSubscription for Customer.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(RestockSubscriptionsConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return builder;

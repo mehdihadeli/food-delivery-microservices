@@ -14,7 +14,7 @@ public static class GetClaimsEndpoint
             .Produces<GetClaimsResponse>()
             .Produces(StatusCodes.Status401Unauthorized)
             .WithDisplayName("Get User claims")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(IdentityConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return endpoints;

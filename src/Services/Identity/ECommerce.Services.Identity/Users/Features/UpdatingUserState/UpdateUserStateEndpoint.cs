@@ -16,7 +16,7 @@ public static class UpdateUserStateEndpoint
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
             .WithDisplayName("Update User State.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(UsersConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return endpoints;

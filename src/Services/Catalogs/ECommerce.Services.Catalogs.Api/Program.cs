@@ -11,9 +11,13 @@ using ECommerce.Services.Catalogs.Api.Extensions.ApplicationBuilderExtensions;
 using ECommerce.Services.Catalogs.Api.Extensions.ServiceCollectionExtensions;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.Extensions.Options;
+using Asp.Versioning;
+using Asp.Versioning.Conventions;
 using Serilog;
 using Serilog.Events;
 using Spectre.Console;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 AnsiConsole.Write(new FigletText("Catalogs Service").Centered().Color(Color.Purple));
 
@@ -76,7 +80,7 @@ static void RegisterServices(WebApplicationBuilder builder)
         });
 
     builder.Services.AddCustomVersioning();
-    builder.AddCustomSwagger(builder.Configuration, typeof(CatalogRoot).Assembly);
+    builder.AddCustomSwagger(typeof(CatalogRoot).Assembly);
 
     builder.Services.AddHttpContextAccessor();
 
@@ -95,12 +99,6 @@ static void RegisterServices(WebApplicationBuilder builder)
 static async Task ConfigureApplication(WebApplication app)
 {
     var environment = app.Environment;
-
-    if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
-    {
-        app.UseDeveloperExceptionPage();
-        app.UseCustomSwagger();
-    }
 
     app.UseProblemDetails();
 
@@ -129,6 +127,12 @@ static async Task ConfigureApplication(WebApplication app)
     // NOTE: This should only be exposed on an internal port!
     // .RequireHost("*:9100");
     app.MapPrometheusScrapingEndpoint();
+
+    if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
+    {
+        // swagger middleware should register last to discover all endpoints and its versions correctly
+        app.UseCustomSwagger();
+    }
 
     Log.Logger = new LoggerConfiguration()
         .WriteTo.Console()

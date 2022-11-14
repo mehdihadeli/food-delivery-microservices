@@ -70,12 +70,15 @@ public static partial class ServiceCollectionExtensions
                 Detail = ex.Message,
                 Type = "https://somedomain/bad-request-error"
             });
-            x.Map<NotFoundException>(ex => new ProblemDetails
+            x.Map<CustomNotFoundException>(ex =>
             {
-                Title = "not found exception",
-                Status = (int)ex.StatusCode,
-                Detail = ex.Message,
-                Type = "https://somedomain/not-found-error"
+                return new ProblemDetails
+                {
+                    Title = "not found exception",
+                    Status = (int)ex.StatusCode,
+                    Detail = ex.Message,
+                    Type = "https://somedomain/not-found-error"
+                };
             });
             x.Map<ApiException>(ex => new ProblemDetails
             {
@@ -84,12 +87,15 @@ public static partial class ServiceCollectionExtensions
                 Detail = ex.Message,
                 Type = "https://somedomain/api-server-error"
             });
-            x.Map<AppException>(ex => new ProblemDetails
+            x.Map<AppException>(ex =>
             {
-                Title = "application exception",
-                Status = (int)ex.StatusCode,
-                Detail = ex.Message,
-                Type = "https://somedomain/application-error"
+                return new ProblemDetails
+                {
+                    Title = "application exception",
+                    Status = (int)ex.StatusCode,
+                    Detail = ex.Message,
+                    Type = "https://somedomain/application-error"
+                };
             });
             x.Map<ForbiddenException>(ex => new ForbiddenProblemDetails(ex.Message));
             x.Map<UnAuthorizedException>(ex => new UnauthorizedProblemDetails(ex.Message));

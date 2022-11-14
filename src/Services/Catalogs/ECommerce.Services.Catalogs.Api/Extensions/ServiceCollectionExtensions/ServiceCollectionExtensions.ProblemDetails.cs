@@ -70,7 +70,7 @@ public static partial class ServiceCollectionExtensions
                 Detail = ex.Message,
                 Type = "https://somedomain/bad-request-error"
             });
-            x.Map<NotFoundException>(ex => new ProblemDetails
+            x.Map<CustomNotFoundException>(ex => new ProblemDetails
             {
                 Title = "not found exception",
                 Status = (int)ex.StatusCode,

@@ -1,6 +1,7 @@
 using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using ECommerce.Services.Catalogs.Shared;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Catalogs.Products.Features.DebitingProductStock;
 
@@ -12,15 +13,16 @@ public static class DebitProductStockEndpoint
         endpoints.MapPost(
                 $"{ProductsConfigs.ProductsPrefixUri}/{{productId}}/debit-stock",
                 DebitProductStock)
-            .WithTags(ProductsConfigs.Tag)
             .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)
+            .WithTags(ProductsConfigs.Tag)
+            .WithMetadata(new SwaggerOperationAttribute("Debiting Product Stock", "Debiting Product Stock"))
             .WithName("DebitProductStock")
             .WithDisplayName("Debit product stock")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(ProductsConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return endpoints;

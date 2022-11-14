@@ -6,7 +6,7 @@ using ECommerce.Services.Catalogs.Products.Models;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProductsView;
 
-public class GetProductsView : IQuery<GetProductsViewResult>
+public class GetProductsView : IQuery<GetProductsViewResponse>
 {
     public int Page { get; init; } = 1;
     public int PageSize { get; init; } = 20;
@@ -26,7 +26,7 @@ public class GetProductsViewValidator : AbstractValidator<GetProductsView>
     }
 }
 
-internal class GetProductsViewQueryHandler : IRequestHandler<GetProductsView, GetProductsViewResult>
+internal class GetProductsViewQueryHandler : IRequestHandler<GetProductsView, GetProductsViewResponse>
 {
     private readonly IDbFacadeResolver _facadeResolver;
     private readonly IMapper _mapper;
@@ -37,7 +37,7 @@ internal class GetProductsViewQueryHandler : IRequestHandler<GetProductsView, Ge
         _mapper = mapper;
     }
 
-    public async Task<GetProductsViewResult> Handle(
+    public async Task<GetProductsViewResponse> Handle(
         GetProductsView request,
         CancellationToken cancellationToken)
     {
@@ -51,8 +51,6 @@ internal class GetProductsViewQueryHandler : IRequestHandler<GetProductsView, Ge
 
         var productViewDtos = _mapper.Map<IEnumerable<ProductViewDto>>(results);
 
-        return new GetProductsViewResult(productViewDtos);
+        return new GetProductsViewResponse(productViewDtos);
     }
 }
-
-public record GetProductsViewResult(IEnumerable<ProductViewDto> Products);

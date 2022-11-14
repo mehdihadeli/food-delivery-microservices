@@ -1,5 +1,6 @@
 using Ardalis.ApiEndpoints;
 using Ardalis.GuardClauses;
+using Asp.Versioning;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -22,9 +23,10 @@ public class GetRestockSubscriptionsEndpoint : EndpointBaseAsync
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ApiVersion(1.0)]
     [SwaggerOperation(
-        Summary = "Get Restock Subscriptions.",
-        Description = "Get Restock Subscriptions.",
+        Summary = "Getting Restock Subscriptions.",
+        Description = "Getting Restock Subscriptions.",
         OperationId = "GetRestockSubscriptions",
         Tags = new[] {RestockSubscriptionsConfigs.Tag})]
     [Authorize(Roles = CustomersConstants.Role.Admin)]

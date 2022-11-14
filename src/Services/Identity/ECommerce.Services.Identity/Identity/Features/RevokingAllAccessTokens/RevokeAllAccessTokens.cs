@@ -30,7 +30,7 @@ public class RevokeAllAccessTokenHandler : ICommandHandler<RevokeAllAccessTokens
         var appUser = await _userManager.FindByNameAsync(request.UserName);
         if (appUser == null)
         {
-            throw new UserNotFoundException(request.UserName);
+            throw new UserCustomNotFoundException(request.UserName);
         }
 
         var tokens = _identityDbContext.Set<AccessToken>()

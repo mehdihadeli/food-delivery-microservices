@@ -1,3 +1,4 @@
+using Asp.Versioning.Builder;
 using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
@@ -14,8 +15,9 @@ namespace ECommerce.Services.Catalogs.Products;
 
 internal class ProductsConfigs : IModuleConfiguration
 {
-    public const string Tag = "Product";
+    public const string Tag = "Products";
     public const string ProductsPrefixUri = $"{SharedModulesConfiguration.CatalogModulePrefixUri}/products";
+    public static ApiVersionSet VersionSet { get; private set; } = default!;
 
     public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
@@ -27,11 +29,13 @@ internal class ProductsConfigs : IModuleConfiguration
 
     public Task<WebApplication> ConfigureModule(WebApplication app)
     {
-        return Task.FromResult<WebApplication>(app);
+        return Task.FromResult(app);
     }
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
+        VersionSet = endpoints.NewApiVersionSet(Tag).Build();
+
         return endpoints.MapCreateProductsEndpoint()
             .MapUpdateProductEndpoint()
             .MapDebitProductStockEndpoint()

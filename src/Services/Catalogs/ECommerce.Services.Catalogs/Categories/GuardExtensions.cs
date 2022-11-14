@@ -8,6 +8,6 @@ public static class GuardExtensions
     public static void ExistsCategory(this IGuardClause guardClause, bool exists, long categoryId)
     {
         if (exists == false)
-            throw new CategoryNotFoundException(categoryId);
+            throw new CategoryCustomNotFoundException(categoryId);
     }
 }

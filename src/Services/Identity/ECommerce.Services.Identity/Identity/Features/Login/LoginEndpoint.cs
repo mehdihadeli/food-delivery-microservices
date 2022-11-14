@@ -16,8 +16,9 @@ public static class LoginEndpoint
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status400BadRequest)
             .WithDisplayName("Login User.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
-            .HasApiVersion(1.0);
+            .WithApiVersionSet(IdentityConfigs.VersionSet)
+            .HasApiVersion(1.0)
+            .HasApiVersion(2.0);
 
         return endpoints;
     }

@@ -3,6 +3,7 @@ using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using ECommerce.Services.Customers.Shared;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Customers.Customers.Features.GettingCustomerById;
 
@@ -13,15 +14,16 @@ public class GetCustomerByIdEndpointEndpoint : IMinimalEndpoint
         builder.MapGet(
                 $"{CustomersConfigs.CustomersPrefixUri}/{{id}}",
                 GetCustomerById)
-            .WithTags(CustomersConfigs.Tag)
             // .RequireAuthorization()
             .Produces<GetCustomerByIdResult>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)
+            .WithTags(CustomersConfigs.Tag)
+            .WithMetadata(new SwaggerOperationAttribute("Getting a Customer By Id", "Getting a Customer By Id"))
             .WithName("GetCustomerById")
             .WithDisplayName("Get Customer By Id.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(CustomersConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return builder;

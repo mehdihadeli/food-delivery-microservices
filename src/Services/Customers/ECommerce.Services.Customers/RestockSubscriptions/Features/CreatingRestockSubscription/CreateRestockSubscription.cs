@@ -70,7 +70,7 @@ internal class CreateRestockSubscriptionHandler
         Guard.Against.NotExists(existsCustomer, new CustomerNotFoundException(request.CustomerId));
 
         var product = (await _catalogApiClient.GetProductByIdAsync(request.ProductId, cancellationToken))?.Product;
-        Guard.Against.NotFound(product, new ProductNotFoundException(request.ProductId));
+        Guard.Against.NotFound(product, new ProductCustomNotFoundException(request.ProductId));
 
         if (product!.AvailableStock > 0)
             throw new ProductHaveStockException(product.Id, product.AvailableStock, product.Name);

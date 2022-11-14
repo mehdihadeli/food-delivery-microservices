@@ -51,16 +51,16 @@ internal class UpdateProductCommandHandler : ICommandHandler<UpdateProduct>
         Guard.Against.Null(command, nameof(command));
 
         var product = await _catalogDbContext.FindProductByIdAsync(command.Id);
-        Guard.Against.NotFound(product, new ProductNotFoundException(command.Id));
+        Guard.Against.NotFound(product, new ProductCustomNotFoundException(command.Id));
 
         var category = await _catalogDbContext.FindCategoryAsync(command.CategoryId);
-        Guard.Against.NotFound(category, new CategoryNotFoundException(command.CategoryId));
+        Guard.Against.NotFound(category, new CategoryCustomNotFoundException(command.CategoryId));
 
         var brand = await _catalogDbContext.FindBrandAsync(command.BrandId);
-        Guard.Against.NotFound(brand, new BrandNotFoundException(command.BrandId));
+        Guard.Against.NotFound(brand, new BrandCustomNotFoundException(command.BrandId));
 
         var supplier = await _catalogDbContext.FindSupplierByIdAsync(command.SupplierId);
-        Guard.Against.NotFound(supplier, new SupplierNotFoundException(command.SupplierId));
+        Guard.Against.NotFound(supplier, new SupplierCustomNotFoundException(command.SupplierId));
 
         product!.ChangeCategory(command.CategoryId);
         product.ChangeBrand(command.BrandId);

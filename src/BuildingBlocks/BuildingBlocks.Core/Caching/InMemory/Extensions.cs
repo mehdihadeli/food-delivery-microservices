@@ -1,7 +1,6 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Caching;
 using BuildingBlocks.Core.Caching;
-using BuildingBlocks.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 
 namespace BuildingBlocks.Caching.InMemory;

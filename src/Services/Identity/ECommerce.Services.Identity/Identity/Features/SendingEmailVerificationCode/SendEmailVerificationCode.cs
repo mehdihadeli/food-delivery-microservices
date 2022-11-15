@@ -40,7 +40,7 @@ internal class SendEmailVerificationCodeCommandHandler : ICommandHandler<SendEma
         var identityUser = await _userManager.FindByEmailAsync(request.Email);
 
         if (identityUser == null)
-            throw new UserNotFoundException(request.Email);
+            throw new UserCustomNotFoundException(request.Email);
 
         if (identityUser.EmailConfirmed)
         {

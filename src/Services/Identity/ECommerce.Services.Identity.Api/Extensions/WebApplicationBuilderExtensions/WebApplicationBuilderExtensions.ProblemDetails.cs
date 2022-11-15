@@ -55,7 +55,7 @@ public static class WebApplicationBuilderExtensions
                 Detail = ex.Message,
                 Type = "https://somedomain/argument-error"
             });
-            x.Map<NotFoundException>(ex => new ProblemDetails
+            x.Map<CustomNotFoundException>(ex => new ProblemDetails
             {
                 Title = "not found exception",
                 Status = (int)ex.StatusCode,

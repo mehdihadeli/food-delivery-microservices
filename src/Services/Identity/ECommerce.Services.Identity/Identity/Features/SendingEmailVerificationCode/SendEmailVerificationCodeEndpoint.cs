@@ -17,7 +17,7 @@ public static class SendEmailVerificationCodeEndpoint
             .Produces(StatusCodes.Status409Conflict)
             .Produces(StatusCodes.Status400BadRequest)
             .WithDisplayName("Send Email Verification Code.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(IdentityConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return endpoints;

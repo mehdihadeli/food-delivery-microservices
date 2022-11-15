@@ -34,7 +34,7 @@ public class ProductUpdatedHandler : IDomainEventHandler<ProductUpdated>
                 .Include(x => x.Supplier)
                 .SingleOrDefaultAsync(x => x.Id == notification.Product.Id, cancellationToken);
 
-            Guard.Against.NotFound(product, new ProductNotFoundException(notification.Product.Id));
+            Guard.Against.NotFound(product, new ProductCustomNotFoundException(notification.Product.Id));
 
             existed.ProductId = product!.Id;
             existed.ProductName = product.Name;

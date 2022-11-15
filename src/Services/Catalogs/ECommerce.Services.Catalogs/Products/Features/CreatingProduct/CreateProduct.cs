@@ -114,10 +114,10 @@ public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProduct
         Guard.Against.NotFound(category, new CategoryDomainException(command.CategoryId));
 
         var brand = await _catalogDbContext.FindBrandAsync(command.BrandId);
-        Guard.Against.NotFound(brand, new BrandNotFoundException(command.BrandId));
+        Guard.Against.NotFound(brand, new BrandCustomNotFoundException(command.BrandId));
 
         var supplier = await _catalogDbContext.FindSupplierByIdAsync(command.SupplierId);
-        Guard.Against.NotFound(supplier, new SupplierNotFoundException(command.SupplierId));
+        Guard.Against.NotFound(supplier, new SupplierCustomNotFoundException(command.SupplierId));
 
         // await _domainEventDispatcher.DispatchAsync(cancellationToken, new Events.Domain.CreatingProduct());
         var product = Product.Create(

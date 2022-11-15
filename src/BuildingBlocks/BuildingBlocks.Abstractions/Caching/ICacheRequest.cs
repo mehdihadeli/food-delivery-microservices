@@ -2,10 +2,12 @@ using MediatR;
 
 namespace BuildingBlocks.Abstractions.Caching;
 
-public interface ICachePolicy<in TRequest, TResponse>
+public interface ICacheRequest<in TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    DateTime? AbsoluteExpirationRelativeToNow { get; }
+    TimeSpan? AbsoluteExpirationRelativeToNow => TimeSpan.FromMinutes(5);
+    TimeSpan? SlidingExpiration => TimeSpan.FromSeconds(30);
+    DateTime? AbsoluteExpiration => null;
 
     string GetCacheKey(TRequest request)
     {
@@ -15,10 +17,12 @@ public interface ICachePolicy<in TRequest, TResponse>
     }
 }
 
-public interface IStreamCachePolicy<in TRequest, TResponse>
+public interface IStreamCacheRequest<in TRequest, TResponse>
     where TRequest : IStreamRequest<TResponse>
 {
-    DateTime? AbsoluteExpirationRelativeToNow { get; }
+    TimeSpan? AbsoluteExpirationRelativeToNow => TimeSpan.FromMinutes(5);
+    TimeSpan? SlidingExpiration => TimeSpan.FromSeconds(30);
+    DateTime? AbsoluteExpiration => null;
 
     string GetCacheKey(TRequest request)
     {

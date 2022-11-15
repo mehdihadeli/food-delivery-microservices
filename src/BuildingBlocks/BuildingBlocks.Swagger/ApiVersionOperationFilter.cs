@@ -23,13 +23,13 @@ public class ApiVersionOperationFilter : IOperationFilter
             //     Description = "API Version header value",
             //     Schema = new OpenApiSchema {Type = "String", Default = new OpenApiString("1.0")}
             // });
-            operation.Parameters.Add(new OpenApiParameter
-            {
-                Name = "{version}",
-                In = ParameterLocation.Path,
-                Description = "API Version route value",
-                Schema = new OpenApiSchema {Type = "String", Default = new OpenApiString("1.0")}
-            });
+            // operation.Parameters.Add(new OpenApiParameter
+            // {
+            //     Name = "{version:apiVersion}",
+            //     In = ParameterLocation.Path,
+            //     Description = "API Version route value",
+            //     Schema = new OpenApiSchema {Type = "String", Default = new OpenApiString("1.0")}
+            // });
         }
     }
 }

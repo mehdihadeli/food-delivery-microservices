@@ -19,7 +19,7 @@ public class CreateRestockSubscriptionEndpoint : ICommandMinimalEndpoint<CreateR
             .Produces(StatusCodes.Status401Unauthorized)
             .WithName("CreateRestockSubscription")
             .WithDisplayName("Register New RestockSubscription for Customer.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(RestockSubscriptionsConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return builder;

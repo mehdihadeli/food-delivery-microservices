@@ -2,9 +2,9 @@ using System.Net;
 
 namespace BuildingBlocks.Core.Exception.Types;
 
-public class NotFoundException : CustomException
+public class CustomNotFoundException : CustomException
 {
-    public NotFoundException(string message) : base(message)
+    public CustomNotFoundException(string message) : base(message)
     {
         StatusCode = HttpStatusCode.NotFound;
     }

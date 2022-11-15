@@ -3,6 +3,7 @@ using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using ECommerce.Services.Customers.Shared;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Customers.Customers.Features.CreatingCustomer;
 
@@ -12,13 +13,15 @@ public class CreateCustomerEndpoint : IMinimalEndpoint
     {
         builder.MapPost(CustomersConfigs.CustomersPrefixUri, CreateCustomer)
             .AllowAnonymous()
-            .WithTags(CustomersConfigs.Tag)
             .Produces<CreateCustomerResult>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
+            .WithTags(CustomersConfigs.Tag)
+            .WithMetadata(new SwaggerOperationAttribute("Creating a Customer", "Creating a Customer"))
             .WithName("CreateCustomer")
             .WithDisplayName("Register New Customer.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
-            .HasApiVersion(1.0);
+            .WithApiVersionSet(CustomersConfigs.VersionSet)
+            .HasApiVersion(1.0)
+            .HasApiVersion(2.0);
 
         return builder;
     }

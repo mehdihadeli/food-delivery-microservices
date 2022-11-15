@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
     <ItemGroup>
-	  <PackageVersion Update="MediatR" Version="10.0.1" />
-	  <PackageVersion Update="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
 	</ItemGroup>
 </Project>

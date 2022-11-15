@@ -21,13 +21,13 @@
     <PackageReference Include="MartinCostello.Logging.XUnit" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NSubstitute.Analyzers.CSharp" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Serilog.Sinks.Debug" />
     <PackageReference Include="Serilog.Sinks.Xunit2" />
     <PackageReference Include="System.Reactive.Linq" />
     <PackageReference Include="AutoBogus" />
     <PackageReference Include="AutoBogus.NSubstitute" />
-    <PackageReference Include="MartinCostello.Logging.XUnit" />
     <PackageReference Include="xunit.analyzers" />
   </ItemGroup>
 

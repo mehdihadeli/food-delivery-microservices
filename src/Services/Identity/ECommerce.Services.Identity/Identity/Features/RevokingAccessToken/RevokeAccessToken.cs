@@ -27,10 +27,11 @@ public class RevokeAccessTokenHandler : ICommandHandler<RevokeAccessToken>
         // https://dev.to/chukwutosin_/how-to-invalidate-a-jwt-using-a-blacklist-28dl
         // https://supertokens.com/blog/revoking-access-with-a-jwt-blacklist
         // The blacklist is saved in the format => "userName_revoked_tokens": [token1, token2,...]
-        await _cacheManager.SetAsync(
+        await _cacheManager.DefaultCacheProvider.SetAsync(
             $"{request.UserName}_{request.Token}_revoked_token",
             request.Token,
-            Convert.ToInt32(_jwtOptions.TokenLifeTimeSecond));
+            TimeSpan.FromSeconds(_jwtOptions.TokenLifeTimeSecond),
+            cancellationToken);
 
         return Unit.Value;
     }

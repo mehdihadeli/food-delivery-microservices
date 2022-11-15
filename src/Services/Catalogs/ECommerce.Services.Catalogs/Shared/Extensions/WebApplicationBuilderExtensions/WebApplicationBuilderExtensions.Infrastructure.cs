@@ -67,7 +67,10 @@ public static partial class ServiceCollectionExtensions
         });
 
         builder.Services.AddCustomValidators(Assembly.GetExecutingAssembly());
-        builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        builder.Services.AddAutoMapper(x =>
+        {
+            x.AddProfile<ProductMappers>();
+        });
 
         builder.Services.AddCustomInMemoryCache(builder.Configuration)
             .AddCachingRequestPolicies(Assembly.GetExecutingAssembly());

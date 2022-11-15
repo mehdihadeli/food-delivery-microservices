@@ -1,3 +1,4 @@
+using Asp.Versioning.Builder;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Identity.Identity.Data;
@@ -19,6 +20,7 @@ internal class IdentityConfigs : IModuleConfiguration
 {
     public const string Tag = "Identity";
     public const string IdentityPrefixUri = $"{SharedModulesConfiguration.IdentityModulePrefixUri}";
+    public static ApiVersionSet VersionSet { get; private set; } = default!;
 
     public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
@@ -39,6 +41,8 @@ internal class IdentityConfigs : IModuleConfiguration
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
+        VersionSet = endpoints.NewApiVersionSet(Tag).Build();
+
         endpoints.MapGet(
             $"{IdentityPrefixUri}/user-role",
             [Authorize(

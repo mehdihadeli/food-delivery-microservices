@@ -41,7 +41,7 @@ public static class CQRSRegistrationExtensions
 
         foreach (var pipeline in pipelines)
         {
-            services.TryAddTransientExact(typeof(IPipelineBehavior<,>), pipeline);
+            services.AddScoped(typeof(IPipelineBehavior<,>), pipeline);
         }
 
         services.Add<ICommandProcessor, CommandProcessor>(serviceLifetime)

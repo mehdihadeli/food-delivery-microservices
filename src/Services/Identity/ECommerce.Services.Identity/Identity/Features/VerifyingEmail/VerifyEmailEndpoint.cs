@@ -17,7 +17,7 @@ public static class VerifyEmailEndpoint
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status400BadRequest)
             .WithDisplayName("Verify Email.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(IdentityConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return endpoints;

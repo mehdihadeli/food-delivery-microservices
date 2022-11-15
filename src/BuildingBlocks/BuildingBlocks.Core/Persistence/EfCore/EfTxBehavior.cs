@@ -36,10 +36,10 @@ public class EfTxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TRe
 
     public async Task<TResponse> Handle(
         TRequest request,
-        CancellationToken cancellationToken,
-        RequestHandlerDelegate<TResponse> next)
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
-        using (Serilog.Context.LogContext.PushProperty("Request Object", _serializer.Serialize(request)))
+        using (Serilog.Context.LogContext.PushProperty("RequestObject", _serializer.Serialize(request)))
         {
             if (request is not ITxRequest) return await next();
 

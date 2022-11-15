@@ -75,7 +75,7 @@ static void RegisterServices(WebApplicationBuilder builder)
         });
 
     builder.Services.AddCustomVersioning();
-    builder.AddCustomSwagger(builder.Configuration, typeof(CustomersRoot).Assembly);
+    builder.AddCustomSwagger(typeof(CustomersRoot).Assembly);
 
     builder.Services.AddHttpContextAccessor();
 
@@ -97,12 +97,6 @@ static void RegisterServices(WebApplicationBuilder builder)
 static async Task ConfigureApplication(WebApplication app)
 {
     var environment = app.Environment;
-
-    if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
-    {
-        app.UseDeveloperExceptionPage();
-        app.UseCustomSwagger();
-    }
 
     app.UseProblemDetails();
 
@@ -126,6 +120,12 @@ static async Task ConfigureApplication(WebApplication app)
 
     // map registered minimal endpoints
     app.MapMinimalEndpoints();
+
+    if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
+    {
+        // swagger middleware should register last to discover all endpoints and its versions correctly
+        app.UseCustomSwagger();
+    }
 
     Log.Logger = new LoggerConfiguration()
         .WriteTo.Console()

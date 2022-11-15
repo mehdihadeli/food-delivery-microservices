@@ -14,8 +14,9 @@ public static class RegisterUserEndpoint
             .Produces<RegisterUserResult>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .WithDisplayName("Register New user.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
-            .HasApiVersion(1.0);
+            .WithApiVersionSet(UsersConfigs.VersionSet)
+            .HasApiVersion(1.0)
+            .HasApiVersion(2.0);
 
         return endpoints;
     }

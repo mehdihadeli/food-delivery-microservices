@@ -21,7 +21,7 @@ public class GetRestockSubscriptionByIdEndpoint : IQueryMinimalEndpoint<long, IR
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetRestockSubscriptionById")
             .WithDisplayName("Get RestockSubscription By Id.")
-            .WithApiVersionSet(SharedModulesConfiguration.VersionSet)
+            .WithApiVersionSet(RestockSubscriptionsConfigs.VersionSet)
             .HasApiVersion(1.0);
 
         return builder;

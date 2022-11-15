@@ -1,14 +1,17 @@
+using Asp.Versioning.Builder;
 using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Customers.Shared;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions;
 
-public class RestockSubscriptionsConfigs:IModuleConfiguration
+public class RestockSubscriptionsConfigs : IModuleConfiguration
 {
     public const string Tag = "RestockSubscriptions";
 
     public const string RestockSubscriptionsUrl =
         $"{SharedModulesConfiguration.CustomerModulePrefixUri}/restock-subscriptions";
+
+    public static ApiVersionSet VersionSet { get; private set; } = default!;
 
     public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
@@ -22,6 +25,8 @@ public class RestockSubscriptionsConfigs:IModuleConfiguration
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
+        VersionSet = endpoints.NewApiVersionSet(Tag).Build();
+
         // Here we can add endpoints manually but, if our endpoint inherits from `IMinimalEndpointDefinition`, they discover automatically.
         return endpoints;
     }

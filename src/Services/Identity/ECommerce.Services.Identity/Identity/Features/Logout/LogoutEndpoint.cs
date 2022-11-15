@@ -33,10 +33,10 @@ public static class LogoutEndpoint
             // The blacklist is saved in the format => "userName_revoked_tokens": [token1, token2,...]
             var token = GetTokenFromHeader(httpContext);
             var userName = httpContext.User.Identity!.Name;
-            await cacheManager.SetAsync(
+            await cacheManager.DefaultCacheProvider.SetAsync(
                 $"{userName}_{token}_revoked_token",
                 token,
-                Convert.ToInt32(jwtOptions.Value.TokenLifeTimeSecond));
+                TimeSpan.FromSeconds(jwtOptions.Value.TokenLifeTimeSecond));
         }
 
         return Results.Ok();

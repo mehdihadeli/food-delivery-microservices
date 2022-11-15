@@ -46,7 +46,7 @@ internal class UpdateUserStateHandler : ICommandHandler<UpdateUserState>
     public async Task<Unit> Handle(UpdateUserState request, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByIdAsync(request.UserId.ToString());
-        Guard.Against.Null(user, new UserNotFoundException(request.UserId));
+        Guard.Against.Null(user, new UserCustomNotFoundException(request.UserId));
 
         var previousState = user.UserState;
         if (previousState == request.State)

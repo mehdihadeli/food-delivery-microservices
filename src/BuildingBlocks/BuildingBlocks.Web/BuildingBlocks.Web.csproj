@@ -2,23 +2,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
-    <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
+    <ProjectReference Include="..\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj"/>
+    <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Asp.Versioning.Http" />
-    <PackageReference Include="Asp.Versioning.Mvc" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
-    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
-    <PackageReference Include="MinimalApis.Extensions" />
+    <PackageReference Include="Asp.Versioning.Http"/>
+    <PackageReference Include="Asp.Versioning.Mvc"/>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson"/>
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer"/>
+    <PackageReference Include="MinimalApis.Extensions"/>
+    <PackageReference Include="Ardalis.ApiEndpoints"/>
   </ItemGroup>
 
   <ItemGroup>
     <!--https://github.com/dotnet/aspnetcore/issues/19481-->
     <!--https://docs.microsoft.com/en-us/aspnet/core/fundamentals/metapackage-app-->
     <!--https://docs.microsoft.com/en-us/aspnet/core/fundamentals/target-aspnetcore-->
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <ItemGroup>
-    <ProjectReference Include="..\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
-    <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
-  </ItemGroup>
-
-</Project>

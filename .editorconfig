@@ -143,7 +143,6 @@ dotnet_diagnostic.CA1810.severity = Suggestion
 # CA1725: Parameter names should match base declaration
 dotnet_diagnostic.CA1725.severity = Suggestion
 
-
 ##################################################################################
 ## https://github.com/DotNetAnalyzers/StyleCopAnalyzers/tree/master/documentation
 ## https://documentation.help/StyleCop/StyleCop.html
@@ -271,7 +270,7 @@ dotnet_diagnostic.SA1101.severity = None
 dotnet_diagnostic.MA0004.severity = Suggestion
 
 # MA0049: Type name should not match containing namespace
-dotnet_diagnostic.MA0049.severity = Suggestion
+dotnet_diagnostic.MA0049.severity = None
 
 # MA0048: File name must match type name
 dotnet_diagnostic.MA0048.severity = Suggestion

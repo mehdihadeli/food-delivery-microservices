@@ -9,11 +9,11 @@ public static class CachingRegistrationExtensions
         this IServiceCollection services,
         params Assembly[] assembliesToScan)
     {
-        // ICachePolicy discovery and registration
+        // ICacheRequest discovery and registration
         services.Scan(scan => scan
             .FromAssemblies(assembliesToScan.Any() ? assembliesToScan : AppDomain.CurrentDomain.GetAssemblies())
             .AddClasses(
-                classes => classes.AssignableTo(typeof(ICachePolicy<,>)),
+                classes => classes.AssignableTo(typeof(ICacheRequest<,>)),
                 false)
             .AsImplementedInterfaces()
             .WithTransientLifetime());

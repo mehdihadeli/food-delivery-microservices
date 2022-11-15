@@ -1,3 +1,4 @@
+using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Caching;
 using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Extensions;
@@ -39,7 +40,6 @@ public static class Extensions
                 DefaultDatabase = redisOptions.Db,
             }));
 
-        services.AddSingleton<IRedisCache, RedisCache>();
         services.AddSingleton<ICacheManager, CacheManager>();
         services.AddSingleton<ICacheProvider, RedisCacheProvider>();
 

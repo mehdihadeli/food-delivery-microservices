@@ -1,8 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <AssemblyName>BuildingBlocks.Integration.MassTransit.IntegrationTests</AssemblyName>
     <RootNamespace>BuildingBlocks.Integration.MassTransit.IntegrationTests</RootNamespace>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <WarningsAsErrors></WarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\Services\Catalogs\ECommerce.Services.Catalogs.Api\ECommerce.Services.Catalogs.Api.csproj" />
     <ProjectReference Include="..\..\..\..\src\Services\Customers\ECommerce.Services.Customers.Api\ECommerce.Services.Customers.Api.csproj" />
@@ -16,5 +22,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  
+
+  <!--  https://devblogs.microsoft.com/nuget/introducing-central-package-management/-->
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" VersionOverride="11.0.0"/>
+    <PackageReference Include="AutoMapper" VersionOverride="11.0.0"/>
+  </ItemGroup>
+
 </Project>

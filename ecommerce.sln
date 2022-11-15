@@ -117,8 +117,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Services.Customer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.ApiGateway", "src\ApiGateway\ECommerce.ApiGateway\ECommerce.ApiGateway.csproj", "{77E45A0D-E20F-4779-9AB6-E9EC96D9C5E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Integration.MassTransit.IntegrationTests", "tests\BuildingBlocks\MassTransit\BuildingBlocks.Integration.MassTransit.IntegrationTests\BuildingBlocks.Integration.MassTransit.IntegrationTests.csproj", "{E796E951-7E05-4407-99CB-7EC54CDD46D8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Core", "src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj", "{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Messaging.Persistence.Postgres", "src\BuildingBlocks\BuildingBlocks.Messaging.Persistence.Postgres\BuildingBlocks.Messaging.Persistence.Postgres.csproj", "{BF962BA1-50F3-4714-A932-8DA76066F0AD}"
@@ -126,6 +124,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.OpenTelemetry", "src\BuildingBlocks\BuildingBlocks.OpenTelemetry\BuildingBlocks.OpenTelemetry.csproj", "{E26DC756-4A91-4644-8867-F0EDB2F1E38B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Caching.Redis", "src\BuildingBlocks\BuildingBlocks.Caching.Redis\BuildingBlocks.Caching.Redis.csproj", "{EF567F17-8961-4777-AEB9-D8CF4F4267E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Integration.MassTransit.IntegrationTests", "tests\BuildingBlocks\MassTransit\BuildingBlocks.Integration.MassTransit.IntegrationTests\BuildingBlocks.Integration.MassTransit.IntegrationTests.csproj", "{9789720F-4866-4A17-83C7-9E7CC740DE93}"
 EndProject
 
 Global
@@ -184,11 +184,11 @@ Global
 		{39703963-5D46-4B9F-BDCD-7371934ED5EC} = {EE33219C-7696-48D8-B86C-BF3A2D6087B1}
 		{364D684E-DF6D-4A8B-87D2-D2B7191E86B2} = {EE33219C-7696-48D8-B86C-BF3A2D6087B1}
 		{77E45A0D-E20F-4779-9AB6-E9EC96D9C5E0} = {B9EFF5EA-4AD3-477D-8932-A9D114EEA824}
-		{E796E951-7E05-4407-99CB-7EC54CDD46D8} = {23204097-F83E-4FC3-98C5-316C07D5CC57}
 		{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6} = {FB247B5A-5299-4FFE-BE54-B7E1472D4A2E}
 		{BF962BA1-50F3-4714-A932-8DA76066F0AD} = {FB247B5A-5299-4FFE-BE54-B7E1472D4A2E}
 		{E26DC756-4A91-4644-8867-F0EDB2F1E38B} = {FB247B5A-5299-4FFE-BE54-B7E1472D4A2E}
 		{EF567F17-8961-4777-AEB9-D8CF4F4267E7} = {FB247B5A-5299-4FFE-BE54-B7E1472D4A2E}
+		{9789720F-4866-4A17-83C7-9E7CC740DE93} = {23204097-F83E-4FC3-98C5-316C07D5CC57}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -307,10 +307,6 @@ Global
 		{77E45A0D-E20F-4779-9AB6-E9EC96D9C5E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77E45A0D-E20F-4779-9AB6-E9EC96D9C5E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77E45A0D-E20F-4779-9AB6-E9EC96D9C5E0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E796E951-7E05-4407-99CB-7EC54CDD46D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E796E951-7E05-4407-99CB-7EC54CDD46D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E796E951-7E05-4407-99CB-7EC54CDD46D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E796E951-7E05-4407-99CB-7EC54CDD46D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E05DDBBC-BADE-4F9B-ADC4-10741E2DADA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -327,5 +323,9 @@ Global
 		{EF567F17-8961-4777-AEB9-D8CF4F4267E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF567F17-8961-4777-AEB9-D8CF4F4267E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF567F17-8961-4777-AEB9-D8CF4F4267E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9789720F-4866-4A17-83C7-9E7CC740DE93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9789720F-4866-4A17-83C7-9E7CC740DE93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9789720F-4866-4A17-83C7-9E7CC740DE93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9789720F-4866-4A17-83C7-9E7CC740DE93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

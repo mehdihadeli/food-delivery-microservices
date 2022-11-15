@@ -1,12 +1,13 @@
+using System.Text;
 using BuildingBlocks.Abstractions.Caching;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace BuildingBlocks.Caching.Redis;
 
 public class RedisCacheProvider : ICacheProvider
 {
-    private readonly string _keyPrefix;
     private readonly IDistributedCache _cache;
     private readonly IConfiguration _config;
 
@@ -14,70 +15,63 @@ public class RedisCacheProvider : ICacheProvider
     {
         _cache = cache;
         _config = config;
-        var keyPrefix = _config["CacheKeyPrefix"];
-        _keyPrefix = keyPrefix ?? typeof(RedisCacheProvider).FullName;
     }
 
-    public string GetCacheKey(string key)
-    {
-        return MakeKey(key);
-    }
-
-    public async Task<T> GetAsync<T>(string key, CancellationToken token = default)
+    public async Task<T?> GetAsync<T>(string key, CancellationToken token = default)
     {
         return await GetInternalAsync<T>(key, token);
     }
 
-    public async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, CancellationToken token = default)
+    public async Task<T?> GetOrCreateAsync<T>(string key, Func<Task<T?>> factory, CancellationToken token = default)
     {
         return await GetOrCreateInternalAsync(key, null, null, null, factory, token);
     }
 
-    public async Task<T> GetOrCreateAsync<T>(
+    public async Task<T?> GetOrCreateAsync<T>(
         string key,
         TimeSpan slidingExpiration,
-        Func<Task<T>> factory,
+        Func<Task<T?>> factory,
         CancellationToken token = default)
     {
         return await GetOrCreateInternalAsync(key, slidingExpiration, null, null, factory, token);
     }
 
-    public async Task<T> GetOrCreateAsync<T>(
+    public async Task<T?> GetOrCreateAsync<T>(
         string key,
         DateTime absoluteExpiration,
-        Func<Task<T>> factory,
+        Func<Task<T?>> factory,
         CancellationToken token = default)
     {
         return await GetOrCreateInternalAsync(key, null, absoluteExpiration, null, factory, token);
     }
 
-    public async Task<T> GetOrCreateAsync<T>(
+    public async Task<T?> GetOrCreateAsync<T>(
         string key,
         TimeSpan slidingExpiration,
         DateTime absoluteExpiration,
-        Func<Task<T>> factory,
+        Func<Task<T?>> factory,
         CancellationToken token = default)
     {
         return await GetOrCreateInternalAsync(key, slidingExpiration, absoluteExpiration, null, factory, token);
     }
 
-    public async Task<T> GetOrCreateAsync<T>(
+    public async Task<T?> GetOrCreateAsync<T>(
         string key,
         TimeSpan slidingExpiration,
         TimeSpan absoluteExpirationRelativeToNow,
-        Func<Task<T>> factory,
+        Func<Task<T?>> factory,
         CancellationToken token = default)
     {
         return await GetOrCreateInternalAsync(key, slidingExpiration, null, absoluteExpirationRelativeToNow, factory,
             token);
     }
 
-    public async Task<T> GetOrCreateAsync<T>(
+    public async Task<T?> GetOrCreateAsync<T>(
         string key,
         TimeSpan? slidingExpiration,
         DateTime? absoluteExpiration,
         TimeSpan? absoluteExpirationRelativeToNow,
-        Func<Task<T>> factory,
+        Func<Task<T?>> factory,
         CancellationToken token = default)
     {
         return await GetOrCreateInternalAsync(
@@ -159,17 +153,18 @@ public class RedisCacheProvider : ICacheProvider
         await _cache.RemoveAsync(key, token);
     }
 
-    private string MakeKey(string key)
+    private async Task<T?> GetInternalAsync<T>(string key, CancellationToken token = default)
     {
-        return $"{(string.IsNullOrWhiteSpace(_keyPrefix) ? "" : _keyPrefix + ":")}{key}";
+        var bytes = await _cache.GetAsync(key, token);
+        if (bytes is null)
+            return default;
+
+        var jsonString = Encoding.UTF8.GetString(bytes);
+
+        return JsonConvert.DeserializeObject<T>(jsonString);
     }
 
-    private async Task<T> GetInternalAsync<T>(string key, CancellationToken token = default)
-    {
-        return await _cache.GetAsync<T>(MakeKey(key), token);
-    }
-
-    private async Task<T> GetOrCreateInternalAsync<T>(
+    private async Task<T?> GetOrCreateInternalAsync<T>(
         string key,
         TimeSpan? slidingExpiration,
         DateTime? absoluteExpiration,
@@ -185,15 +180,24 @@ public class RedisCacheProvider : ICacheProvider
 
         if (value != null)
         {
-            await SetInternalAsync<T>(key, value, slidingExpiration, absoluteExpiration,
-                absoluteExpirationRelativeToNow, token);
+            await SetInternalAsync<T>(
+                key,
+                value,
+                slidingExpiration,
+                absoluteExpiration,
+                absoluteExpirationRelativeToNow,
+                token);
         }
 
         return value;
     }
 
-    private async Task SetInternalAsync<T>(string key, T value, TimeSpan? slidingExpiration,
-        DateTime? absoluteExpiration, TimeSpan? absoluteExpirationRelativeToNow,
+    private async Task SetInternalAsync<T>(
+        string key,
+        T value,
+        TimeSpan? slidingExpiration,
+        DateTime? absoluteExpiration,
+        TimeSpan? absoluteExpirationRelativeToNow,
         CancellationToken token = default)
     {
         var cacheEntryOptions = new DistributedCacheEntryOptions();
@@ -218,6 +222,8 @@ public class RedisCacheProvider : ICacheProvider
             cacheEntryOptions.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
         }
 
-        await _cache.SetAsync<T>(MakeKey(key), value, cacheEntryOptions, token);
+        var jsonString = JsonConvert.SerializeObject(value);
+        var bytes = Encoding.UTF8.GetBytes(jsonString);
+        await _cache.SetAsync(key, bytes, cacheEntryOptions, token);
     }
 }

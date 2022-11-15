@@ -39,7 +39,7 @@ public static class ReplenishingProductStockEndpoint
         using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(ReplenishingProductStockEndpoint)))
         using (Serilog.Context.LogContext.PushProperty("ProductId", productId))
         {
-            await commandProcessor.SendAsync(new ReplenishingProductStock(productId, quantity), cancellationToken);
+            await commandProcessor.SendAsync(new ReplenishProductStock(productId, quantity), cancellationToken);
 
             return Results.NoContent();
         }

@@ -23,10 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Caching.InMemory\BuildingBlocks.Caching.InMemory.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />

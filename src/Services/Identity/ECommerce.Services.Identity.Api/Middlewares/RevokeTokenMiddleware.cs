@@ -13,20 +13,23 @@ public class RevokeAccessTokenMiddleware : IMiddleware
         _cacheManager = cacheManager;
     }
 
-    public Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (context.User.Identity is null || string.IsNullOrWhiteSpace(context.User.Identity.Name))
         {
-            return next(context);
+            await next(context);
+            return;
         }
 
         var accessToken = GetTokenFromHeader(context);
         var userName = context.User.Identity.Name;
 
-        var revokedToken = _cacheManager.Get<string>($"{userName}_{accessToken}_revoked_token");
+        var revokedToken = await _cacheManager.DefaultCacheProvider.GetAsync<string>
+            ($"{userName}_{accessToken}_revoked_token");
         if (string.IsNullOrWhiteSpace(revokedToken))
         {
-            return next(context);
+             await next(context);
+             return;
         }
 
         throw new UnAuthorizedException("Access token is revoked, User in not authorized to access this resource");

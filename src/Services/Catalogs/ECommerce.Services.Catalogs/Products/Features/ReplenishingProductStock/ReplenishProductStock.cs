@@ -7,9 +7,9 @@ using ECommerce.Services.Catalogs.Shared.Extensions;
 
 namespace ECommerce.Services.Catalogs.Products.Features.ReplenishingProductStock;
 
-public record ReplenishingProductStock(long ProductId, int Quantity) : ITxCommand;
+public record ReplenishProductStock(long ProductId, int Quantity) : ITxCommand;
 
-internal class ReplenishingProductStockValidator : AbstractValidator<ReplenishingProductStock>
+internal class ReplenishingProductStockValidator : AbstractValidator<ReplenishProductStock>
 {
     public ReplenishingProductStockValidator()
     {
@@ -25,7 +25,7 @@ internal class ReplenishingProductStockValidator : AbstractValidator<Replenishin
     }
 }
 
-internal class ReplenishingProductStockHandler : ICommandHandler<ReplenishingProductStock>
+internal class ReplenishingProductStockHandler : ICommandHandler<ReplenishProductStock>
 {
     private readonly ICatalogDbContext _catalogDbContext;
 
@@ -34,7 +34,7 @@ internal class ReplenishingProductStockHandler : ICommandHandler<ReplenishingPro
         _catalogDbContext = Guard.Against.Null(catalogDbContext, nameof(catalogDbContext));
     }
 
-    public async Task<Unit> Handle(ReplenishingProductStock command, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(ReplenishProductStock command, CancellationToken cancellationToken)
     {
         Guard.Against.Null(command, nameof(command));
 

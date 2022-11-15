@@ -1,8 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <ContainerImageName>identity-services</ContainerImageName>
+    <ContainerImageTag>1.1.0</ContainerImageTag>
+    <ContainerBaseImage>mcr.microsoft.com/dotnet/nightly/runtime-deps:7.0</ContainerBaseImage>
+    <PublishTrimmed>true</PublishTrimmed>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\ECommerce.Services.Identity\ECommerce.Services.Identity.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Build.Containers"/>
   </ItemGroup>
 
   <ItemGroup>

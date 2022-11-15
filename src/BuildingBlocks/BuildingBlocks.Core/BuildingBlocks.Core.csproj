@@ -6,9 +6,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bogus" />
-    <PackageReference Include="DotNetEnv" />
-    <PackageReference Include="McMaster.NETCore.Plugins" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
@@ -22,18 +19,20 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" />
-    <PackageReference Include="OpenTelemetry.Api" />
     <PackageReference Include="EFCore.NamingConventions" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Api" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bogus" />
+    <PackageReference Include="McMaster.NETCore.Plugins" />
+    <PackageReference Include="DotNetEnv" />
     <PackageReference Include="Hellang.Middleware.ProblemDetails" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="IdGen" />
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="Nito.AsyncEx" />
-    <PackageReference Include="Nito.AsyncEx.Context" />
-    <PackageReference Include="Nito.AsyncEx.Tasks" />
     <PackageReference Include="Scrutor" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Spectre.Console" />
@@ -43,6 +42,12 @@
     <PackageReference Include="System.Reactive" />
     <PackageReference Include="Humanizer" />
     <PackageReference Include="Humanizer.Core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nito.AsyncEx" />
+    <PackageReference Include="Nito.AsyncEx.Context" />
+    <PackageReference Include="Nito.AsyncEx.Tasks" />
   </ItemGroup>
 
 </Project>

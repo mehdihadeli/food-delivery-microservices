@@ -21,11 +21,10 @@ public class RetryBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TR
 
     public async Task<TResponse> Handle(
         TRequest request,
-        CancellationToken cancellationToken,
-        RequestHandlerDelegate<TResponse> next)
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
-        IRetryableRequest<TRequest, TResponse>? retryHandler;
-        retryHandler = _retryHandlers.FirstOrDefault();
+        var retryHandler = _retryHandlers.FirstOrDefault();
 
         // var retryAttr = typeof(TRequest).GetCustomAttribute<RetryPolicyAttribute>();
         if (retryHandler == null)
@@ -49,7 +48,7 @@ public class RetryBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TR
                     ? TimeSpan.FromMilliseconds(Math.Pow(2, retryAttempt) * retryHandler.RetryDelay)
                     : TimeSpan.FromMilliseconds(retryHandler.RetryDelay);
 
-                _logger.LogDebug($"Retrying, waiting {retryDelay}...");
+                _logger.LogDebug("Retrying, waiting {RetryDelay}...", retryDelay);
 
                 return retryDelay;
             });

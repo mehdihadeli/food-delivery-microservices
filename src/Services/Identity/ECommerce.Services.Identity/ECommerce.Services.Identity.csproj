@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <PackageReference Include="Duende.IdentityServer" />
-    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" />
-    <PackageReference Include="Duende.IdentityServer.EntityFramework" />
-  </ItemGroup>
-
   <PropertyGroup>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
@@ -18,13 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Caching.InMemory\BuildingBlocks.Caching.InMemory.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Email\BuildingBlocks.Email.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Integration.MassTransit\BuildingBlocks.Integration.MassTransit.csproj" />
@@ -39,6 +27,15 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Validation\BuildingBlocks.Validation.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\..\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Duende.IdentityServer" />
+    <PackageReference Include="Duende.IdentityServer.Storage" />
+    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" />
+    <PackageReference Include="Duende.IdentityServer.EntityFramework" />
   </ItemGroup>
 
   <ItemGroup>

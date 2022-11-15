@@ -27,21 +27,27 @@ public class MongoTxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
     public async Task<TResponse> Handle(
         TRequest request,
-        CancellationToken cancellationToken,
-        RequestHandlerDelegate<TResponse> next)
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
         if (request is not ITxRequest)
         {
             return await next();
         }
 
-        _logger.LogInformation("{Prefix} Handled command {MediatRRequest}",
+        _logger.LogInformation(
+            "{Prefix} Handled command {MediatRRequest}",
             nameof(MongoTxBehavior<TRequest, TResponse>),
             typeof(TRequest).FullName);
-        _logger.LogDebug("{Prefix} Handled command {MediatRRequest} with content {RequestContent}",
-            nameof(MongoTxBehavior<TRequest, TResponse>), typeof(TRequest).FullName, JsonSerializer.Serialize(request));
-        _logger.LogInformation("{Prefix} Open the transaction for {MediatRRequest}",
-            nameof(MongoTxBehavior<TRequest, TResponse>), typeof(TRequest).FullName);
+        _logger.LogDebug(
+            "{Prefix} Handled command {MediatRRequest} with content {RequestContent}",
+            nameof(MongoTxBehavior<TRequest, TResponse>),
+            typeof(TRequest).FullName,
+            JsonSerializer.Serialize(request));
+        _logger.LogInformation(
+            "{Prefix} Open the transaction for {MediatRRequest}",
+            nameof(MongoTxBehavior<TRequest, TResponse>),
+            typeof(TRequest).FullName);
 
         try
         {
@@ -49,8 +55,10 @@ public class MongoTxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
             await _dbContext.BeginTransactionAsync(cancellationToken);
 
             var response = await next();
-            _logger.LogInformation("{Prefix} Executed the {MediatRRequest} request",
-                nameof(MongoTxBehavior<TRequest, TResponse>), typeof(TRequest).FullName);
+            _logger.LogInformation(
+                "{Prefix} Executed the {MediatRRequest} request",
+                nameof(MongoTxBehavior<TRequest, TResponse>),
+                typeof(TRequest).FullName);
 
             await _dbContext.CommitTransactionAsync(cancellationToken);
 

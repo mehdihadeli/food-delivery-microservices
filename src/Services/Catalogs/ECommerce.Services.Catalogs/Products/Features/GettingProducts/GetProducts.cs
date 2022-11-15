@@ -30,7 +30,7 @@ public class GetProductsHandler : IQueryHandler<GetProducts, GetProductsResponse
     private readonly ICatalogDbContext _catalogDbContext;
     private readonly IMapper _mapper;
 
-    public GetProductsHandler(ICatalogDbContext catalogDbContext, IMapper mapper)
+    public GetProductsHandler(IMapper mapper, ICatalogDbContext catalogDbContext)
     {
         _catalogDbContext = catalogDbContext;
         _mapper = mapper;

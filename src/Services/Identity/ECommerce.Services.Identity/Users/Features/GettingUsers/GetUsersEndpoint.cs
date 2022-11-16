@@ -1,5 +1,6 @@
 using Ardalis.ApiEndpoints;
 using Ardalis.GuardClauses;
+using Asp.Versioning;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using Microsoft.AspNetCore.Http;
 using Swashbuckle.AspNetCore.Annotations;
@@ -10,7 +11,7 @@ namespace ECommerce.Services.Identity.Users.Features.GettingUsers;
 // https://github.com/ardalis/ApiEndpoints
 public class GetUsersEndpoint : EndpointBaseAsync
     .WithRequest<GetUsersRequest?>
-    .WithActionResult<GetUsersResult>
+    .WithActionResult<GetUsersResponse>
 {
     private readonly IQueryProcessor _queryProcessor;
 
@@ -23,12 +24,13 @@ public class GetUsersEndpoint : EndpointBaseAsync
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ApiVersion(1.0)]
     [SwaggerOperation(
         Summary = "Get all users",
         Description = "Get all users",
         OperationId = "GetUsers",
         Tags = new[] { UsersConfigs.Tag })]
-    public override async Task<ActionResult<GetUsersResult>> HandleAsync(
+    public override async Task<ActionResult<GetUsersResponse>> HandleAsync(
         [FromQuery] GetUsersRequest? request,
         CancellationToken cancellationToken = default)
     {

@@ -1,6 +1,5 @@
 using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Queries;
-using ECommerce.Services.Identity.Shared;
 using ECommerce.Services.Identity.Users.Features.RegisteringUser;
 
 namespace ECommerce.Services.Identity.Users.Features.GettingUerByEmail;
@@ -14,7 +13,7 @@ public static class GetUserByEmailEndpoint
         endpoints.MapGet($"{UsersConfigs.UsersPrefixUri}/by-email/{{email}}", GetUserByEmail)
             .AllowAnonymous()
             .WithTags(UsersConfigs.Tag)
-            .Produces<RegisterUserResult>(StatusCodes.Status200OK)
+            .Produces<RegisterUserResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("GetUserByEmail")

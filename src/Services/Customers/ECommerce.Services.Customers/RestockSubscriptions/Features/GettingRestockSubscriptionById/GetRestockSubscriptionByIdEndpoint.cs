@@ -15,7 +15,7 @@ public class GetRestockSubscriptionByIdEndpoint : IQueryMinimalEndpoint<long, IR
                 $"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}/{{id}}", HandleAsync)
             .WithTags(RestockSubscriptionsConfigs.Tag)
             .RequireAuthorization(CustomersConstants.Role.Admin)
-            .Produces<GetRestockSubscriptionByIdResult>(StatusCodes.Status200OK)
+            .Produces<GetRestockSubscriptionByIdResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)

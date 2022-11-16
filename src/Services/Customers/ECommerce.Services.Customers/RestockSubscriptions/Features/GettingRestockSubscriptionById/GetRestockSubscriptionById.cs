@@ -10,7 +10,7 @@ using MongoDB.Driver.Linq;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionById;
 
-public record GetRestockSubscriptionById(long Id) : IQuery<GetRestockSubscriptionByIdResult>;
+public record GetRestockSubscriptionById(long Id) : IQuery<GetRestockSubscriptionByIdResponse>;
 
 internal class GetRestockSubscriptionByIdValidator : AbstractValidator<GetRestockSubscriptionById>
 {
@@ -22,7 +22,7 @@ internal class GetRestockSubscriptionByIdValidator : AbstractValidator<GetRestoc
 }
 
 internal class GetRestockSubscriptionByIdHandler
-    : IQueryHandler<GetRestockSubscriptionById, GetRestockSubscriptionByIdResult>
+    : IQueryHandler<GetRestockSubscriptionById, GetRestockSubscriptionByIdResponse>
 {
     private readonly CustomersReadDbContext _customersReadDbContext;
     private readonly IMapper _mapper;
@@ -33,7 +33,7 @@ internal class GetRestockSubscriptionByIdHandler
         _mapper = mapper;
     }
 
-    public async Task<GetRestockSubscriptionByIdResult> Handle(
+    public async Task<GetRestockSubscriptionByIdResponse> Handle(
         GetRestockSubscriptionById query,
         CancellationToken cancellationToken)
     {
@@ -48,8 +48,6 @@ internal class GetRestockSubscriptionByIdHandler
 
         var subscriptionDto = _mapper.Map<RestockSubscriptionDto>(restockSubscription);
 
-        return new GetRestockSubscriptionByIdResult(subscriptionDto);
+        return new GetRestockSubscriptionByIdResponse(subscriptionDto);
     }
 }
-
-public record GetRestockSubscriptionByIdResult(RestockSubscriptionDto RestockSubscription);

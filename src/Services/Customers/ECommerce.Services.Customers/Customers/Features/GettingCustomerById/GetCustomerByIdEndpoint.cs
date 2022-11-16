@@ -15,7 +15,7 @@ public class GetCustomerByIdEndpointEndpoint : IMinimalEndpoint
                 $"{CustomersConfigs.CustomersPrefixUri}/{{id}}",
                 GetCustomerById)
             // .RequireAuthorization()
-            .Produces<GetCustomerByIdResult>(StatusCodes.Status200OK)
+            .Produces<GetCustomerByIdResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)

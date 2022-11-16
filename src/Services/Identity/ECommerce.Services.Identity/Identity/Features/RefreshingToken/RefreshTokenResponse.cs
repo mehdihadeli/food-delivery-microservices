@@ -9,7 +9,7 @@ public record RefreshTokenResponse
         UserId = user.Id;
         FirstName = user.FirstName;
         LastName = user.LastName;
-        Username = user.UserName;
+        Username = user.UserName!;
         AccessToken = accessToken;
         RefreshToken = refreshToken;
     }

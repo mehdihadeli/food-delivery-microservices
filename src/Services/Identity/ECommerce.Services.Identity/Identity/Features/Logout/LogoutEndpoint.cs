@@ -1,3 +1,4 @@
+using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.Caching;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Security.Jwt;
@@ -14,7 +15,10 @@ public static class LogoutEndpoint
             .Produces(StatusCodes.Status200OK)
             .WithTags(IdentityConfigs.Tag)
             .RequireAuthorization()
-            .WithDisplayName("Logout User.");
+            .WithName("logout")
+            .WithDisplayName("Logout User.")
+            .WithApiVersionSet(IdentityConfigs.VersionSet)
+            .HasApiVersion(1.0);
 
         return endpoints;
     }

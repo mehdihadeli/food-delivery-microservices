@@ -31,7 +31,7 @@ public record CreateProduct(
     long SupplierId,
     long BrandId,
     string? Description = null,
-    IEnumerable<CreateProductImageRequest>? Images = null) : ITxCreateCommand<CreateProductResult>
+    IEnumerable<CreateProductImageRequest>? Images = null) : ITxCreateCommand<CreateProductResponse>
 {
     public long Id { get; init; } = SnowFlakIdGenerator.NewId();
 }
@@ -85,7 +85,7 @@ public class CreateProductValidator : AbstractValidator<CreateProduct>
     }
 }
 
-public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProductResult>
+public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProductResponse>
 {
     private readonly ILogger<CreateProductHandler> _logger;
     private readonly IMapper _mapper;
@@ -101,7 +101,7 @@ public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProduct
         _catalogDbContext = Guard.Against.Null(catalogDbContext, nameof(catalogDbContext));
     }
 
-    public async Task<CreateProductResult> Handle(
+    public async Task<CreateProductResponse> Handle(
         CreateProduct command,
         CancellationToken cancellationToken)
     {
@@ -149,8 +149,6 @@ public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProduct
 
         _logger.LogInformation("Product a with ID: '{ProductId} created.'", command.Id);
 
-        return new CreateProductResult(productDto);
+        return new CreateProductResponse(productDto);
     }
 }
-
-public record CreateProductResult(ProductDto Product);

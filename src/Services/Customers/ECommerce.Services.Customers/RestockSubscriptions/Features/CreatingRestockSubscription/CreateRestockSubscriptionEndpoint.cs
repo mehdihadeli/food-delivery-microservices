@@ -14,7 +14,7 @@ public class CreateRestockSubscriptionEndpoint : ICommandMinimalEndpoint<CreateR
         builder.MapPost(RestockSubscriptionsConfigs.RestockSubscriptionsUrl, HandleAsync)
             .AllowAnonymous()
             .WithTags(RestockSubscriptionsConfigs.Tag)
-            .Produces<CreateRestockSubscriptionResult>(StatusCodes.Status201Created)
+            .Produces<CreateRestockSubscriptionResponse>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized)
             .WithName("CreateRestockSubscription")

@@ -4,10 +4,9 @@ using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Identity.Shared.Exceptions;
 using ECommerce.Services.Identity.Shared.Models;
+using ECommerce.Services.Identity.Users.Features.UpdatingUserState.Events.Integration;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using ECommerce.Services.Identity.Users.Features.UpdatingUserState.Events.Integration;
 
 namespace ECommerce.Services.Identity.Users.Features.UpdatingUserState;
 

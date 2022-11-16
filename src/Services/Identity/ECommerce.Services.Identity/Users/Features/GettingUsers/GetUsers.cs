@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Identity.Users.Features.GettingUsers;
 
-public record GetUsers : ListQuery<GetUsersResult>;
+public record GetUsers : ListQuery<GetUsersResponse>;
 
 
 public class GetUsersValidator : AbstractValidator<GetUsers>
@@ -28,7 +28,7 @@ public class GetUsersValidator : AbstractValidator<GetUsers>
     }
 }
 
-public class GetUsersHandler : IQueryHandler<GetUsers, GetUsersResult>
+public class GetUsersHandler : IQueryHandler<GetUsers, GetUsersResponse>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
@@ -39,7 +39,7 @@ public class GetUsersHandler : IQueryHandler<GetUsers, GetUsersResult>
         _mapper = mapper;
     }
 
-    public async Task<GetUsersResult> Handle(GetUsers request, CancellationToken cancellationToken)
+    public async Task<GetUsersResponse> Handle(GetUsers request, CancellationToken cancellationToken)
     {
         var customer = await _userManager.Users
             .OrderByDescending(x => x.CreatedAt)
@@ -52,8 +52,6 @@ public class GetUsersHandler : IQueryHandler<GetUsers, GetUsersResult>
                 request.PageSize,
                 cancellationToken: cancellationToken);
 
-        return new GetUsersResult(customer);
+        return new GetUsersResponse(customer);
     }
 }
-
-public record GetUsersResult(ListResultModel<IdentityUserDto> IdentityUsers);

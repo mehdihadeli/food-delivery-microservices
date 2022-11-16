@@ -41,5 +41,3 @@ internal class GetUserByIdHandler : IQueryHandler<GetUserById, UserByIdResponse>
         return new UserByIdResponse(identityUserDto);
     }
 }
-
-internal record UserByIdResponse(IdentityUserDto IdentityUser);

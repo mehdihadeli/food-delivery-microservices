@@ -24,7 +24,7 @@ public static class CreateProductEndpoint
                 Summary = "Creating a New Product", Description = "Creating a New Product"
             })
             .RequireAuthorization()
-            .Produces<CreateProductResult>(StatusCodes.Status201Created)
+            .Produces<CreateProductResponse>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
             .WithTags(ProductsConfigs.Tag)

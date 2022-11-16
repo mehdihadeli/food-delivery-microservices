@@ -1,6 +1,5 @@
 using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
-using ECommerce.Services.Identity.Shared;
 using ECommerce.Services.Identity.Users.Features.RegisteringUser;
 
 namespace ECommerce.Services.Identity.Users.Features.UpdatingUserState;
@@ -12,9 +11,10 @@ public static class UpdateUserStateEndpoint
         endpoints.MapPut($"{UsersConfigs.UsersPrefixUri}/{{userId:guid}}/state", UpdateUserState)
             .AllowAnonymous()
             .WithTags(UsersConfigs.Tag)
-            .Produces<RegisterUserResult>(StatusCodes.Status204NoContent)
+            .Produces<RegisterUserResponse>(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
+            .WithName("UpdateUserState")
             .WithDisplayName("Update User State.")
             .WithApiVersionSet(UsersConfigs.VersionSet)
             .HasApiVersion(1.0);

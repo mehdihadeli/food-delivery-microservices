@@ -11,7 +11,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 {
     private readonly ILogger<CachingBehavior<TRequest, TResponse>> _logger;
     private readonly ICacheProvider _cacheProvider;
-    private readonly int _defaultCacheExpirationInHours = 1;
+    private readonly IEnumerable<ICacheRequest<TRequest, TResponse>> _cachePolicies;
 
     public CachingBehavior(
         ILogger<CachingBehavior<TRequest, TResponse>> logger,
@@ -20,15 +20,24 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     {
         _logger = logger;
         _cacheProvider = cacheManager.DefaultCacheProvider;
+
+        // cachePolicies inject like `FluentValidation` approach as a nested or seperated cache class for commands ,queries
+        _cachePolicies = cachePolicies;
     }
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken
-        cancellationToken)
+    public async Task<TResponse> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
-        if (request is not ICacheRequest<TRequest, TResponse> cachePolicy)
+        var cacheRequest = _cachePolicies.FirstOrDefault();
+        if (cacheRequest == null)
+        {
+            // No cache policy found, so just continue through the pipeline
             return await next();
+        }
 
-        var cacheKey = cachePolicy.GetCacheKey(request);
+        var cacheKey = cacheRequest.GetCacheKey(request);
         var cachedResponse = await _cacheProvider.GetAsync<TResponse?>(cacheKey, cancellationToken);
 
         if (cachedResponse != null)
@@ -45,9 +54,9 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         await _cacheProvider.SetAsync(
             cacheKey,
             response,
-            cachePolicy.SlidingExpiration,
-            cachePolicy.AbsoluteExpiration,
-            cachePolicy.AbsoluteExpirationRelativeToNow,
+            cacheRequest.SlidingExpiration,
+            cacheRequest.AbsoluteExpiration,
+            cacheRequest.AbsoluteExpirationRelativeToNow,
             cancellationToken);
 
         _logger.LogDebug(

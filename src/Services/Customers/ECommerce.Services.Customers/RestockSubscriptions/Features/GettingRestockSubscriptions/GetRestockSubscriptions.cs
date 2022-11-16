@@ -11,7 +11,7 @@ using ECommerce.Services.Customers.Shared.Data;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptions;
 
-public record GetRestockSubscriptions : ListQuery<GetRestockSubscriptionsResult>
+public record GetRestockSubscriptions : ListQuery<GetRestockSubscriptionsResponse>
 {
     public IList<string> Emails { get; init; } = null!;
     public DateTime? From { get; init; }
@@ -32,7 +32,7 @@ internal class GetRestockSubscriptionsValidator : AbstractValidator<GetRestockSu
     }
 }
 
-public class GeRestockSubscriptionsHandler : IQueryHandler<GetRestockSubscriptions, GetRestockSubscriptionsResult>
+public class GeRestockSubscriptionsHandler : IQueryHandler<GetRestockSubscriptions, GetRestockSubscriptionsResponse>
 {
     private readonly CustomersReadDbContext _customersReadDbContext;
     private readonly IMapper _mapper;
@@ -43,7 +43,7 @@ public class GeRestockSubscriptionsHandler : IQueryHandler<GetRestockSubscriptio
         _mapper = mapper;
     }
 
-    public async Task<GetRestockSubscriptionsResult> Handle(
+    public async Task<GetRestockSubscriptionsResponse> Handle(
         GetRestockSubscriptions query,
         CancellationToken cancellationToken)
     {
@@ -63,8 +63,6 @@ public class GeRestockSubscriptionsHandler : IQueryHandler<GetRestockSubscriptio
                 query.PageSize,
                 cancellationToken: cancellationToken);
 
-        return new GetRestockSubscriptionsResult(restockSubscriptions);
+        return new GetRestockSubscriptionsResponse(restockSubscriptions);
     }
 }
-
-public record GetRestockSubscriptionsResult(ListResultModel<RestockSubscriptionDto> RestockSubscriptions);

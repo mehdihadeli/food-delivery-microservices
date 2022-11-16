@@ -41,6 +41,7 @@
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="6.2.1"/>
     <PackageVersion Include="Microsoft.NET.Build.Containers" Version="0.2.7"/>
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCoreVersion)"/>
+    <PackageVersion Include="System.Threading.RateLimiting" Version="$(AspNetCoreVersion)"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -173,10 +174,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageVersion Include="Duende.IdentityServer" Version="6.1.7"/>
-    <PackageVersion Include="Duende.IdentityServer.Storage" Version="6.1.7"/>
-    <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="6.1.7"/>
-    <PackageVersion Include="Duende.IdentityServer.EntityFramework" Version="6.1.7"/>
+    <PackageVersion Include="Duende.IdentityServer" Version="6.2.0-rc.1"/>
+    <PackageVersion Include="Duende.IdentityServer.Storage" Version="6.2.0-rc.1"/>
+    <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="6.2.0-rc.1"/>
+    <PackageVersion Include="Duende.IdentityServer.EntityFramework" Version="6.2.0-rc.1"/>
   </ItemGroup>
 
 </Project>

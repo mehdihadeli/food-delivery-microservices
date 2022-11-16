@@ -1,3 +1,4 @@
+using System.Threading.RateLimiting;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Caching.InMemory;
 using BuildingBlocks.Core.Caching;
@@ -51,6 +52,19 @@ public static partial class WebApplicationBuilderExtensions
         });
 
         builder.Services.AddPostgresMessagePersistence(builder.Configuration);
+
+        // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
+        builder.Services.AddRateLimiter(options =>
+        {
+            // rate limiter that limits all to 10 requests per minute, per authenticated username (or hostname if not authenticated)
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+                    factory: partition => new FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true, PermitLimit = 10, QueueLimit = 0, Window = TimeSpan.FromMinutes(1)
+                    }));
+        });
 
         builder.Services.AddCustomMassTransit(
             builder.Configuration,

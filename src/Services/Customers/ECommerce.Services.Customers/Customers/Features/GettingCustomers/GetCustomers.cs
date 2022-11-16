@@ -11,7 +11,7 @@ using ECommerce.Services.Customers.Shared.Data;
 
 namespace ECommerce.Services.Customers.Customers.Features.GettingCustomers;
 
-public record GetCustomers : ListQuery<GetCustomersResult>;
+public record GetCustomers : ListQuery<GetCustomersResponse>;
 
 public class GetCustomersValidator : AbstractValidator<GetCustomers>
 {
@@ -27,7 +27,7 @@ public class GetCustomersValidator : AbstractValidator<GetCustomers>
     }
 }
 
-public class GetCustomersHandler : IQueryHandler<GetCustomers, GetCustomersResult>
+public class GetCustomersHandler : IQueryHandler<GetCustomers, GetCustomersResponse>
 {
     private readonly CustomersReadDbContext _customersReadDbContext;
     private readonly IMapper _mapper;
@@ -38,7 +38,7 @@ public class GetCustomersHandler : IQueryHandler<GetCustomers, GetCustomersResul
         _mapper = mapper;
     }
 
-    public async Task<GetCustomersResult> Handle(GetCustomers request, CancellationToken cancellationToken)
+    public async Task<GetCustomersResponse> Handle(GetCustomers request, CancellationToken cancellationToken)
     {
         var customer = await _customersReadDbContext.Customers.AsQueryable()
             .OrderByDescending(x => x.City)
@@ -49,8 +49,6 @@ public class GetCustomersHandler : IQueryHandler<GetCustomers, GetCustomersResul
                 request.PageSize,
                 cancellationToken: cancellationToken);
 
-        return new GetCustomersResult(customer);
+        return new GetCustomersResponse(customer);
     }
 }
-
-public record GetCustomersResult(ListResultModel<CustomerReadDto> Customers);

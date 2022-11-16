@@ -1,5 +1,6 @@
 using Ardalis.GuardClauses;
 using AutoMapper;
+using BuildingBlocks.Abstractions.Caching;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Catalogs.Products.Dtos;
@@ -9,38 +10,46 @@ using ECommerce.Services.Catalogs.Shared.Extensions;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProductById;
 
-public record GetProductById(long Id) : IQuery<GetProductByIdResponse>;
-
-internal class GetProductByIdValidator : AbstractValidator<GetProductById>
+public record GetProductById(long Id) : IQuery<GetProductByIdResponse>
 {
-    public GetProductByIdValidator()
+    internal class Validator : AbstractValidator<GetProductById>
     {
-        CascadeMode = CascadeMode.Stop;
+        public Validator()
+        {
+            CascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => x.Id).GreaterThan(0);
-    }
-}
-
-public class GetProductByIdHandler : IQueryHandler<GetProductById, GetProductByIdResponse>
-{
-    private readonly ICatalogDbContext _catalogDbContext;
-    private readonly IMapper _mapper;
-
-    public GetProductByIdHandler(ICatalogDbContext catalogDbContext, IMapper mapper)
-    {
-        _catalogDbContext = catalogDbContext;
-        _mapper = mapper;
+            RuleFor(x => x.Id).GreaterThan(0);
+        }
     }
 
-    public async Task<GetProductByIdResponse> Handle(GetProductById query, CancellationToken cancellationToken)
+    internal class Cache : ICacheRequest<GetProductById, GetProductByIdResponse>
     {
-        Guard.Against.Null(query, nameof(query));
+        // Optionally, change defaults
+        public TimeSpan? AbsoluteExpirationRelativeToNow => TimeSpan.FromMinutes(10);
+        public TimeSpan? SlidingExpiration => TimeSpan.FromMinutes(1);
+    }
 
-        var product = await _catalogDbContext.FindProductByIdAsync(query.Id);
-        Guard.Against.NotFound(product, new ProductCustomNotFoundException(query.Id));
+    internal class Handler : IQueryHandler<GetProductById, GetProductByIdResponse>
+    {
+        private readonly ICatalogDbContext _catalogDbContext;
+        private readonly IMapper _mapper;
 
-        var productsDto = _mapper.Map<ProductDto>(product);
+        public Handler(ICatalogDbContext catalogDbContext, IMapper mapper)
+        {
+            _catalogDbContext = catalogDbContext;
+            _mapper = mapper;
+        }
 
-        return new GetProductByIdResponse(productsDto);
+        public async Task<GetProductByIdResponse> Handle(GetProductById query, CancellationToken cancellationToken)
+        {
+            Guard.Against.Null(query, nameof(query));
+
+            var product = await _catalogDbContext.FindProductByIdAsync(query.Id);
+            Guard.Against.NotFound(product, new ProductCustomNotFoundException(query.Id));
+
+            var productsDto = _mapper.Map<ProductDto>(product);
+
+            return new GetProductByIdResponse(productsDto);
+        }
     }
 }

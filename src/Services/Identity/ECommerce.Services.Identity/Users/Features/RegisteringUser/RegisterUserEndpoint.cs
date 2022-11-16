@@ -1,6 +1,5 @@
 using Asp.Versioning.Conventions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
-using ECommerce.Services.Identity.Shared;
 
 namespace ECommerce.Services.Identity.Users.Features.RegisteringUser;
 
@@ -11,8 +10,9 @@ public static class RegisterUserEndpoint
         endpoints.MapPost($"{UsersConfigs.UsersPrefixUri}", RegisterUser)
             .AllowAnonymous()
             .WithTags(UsersConfigs.Tag)
-            .Produces<RegisterUserResult>(StatusCodes.Status201Created)
+            .Produces<RegisterUserResponse>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
+            .WithName("RegisterUser")
             .WithDisplayName("Register New user.")
             .WithApiVersionSet(UsersConfigs.VersionSet)
             .HasApiVersion(1.0)

@@ -13,7 +13,7 @@ public class CreateCustomerEndpoint : IMinimalEndpoint
     {
         builder.MapPost(CustomersConfigs.CustomersPrefixUri, CreateCustomer)
             .AllowAnonymous()
-            .Produces<CreateCustomerResult>(StatusCodes.Status201Created)
+            .Produces<CreateCustomerResponse>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .WithTags(CustomersConfigs.Tag)
             .WithMetadata(new SwaggerOperationAttribute("Creating a Customer", "Creating a Customer"))

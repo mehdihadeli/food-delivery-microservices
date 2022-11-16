@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ECommerce.Services.Identity.Users.Features.GettingUerByEmail;
 
-public record GetUserByEmail(string Email) : IQuery<GetUserByEmailResult>;
+public record GetUserByEmail(string Email) : IQuery<GetUserByEmailResponse>;
 
 internal class GetUserByIdValidator : AbstractValidator<GetUserByEmail>
 {
@@ -23,7 +23,7 @@ internal class GetUserByIdValidator : AbstractValidator<GetUserByEmail>
     }
 }
 
-internal class GetUserByEmailHandler : IQueryHandler<GetUserByEmail, GetUserByEmailResult>
+internal class GetUserByEmailHandler : IQueryHandler<GetUserByEmail, GetUserByEmailResponse>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
@@ -34,7 +34,7 @@ internal class GetUserByEmailHandler : IQueryHandler<GetUserByEmail, GetUserByEm
         _mapper = Guard.Against.Null(mapper, nameof(mapper));
     }
 
-    public async Task<GetUserByEmailResult> Handle(GetUserByEmail query, CancellationToken cancellationToken)
+    public async Task<GetUserByEmailResponse> Handle(GetUserByEmail query, CancellationToken cancellationToken)
     {
         Guard.Against.Null(query, nameof(query));
 
@@ -42,8 +42,6 @@ internal class GetUserByEmailHandler : IQueryHandler<GetUserByEmail, GetUserByEm
 
         var userDto = _mapper.Map<IdentityUserDto>(identityUser);
 
-        return new GetUserByEmailResult(userDto);
+        return new GetUserByEmailResponse(userDto);
     }
 }
-
-public record GetUserByEmailResult(IdentityUserDto? UserIdentity);

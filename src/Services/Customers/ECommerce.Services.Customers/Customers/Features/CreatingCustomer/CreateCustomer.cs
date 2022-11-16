@@ -10,7 +10,7 @@ using ECommerce.Services.Customers.Shared.Data;
 
 namespace ECommerce.Services.Customers.Customers.Features.CreatingCustomer;
 
-public record CreateCustomer(string Email) : ITxCreateCommand<CreateCustomerResult>
+public record CreateCustomer(string Email) : ITxCreateCommand<CreateCustomerResponse>
 {
     public long Id { get; init; } = SnowFlakIdGenerator.NewId();
 }
@@ -29,7 +29,7 @@ internal class CreateCustomerValidator : AbstractValidator<CreateCustomer>
     }
 }
 
-public class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCustomerResult>
+internal class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCustomerResponse>
 {
     private readonly IIdentityApiClient _identityApiClient;
     private readonly CustomersDbContext _customersDbContext;
@@ -45,7 +45,7 @@ public class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCusto
         _logger = logger;
     }
 
-    public async Task<CreateCustomerResult> Handle(CreateCustomer command, CancellationToken cancellationToken)
+    public async Task<CreateCustomerResponse> Handle(CreateCustomer command, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Creating customer");
 
@@ -73,7 +73,7 @@ public class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCusto
 
         _logger.LogInformation("Created a customer with ID: '{@CustomerId}'", customer.Id);
 
-        return new CreateCustomerResult(
+        return new CreateCustomerResponse(
             customer.Id,
             customer.Email!,
             customer.Name.FirstName,
@@ -81,10 +81,3 @@ public class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCusto
             customer.IdentityId);
     }
 }
-
-public record CreateCustomerResult(
-    long CustomerId,
-    string Email,
-    string FirstName,
-    string LastName,
-    Guid IdentityUserId);

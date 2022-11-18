@@ -1,8 +1,8 @@
-﻿using Humanizer;
+﻿using ECommerce.Services.Orders.Customers.Features.CreatingCustomer.v1.Events.External;
+using ECommerce.Services.Shared.Customers.Customers.Events.v1.Integration;
+using Humanizer;
 using MassTransit;
 using RabbitMQ.Client;
-using ECommerce.Services.Orders.Customers.Features.CreatingCustomer.Events.External;
-using ECommerce.Services.Shared.Customers.Customers.Events.Integration;
 
 namespace ECommerce.Services.Orders.Customers;
 

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -10,12 +11,12 @@ namespace BuildingBlocks.Logging;
 
 public static class RegistrationExtensions
 {
-    public static IHostBuilder AddCustomSerilog(
-        this IHostBuilder builder,
+    public static WebApplicationBuilder AddCustomSerilog(
+        this WebApplicationBuilder builder,
         Action<LoggingOptionsBuilder>? optionBuilder = null,
         Action<LoggerConfiguration>? extraConfigure = null)
     {
-        return builder.UseSerilog((context, serviceProvider, loggerConfiguration) =>
+        builder.Host.UseSerilog((context, serviceProvider, loggerConfiguration) =>
         {
             var loggerOptions = context.Configuration.GetSection(nameof(LoggerOptions)).Get<LoggerOptions>();
 
@@ -71,5 +72,7 @@ public static class RegistrationExtensions
                     rollOnFileSizeLimit: true);
             }
         });
+
+        return builder;
     }
 }

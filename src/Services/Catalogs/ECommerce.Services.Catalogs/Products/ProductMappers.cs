@@ -1,8 +1,10 @@
 using AutoMapper;
 using ECommerce.Services.Catalogs.Products.Dtos;
 using ECommerce.Services.Catalogs.Products.Features.CreatingProduct;
-using ECommerce.Services.Catalogs.Products.Features.CreatingProduct.Requests;
+using ECommerce.Services.Catalogs.Products.Features.CreatingProduct.v1;
+using ECommerce.Services.Catalogs.Products.Features.CreatingProduct.v1.Requests;
 using ECommerce.Services.Catalogs.Products.Features.GettingProductsView;
+using ECommerce.Services.Catalogs.Products.Features.GettingProductsView.v1;
 using ECommerce.Services.Catalogs.Products.Models;
 
 namespace ECommerce.Services.Catalogs.Products;

@@ -16,9 +16,9 @@
     <WarningsAsErrors></WarningsAsErrors>
   </PropertyGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Caching\BuildingBlocks.Caching.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Email\BuildingBlocks.Email.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Integration.MassTransit\BuildingBlocks.Integration.MassTransit.csproj" />
@@ -55,6 +55,7 @@
 
   <ItemGroup>
     <Folder Include="Shared\Data\Migrations" />
+    <Folder Include="Shared\Data\Migrations\Identity" />
   </ItemGroup>
 
 </Project>

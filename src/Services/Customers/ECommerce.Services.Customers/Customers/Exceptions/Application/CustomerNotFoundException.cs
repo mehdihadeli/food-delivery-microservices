@@ -12,4 +12,8 @@ public class CustomerNotFoundException : AppException
     public CustomerNotFoundException(long id) : base($"Customer with id '{id}' not found.", HttpStatusCode.NotFound)
     {
     }
+
+    public CustomerNotFoundException(Guid id) : base($"Customer with id '{id}' not found.", HttpStatusCode.NotFound)
+    {
+    }
 }

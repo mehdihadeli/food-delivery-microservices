@@ -1,7 +1,7 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Core.Domain;
 using BuildingBlocks.Core.Domain.ValueObjects;
-using ECommerce.Services.Customers.Customers.Features.CreatingCustomer.Events.Domain;
+using ECommerce.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
 using ECommerce.Services.Customers.Customers.ValueObjects;
 
 namespace ECommerce.Services.Customers.Customers.Models;

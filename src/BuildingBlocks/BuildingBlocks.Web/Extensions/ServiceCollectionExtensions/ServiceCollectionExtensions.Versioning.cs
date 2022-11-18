@@ -31,6 +31,7 @@ public static partial class ServiceCollectionExtensions
                 // Defines how an API version is read from the current HTTP request
                 options.ApiVersionReader = ApiVersionReader.Combine(
                     new HeaderApiVersionReader("api-version"),
+                    new QueryStringApiVersionReader(),
                     new UrlSegmentApiVersionReader());
 
                 configurator?.Invoke(options);
@@ -42,8 +43,10 @@ public static partial class ServiceCollectionExtensions
                     // note: the specified format code will format the version as "'v'major[.minor][-status]"
                     options.GroupNameFormat = "'v'VVV";
 
-                    // note: this option is only necessary when versioning by url segment. the SubstitutionFormat
-                    // can also be used to control the format of the API version in route templates
+                    // note1: this option is only necessary when versioning by url segment.
+                    // note2:if we set it to true version will infer automatically in swagger based on mapped versions to api (swagger infer api versions in different tab in header Swagger UI),
+                    // but if we set it to false we should put version for api endpoint manually.
+                    // https://github.com/dotnet/aspnet-api-versioning/issues/909
                     options.SubstituteApiVersionInUrl = true;
                 })
 

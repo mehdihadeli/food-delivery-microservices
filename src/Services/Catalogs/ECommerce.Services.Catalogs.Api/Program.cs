@@ -1,23 +1,19 @@
 using BuildingBlocks.Logging;
 using BuildingBlocks.Security;
+using BuildingBlocks.Security.Extensions;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Extensions.ServiceCollectionExtensions;
-using BuildingBlocks.Web.Middlewares;
 using ECommerce.Services.Catalogs;
 using ECommerce.Services.Catalogs.Api.Extensions.ApplicationBuilderExtensions;
 using ECommerce.Services.Catalogs.Api.Extensions.ServiceCollectionExtensions;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.Extensions.Options;
-using Asp.Versioning;
-using Asp.Versioning.Conventions;
 using Serilog;
 using Serilog.Events;
 using Spectre.Console;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 AnsiConsole.Write(new FigletText("Catalogs Service").Centered().Color(Color.Purple));
 
@@ -67,12 +63,11 @@ static void RegisterServices(WebApplicationBuilder builder)
     });
 
     builder.Services.AddApplicationOptions(builder.Configuration);
-    var loggingOptions = builder.Configuration.GetSection(nameof(LoggerOptions)).Get<LoggerOptions>();
 
     builder.AddCompression();
     builder.AddCustomProblemDetails();
 
-    builder.Host.AddCustomSerilog(
+    builder.AddCustomSerilog(
         optionsBuilder =>
         {
             optionsBuilder
@@ -102,10 +97,16 @@ static async Task ConfigureApplication(WebApplication app)
 
     app.UseProblemDetails();
 
+    // https://thecodeblogger.com/2021/05/27/asp-net-core-web-application-routing-and-endpoint-internals/
+    // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-7.0#routing-basics
+    // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-7.0#endpoints
+    // https://stackoverflow.com/questions/57846127/what-are-the-differences-between-app-userouting-and-app-useendpoints
+    // in .net 6 and above we don't need UseRouting and UseEndpoints but if ordering is important we should write it
+    // app.UseRouting();
+
     app.UseSerilogRequestLogging(opts => opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest);
     app.UseRequestLogContextMiddleware();
 
-    app.UseRouting();
     app.UseAppCors();
 
     app.UseAuthentication();
@@ -113,9 +114,6 @@ static async Task ConfigureApplication(WebApplication app)
 
     /*----------------- Module Middleware Setup ------------------*/
     await app.ConfigureModules();
-
-    // https://learn.microsoft.com/en-us/aspnet/core/diagnostics/asp0014
-    app.MapControllers();
 
     /*----------------- Module Routes Setup ------------------*/
     app.MapModulesEndpoints();
@@ -127,6 +125,9 @@ static async Task ConfigureApplication(WebApplication app)
     // NOTE: This should only be exposed on an internal port!
     // .RequireHost("*:9100");
     app.MapPrometheusScrapingEndpoint();
+
+    // https://learn.microsoft.com/en-us/aspnet/core/diagnostics/asp0014
+    app.MapControllers();
 
     if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
     {

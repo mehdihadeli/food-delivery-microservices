@@ -1,6 +1,7 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
@@ -8,7 +9,10 @@ namespace BuildingBlocks.Abstractions.Web.MinimalApi;
 
 public interface IMinimalEndpoint
 {
-    IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder);
+    string GroupName { get; }
+    string PrefixRoute { get; }
+    double Version { get; }
+    RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder);
 }
 
 public interface IMinimalEndpoint<TResult> : IMinimalEndpoint
@@ -54,6 +58,16 @@ public interface
         CancellationToken cancellationToken);
 }
 
+public interface ICommandMinimalEndpoint<in TRequest> : IMinimalEndpoint
+{
+    Task<IResult> HandleAsync(
+        HttpContext context,
+        TRequest request,
+        ICommandProcessor commandProcessor,
+        IMapper mapper,
+        CancellationToken cancellationToken);
+}
+
 public interface ICommandMinimalEndpoint<in TRequest, TResult> : IMinimalEndpoint
 {
     Task<TResult> HandleAsync(
@@ -84,6 +98,16 @@ public interface ICommandMinimalEndpoint<in TRequest, in TDependency1, in TDepen
         IMapper mapper,
         TDependency1 dependency1,
         TDependency2 dependency2,
+        CancellationToken cancellationToken);
+}
+
+public interface IQueryMinimalEndpoint<in TRequest> : IMinimalEndpoint
+{
+    Task<IResult> HandleAsync(
+        HttpContext context,
+        TRequest request,
+        IQueryProcessor queryProcessor,
+        IMapper mapper,
         CancellationToken cancellationToken);
 }
 

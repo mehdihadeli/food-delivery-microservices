@@ -1,7 +1,7 @@
 using System.Threading.RateLimiting;
 using Ardalis.GuardClauses;
-using BuildingBlocks.Caching.InMemory;
-using BuildingBlocks.Core.Caching;
+using BuildingBlocks.Caching;
+using BuildingBlocks.Caching.Behaviours;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Persistence.EfCore;
@@ -86,8 +86,7 @@ public static partial class ServiceCollectionExtensions
             x.AddProfile<ProductMappers>();
         });
 
-        builder.Services.AddCustomInMemoryCache(builder.Configuration)
-            .AddCachingRequestPolicies(Assembly.GetExecutingAssembly());
+        builder.AddCustomCaching();
 
         return builder;
     }

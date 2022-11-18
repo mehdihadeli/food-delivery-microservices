@@ -1,7 +1,7 @@
 using System.Threading.RateLimiting;
 using Ardalis.GuardClauses;
-using BuildingBlocks.Caching.InMemory;
-using BuildingBlocks.Core.Caching;
+using BuildingBlocks.Caching;
+using BuildingBlocks.Caching.Behaviours;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
@@ -75,9 +75,7 @@ public static partial class WebApplicationBuilderExtensions
             },
             autoConfigEndpoints: false);
 
-        builder.Services.AddCustomInMemoryCache(builder.Configuration)
-            .AddCachingRequestPolicies(Assembly.GetExecutingAssembly());
-
+        builder.AddCustomCaching();
 
         builder.Services.AddCustomValidators(Assembly.GetExecutingAssembly());
 

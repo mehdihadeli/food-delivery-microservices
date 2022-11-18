@@ -1,7 +1,7 @@
 using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging;
-using ECommerce.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.Events.Domain;
+using ECommerce.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Events.Domain;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions;
 
@@ -17,7 +17,7 @@ public class RestockSubscriptionsEventMapper : IIntegrationEventMapper
         return domainEvent switch
         {
             RestockSubscriptionCreated e =>
-                new Services.Shared.Customers.RestockSubscriptions.Events.Integration.RestockSubscriptionCreated(
+                new Services.Shared.Customers.RestockSubscriptions.Events.v1.Integration.RestockSubscriptionCreated(
                     e.RestockSubscription.Id.Value, e.RestockSubscription.Email),
             _ => null
         };

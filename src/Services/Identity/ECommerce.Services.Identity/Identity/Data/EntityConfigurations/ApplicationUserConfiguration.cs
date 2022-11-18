@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Persistence.EfCore;
+using ECommerce.Services.Identity.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ECommerce.Services.Identity.Shared.Models;
 
 namespace ECommerce.Services.Identity.Identity.Data.EntityConfigurations;
 
@@ -25,5 +25,12 @@ internal class ApplicationUserConfiguration : IEntityTypeConfiguration<Applicati
 
         builder.HasIndex(x => x.Email).IsUnique();
         builder.HasIndex(x => x.NormalizedEmail).IsUnique();
+
+        // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model#add-navigation-properties
+        // Each User can have many entries in the UserRole join table
+        builder.HasMany(e => e.UserRoles)
+            .WithOne(e => e.User)
+            .HasForeignKey(ur => ur.UserId)
+            .IsRequired();
     }
 }

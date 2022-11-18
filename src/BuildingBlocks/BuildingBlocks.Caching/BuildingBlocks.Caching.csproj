@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
+    <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EasyCaching.Serialization.MessagePack" />
+    <PackageReference Include="EasyCaching.Serialization.Json" />
+    <PackageReference Include="EasyCaching.Redis" />
+    <PackageReference Include="EasyCaching.InMemory" />
+    <PackageReference Include="EasyCaching.Core" />
+  </ItemGroup>
+
+</Project>

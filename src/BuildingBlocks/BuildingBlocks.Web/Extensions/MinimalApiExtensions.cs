@@ -1,6 +1,11 @@
+using System.Text.RegularExpressions;
+using Asp.Versioning.Builder;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using LinqKit;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using MongoDB.Driver;
 using Scrutor;
 
 namespace BuildingBlocks.Web.Extensions;
@@ -44,11 +49,31 @@ public static class MinimalApiExtensions
     {
         var scope = builder.ServiceProvider.CreateScope();
 
-        var endpoints = scope.ServiceProvider.GetServices<IMinimalEndpoint>();
+        var endpoints = scope.ServiceProvider.GetServices<IMinimalEndpoint>().ToList();
 
-        foreach (var endpoint in endpoints)
+        var versionGroups =
+            endpoints.GroupBy(x => x.GroupName)
+                .ToDictionary(x => x.Key, c => builder.MapApiGroup(c.Key).WithTags(c.Key));
+
+        var versionSubGroups = endpoints.GroupBy(x => new {x.GroupName, x.PrefixRoute, x.Version})
+            .ToDictionary(
+                x => x.Key,
+                c => versionGroups[c.Key.GroupName].MapGroup(c.Key.PrefixRoute).HasApiVersion(c.Key.Version));
+
+        var endpointVersions = endpoints.GroupBy(x => new {x.GroupName, x.Version}).Select(x => new
         {
-            endpoint.MapEndpoint(builder);
+            Verion = x.Key.Version, x.Key.GroupName, Endpoints = x.Select(v => v)
+        });
+
+        foreach (var endpointVersion in endpointVersions)
+        {
+            var versionGroup = versionSubGroups
+                .FirstOrDefault(x => x.Key.GroupName == endpointVersion.GroupName).Value;
+
+            endpointVersion.Endpoints.ForEach(ep =>
+            {
+                ep.MapEndpoint(versionGroup);
+            });
         }
 
         return builder;

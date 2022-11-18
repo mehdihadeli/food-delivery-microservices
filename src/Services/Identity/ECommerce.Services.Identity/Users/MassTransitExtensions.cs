@@ -1,8 +1,8 @@
-﻿using Humanizer;
+﻿using ECommerce.Services.Identity.Users.Features.UpdatingUserState.v1.Events.Integration;
+using ECommerce.Services.Shared.Identity.Users.Events.v1.Integration;
+using Humanizer;
 using MassTransit;
 using RabbitMQ.Client;
-using ECommerce.Services.Identity.Users.Features.UpdatingUserState.Events.Integration;
-using ECommerce.Services.Shared.Identity.Users.Events.Integration;
 
 namespace ECommerce.Services.Identity.Users;
 

@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -6,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace BuildingBlocks.Swagger;
+
 public static class Extensions
 {
     // https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/README.md
@@ -38,52 +40,39 @@ public static class Extensions
                 var xmlFile = XmlCommentsFilePath(assembly);
                 if (File.Exists(xmlFile)) options.IncludeXmlComments(xmlFile);
 
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                // https://github.com/domaindrivendev/Swashbuckle.AspNetCore#add-security-definitions-and-requirements
+                // https://swagger.io/docs/specification/authentication/
+                // https://medium.com/@niteshsinghal85/assign-specific-authorization-scheme-to-endpoint-in-swagger-ui-in-net-core-cd84d2a2ebd7
+                var bearerScheme = new OpenApiSecurityScheme()
                 {
-                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n
-                              Enter 'Bearer' [space] and then your token in the text input below.
-                              \r\n\r\nExample: 'Bearer 12345abcdef'",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-
-                options.AddSecurityDefinition(
-                    Constants.ApiKeyConstants.HeaderName,
-                    new OpenApiSecurityScheme
+                    Type = SecuritySchemeType.Http,
+                    Name = JwtBearerDefaults.AuthenticationScheme,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    Reference = new()
                     {
-                        Description = "Api key needed to access the endpoints. X-Api-Key: My_API_Key",
-                        In = ParameterLocation.Header,
-                        Name = Constants.ApiKeyConstants.HeaderName,
-                        Type = SecuritySchemeType.ApiKey
-                    });
+                        Type = ReferenceType.SecurityScheme, Id = JwtBearerDefaults.AuthenticationScheme
+                    }
+                };
+
+                var apiKeyScheme = new OpenApiSecurityScheme
+                {
+                    Description = "Api key needed to access the endpoints. X-Api-Key: My_API_Key",
+                    In = ParameterLocation.Header,
+                    Name = Constants.ApiKeyConstants.HeaderName,
+                    Scheme = Constants.ApiKeyConstants.DefaultScheme,
+                    Type = SecuritySchemeType.ApiKey,
+                    Reference = new()
+                    {
+                        Type = ReferenceType.SecurityScheme, Id = Constants.ApiKeyConstants.HeaderName
+                    }
+                };
+
+                options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, bearerScheme);
+                options.AddSecurityDefinition(Constants.ApiKeyConstants.HeaderName, apiKeyScheme);
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "Bearer"},
-                            Scheme = "oauth2",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header
-                        },
-                        new List<string>()
-                    },
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Name = Constants.ApiKeyConstants.HeaderName,
-                            Type = SecuritySchemeType.ApiKey,
-                            In = ParameterLocation.Header,
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme, Id = Constants.ApiKeyConstants.HeaderName
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
+                    {bearerScheme, Array.Empty<string>()}, {apiKeyScheme, Array.Empty<string>()}
                 });
 
                 options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
@@ -95,8 +84,6 @@ public static class Extensions
                 // Enables Swagger annotations (SwaggerOperationAttribute, SwaggerParameterAttribute etc.)
                 options.EnableAnnotations();
             });
-
-        services.Configure<SwaggerGeneratorOptions>(o => o.InferSecuritySchemes = true);
 
         static string XmlCommentsFilePath(Assembly assembly)
         {

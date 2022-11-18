@@ -9,4 +9,12 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Catalogs\Products\Events\v1" />
+    <Folder Include="Catalogs\Suppliers\Events\v1" />
+    <Folder Include="Customers\Customers\Events\v1" />
+    <Folder Include="Customers\RestockSubscriptions\Events\v1" />
+    <Folder Include="Identity\Users\Events\v1" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,5 @@
-﻿using ECommerce.Services.Customers.Users.Features.RegisteringUser.Events.Integration.External;
-using ECommerce.Services.Shared.Identity.Users.Events.Integration;
+﻿using ECommerce.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
+using ECommerce.Services.Shared.Identity.Users.Events.v1.Integration;
 using Humanizer;
 using MassTransit;
 using RabbitMQ.Client;

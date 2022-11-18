@@ -1,10 +1,9 @@
-using Asp.Versioning.Builder;
 using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Identity.Shared;
-using ECommerce.Services.Identity.Users.Features.GettingUerByEmail;
-using ECommerce.Services.Identity.Users.Features.GettingUserById;
-using ECommerce.Services.Identity.Users.Features.RegisteringUser;
-using ECommerce.Services.Identity.Users.Features.UpdatingUserState;
+using ECommerce.Services.Identity.Users.Features.GettingUerByEmail.v1;
+using ECommerce.Services.Identity.Users.Features.GettingUserById.v1;
+using ECommerce.Services.Identity.Users.Features.RegisteringUser.v1;
+using ECommerce.Services.Identity.Users.Features.UpdatingUserState.v1;
 
 namespace ECommerce.Services.Identity.Users;
 
@@ -12,7 +11,6 @@ internal class UsersConfigs : IModuleConfiguration
 {
     public const string Tag = "Users";
     public const string UsersPrefixUri = $"{SharedModulesConfiguration.IdentityModulePrefixUri}/users";
-    public static ApiVersionSet VersionSet { get; private set; } = default!;
 
     public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
@@ -26,12 +24,26 @@ internal class UsersConfigs : IModuleConfiguration
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        VersionSet = endpoints.NewApiVersionSet(Tag).Build();
+        var usersVersionGroup = endpoints
+            .MapApiGroup(Tag)
+            .WithTags(Tag);
 
-        endpoints.MapRegisterNewUserEndpoint();
-        endpoints.MapUpdateUserStateEndpoint();
-        endpoints.MapGetUserByIdEndpoint();
-        endpoints.MapGetUserByEmailEndpoint();
+        // create a new sub group for each version
+        var usersGroupV1 = usersVersionGroup
+            .MapGroup(UsersPrefixUri)
+            .HasApiVersion(1.0);
+
+        // create a new sub group for each version
+        var usersGroupV2 = usersVersionGroup
+            .MapGroup(UsersPrefixUri)
+            .HasApiVersion(2.0);
+
+        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-7.0#route-groups
+        // https://github.com/dotnet/aspnet-api-versioning/blob/main/examples/AspNetCore/WebApi/MinimalOpenApiExample/Program.cs
+        usersGroupV1.MapRegisterNewUserEndpoint();
+        usersGroupV1.MapUpdateUserStateEndpoint();
+        usersGroupV1.MapGetUserByIdEndpoint();
+        usersGroupV1.MapGetUserByEmailEndpoint();
 
         return endpoints;
     }

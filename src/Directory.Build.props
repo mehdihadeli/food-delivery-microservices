@@ -46,6 +46,7 @@
     <PackageReference Include="Roslynator.Formatting.Analyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
     <PackageReference Include="AsyncFixer" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
+    <PackageReference Include="AsyncAwaitBestPractices" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
   </ItemGroup>
 
   <ItemGroup>

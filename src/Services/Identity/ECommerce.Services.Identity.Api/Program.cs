@@ -1,5 +1,6 @@
 using BuildingBlocks.Logging;
 using BuildingBlocks.Security;
+using BuildingBlocks.Security.Extensions;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
@@ -63,15 +64,13 @@ static void RegisterServices(WebApplicationBuilder builder)
         options.SuppressModelStateInvalidFilter = true;
     });
 
-    var loggingOptions = builder.Configuration.GetSection(nameof(LoggerOptions)).Get<LoggerOptions>();
-
     builder.AddCompression();
 
     builder.AddCustomProblemDetails();
 
     builder.Services.AddSingleton<RevokeAccessTokenMiddleware>();
 
-    builder.Host.AddCustomSerilog(
+    builder.AddCustomSerilog(
         optionsBuilder =>
         {
             optionsBuilder.SetLevel(LogEventLevel.Information);
@@ -100,10 +99,18 @@ static async Task ConfigureApplication(WebApplication app)
     var environment = app.Environment;
 
     app.UseProblemDetails();
+
+    // https://thecodeblogger.com/2021/05/27/asp-net-core-web-application-routing-and-endpoint-internals/
+    // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-7.0#routing-basics
+    // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-7.0#endpoints
+    // https://stackoverflow.com/questions/57846127/what-are-the-differences-between-app-userouting-and-app-useendpoints
+    // in .net 6 and above we don't need UseRouting and UseEndpoints but if ordering is important we should write it
+    // app.UseRouting();
+
+
     app.UseSerilogRequestLogging(opts => opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest);
     app.UseRequestLogContextMiddleware();
 
-    app.UseRouting();
     app.UseAppCors();
 
     app.UseAuthentication();
@@ -120,7 +127,7 @@ static async Task ConfigureApplication(WebApplication app)
     app.MapModulesEndpoints();
 
     // automatic discover minimal endpoints
-    app.MapMinimalEndpoints();
+    //app.MapMinimalEndpoints();
 
     if (environment.IsDevelopment() || environment.IsEnvironment("docker"))
     {

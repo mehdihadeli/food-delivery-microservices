@@ -3,13 +3,19 @@ using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Persistence;
 using ECommerce.Services.Identity.Shared.Models;
 using Humanizer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ECommerce.Services.Identity.Shared.Data;
 
-public class IdentityContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>,
+public class IdentityContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid,
+        IdentityUserClaim<Guid>,
+        ApplicationUserRole,
+        IdentityUserLogin<Guid>,
+        IdentityRoleClaim<Guid>,
+        IdentityUserToken<Guid>>,
     IDbFacadeResolver,
     IDomainEventContext,
     ITxDbContextExecution

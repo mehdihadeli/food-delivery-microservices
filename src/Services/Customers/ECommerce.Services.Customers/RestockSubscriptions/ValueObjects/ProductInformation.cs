@@ -18,7 +18,7 @@ public record ProductInformation
             Name = Guard.Against.NullOrWhiteSpace(
                 name,
                 new RestockSubscriptionDomainException("Product name can't be null.")),
-            Id = Guard.Against.Null(id, new RestockSubscriptionDomainException("Product Id can't be  null.")),
+            Id = Guard.Against.Null(id, new RestockSubscriptionDomainException("Product InternalCommandId can't be  null.")),
         };
     }
 }

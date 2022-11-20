@@ -4,6 +4,7 @@ using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using ECommerce.Services.Identity.Shared.Models;
 using ECommerce.Services.Identity.Users.Dtos;
+using ECommerce.Services.Identity.Users.Dtos.v1;
 using ECommerce.Services.Shared.Identity.Users.Events.v1.Integration;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
@@ -107,7 +108,7 @@ internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserR
             throw new RegisterIdentityUserException(string.Join(',', roleResult.Errors.Select(e => e.Description)));
 
 
-        var userRegistered = new UserRegistered(
+        var userRegistered = new UserRegisteredV1(
             applicationUser.Id,
             applicationUser.Email,
             applicationUser.UserName,
@@ -118,7 +119,7 @@ internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserR
         // publish our integration event and save to outbox should do in same transaction of our business logic actions. we could use TxBehaviour or ITxDbContextExecutes interface
         // This service is not DDD, so we couldn't use DomainEventPublisher to publish mapped integration events
         await _messagePersistenceService.AddPublishMessageAsync(
-            new MessageEnvelope<UserRegistered>(userRegistered, new Dictionary<string, object?>()), cancellationToken);
+            new MessageEnvelope<UserRegisteredV1>(userRegistered, new Dictionary<string, object?>()), cancellationToken);
 
         return new RegisterUserResponse(new IdentityUserDto
         {

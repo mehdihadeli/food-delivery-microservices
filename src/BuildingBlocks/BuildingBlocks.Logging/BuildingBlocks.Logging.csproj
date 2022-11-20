@@ -1,27 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  
+
   <ItemGroup>
-    <PackageReference Include="Serilog" />
-    <PackageReference Include="Serilog.AspNetCore" />
-    <PackageReference Include="Serilog.Enrichers.CorrelationId" />
-    <PackageReference Include="Serilog.Enrichers.Environment" />
-    <PackageReference Include="Serilog.Enrichers.Span" />
-    <PackageReference Include="Serilog.Exceptions" />
-    <PackageReference Include="Serilog.Extensions.Hosting" />
-    <PackageReference Include="Serilog.Formatting.Elasticsearch" />
-    <PackageReference Include="Serilog.Sinks.Async" />
-    <PackageReference Include="Serilog.Sinks.Console" />
-    <PackageReference Include="Serilog.Sinks.Elasticsearch" />
-    <PackageReference Include="Serilog.Sinks.File" />
-    <PackageReference Include="Serilog.Sinks.Seq" />
-    <PackageReference Include="Serilog.Sinks.SpectreConsole" />
-    <PackageReference Include="SerilogTimings" />
+    <PackageReference Include="Serilog"/>
+    <PackageReference Include="Serilog.AspNetCore"/>
+    <PackageReference Include="Serilog.Enrichers.CorrelationId"/>
+    <PackageReference Include="Serilog.Enrichers.Environment"/>
+    <PackageReference Include="Serilog.Enrichers.Span"/>
+    <PackageReference Include="Serilog.Exceptions"/>
+    <PackageReference Include="Serilog.Extensions.Hosting"/>
+    <PackageReference Include="Serilog.Formatting.Elasticsearch"/>
+    <PackageReference Include="Serilog.Sinks.Async"/>
+    <PackageReference Include="Serilog.Sinks.Console"/>
+    <PackageReference Include="Serilog.Sinks.Elasticsearch"/>
+    <PackageReference Include="Serilog.Sinks.File"/>
+    <PackageReference Include="Serilog.Sinks.Seq"/>
+    <PackageReference Include="Serilog.Sinks.SpectreConsole"/>
+    <PackageReference Include="SerilogTimings"/>
+    <PackageReference Include="Serilog.OpenTelemetry.ConsoleSink"/>
+    <PackageReference Include="Serilog.Sinks.Debug"/>
+    <PackageReference Include="Serilog.Enrichers.Environment"/>
   </ItemGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
-    <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
+    <ProjectReference Include="..\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj"/>
+    <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj"/>
   </ItemGroup>
 
 </Project>

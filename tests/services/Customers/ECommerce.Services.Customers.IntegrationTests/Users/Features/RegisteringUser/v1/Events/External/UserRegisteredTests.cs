@@ -18,14 +18,14 @@ namespace ECommerce.Services.Customers.IntegrationTests.Users.Features.Registeri
 
 public class UserRegisteredTests : IntegrationTestBase<Program, CustomersDbContext, CustomersReadDbContext>
 {
-    private static UserRegistered? _userRegistered;
+    private static UserRegisteredV1? _userRegistered;
 
     public UserRegisteredTests(
         IntegrationTestFixture<Program, CustomersDbContext, CustomersReadDbContext> integrationTestFixture,
         ITestOutputHelper outputHelper) : base(integrationTestFixture, outputHelper)
     {
-        _userRegistered = new Faker<UserRegistered>().CustomInstantiator(faker =>
-                new UserRegistered(
+        _userRegistered = new Faker<UserRegisteredV1>().CustomInstantiator(faker =>
+                new UserRegisteredV1(
                     Guid.NewGuid(),
                     faker.Person.Email,
                     faker.Person.UserName,
@@ -69,7 +69,7 @@ public class UserRegisteredTests : IntegrationTestBase<Program, CustomersDbConte
         await IntegrationTestFixture.PublishMessageAsync(_userRegistered, null, CancellationToken);
 
         // Assert
-        var shouldConsume = await IntegrationTestFixture.IsConsumed<UserRegistered>();
+        var shouldConsume = await IntegrationTestFixture.IsConsumed<UserRegisteredV1>();
         shouldConsume.Should().BeTrue();
     }
 
@@ -77,7 +77,7 @@ public class UserRegisteredTests : IntegrationTestBase<Program, CustomersDbConte
     // public async Task user_registered_message_should_consume_new_consumers_by_broker()
     // {
     //     // Arrange
-    //     var shouldConsume = await IntegrationTestFixture.ShouldConsumeWithNewConsumer<UserRegistered>();
+    //     var shouldConsume = await IntegrationTestFixture.ShouldConsumeWithNewConsumer<UserRegisteredV1>();
     //
     //     // Act
     //     await IntegrationTestFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
@@ -93,7 +93,7 @@ public class UserRegisteredTests : IntegrationTestBase<Program, CustomersDbConte
         await IntegrationTestFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        var shouldConsume = await IntegrationTestFixture.IsConsumed<UserRegistered, UserRegisteredConsumer>();
+        var shouldConsume = await IntegrationTestFixture.IsConsumed<UserRegisteredV1, UserRegisteredConsumer>();
         shouldConsume.Should().BeTrue();
     }
 
@@ -142,7 +142,7 @@ public class UserRegisteredTests : IntegrationTestBase<Program, CustomersDbConte
         // Act
         await IntegrationTestFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
-        await IntegrationTestFixture.ShouldProcessedOutboxPersistMessage<CustomerCreated>();
+        await IntegrationTestFixture.ShouldProcessedOutboxPersistMessage<CustomerCreatedV1>();
     }
 
     [Fact]
@@ -152,6 +152,6 @@ public class UserRegisteredTests : IntegrationTestBase<Program, CustomersDbConte
         await IntegrationTestFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await IntegrationTestFixture.WaitForPublishing<CustomerCreated>();
+        await IntegrationTestFixture.WaitForPublishing<CustomerCreatedV1>();
     }
 }

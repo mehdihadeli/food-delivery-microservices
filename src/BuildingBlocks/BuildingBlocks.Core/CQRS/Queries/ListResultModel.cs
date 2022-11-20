@@ -14,6 +14,8 @@ public record ListResultModel<T>(List<T> Items, long TotalItems, int Page, int P
     {
         return ListResultModel<U>.Create(
             Items.Select(map).ToList(),
-            TotalItems, Page, PageSize);
+            TotalItems,
+            Page,
+            PageSize);
     }
 }

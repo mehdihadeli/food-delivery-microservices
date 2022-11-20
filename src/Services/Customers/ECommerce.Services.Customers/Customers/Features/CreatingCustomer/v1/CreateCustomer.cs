@@ -7,6 +7,7 @@ using ECommerce.Services.Customers.Customers.Exceptions.Application;
 using ECommerce.Services.Customers.Customers.Models;
 using ECommerce.Services.Customers.Shared.Clients.Identity;
 using ECommerce.Services.Customers.Shared.Data;
+using FluentValidation;
 
 namespace ECommerce.Services.Customers.Customers.Features.CreatingCustomer.v1;
 

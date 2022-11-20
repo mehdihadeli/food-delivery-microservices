@@ -1,13 +1,4 @@
-version: '3.7'
-
-networks:
-  ecommerce:
-    name: ecommerce-network
-    driver: bridge
-
-volumes:
-    eventecommerce-volume-data:
-    eventecommerce-volume-logs:
+version: "3.8"
 
 services:
     #######################################################
@@ -35,7 +26,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
-    ports: 
+    ports:
       - ${MONGO_PORT}:${MONGO_PORT}
     networks:
       - ecommerce
@@ -75,6 +66,13 @@ services:
     ports:
       - "1113:1113"
       - "2113:2113"
+    volumes:
+      - type: volume
+        source: eventstore-volume-data
+        target: /var/lib/eventstore
+      - type: volume
+        source: eventstore-volume-logs
+        target: /var/log/eventstore
     networks:
       - ecommerce
 
@@ -94,9 +92,9 @@ services:
   #     - redis:/data
 
 
-#   #######################################################
-#   #  Portainer
-#   #######################################################
+   #######################################################
+   #  Portainer
+   #######################################################
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -109,3 +107,140 @@ services:
       - ./portainer-data:/data
     ports:
       - 9000:9000
+    networks:
+      - ecommerce
+
+   #######################################################
+   #  elasticsearch
+   #######################################################
+  elasticsearch:
+    container_name: elastic_search
+    restart: on-failure
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.3
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.monitoring.enabled=true
+      - xpack.watcher.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - ecommerce
+
+   #######################################################
+   #  kibana
+   #######################################################
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.13.3
+    container_name: kibana
+    restart: on-failure
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elastic_search:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - ecommerce
+    depends_on:
+      - elasticsearch
+
+  jaeger:
+    container_name: jaeger
+    restart: on-failure
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+    networks:
+      - ecommerce
+
+   #######################################################
+   #  zipkin
+   #######################################################
+  zipkin:
+    image: openzipkin/zipkin:latest
+    restart: on-failure
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - ecommerce
+
+   #######################################################
+   #  otel-collector
+   #######################################################
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib-dev:latest
+    command: ["--config=/etc/otel-collector-config.yaml", ""]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "1888:1888"   # pprof extension
+      - "8888:8888"   # Prometheus metrics exposed by the collector
+      - "8889:8889"   # Prometheus exporter metrics
+      - "13133:13133" # health_check extension
+      - "4317:4317"   # OTLP gRPC receiver
+      - "55679:55679" # zpages extension
+    depends_on:
+      - jaeger
+      - zipkin
+    networks:
+      - ecommerce
+
+   #######################################################
+   # prometheus
+   #######################################################
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: on-failure
+    user: root
+    ports:
+      - "9090:9090"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - ecommerce
+
+   #######################################################
+   # node_exporter
+   #######################################################
+  node_exporter:
+    container_name: node_exporter
+    restart: on-failure
+    image: prom/node-exporter
+    ports:
+      - '9101:9100'
+    networks:
+      - ecommerce
+
+   #######################################################
+   # grafana
+   #######################################################
+  grafana:
+    container_name: grafana
+    restart: on-failure
+    image: grafana/grafana
+    ports:
+      - '3000:3000'
+    networks:
+      - ecommerce
+
+networks:
+  ecommerce:
+    name: ecommerce
+
+volumes:
+  eventstore-volume-data:
+  eventstore-volume-logs:
+  elastic-data:

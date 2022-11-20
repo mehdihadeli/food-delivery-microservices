@@ -1,15 +1,14 @@
-using Asp.Versioning;
-using Asp.Versioning.Builder;
 using BuildingBlocks.Abstractions.Web.Module;
-using BuildingBlocks.Monitoring;
-using ECommerce.Services.Orders.Shared.Extensions.ApplicationBuilderExtensions;
+using BuildingBlocks.Core;
 using ECommerce.Services.Orders.Shared.Extensions.WebApplicationBuilderExtensions;
+using ECommerce.Services.Orders.Shared.Extensions.WebApplicationExtensions;
 
 namespace ECommerce.Services.Orders.Shared;
 
 public class SharedModulesConfiguration : ISharedModulesConfiguration
 {
     public const string OrderModulePrefixUri = "api/v{version:apiVersion}/orders";
+
     public WebApplicationBuilder AddSharedModuleServices(WebApplicationBuilder builder)
     {
         builder.AddInfrastructure();
@@ -21,13 +20,12 @@ public class SharedModulesConfiguration : ISharedModulesConfiguration
 
     public async Task<WebApplication> ConfigureSharedModule(WebApplication app)
     {
-        if (app.Environment.IsEnvironment("test") == false)
-            app.UseMonitoring();
+        await app.UseInfrastructure();
 
-        await app.ApplyDatabaseMigrations(app.Logger);
-        await app.SeedData(app.Logger, app.Environment);
+        ServiceActivator.Configure(app.Services);
 
-        await app.UseInfrastructure(app.Logger);
+        await app.ApplyDatabaseMigrations();
+        await app.SeedData();
 
         return app;
     }
@@ -36,7 +34,7 @@ public class SharedModulesConfiguration : ISharedModulesConfiguration
     {
         endpoints.MapGet("/", (HttpContext context) =>
         {
-            var requestId = context.Request.Headers.TryGetValue("X-Request-Id", out var requestIdHeader)
+            var requestId = context.Request.Headers.TryGetValue("X-Request-InternalCommandId", out var requestIdHeader)
                 ? requestIdHeader.FirstOrDefault()
                 : string.Empty;
 

@@ -25,7 +25,7 @@ namespace ECommerce.Services.Orders.Shared.Data.Migrations.Order
 
             modelBuilder.Entity("ECommerce.Services.Orders.Orders.Models.Order", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("InternalCommandId")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -42,10 +42,10 @@ namespace ECommerce.Services.Orders.Shared.Data.Migrations.Order
                         .HasColumnType("bigint")
                         .HasColumnName("original_version");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_orders");
 
-                    b.HasIndex("Id")
+                    b.HasIndex("InternalCommandId")
                         .IsUnique()
                         .HasDatabaseName("ix_orders_id");
 

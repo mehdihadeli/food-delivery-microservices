@@ -1,5 +1,6 @@
 using AutoMapper;
 using ECommerce.Services.Catalogs.Products.Dtos;
+using ECommerce.Services.Catalogs.Products.Dtos.v1;
 using ECommerce.Services.Catalogs.Products.Features.CreatingProduct;
 using ECommerce.Services.Catalogs.Products.Features.CreatingProduct.v1;
 using ECommerce.Services.Catalogs.Products.Features.CreatingProduct.v1.Requests;

@@ -9,6 +9,7 @@ public class CacheOptions
     public string SerializationType { get; set; } = nameof(CacheSerializationType.Json);
     public RedisCacheOptions? RedisCacheOptions { get; set; } = default!;
     public InMemoryCacheOptions? InMemoryOptions { get; set; } = default!;
+    public string DefaultCachePrefix { get; set; } = "Ch_";
 }
 
 public class RedisCacheOptions

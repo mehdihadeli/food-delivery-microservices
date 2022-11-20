@@ -1,5 +1,6 @@
 using AutoMapper;
 using ECommerce.Services.Customers.RestockSubscriptions.Dtos;
+using ECommerce.Services.Customers.RestockSubscriptions.Dtos.v1;
 using ECommerce.Services.Customers.RestockSubscriptions.Features;
 using ECommerce.Services.Customers.RestockSubscriptions.Models.Read;
 using ECommerce.Services.Customers.RestockSubscriptions.Models.Write;

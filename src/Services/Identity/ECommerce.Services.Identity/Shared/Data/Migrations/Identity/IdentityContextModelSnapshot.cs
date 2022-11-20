@@ -24,7 +24,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
 
             modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.AccessToken", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("InternalCommandId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
@@ -51,7 +51,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_access_tokens");
 
                     b.HasIndex("UserId")
@@ -66,7 +66,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
 
             modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.ApplicationRole", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("InternalCommandId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
@@ -86,7 +86,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                         .HasColumnType("character varying(256)")
                         .HasColumnName("normalized_name");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_asp_net_roles");
 
                     b.HasIndex("NormalizedName")
@@ -98,7 +98,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
 
             modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.ApplicationUser", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("InternalCommandId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
@@ -198,7 +198,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                         .HasDefaultValue("Active")
                         .HasColumnName("user_state");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_asp_net_users");
 
                     b.HasIndex("Email")
@@ -237,7 +237,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
 
             modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.EmailVerificationCode", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("InternalCommandId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
@@ -263,7 +263,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("used_at");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_email_verification_codes");
 
                     b.ToTable("email_verification_codes", (string)null);
@@ -271,7 +271,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
 
             modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.PasswordResetCode", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("InternalCommandId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
@@ -297,7 +297,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("used_at");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_password_reset_codes");
 
                     b.ToTable("password_reset_codes", (string)null);
@@ -305,7 +305,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
 
             modelBuilder.Entity("ECommerce.Services.Identity.Shared.Models.RefreshToken", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("InternalCommandId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
@@ -337,7 +337,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_refresh_tokens");
 
                     b.HasIndex("UserId")
@@ -352,12 +352,12 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("InternalCommandId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("InternalCommandId"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("text")
@@ -371,7 +371,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                         .HasColumnType("uuid")
                         .HasColumnName("role_id");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_asp_net_role_claims");
 
                     b.HasIndex("RoleId")
@@ -382,12 +382,12 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("InternalCommandId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("InternalCommandId"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("text")
@@ -401,7 +401,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_asp_net_user_claims");
 
                     b.HasIndex("UserId")

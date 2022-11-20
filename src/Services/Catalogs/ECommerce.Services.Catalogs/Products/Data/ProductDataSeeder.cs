@@ -3,6 +3,7 @@ using BuildingBlocks.Abstractions.Persistence;
 using ECommerce.Services.Catalogs.Products.Models;
 using ECommerce.Services.Catalogs.Products.ValueObjects;
 using ECommerce.Services.Catalogs.Shared.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Catalogs.Products.Data;
 

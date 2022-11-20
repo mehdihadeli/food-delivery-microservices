@@ -5,7 +5,7 @@ using MassTransit;
 
 namespace ECommerce.Services.Customers.Products.Features.ReplenishingProductStock.v1.Events.Integration.External;
 
-public class ProductStockReplenishedConsumer : IConsumer<ProductStockReplenished>
+public class ProductStockReplenishedConsumer : IConsumer<ProductStockReplenishedV1>
 {
     private readonly ICommandProcessor _commandProcessor;
     private readonly ILogger<ProductStockReplenishedConsumer> _logger;
@@ -20,7 +20,7 @@ public class ProductStockReplenishedConsumer : IConsumer<ProductStockReplenished
 
     // If this handler is called successfully, it will send a ACK to rabbitmq for removing message from the queue and if we have an exception it send an NACK to rabbitmq
     // and with NACK we can retry the message with re-queueing this message to the broker
-    public async Task Consume(ConsumeContext<ProductStockReplenished> context)
+    public async Task Consume(ConsumeContext<ProductStockReplenishedV1> context)
     {
         var productStockReplenished = context.Message;
 

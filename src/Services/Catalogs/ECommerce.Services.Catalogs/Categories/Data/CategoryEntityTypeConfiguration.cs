@@ -1,5 +1,6 @@
 using BuildingBlocks.Core.Persistence.EfCore;
 using ECommerce.Services.Catalogs.Shared.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ECommerce.Services.Catalogs.Categories.Data;

@@ -15,9 +15,9 @@ public static class GetProductByIdEndpoint
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)
-            .WithMetadata(new SwaggerOperationAttribute("Getting Product by Id", "Getting Product by Id"))
+            .WithMetadata(new SwaggerOperationAttribute("Getting Product by InternalCommandId", "Getting Product by InternalCommandId"))
             .WithName("GetProductById")
-            .WithDisplayName("Get product By Id.");
+            .WithDisplayName("Get product By InternalCommandId.");
     }
 
     private static async Task<IResult> GetProductById(

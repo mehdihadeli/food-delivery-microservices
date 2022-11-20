@@ -7,17 +7,21 @@ using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
 using BuildingBlocks.Email;
+using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
-using BuildingBlocks.Monitoring;
+using BuildingBlocks.OpenTelemetry;
 using BuildingBlocks.Persistence.EfCore.Postgres;
+using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
+using BuildingBlocks.Web.Extensions;
 using ECommerce.Services.Orders.Customers;
+using Serilog.Events;
 
 namespace ECommerce.Services.Orders.Shared.Extensions.WebApplicationBuilderExtensions;
 
-public static partial class WebApplicationBuilderExtensions
+internal static partial class WebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
@@ -25,7 +29,32 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.Services.AddCore(builder.Configuration);
 
-        builder.Services.AddMonitoring(healthChecksBuilder =>
+        // https://www.michaco.net/blog/EnvironmentVariablesAndConfigurationInASPNETCoreApps#environment-variables-and-configuration
+        // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#non-prefixed-environment-variables
+        builder.Configuration.AddEnvironmentVariables("ecommerce_orders_env_");
+
+        // https://github.com/tonerdo/dotnet-env
+        DotNetEnv.Env.TraversePath().Load();
+
+        builder.AddCompression();
+
+        builder.AddCustomProblemDetails();
+
+        builder.AddCustomSerilog(
+            optionsBuilder =>
+            {
+                optionsBuilder.SetLevel(LogEventLevel.Information);
+            });
+
+        builder.AddCustomVersioning();
+
+        builder.AddCustomSwagger(typeof(OrdersRoot).Assembly);
+
+        builder.Services.AddHttpContextAccessor();
+
+        builder.AddCustomOpenTelemetry();
+
+        builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
         {
             var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>(nameof(PostgresOptions));
             var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>(nameof(RabbitMqOptions));

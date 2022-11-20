@@ -42,7 +42,7 @@ public class RegisterUserTests : IntegrationTestBase<Program>
         // Assert
         result.UserIdentity.Should().NotBeNull();
 
-        // var user = await IdentityModule.FindWriteAsync<ApplicationUser>(result.UserIdentity.Id);
+        // var user = await IdentityModule.FindWriteAsync<ApplicationUser>(result.UserIdentity.InternalCommandId);
         // user.Should().NotBeNull();
 
         var userByIdResponse =
@@ -59,7 +59,7 @@ public class RegisterUserTests : IntegrationTestBase<Program>
         await IntegrationTestFixture.SendAsync(_registerUser, CancellationToken);
 
         // Assert
-        var res = await IntegrationTestFixture.IsPublished<UserRegistered>();
+        var res = await IntegrationTestFixture.IsPublished<UserRegisteredV1>();
         res.Should().BeTrue();
     }
 }

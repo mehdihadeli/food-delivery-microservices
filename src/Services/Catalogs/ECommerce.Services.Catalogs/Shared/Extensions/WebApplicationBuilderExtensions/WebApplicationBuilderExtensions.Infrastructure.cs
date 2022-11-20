@@ -1,4 +1,3 @@
-using System.Threading.RateLimiting;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
@@ -7,18 +6,21 @@ using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
 using BuildingBlocks.Email;
+using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
-using BuildingBlocks.Monitoring;
 using BuildingBlocks.OpenTelemetry;
 using BuildingBlocks.Persistence.EfCore.Postgres;
+using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
+using BuildingBlocks.Web.Extensions;
 using ECommerce.Services.Catalogs.Products;
+using Serilog.Events;
 
 namespace ECommerce.Services.Catalogs.Shared.Extensions.WebApplicationBuilderExtensions;
 
-public static partial class ServiceCollectionExtensions
+public static partial class WebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
@@ -34,23 +36,35 @@ public static partial class ServiceCollectionExtensions
             typeof(CachingBehavior<,>), typeof(InvalidateCachingBehavior<,>), typeof(EfTxBehavior<,>)
         });
 
+        // https://github.com/tonerdo/dotnet-env
+        DotNetEnv.Env.TraversePath().Load();
+
+        // https://www.michaco.net/blog/EnvironmentVariablesAndConfigurationInASPNETCoreApps#environment-variables-and-configuration
+        // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#non-prefixed-environment-variables
+        builder.Configuration.AddEnvironmentVariables("ecommerce_catalogs_env_");
+
+        builder.AddCustomVersioning();
+
+        builder.AddCustomSwagger(typeof(CatalogRoot).Assembly);
+
+        builder.Services.AddHttpContextAccessor();
+
         builder.Services.AddPostgresMessagePersistence(builder.Configuration);
 
-        builder.AddOTelTracing();
-        builder.AddOTelMetrics();
+        builder.AddCompression();
+        builder.AddCustomProblemDetails();
+
+        builder.AddCustomSerilog(
+            optionsBuilder =>
+            {
+                optionsBuilder
+                    .SetLevel(LogEventLevel.Information);
+            });
+
+        builder.AddCustomOpenTelemetry();
 
         // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
-        builder.Services.AddRateLimiter(options =>
-        {
-            // rate limiter that limits all to 10 requests per minute, per authenticated username (or hostname if not authenticated)
-            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-                RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
-                    factory: partition => new FixedWindowRateLimiterOptions
-                    {
-                        AutoReplenishment = true, PermitLimit = 10, QueueLimit = 0, Window = TimeSpan.FromMinutes(1)
-                    }));
-        });
+        builder.AddCustomRateLimit();
 
         builder.Services.AddCustomMassTransit(
             builder.Configuration,
@@ -60,7 +74,7 @@ public static partial class ServiceCollectionExtensions
                 busFactoryConfigurator.AddProductPublishers();
             });
 
-        builder.Services.AddMonitoring(healthChecksBuilder =>
+        builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
         {
             var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>(nameof(PostgresOptions));
             var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>(nameof(RabbitMqOptions));

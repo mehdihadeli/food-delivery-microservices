@@ -1,18 +1,20 @@
-using System.Threading.RateLimiting;
-using Ardalis.GuardClauses;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
 using BuildingBlocks.Email;
+using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
-using BuildingBlocks.Monitoring;
+using BuildingBlocks.OpenTelemetry;
 using BuildingBlocks.Persistence.EfCore.Postgres;
+using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
+using BuildingBlocks.Web.Extensions;
 using ECommerce.Services.Identity.Users;
+using Serilog.Events;
 
 namespace ECommerce.Services.Identity.Shared.Extensions.WebApplicationBuilderExtensions;
 
@@ -22,13 +24,35 @@ public static partial class WebApplicationBuilderExtensions
     {
         builder.Services.AddCore(builder.Configuration);
 
-        builder.Services.AddMonitoring(healthChecksBuilder =>
-        {
-            var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>(nameof(PostgresOptions));
-            var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
+        // https://www.michaco.net/blog/EnvironmentVariablesAndConfigurationInASPNETCoreApps#environment-variables-and-configuration
+        // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#non-prefixed-environment-variables
+        builder.Configuration.AddEnvironmentVariables("ecommerce_identity_env_");
 
-            Guard.Against.Null(postgresOptions, nameof(postgresOptions));
-            Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));
+        // https://github.com/tonerdo/dotnet-env
+        DotNetEnv.Env.TraversePath().Load();
+
+        builder.AddCompression();
+
+        builder.AddCustomProblemDetails();
+
+        builder.AddCustomSerilog(
+            optionsBuilder =>
+            {
+                optionsBuilder.SetLevel(LogEventLevel.Information);
+            });
+
+        builder.AddCustomVersioning();
+
+        builder.AddCustomSwagger(typeof(IdentityRoot).Assembly);
+
+        builder.AddCustomOpenTelemetry();
+
+        builder.Services.AddHttpContextAccessor();
+
+        builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
+        {
+            var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>();
+            var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>();
 
             healthChecksBuilder
                 .AddNpgSql(
@@ -54,17 +78,7 @@ public static partial class WebApplicationBuilderExtensions
         builder.Services.AddPostgresMessagePersistence(builder.Configuration);
 
         // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
-        builder.Services.AddRateLimiter(options =>
-        {
-            // rate limiter that limits all to 10 requests per minute, per authenticated username (or hostname if not authenticated)
-            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-                RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
-                    factory: partition => new FixedWindowRateLimiterOptions
-                    {
-                        AutoReplenishment = true, PermitLimit = 10, QueueLimit = 0, Window = TimeSpan.FromMinutes(1)
-                    }));
-        });
+        builder.AddCustomRateLimit();
 
         builder.Services.AddCustomMassTransit(
             builder.Configuration,

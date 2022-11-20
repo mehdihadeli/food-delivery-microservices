@@ -3,6 +3,8 @@ using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Catalogs.Products.Exceptions.Application;
 using ECommerce.Services.Catalogs.Shared.Contracts;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Catalogs.Products.Features.DebitingProductStock.v1;
 

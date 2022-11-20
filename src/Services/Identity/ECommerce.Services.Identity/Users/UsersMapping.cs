@@ -1,6 +1,7 @@
 using AutoMapper;
 using ECommerce.Services.Identity.Shared.Models;
 using ECommerce.Services.Identity.Users.Dtos;
+using ECommerce.Services.Identity.Users.Dtos.v1;
 
 namespace ECommerce.Services.Identity.Users;
 

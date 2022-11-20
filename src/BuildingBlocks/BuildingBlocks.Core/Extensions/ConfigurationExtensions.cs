@@ -14,7 +14,7 @@ public static class ConfigurationExtensions
     /// <param name="configuration">The configuration instance to bind.</param>
     /// <param name="section">The configuration section</param>
     /// <returns>The new instance of <typeparamref name="TModel"/>.</returns>
-    public static TModel? GetOptions<TModel>(this IConfiguration configuration, string section)
+    public static TModel GetOptions<TModel>(this IConfiguration configuration, string section)
         where TModel : new()
     {
         // note: with using Get<>() if there is no configuration in appsettings it just returns default value (null) for the configuration type
@@ -34,7 +34,7 @@ public static class ConfigurationExtensions
     /// <typeparam name="TModel">The given bind model.</typeparam>
     /// <param name="configuration">The configuration instance to bind.</param>
     /// <returns>The new instance of <typeparamref name="TModel"/>.</returns>
-    public static TModel? GetOptions<TModel>(this IConfiguration configuration)
+    public static TModel GetOptions<TModel>(this IConfiguration configuration)
         where TModel : new()
     {
         return GetOptions<TModel>(configuration, typeof(TModel).Name);

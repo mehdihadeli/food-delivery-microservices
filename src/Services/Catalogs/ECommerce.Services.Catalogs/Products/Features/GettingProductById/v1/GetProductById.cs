@@ -1,12 +1,14 @@
 using Ardalis.GuardClauses;
 using AutoMapper;
-using BuildingBlocks.Abstractions.Caching;
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Catalogs.Products.Dtos;
+using ECommerce.Services.Catalogs.Products.Dtos.v1;
 using ECommerce.Services.Catalogs.Products.Exceptions.Application;
 using ECommerce.Services.Catalogs.Shared.Contracts;
 using ECommerce.Services.Catalogs.Shared.Extensions;
+using FluentValidation;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProductById.v1;
 

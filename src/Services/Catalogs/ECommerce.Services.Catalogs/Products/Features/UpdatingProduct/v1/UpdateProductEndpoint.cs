@@ -13,6 +13,7 @@ public static class UpdateProductEndpoint
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
+            .HasApiVersion(2.0)
             .WithMetadata(new SwaggerOperationAttribute("Updating Product", "Updating Product"))
             .WithName("UpdateProduct")
             .WithDisplayName("Update a product.");

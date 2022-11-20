@@ -3,6 +3,7 @@ using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Customers.RestockSubscriptions.Exceptions.Application;
 using ECommerce.Services.Customers.Shared.Data;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription.v1;
@@ -48,7 +49,7 @@ internal class DeleteRestockSubscriptionHandler : ICommandHandler<DeleteRestockS
 
         await _customersDbContext.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("RestockSubscription with id '{Id} removed.'", command.Id);
+        _logger.LogInformation("RestockSubscription with id '{InternalCommandId} removed.'", command.Id);
 
         return Unit.Value;
     }

@@ -7,12 +7,14 @@ using BuildingBlocks.Core.IdsGenerator;
 using ECommerce.Services.Customers.Customers.Exceptions.Application;
 using ECommerce.Services.Customers.Products.Exceptions;
 using ECommerce.Services.Customers.RestockSubscriptions.Dtos;
+using ECommerce.Services.Customers.RestockSubscriptions.Dtos.v1;
 using ECommerce.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Exceptions;
 using ECommerce.Services.Customers.RestockSubscriptions.Models.Write;
 using ECommerce.Services.Customers.RestockSubscriptions.ValueObjects;
 using ECommerce.Services.Customers.Shared.Clients.Catalogs;
 using ECommerce.Services.Customers.Shared.Data;
 using ECommerce.Services.Customers.Shared.Extensions;
+using FluentValidation;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 
@@ -90,7 +92,7 @@ internal class CreateRestockSubscriptionHandler
 
         await _customersDbContext.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("RestockSubscription with id '{@Id}' saved successfully", restockSubscription.Id);
+        _logger.LogInformation("RestockSubscription with id '{@InternalCommandId}' saved successfully", restockSubscription.Id);
 
         var restockSubscriptionDto = _mapper.Map<RestockSubscriptionDto>(restockSubscription);
 

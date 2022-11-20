@@ -4,6 +4,7 @@ using BuildingBlocks.Abstractions.CQRS.Queries;
 using ECommerce.Services.Identity.Shared.Extensions;
 using ECommerce.Services.Identity.Shared.Models;
 using ECommerce.Services.Identity.Users.Dtos;
+using ECommerce.Services.Identity.Users.Dtos.v1;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,7 +17,7 @@ internal class GetUserByIdValidator : AbstractValidator<GetUserById>
     public GetUserByIdValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Id is required.");
+            .NotEmpty().WithMessage("InternalCommandId is required.");
     }
 }
 

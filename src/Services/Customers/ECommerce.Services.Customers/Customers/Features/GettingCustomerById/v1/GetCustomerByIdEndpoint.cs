@@ -20,9 +20,9 @@ public class GetCustomerByIdEndpointEndpoint : IQueryMinimalEndpoint<Guid>
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status404NotFound)
-            .WithMetadata(new SwaggerOperationAttribute("Getting a Customer By Id", "Getting a Customer By Id"))
+            .WithMetadata(new SwaggerOperationAttribute("Getting a Customer By InternalCommandId", "Getting a Customer By InternalCommandId"))
             .WithName("GetCustomerById")
-            .WithDisplayName("Get Customer By Id.");
+            .WithDisplayName("Get Customer By InternalCommandId.");
     }
 
     public async Task<IResult> HandleAsync(
@@ -37,7 +37,7 @@ public class GetCustomerByIdEndpointEndpoint : IQueryMinimalEndpoint<Guid>
         // https://github.com/serilog/serilog/wiki/Enrichment
         // https://dotnetdocs.ir/Post/34/categorizing-logs-with-serilog-in-aspnet-core
         using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(GetCustomerByIdEndpointEndpoint)))
-        using (Serilog.Context.LogContext.PushProperty("Id", id))
+        using (Serilog.Context.LogContext.PushProperty("InternalCommandId", id))
         {
             var result = await queryProcessor.SendAsync(new GetCustomerById(id), cancellationToken);
 

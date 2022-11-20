@@ -3,6 +3,7 @@ using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace BuildingBlocks.Core.CQRS.Events;
@@ -11,11 +12,13 @@ public class EventProcessor : IEventProcessor
 {
     private readonly IMediator _mediator;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<EventProcessor> _logger;
 
-    public EventProcessor(IMediator mediator, IServiceProvider serviceProvider)
+    public EventProcessor(IMediator mediator, IServiceProvider serviceProvider, ILogger<EventProcessor> logger)
     {
         _mediator = mediator;
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
@@ -63,7 +66,7 @@ public class EventProcessor : IEventProcessor
         {
             await _mediator.Publish(integrationEvent, cancellationToken);
 
-            Log.Logger.Debug(
+            _logger.LogDebug(
                 "Dispatched integration notification event {IntegrationEventName} with payload {IntegrationEventContent}",
                 integrationEvent.GetType().FullName,
                 integrationEvent);
@@ -75,7 +78,7 @@ public class EventProcessor : IEventProcessor
         {
             await _mediator.Publish(domainEvent, cancellationToken);
 
-            Log.Logger.Debug(
+            _logger.LogDebug(
                 "Dispatched domain event {DomainEventName} with payload {DomainEventContent}",
                 domainEvent.GetType().FullName,
                 domainEvent);
@@ -87,7 +90,7 @@ public class EventProcessor : IEventProcessor
         {
             await _mediator.Publish(notificationEvent, cancellationToken);
 
-            Log.Logger.Debug(
+            _logger.LogDebug(
                 "Dispatched domain notification event {DomainNotificationEventName} with payload {DomainNotificationEventContent}",
                 notificationEvent.GetType().FullName,
                 notificationEvent);

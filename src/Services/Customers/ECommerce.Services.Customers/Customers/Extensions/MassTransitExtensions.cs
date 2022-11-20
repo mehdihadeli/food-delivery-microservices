@@ -9,10 +9,10 @@ internal static class MassTransitExtensions
 {
     internal static void AddCustomerPublishers(this IRabbitMqBusFactoryConfigurator cfg)
     {
-        cfg.Message<CustomerCreated>(e =>
-            e.SetEntityName($"{nameof(CustomerCreated).Underscore()}.input_exchange")); // name of the primary exchange
-        cfg.Publish<CustomerCreated>(e => e.ExchangeType = ExchangeType.Direct); // primary exchange type
-        cfg.Send<CustomerCreated>(e =>
+        cfg.Message<CustomerCreatedV1>(e =>
+            e.SetEntityName($"{nameof(CustomerCreatedV1).Underscore()}.input_exchange")); // name of the primary exchange
+        cfg.Publish<CustomerCreatedV1>(e => e.ExchangeType = ExchangeType.Direct); // primary exchange type
+        cfg.Send<CustomerCreatedV1>(e =>
         {
             // route by message type to binding fanout exchange (exchange to exchange binding)
             e.UseRoutingKeyFormatter(context =>

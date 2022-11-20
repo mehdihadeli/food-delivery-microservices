@@ -33,16 +33,10 @@ public static class Extensions
         Guard.Against.Null(jwtOptions, nameof(jwtOptions));
 
         // https://docs.microsoft.com/en-us/aspnet/core/security/authentication
-        return services.AddAuthentication(options =>
-            {
-                // will choose bellow JwtBearer handler for handling authentication because of our default schema to `JwtBearerDefaults.AuthenticationScheme` we could another schemas with their handlers
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+        // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-6.0#use-multiple-authentication-schemes
+        // https://auth0.com/blog/whats-new-in-dotnet-7-for-authentication-and-authorization/
+        // since .NET 7, the default scheme is no longer required, when we define just one authentication scheme and It is automatically inferred
+        return services.AddAuthentication() // no default scheme specified
             .AddJwtBearer(options =>
             {
                 //-- JwtBearerDefaults.AuthenticationScheme --

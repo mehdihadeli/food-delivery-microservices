@@ -1,14 +1,17 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Catalogs.Brands.Exceptions.Application;
 using ECommerce.Services.Catalogs.Categories.Exceptions.Application;
 using ECommerce.Services.Catalogs.Products.Exceptions.Application;
+using ECommerce.Services.Catalogs.Products.Features.GettingProductById.v1;
 using ECommerce.Services.Catalogs.Products.Models;
 using ECommerce.Services.Catalogs.Products.ValueObjects;
 using ECommerce.Services.Catalogs.Shared.Contracts;
 using ECommerce.Services.Catalogs.Shared.Extensions;
 using ECommerce.Services.Catalogs.Suppliers.Exceptions.Application;
+using FluentValidation;
 
 namespace ECommerce.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 
@@ -34,6 +37,14 @@ internal class UpdateProductValidator : AbstractValidator<UpdateProduct>
     {
         RuleFor(x => x.Id)
             .NotEmpty();
+    }
+}
+
+internal class UpdateProductInvalidateCache : InvalidateCacheRequest<UpdateProduct>
+{
+    public override IEnumerable<string> CacheKeys(UpdateProduct request)
+    {
+        yield return $"{Prefix}{nameof(GetProductById)}_{request.Id}";
     }
 }
 

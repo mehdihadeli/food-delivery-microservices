@@ -3,6 +3,8 @@ using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Persistence;
 using Dapper;
 using ECommerce.Services.Catalogs.Products.Models;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProductsView.v1;
 
@@ -43,7 +45,7 @@ public record GetProductsView : IQuery<GetProductsViewResponse>
             await using var conn = _facadeResolver.Database.GetDbConnection();
             await conn.OpenAsync(cancellationToken);
             var results = await conn.QueryAsync<ProductView>(
-                @"SELECT product_id ""Id"", product_name ""Name"", category_name CategoryName, supplier_name SupplierName, count(*) OVER() AS ItemCount
+                @"SELECT product_id ""InternalCommandId"", product_name ""Name"", category_name CategoryName, supplier_name SupplierName, count(*) OVER() AS ItemCount
                     FROM catalog.product_views LIMIT @PageSize OFFSET ((@Page - 1) * @PageSize)",
                 new {request.PageSize, request.Page}
             );

@@ -15,8 +15,8 @@ public static class GetUserByIdEndpoint
             .Produces<RegisterUserResponse>(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("GetUserById")
-            .WithDisplayName("Get User by Id.")
-            .WithMetadata(new SwaggerOperationAttribute("Getting User by Id", "Getting User by Id"));
+            .WithDisplayName("Get User by InternalCommandId.")
+            .WithMetadata(new SwaggerOperationAttribute("Getting User by InternalCommandId", "Getting User by InternalCommandId"));
     }
 
     private static async Task<IResult> GetUserById(

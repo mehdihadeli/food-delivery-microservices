@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.Persistence;
 using ECommerce.Services.Catalogs.Shared.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Catalogs.Categories.Data;
 

@@ -42,12 +42,14 @@ public class InvalidateCachingBehavior<TRequest, TResponse> : IPipelineBehavior<
             return await next();
         }
 
-        var cacheKey = cacheRequest.CacheKey;
+        var cacheKeys = cacheRequest.CacheKeys(request);
         var response = await next();
 
-        await _cacheProvider.RemoveAsync(cacheKey, cancellationToken);
-
-        _logger.LogDebug("Cache data with cache key: {CacheKey} invalidated", cacheKey);
+        foreach (var cacheKey in cacheKeys)
+        {
+            await _cacheProvider.RemoveAsync(cacheKey, cancellationToken);
+            _logger.LogDebug("Cache data with cache key: {CacheKey} invalidated", cacheKey);
+        }
 
         return response;
     }

@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Build.Containers"/>
+    <PackageReference Include="Microsoft.NET.Build.Containers" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Orders.Shared.Extensions.WebApplicationBuilderExtensions;
 
-public static partial class WebApplicationBuilderExtensions
+internal static partial class WebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddStorage(this WebApplicationBuilder builder)
     {

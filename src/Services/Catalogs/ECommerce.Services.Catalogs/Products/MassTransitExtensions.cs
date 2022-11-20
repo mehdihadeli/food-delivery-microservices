@@ -9,32 +9,32 @@ public static class MassTransitExtensions
 {
     internal static void AddProductPublishers(this IRabbitMqBusFactoryConfigurator cfg)
     {
-        cfg.Message<ProductCreated>(e =>
-            e.SetEntityName($"{nameof(ProductCreated).Underscore()}.input_exchange")); // name of the primary exchange
-        cfg.Publish<ProductCreated>(e => e.ExchangeType = ExchangeType.Direct); // primary exchange type
-        cfg.Send<ProductCreated>(e =>
+        cfg.Message<ProductCreatedV1>(e =>
+            e.SetEntityName($"{nameof(ProductCreatedV1).Underscore()}.input_exchange")); // name of the primary exchange
+        cfg.Publish<ProductCreatedV1>(e => e.ExchangeType = ExchangeType.Direct); // primary exchange type
+        cfg.Send<ProductCreatedV1>(e =>
         {
             // route by message type to binding fanout exchange (exchange to exchange binding)
             e.UseRoutingKeyFormatter(context =>
                 context.Message.GetType().Name.Underscore());
         });
 
-        cfg.Message<ProductStockDebited>(e =>
+        cfg.Message<ProductStockDebitedV1>(e =>
             e.SetEntityName(
-                $"{nameof(ProductStockDebited).Underscore()}.input_exchange")); // name of the primary exchange
-        cfg.Publish<ProductStockDebited>(e => e.ExchangeType = ExchangeType.Direct); // primary exchange type
-        cfg.Send<ProductStockDebited>(e =>
+                $"{nameof(ProductStockDebitedV1).Underscore()}.input_exchange")); // name of the primary exchange
+        cfg.Publish<ProductStockDebitedV1>(e => e.ExchangeType = ExchangeType.Direct); // primary exchange type
+        cfg.Send<ProductStockDebitedV1>(e =>
         {
             // route by message type to binding fanout exchange (exchange to exchange binding)
             e.UseRoutingKeyFormatter(context =>
                 context.Message.GetType().Name.Underscore());
         });
 
-        cfg.Message<ProductStockReplenished>(e =>
+        cfg.Message<ProductStockReplenishedV1>(e =>
             e.SetEntityName(
-                $"{nameof(ProductStockReplenished).Underscore()}.input_exchange")); // name of the primary exchange
-        cfg.Publish<ProductStockReplenished>(e => e.ExchangeType = ExchangeType.Direct); // primary exchange type
-        cfg.Send<ProductStockReplenished>(e =>
+                $"{nameof(ProductStockReplenishedV1).Underscore()}.input_exchange")); // name of the primary exchange
+        cfg.Publish<ProductStockReplenishedV1>(e => e.ExchangeType = ExchangeType.Direct); // primary exchange type
+        cfg.Send<ProductStockReplenishedV1>(e =>
         {
             // route by message type to binding fanout exchange (exchange to exchange binding)
             e.UseRoutingKeyFormatter(context =>

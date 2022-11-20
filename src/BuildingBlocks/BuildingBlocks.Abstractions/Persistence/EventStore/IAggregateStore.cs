@@ -11,8 +11,8 @@ public interface IAggregateStore
     /// Load the aggregate from the store with a aggregate id
     /// </summary>
     /// <typeparam name="TAggregate">Type of aggregate.</typeparam>
-    /// <typeparam name="TId">Type of Id.</typeparam>
-    /// <param name="aggregateId">Id of aggregate.</param>
+    /// <typeparam name="TId">Type of InternalCommandId.</typeparam>
+    /// <param name="aggregateId">InternalCommandId of aggregate.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
     /// <returns>Task with aggregate as result.</returns>
     Task<TAggregate?> GetAsync<TAggregate, TId>(
@@ -24,7 +24,7 @@ public interface IAggregateStore
     /// Store an aggregate state to the store with using some events (use for updating, adding and deleting).
     /// </summary>
     /// <typeparam name="TAggregate">Type of aggregate.</typeparam>
-    /// <typeparam name="TId">Type of Id.</typeparam>
+    /// <typeparam name="TId">Type of InternalCommandId.</typeparam>
     /// <param name="aggregate">Aggregate object to be saved.</param>
     /// <param name="expectedVersion">Expected version saved from earlier. -1 if new.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
@@ -39,7 +39,7 @@ public interface IAggregateStore
     /// Store an aggregate state to the store with using some events (use for updating, adding and deleting).
     /// </summary>
     /// <typeparam name="TAggregate">Type of aggregate.</typeparam>
-    /// <typeparam name="TId">Type of Id.</typeparam>
+    /// <typeparam name="TId">Type of InternalCommandId.</typeparam>
     /// <param name="aggregate">Aggregate object to be saved.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
     /// <returns>Task of operation.</returns>

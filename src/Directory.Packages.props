@@ -86,9 +86,12 @@
     <PackageVersion Include="Serilog.Sinks.Elasticsearch" Version="8.4.1"/>
     <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0"/>
     <PackageVersion Include="Serilog.Sinks.Seq" Version="5.1.1"/>
-    <PackageVersion Include="Serilog.Sinks.SpectreConsole" Version="0.1.1"/>
+    <PackageVersion Include="Serilog.Sinks.SpectreConsole" Version="0.3.3"/>
     <PackageVersion Include="SerilogAnalyzer" Version="0.15.0"/>
     <PackageVersion Include="SerilogTimings" Version="3.0.0"/>
+    <PackageVersion Include="Serilog.OpenTelemetry.ConsoleSink" Version="2.0.0"/>
+    <PackageVersion Include="Serilog.Sinks.Debug" Version="2.0.0"/>
+    <PackageVersion Include="Serilog.Enrichers.Environment" Version="2.0.0"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -97,6 +100,7 @@
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs" Version="$(OpenTelemetry)" />
     <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="$(OpenTelemetry)" />
     <PackageVersion Include="OpenTelemetry.Exporter.Jaeger" Version="$(OpenTelemetry)" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Zipkin" Version="$(OpenTelemetry)" />
     <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="$(OpenTelemetry)" />
     <PackageVersion Include="OpenTelemetry.Api" Version="$(OpenTelemetry)"/>
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9.9" />
@@ -160,7 +164,7 @@
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1"/>
     <PackageVersion Include="Scrutor" Version="4.1.0"/>
     <PackageVersion Include="SendGrid" Version="9.25.3"/>
-    <PackageVersion Include="Spectre.Console" Version="0.44.0"/>
+    <PackageVersion Include="Spectre.Console" Version="0.45.0"/>
     <PackageVersion Include="SqlKata" Version="2.3.7"/>
     <PackageVersion Include="SqlStreamStore" Version="1.2.1-alpha.3"/>
     <PackageVersion Include="System.Interactive.Async" Version="6.0.1"/>

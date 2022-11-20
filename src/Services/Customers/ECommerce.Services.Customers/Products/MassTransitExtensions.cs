@@ -11,17 +11,17 @@ internal static class MassTransitExtensions
 {
     internal static void AddProductEndpoints(this IRabbitMqBusFactoryConfigurator cfg, IBusRegistrationContext context)
     {
-        cfg.ReceiveEndpoint(nameof(ProductStockReplenished).Underscore(), re =>
+        cfg.ReceiveEndpoint(nameof(ProductStockReplenishedV1).Underscore(), re =>
         {
             // turns off default fanout settings
-            re.ConfigureConsumeTopology = false;
+            re.ConfigureConsumeTopology = true;
 
             // a replicated queue to provide high availability and data safety. available in RMQ 3.8+
             re.SetQuorumQueue();
 
-            re.Bind($"{nameof(ProductStockReplenished).Underscore()}.input_exchange", e =>
+            re.Bind($"{nameof(ProductStockReplenishedV1).Underscore()}.input_exchange", e =>
             {
-                e.RoutingKey = nameof(ProductStockReplenished).Underscore();
+                e.RoutingKey = nameof(ProductStockReplenishedV1).Underscore();
                 e.ExchangeType = ExchangeType.Direct;
             });
 
@@ -32,17 +32,17 @@ internal static class MassTransitExtensions
             re.RethrowFaultedMessages();
         });
 
-        cfg.ReceiveEndpoint(nameof(ProductCreated).Underscore(), re =>
+        cfg.ReceiveEndpoint(nameof(ProductCreatedV1).Underscore(), re =>
         {
             // turns off default fanout settings
-            re.ConfigureConsumeTopology = false;
+            re.ConfigureConsumeTopology = true;
 
             // a replicated queue to provide high availability and data safety. available in RMQ 3.8+
             re.SetQuorumQueue();
 
-            re.Bind($"{nameof(ProductCreated).Underscore()}.input_exchange", e =>
+            re.Bind($"{nameof(ProductCreatedV1).Underscore()}.input_exchange", e =>
             {
-                e.RoutingKey = nameof(ProductCreated).Underscore();
+                e.RoutingKey = nameof(ProductCreatedV1).Underscore();
                 e.ExchangeType = ExchangeType.Direct;
             });
 

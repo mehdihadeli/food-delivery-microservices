@@ -27,7 +27,7 @@ public class RestockSubscription : Aggregate<RestockSubscriptionId>, IHaveSoftDe
         ProductInformation productInformation,
         Email email)
     {
-        Guard.Against.Null(id, new RestockSubscriptionDomainException("Id cannot be null"));
+        Guard.Against.Null(id, new RestockSubscriptionDomainException("InternalCommandId cannot be null"));
         Guard.Against.Null(customerId, new RestockSubscriptionDomainException("CustomerId cannot be null"));
         Guard.Against.Null(
             productInformation,

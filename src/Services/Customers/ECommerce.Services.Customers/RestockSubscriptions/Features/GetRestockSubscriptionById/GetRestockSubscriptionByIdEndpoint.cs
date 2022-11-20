@@ -26,7 +26,7 @@ public class GetRestockSubscriptionByIdEndpoint : IQueryMinimalEndpoint<Guid>
                 Description = "Getting RestockSubscription By SubscriptionId.",
                 Summary = "Getting RestockSubscription By SubscriptionId."
             })
-            .WithDisplayName("Get RestockSubscription By Id.");
+            .WithDisplayName("Get RestockSubscription By InternalCommandId.");
     }
 
     public async Task<IResult> HandleAsync(
@@ -39,7 +39,7 @@ public class GetRestockSubscriptionByIdEndpoint : IQueryMinimalEndpoint<Guid>
         using (Serilog.Context.LogContext.PushProperty(
                    "Endpoint",
                    nameof(GetRestockSubscriptionBySubscriptionIdEndpoint)))
-        using (Serilog.Context.LogContext.PushProperty("Id", id))
+        using (Serilog.Context.LogContext.PushProperty("InternalCommandId", id))
         {
             var result = await queryProcessor.SendAsync(
                 new GetRestockSubscriptionById(id),

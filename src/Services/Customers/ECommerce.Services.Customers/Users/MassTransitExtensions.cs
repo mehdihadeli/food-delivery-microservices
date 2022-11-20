@@ -10,7 +10,7 @@ internal static class MassTransitExtensions
 {
     internal static void AddUsersEndpoints(this IRabbitMqBusFactoryConfigurator cfg, IBusRegistrationContext context)
     {
-        cfg.ReceiveEndpoint(nameof(UserRegistered).Underscore(), re =>
+        cfg.ReceiveEndpoint(nameof(UserRegisteredV1).Underscore(), re =>
         {
             // turns off default fanout settings
             re.ConfigureConsumeTopology = false;
@@ -18,9 +18,9 @@ internal static class MassTransitExtensions
             // a replicated queue to provide high availability and data safety. available in RMQ 3.8+
             re.SetQuorumQueue();
 
-            re.Bind($"{nameof(UserRegistered).Underscore()}.input_exchange", e =>
+            re.Bind($"{nameof(UserRegisteredV1).Underscore()}.input_exchange", e =>
             {
-                e.RoutingKey = nameof(UserRegistered).Underscore();
+                e.RoutingKey = nameof(UserRegisteredV1).Underscore();
                 e.ExchangeType = ExchangeType.Direct;
             });
 

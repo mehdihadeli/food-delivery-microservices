@@ -27,8 +27,8 @@ internal class ProductCreatedNotificationHandler : IDomainNotificationEventHandl
     {
         // We could publish integration event to bus here
         // await _bus.PublishAsync(
-        //     new ECommerce.Services.Shared.Catalogs.Products.Events.Integration.ProductCreated(
-        //         notification.Id,
+        //     new ECommerce.Services.Shared.Catalogs.Products.Events.Integration.ProductCreatedV1(
+        //         notification.InternalCommandId,
         //         notification.Name,
         //         notification.Stock,
         //         notification.CategoryName ?? "",

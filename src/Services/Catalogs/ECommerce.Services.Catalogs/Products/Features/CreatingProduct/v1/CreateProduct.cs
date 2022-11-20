@@ -6,12 +6,15 @@ using BuildingBlocks.Core.IdsGenerator;
 using ECommerce.Services.Catalogs.Brands.Exceptions.Application;
 using ECommerce.Services.Catalogs.Categories.Exceptions.Domain;
 using ECommerce.Services.Catalogs.Products.Dtos;
+using ECommerce.Services.Catalogs.Products.Dtos.v1;
 using ECommerce.Services.Catalogs.Products.Features.CreatingProduct.v1.Requests;
 using ECommerce.Services.Catalogs.Products.Models;
 using ECommerce.Services.Catalogs.Products.ValueObjects;
 using ECommerce.Services.Catalogs.Shared.Contracts;
 using ECommerce.Services.Catalogs.Shared.Extensions;
 using ECommerce.Services.Catalogs.Suppliers.Exceptions.Application;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Catalogs.Products.Features.CreatingProduct.v1;
 
@@ -44,7 +47,7 @@ public class CreateProductValidator : AbstractValidator<CreateProduct>
 
         RuleFor(x => x.Id)
             .NotEmpty()
-            .GreaterThan(0).WithMessage("Id must be greater than 0");
+            .GreaterThan(0).WithMessage("InternalCommandId must be greater than 0");
 
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required.");

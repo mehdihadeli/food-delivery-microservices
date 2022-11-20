@@ -10,9 +10,9 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
     {
         builder.ToTable("RefreshTokens");
 
-        builder.Property<Guid>("Id")
+        builder.Property<Guid>("InternalCommandId")
             .ValueGeneratedOnAdd();
-        builder.HasKey("Id");
+        builder.HasKey("InternalCommandId");
 
         builder.HasIndex(x => new { x.Token, x.UserId }).IsUnique();
 

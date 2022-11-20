@@ -3,6 +3,7 @@ using Ardalis.GuardClauses;
 using Asp.Versioning;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using ECommerce.Services.Customers.RestockSubscriptions.Dtos;
+using ECommerce.Services.Customers.RestockSubscriptions.Dtos.v1;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionsByEmails.v1;

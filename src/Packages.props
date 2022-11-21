@@ -7,7 +7,7 @@
     <MicrosoftConfigurationVersion>7.0.0</MicrosoftConfigurationVersion>
     <MicrosoftDependencyInjectionVersion>7.0.0</MicrosoftDependencyInjectionVersion>
     <MicrosoftLoggingVersion>7.0.0</MicrosoftLoggingVersion>
-    <MassTransitVersion>8.0.0</MassTransitVersion>
+    <MassTransitVersion>8.0.8</MassTransitVersion>
     <OpenTelemetry>1.4.0-beta.3</OpenTelemetry>
   </PropertyGroup>
 

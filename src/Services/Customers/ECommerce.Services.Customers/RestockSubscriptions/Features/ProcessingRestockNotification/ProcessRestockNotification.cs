@@ -4,6 +4,8 @@ using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Customers.RestockSubscriptions.Exceptions.Domain;
 using ECommerce.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification;
 using ECommerce.Services.Customers.Shared.Data;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification;
 
@@ -45,7 +47,7 @@ internal class ProcessRestockNotificationHandler : ICommandHandler<ProcessRestoc
             _customersDbContext.RestockSubscriptions.Where(x =>
                 x.ProductInformation.Id == command.ProductId && !x.Processed);
 
-        if (!subscribedCustomers.Any())
+        if (!await subscribedCustomers.AnyAsync(cancellationToken: cancellationToken))
             return Unit.Value;
 
         foreach (var restockSubscription in subscribedCustomers)

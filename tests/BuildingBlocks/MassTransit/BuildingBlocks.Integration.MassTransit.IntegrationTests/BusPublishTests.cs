@@ -13,7 +13,7 @@ namespace BuildingBlocks.Integration.MassTransit.IntegrationTests;
 //     public async Task publish_user_registered_should_send_message_to_correct_exchange_and_consumer()
 //     {
 //         // should receive in customer service.
-//         await IntegrationTestFixture.Bus.PublishAsync(new UserRegistered(
+//         await IntegrationTestFixture.Bus.PublishAsync(new UserRegisteredV1(
 //             Guid.NewGuid(), $"{Guid.NewGuid()}@test.com",
 //             "ss",
 //             "ss", "ss",
@@ -38,7 +38,7 @@ namespace BuildingBlocks.Integration.MassTransit.IntegrationTests;
 //     {
 //         // should receive in customer service.
 //         await IntegrationTestFixture.Bus.PublishAsync(
-//             new ProductCreated(10, "test product", 1, "ss", 10), null, CancellationToken.None);
+//             new ProductCreatedV1(10, "test product", 1, "ss", 10), null, CancellationToken.None);
 //
 //         await Task.Delay(12000);
 //     }

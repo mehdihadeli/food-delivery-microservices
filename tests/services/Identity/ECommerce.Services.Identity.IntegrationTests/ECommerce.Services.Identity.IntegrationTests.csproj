@@ -12,9 +12,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Services\Identity\ECommerce.Services.Identity.Api\ECommerce.Services.Identity.Api.csproj"/>
-    <ProjectReference Include="..\..\..\..\src\Services\Identity\ECommerce.Services.Identity\ECommerce.Services.Identity.csproj"/>
-    <ProjectReference Include="..\..\..\shared\Tests.Shared\Tests.Shared.csproj"/>
+    <ProjectReference Include="..\..\..\..\src\Services\Identity\ECommerce.Services.Identity.Api\ECommerce.Services.Identity.Api.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Services\Identity\ECommerce.Services.Identity\ECommerce.Services.Identity.csproj" />
+    <ProjectReference Include="..\..\..\shared\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
 
 

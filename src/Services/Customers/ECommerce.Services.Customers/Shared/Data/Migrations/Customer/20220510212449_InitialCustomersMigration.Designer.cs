@@ -27,7 +27,7 @@ namespace ECommerce.Services.Customers.Shared.Data.Migrations.Customer
 
             modelBuilder.Entity("ECommerce.Services.Customers.Customers.Models.Customer", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("InternalCommandId")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -70,14 +70,14 @@ namespace ECommerce.Services.Customers.Shared.Data.Migrations.Customer
                         .HasColumnType("character varying(15)")
                         .HasColumnName("phone_number");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_customers");
 
                     b.HasIndex("Email")
                         .IsUnique()
                         .HasDatabaseName("ix_customers_email");
 
-                    b.HasIndex("Id")
+                    b.HasIndex("InternalCommandId")
                         .IsUnique()
                         .HasDatabaseName("ix_customers_id");
 
@@ -94,7 +94,7 @@ namespace ECommerce.Services.Customers.Shared.Data.Migrations.Customer
 
             modelBuilder.Entity("ECommerce.Services.Customers.RestockSubscriptions.Models.Write.RestockSubscription", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("InternalCommandId")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -136,13 +136,13 @@ namespace ECommerce.Services.Customers.Shared.Data.Migrations.Customer
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("processed_time");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_restock_subscriptions");
 
                     b.HasIndex("CustomerId")
                         .HasDatabaseName("ix_restock_subscriptions_customer_id");
 
-                    b.HasIndex("Id")
+                    b.HasIndex("InternalCommandId")
                         .IsUnique()
                         .HasDatabaseName("ix_restock_subscriptions_id");
 
@@ -232,7 +232,7 @@ namespace ECommerce.Services.Customers.Shared.Data.Migrations.Customer
                                 .HasColumnType("bigint")
                                 .HasColumnName("id");
 
-                            b1.Property<long>("Id")
+                            b1.Property<long>("InternalCommandId")
                                 .HasColumnType("bigint")
                                 .HasColumnName("product_information_id");
 

@@ -21,6 +21,6 @@ public static class ApplicationBuilderExtensions
 
         await messagePersistenceDbContext.Database.MigrateAsync();
 
-        logger.LogInformation("persistence-message migrations applied.");
+        logger.LogInformation("persistence-message migrations applied");
     }
 }

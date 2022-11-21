@@ -5,8 +5,9 @@ using BuildingBlocks.Core.Domain.ValueObjects;
 using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Customers.Customers.ValueObjects;
 using ECommerce.Services.Customers.RestockSubscriptions.Exceptions.Domain;
-using ECommerce.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.Events.Domain;
+using ECommerce.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Events.Domain;
 using ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription;
+using ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription.v1;
 using ECommerce.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification;
 using ECommerce.Services.Customers.RestockSubscriptions.ValueObjects;
 
@@ -26,7 +27,7 @@ public class RestockSubscription : Aggregate<RestockSubscriptionId>, IHaveSoftDe
         ProductInformation productInformation,
         Email email)
     {
-        Guard.Against.Null(id, new RestockSubscriptionDomainException("Id cannot be null"));
+        Guard.Against.Null(id, new RestockSubscriptionDomainException("InternalCommandId cannot be null"));
         Guard.Against.Null(customerId, new RestockSubscriptionDomainException("CustomerId cannot be null"));
         Guard.Against.Null(
             productInformation,

@@ -11,5 +11,9 @@
     <ProjectReference Include="..\..\..\..\src\Services\Customers\ECommerce.Services.Customers\ECommerce.Services.Customers.csproj" />
     <ProjectReference Include="..\..\..\shared\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Users\Features\RegisteringUser\v1" />
+  </ItemGroup>
   
 </Project>

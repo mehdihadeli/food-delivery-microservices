@@ -1,4 +1,3 @@
-using Ardalis.GuardClauses;
 using BuildingBlocks.Core.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
@@ -13,49 +12,10 @@ namespace BuildingBlocks.OpenTelemetry;
 
 public static class Extensions
 {
-    public static WebApplicationBuilder AddOTelLogs(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddCustomOpenTelemetry(this WebApplicationBuilder builder)
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
-        var options = builder.Configuration.GetOptions<OpenTelemetryOptions>(nameof(OpenTelemetryOptions));
-        Guard.Against.Null(options);
-
-        builder.Logging.AddOpenTelemetry(o =>
-        {
-            o.SetResourceBuilder(resourceBuilder);
-
-            switch (options.LogExporterType)
-            {
-                case nameof(ExporterType.Console):
-                    o.AddConsoleExporter();
-                    break;
-
-                case nameof(ExporterType.OTLP):
-                    o.AddOtlpExporter(otlpOptions =>
-                    {
-                        otlpOptions.Endpoint = new Uri(options.OTLPEndpoint);
-                    });
-                    break;
-                case nameof(ExporterType.None):
-                    break;
-            }
-        });
-
-        builder.Services.Configure<OpenTelemetryLoggerOptions>(opt =>
-        {
-            opt.IncludeScopes = true;
-            opt.ParseStateValues = true;
-            opt.IncludeFormattedMessage = true;
-        });
-
-        return builder;
-    }
-
-    public static WebApplicationBuilder AddOTelTracing(this WebApplicationBuilder builder)
-    {
-        var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
-
-        var options = builder.Configuration.GetOptions<OpenTelemetryOptions>(nameof(OpenTelemetryOptions));
-        Guard.Against.Null(options);
+        var options = builder.Configuration.GetOptions<OpenTelemetryOptions>();
 
         builder.Services.AddOpenTelemetryTracing(
             tracerProviderBuilder =>
@@ -67,41 +27,16 @@ public static class Extensions
                     .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation();
 
-                switch (options.TracingExporterType)
-                {
-                    case nameof(ExporterType.Console):
-                        tracerProviderBuilder.AddConsoleExporter();
-                        break;
-
-                    case nameof(ExporterType.OTLP):
-                        tracerProviderBuilder.AddOtlpExporter(otlpOptions =>
-                        {
-                            otlpOptions.Endpoint = new Uri(options.OTLPEndpoint);
-                        });
-                        break;
-                    case nameof(ExporterType.Jaeger):
-                        break;
-                    case nameof(ExporterType.None):
-                        break;
-                }
+                SetTracingExporters(options, tracerProviderBuilder);
             }
         );
 
-        // For options which can be configured from code only.
-        builder.Services.Configure<AspNetCoreInstrumentationOptions>(
-            aspNetCoreInstrumentationOptions =>
-            {
-                aspNetCoreInstrumentationOptions.Filter = _ => true;
-            });
+        builder.Logging.AddOpenTelemetry(o =>
+        {
+            o.SetResourceBuilder(resourceBuilder);
 
-        return builder;
-    }
-
-    public static WebApplicationBuilder AddOTelMetrics(this WebApplicationBuilder builder)
-    {
-        var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
-        var options = builder.Configuration.GetOptions<OpenTelemetryOptions>(nameof(OpenTelemetryOptions));
-        Guard.Against.Null(options);
+            SetLogExporters(options, o);
+        });
 
         builder.Services.AddOpenTelemetryMetrics(metrics =>
         {
@@ -121,29 +56,88 @@ public static class Extensions
                         "System.Net.Security");
                 });
 
-            switch (options.TracingExporterType)
-            {
-                case nameof(ExporterType.Console):
-                    metrics.AddConsoleExporter((exporterOptions, metricReaderOptions) =>
-                    {
-                        exporterOptions.Targets = ConsoleExporterOutputTargets.Console;
-                        metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 10000;
-                    });
-                    break;
-
-                case nameof(ExporterType.OTLP):
-                    metrics.AddOtlpExporter(otlpOptions =>
-                    {
-                        otlpOptions.Endpoint = new Uri(options.OTLPEndpoint);
-                    });
-                    break;
-                case nameof(ExporterType.Jaeger):
-                    break;
-                case nameof(ExporterType.None):
-                    break;
-            }
+            SetMetricsExporters(options, metrics);
         });
 
+        builder.Services.Configure<OpenTelemetryLoggerOptions>(opt =>
+        {
+            opt.IncludeScopes = true;
+            opt.ParseStateValues = true;
+            opt.IncludeFormattedMessage = true;
+        });
+
+        // For options which can be configured from code only.
+        builder.Services.Configure<AspNetCoreInstrumentationOptions>(
+            aspNetCoreInstrumentationOptions =>
+            {
+                aspNetCoreInstrumentationOptions.Filter = _ => true;
+            });
+
         return builder;
+    }
+
+    private static void SetLogExporters(OpenTelemetryOptions options, OpenTelemetryLoggerOptions loggerOptions)
+    {
+        switch (options.LogExporterType)
+        {
+            case nameof(LogExporterType.Console):
+                loggerOptions.AddConsoleExporter();
+                break;
+
+            case nameof(LogExporterType.OTLP):
+                loggerOptions.AddOtlpExporter(otlpOptions => { otlpOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint); });
+                break;
+            case nameof(LogExporterType.None):
+                break;
+        }
+    }
+
+    private static void SetMetricsExporters(OpenTelemetryOptions options, MeterProviderBuilder metrics)
+    {
+        switch (options.MetricsExporterType)
+        {
+            case nameof(MetricsExporterType.Console):
+                metrics.AddConsoleExporter((exporterOptions, metricReaderOptions) =>
+                {
+                    exporterOptions.Targets = ConsoleExporterOutputTargets.Console;
+                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 10000;
+                });
+                break;
+
+            case nameof(MetricsExporterType.OTLP):
+                metrics.AddOtlpExporter(otlpOptions => { otlpOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint); });
+                break;
+            case nameof(MetricsExporterType.None):
+                break;
+        }
+    }
+
+    private static void SetTracingExporters(OpenTelemetryOptions options, TracerProviderBuilder tracerProviderBuilder)
+    {
+        switch (options.TracingExporterType)
+        {
+            case nameof(TracingExporterType.Console):
+                tracerProviderBuilder.AddConsoleExporter();
+                break;
+
+            case nameof(TracingExporterType.OTLP):
+                tracerProviderBuilder.AddOtlpExporter(otlpOptions =>
+                {
+                    otlpOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint);
+                });
+                break;
+            case nameof(TracingExporterType.Zipkin):
+                tracerProviderBuilder.AddZipkinExporter(x => { x.Endpoint = new Uri(options.ZipkinOptions.Endpoint); });
+                break;
+            case nameof(TracingExporterType.Jaeger):
+                tracerProviderBuilder.AddJaegerExporter(x =>
+                {
+                    x.AgentHost = options.JaegerOptions.AgentHost;
+                    x.AgentPort = options.JaegerOptions.AgentPort;
+                });
+                break;
+            case nameof(TracingExporterType.None):
+                break;
+        }
     }
 }

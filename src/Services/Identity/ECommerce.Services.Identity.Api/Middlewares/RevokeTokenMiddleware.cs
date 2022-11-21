@@ -1,16 +1,22 @@
-using BuildingBlocks.Abstractions.Caching;
+using Ardalis.GuardClauses;
+using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
+using EasyCaching.Core;
+using Microsoft.Extensions.Options;
 
 namespace ECommerce.Services.Identity.Api.Middlewares;
 
 public class RevokeAccessTokenMiddleware : IMiddleware
 {
-    private readonly ICacheManager _cacheManager;
+    private readonly IEasyCachingProvider _cachingProvider;
 
-    public RevokeAccessTokenMiddleware(ICacheManager cacheManager)
+    public RevokeAccessTokenMiddleware(
+        IEasyCachingProviderFactory cachingProviderFactory,
+        IOptions<CacheOptions> options)
     {
-        _cacheManager = cacheManager;
+        Guard.Against.Null(options);
+        _cachingProvider = Guard.Against.Null(cachingProviderFactory).GetCachingProvider(options.Value.DefaultCacheType);
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -24,12 +30,12 @@ public class RevokeAccessTokenMiddleware : IMiddleware
         var accessToken = GetTokenFromHeader(context);
         var userName = context.User.Identity.Name;
 
-        var revokedToken = await _cacheManager.DefaultCacheProvider.GetAsync<string>
+        var revokedToken = await _cachingProvider.GetAsync<string>
             ($"{userName}_{accessToken}_revoked_token");
-        if (string.IsNullOrWhiteSpace(revokedToken))
+        if (string.IsNullOrWhiteSpace(revokedToken.Value))
         {
-             await next(context);
-             return;
+            await next(context);
+            return;
         }
 
         throw new UnAuthorizedException("Access token is revoked, User in not authorized to access this resource");

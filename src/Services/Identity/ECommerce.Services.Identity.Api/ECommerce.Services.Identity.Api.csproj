@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <ContainerImageName>identity-services</ContainerImageName>
@@ -6,6 +6,7 @@
     <ContainerBaseImage>mcr.microsoft.com/dotnet/nightly/runtime-deps:7.0</ContainerBaseImage>
     <PublishTrimmed>true</PublishTrimmed>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <UserSecretsId>526a05d0-3da0-4d64-b60b-47482dd0cbc0</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Build.Containers"/>
+    <PackageReference Include="Microsoft.NET.Build.Containers" />
   </ItemGroup>
 
   <ItemGroup>

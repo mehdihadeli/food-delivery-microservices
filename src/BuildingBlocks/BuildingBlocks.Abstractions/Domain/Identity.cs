@@ -15,7 +15,7 @@ public abstract record Identity<TId>
 
     public string IdAsString()
     {
-        return $"{GetType().Name} [Id={Value}]";
+        return $"{GetType().Name} [InternalCommandId={Value}]";
     }
 }
 

@@ -7,29 +7,21 @@ namespace BuildingBlocks.Abstractions.Caching;
 public interface ICacheRequest<in TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    TimeSpan? AbsoluteExpirationRelativeToNow => TimeSpan.FromMinutes(5);
-    TimeSpan? SlidingExpiration => TimeSpan.FromSeconds(30);
-    DateTime? AbsoluteExpiration => null;
+    TimeSpan AbsoluteExpirationRelativeToNow { get; }
 
-    string GetCacheKey(TRequest request)
-    {
-        var r = new {request};
-        var props = r.request.GetType().GetProperties().Select(pi => $"{pi.Name}:{pi.GetValue(r.request, null)}");
-        return $"{typeof(TRequest).FullName}{{{string.Join(",", props)}}}";
-    }
+    // TimeSpan SlidingExpiration { get; }
+    // DateTime? AbsoluteExpiration { get; }
+    string Prefix { get; }
+    string CacheKey(TRequest request);
 }
 
 public interface IStreamCacheRequest<in TRequest, TResponse>
     where TRequest : IStreamRequest<TResponse>
 {
-    TimeSpan? AbsoluteExpirationRelativeToNow => TimeSpan.FromMinutes(5);
-    TimeSpan? SlidingExpiration => TimeSpan.FromSeconds(30);
-    DateTime? AbsoluteExpiration => null;
+    TimeSpan AbsoluteExpirationRelativeToNow { get; }
 
-    string GetCacheKey(TRequest request)
-    {
-        var r = new {request};
-        var props = r.request.GetType().GetProperties().Select(pi => $"{pi.Name}:{pi.GetValue(r.request, null)}");
-        return $"{typeof(TRequest).FullName}{{{string.Join(",", props)}}}";
-    }
+    // TimeSpan SlidingExpiration { get; }
+    // DateTime? AbsoluteExpiration { get; }
+    string Prefix { get; }
+    string CacheKey(TRequest request);
 }

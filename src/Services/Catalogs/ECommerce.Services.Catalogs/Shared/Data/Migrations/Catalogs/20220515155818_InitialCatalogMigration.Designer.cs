@@ -26,7 +26,7 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
 
             modelBuilder.Entity("ECommerce.Services.Catalogs.Brands.Brand", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("InternalCommandId")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -50,10 +50,10 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
                         .HasColumnType("bigint")
                         .HasColumnName("original_version");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_brands");
 
-                    b.HasIndex("Id")
+                    b.HasIndex("InternalCommandId")
                         .IsUnique()
                         .HasDatabaseName("ix_brands_id");
 
@@ -62,7 +62,7 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
 
             modelBuilder.Entity("ECommerce.Services.Catalogs.Categories.Category", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("InternalCommandId")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -96,10 +96,10 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
                         .HasColumnType("bigint")
                         .HasColumnName("original_version");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_categories");
 
-                    b.HasIndex("Id")
+                    b.HasIndex("InternalCommandId")
                         .IsUnique()
                         .HasDatabaseName("ix_categories_id");
 
@@ -108,7 +108,7 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
 
             modelBuilder.Entity("ECommerce.Services.Catalogs.Products.Models.Product", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("InternalCommandId")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -173,7 +173,7 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
                         .HasColumnType("bigint")
                         .HasColumnName("supplier_id");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_products");
 
                     b.HasIndex("BrandId")
@@ -182,7 +182,7 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("ix_products_category_id");
 
-                    b.HasIndex("Id")
+                    b.HasIndex("InternalCommandId")
                         .IsUnique()
                         .HasDatabaseName("ix_products_id");
 
@@ -194,7 +194,7 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
 
             modelBuilder.Entity("ECommerce.Services.Catalogs.Products.Models.ProductImage", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("InternalCommandId")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -219,10 +219,10 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
                         .HasColumnType("bigint")
                         .HasColumnName("product_id");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_product_images");
 
-                    b.HasIndex("Id")
+                    b.HasIndex("InternalCommandId")
                         .IsUnique()
                         .HasDatabaseName("ix_product_images_id");
 
@@ -285,7 +285,7 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
 
             modelBuilder.Entity("ECommerce.Services.Catalogs.Suppliers.Supplier", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("InternalCommandId")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
@@ -304,10 +304,10 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
                         .HasColumnType("varchar(50)")
                         .HasColumnName("name");
 
-                    b.HasKey("Id")
+                    b.HasKey("InternalCommandId")
                         .HasName("pk_suppliers");
 
-                    b.HasIndex("Id")
+                    b.HasIndex("InternalCommandId")
                         .IsUnique()
                         .HasDatabaseName("ix_suppliers_id");
 

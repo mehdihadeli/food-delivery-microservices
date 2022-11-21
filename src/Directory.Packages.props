@@ -35,10 +35,10 @@
     <PackageVersion Include="Microsoft.Tye.Extensions.Configuration" Version="0.10.0-alpha.21420.1"/>
     <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.0.64"/>
     <PackageVersion Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6"/>
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreVersion)"/>
-    <PackageVersion Include="Asp.Versioning.Http" Version="6.2.1"/>
-    <PackageVersion Include="Asp.Versioning.Mvc" Version="6.2.1"/>
-    <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="6.2.1"/>
+    <PackageVersion Include="Asp.Versioning.Http" Version="7.0.0-preview.2"/>
+    <PackageVersion Include="Asp.Versioning.Mvc" Version="7.0.0-preview.2"/>
+    <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.0-preview.2"/>
+    <PackageVersion Include="Asp.Versioning.Abstractions" Version="7.0.0-preview.2"/>
     <PackageVersion Include="Microsoft.NET.Build.Containers" Version="0.2.7"/>
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="System.Threading.RateLimiting" Version="$(AspNetCoreVersion)"/>
@@ -86,9 +86,12 @@
     <PackageVersion Include="Serilog.Sinks.Elasticsearch" Version="8.4.1"/>
     <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0"/>
     <PackageVersion Include="Serilog.Sinks.Seq" Version="5.1.1"/>
-    <PackageVersion Include="Serilog.Sinks.SpectreConsole" Version="0.1.1"/>
+    <PackageVersion Include="Serilog.Sinks.SpectreConsole" Version="0.3.3"/>
     <PackageVersion Include="SerilogAnalyzer" Version="0.15.0"/>
     <PackageVersion Include="SerilogTimings" Version="3.0.0"/>
+    <PackageVersion Include="Serilog.OpenTelemetry.ConsoleSink" Version="2.0.0"/>
+    <PackageVersion Include="Serilog.Sinks.Debug" Version="2.0.0"/>
+    <PackageVersion Include="Serilog.Enrichers.Environment" Version="2.0.0"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -97,6 +100,7 @@
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs" Version="$(OpenTelemetry)" />
     <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="$(OpenTelemetry)" />
     <PackageVersion Include="OpenTelemetry.Exporter.Jaeger" Version="$(OpenTelemetry)" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Zipkin" Version="$(OpenTelemetry)" />
     <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="$(OpenTelemetry)" />
     <PackageVersion Include="OpenTelemetry.Api" Version="$(OpenTelemetry)"/>
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9.9" />
@@ -121,6 +125,7 @@
     <PackageVersion Include="Nito.AsyncEx.Tasks" Version="5.1.2"/>
     <PackageVersion Include="SmartanAlyzers.ExceptionAnalyzer" Version="1.0.10"/>
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.354"/>
+    <PackageVersion Include="AsyncAwaitBestPractices" Version="6.0.6"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -159,7 +164,7 @@
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1"/>
     <PackageVersion Include="Scrutor" Version="4.1.0"/>
     <PackageVersion Include="SendGrid" Version="9.25.3"/>
-    <PackageVersion Include="Spectre.Console" Version="0.44.0"/>
+    <PackageVersion Include="Spectre.Console" Version="0.45.0"/>
     <PackageVersion Include="SqlKata" Version="2.3.7"/>
     <PackageVersion Include="SqlStreamStore" Version="1.2.1-alpha.3"/>
     <PackageVersion Include="System.Interactive.Async" Version="6.0.1"/>
@@ -170,7 +175,8 @@
     <PackageVersion Include="Duende.BFF.Yarp" Version="1.2.3"/>
     <PackageVersion Include="Yarp.ReverseProxy" Version="1.1.1"/>
     <PackageVersion Include="Ardalis.ApiEndpoints" Version="4.0.1"/>
-    <PackageVersion Include="Ardalis.ApiEndpoints.Swashbuckle" Version="4.0.1"/>
+    <PackageVersion Include="EntityFrameworkCore.Projectables" Version="2.3.0"/>
+    <PackageVersion Include="LinqKit.Microsoft.EntityFrameworkCore" Version="7.1.3"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -178,6 +184,14 @@
     <PackageVersion Include="Duende.IdentityServer.Storage" Version="6.2.0-rc.1"/>
     <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="6.2.0-rc.1"/>
     <PackageVersion Include="Duende.IdentityServer.EntityFramework" Version="6.2.0-rc.1"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="EasyCaching.Serialization.MessagePack" Version="1.7.0"/>
+    <PackageVersion Include="EasyCaching.Serialization.Json" Version="1.7.0"/>
+    <PackageVersion Include="EasyCaching.Redis" Version="1.7.0"/>
+    <PackageVersion Include="EasyCaching.InMemory" Version="1.7.0"/>
+    <PackageVersion Include="EasyCaching.Core" Version="1.7.0"/>
   </ItemGroup>
 
 </Project>

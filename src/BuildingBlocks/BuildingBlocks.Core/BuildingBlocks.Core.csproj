@@ -42,6 +42,8 @@
     <PackageReference Include="System.Reactive" />
     <PackageReference Include="Humanizer" />
     <PackageReference Include="Humanizer.Core" />
+    <PackageReference Include="EntityFrameworkCore.Projectables" />
+    <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" />
   </ItemGroup>
 
   <ItemGroup>

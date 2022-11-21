@@ -16,7 +16,7 @@ public static class HttpContextExtensions
 
     public static string GetCorrelationId(this HttpContext httpContext)
     {
-        httpContext.Request.Headers.TryGetValue("Cko-Correlation-Id", out StringValues correlationId);
+        httpContext.Request.Headers.TryGetValue("Cko-Correlation-InternalCommandId", out StringValues correlationId);
         return correlationId.FirstOrDefault() ?? httpContext.TraceIdentifier;
     }
 

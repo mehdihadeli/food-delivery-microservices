@@ -4,7 +4,13 @@ namespace ECommerce.Services.Customers.RestockSubscriptions.Exceptions.Applicati
 
 public class RestockSubscriptionCustomNotFoundException : CustomNotFoundException
 {
-    public RestockSubscriptionCustomNotFoundException(long id) : base("RestockSubscription with id: " + id + " not found")
+    public RestockSubscriptionCustomNotFoundException(long id) : base("RestockSubscription with id: " + id +
+                                                                      " not found")
+    {
+    }
+
+    public RestockSubscriptionCustomNotFoundException(Guid id) : base("RestockSubscription with id: " + id +
+                                                                      " not found")
     {
     }
 }

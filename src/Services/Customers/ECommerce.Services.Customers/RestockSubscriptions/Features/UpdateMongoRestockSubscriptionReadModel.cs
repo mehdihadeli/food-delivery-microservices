@@ -50,7 +50,7 @@ internal class UpdateMongoRestockSubscriptionReadModelHandler : ICommandHandler<
             cancellationToken);
 
         // await _customersReadDbContext.RestockSubscriptions.ReplaceOneAsync(
-        //     x => x.RestockSubscriptionId == command.RestockSubscription.Id.Value,
+        //     x => x.RestockSubscriptionId == command.RestockSubscription.InternalCommandId.Value,
         //     updatedEntity,
         //     new ReplaceOptions(),
         //     cancellationToken);

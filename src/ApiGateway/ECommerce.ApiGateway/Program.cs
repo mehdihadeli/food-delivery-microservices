@@ -35,8 +35,8 @@ builder.Services
             var requestId = Guid.NewGuid().ToString("N");
             var correlationId = Guid.NewGuid().ToString("N");
 
-            transform.ProxyRequest.Headers.Add("X-Request-Id", requestId);
-            transform.ProxyRequest.Headers.Add("X-Correlation-Id", correlationId);
+            transform.ProxyRequest.Headers.Add("X-Request-InternalCommandId", requestId);
+            transform.ProxyRequest.Headers.Add("X-Correlation-InternalCommandId", correlationId);
 
             return ValueTask.CompletedTask;
         });

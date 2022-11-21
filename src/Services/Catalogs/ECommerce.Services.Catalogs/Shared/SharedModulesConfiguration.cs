@@ -1,10 +1,7 @@
-using Asp.Versioning;
-using Asp.Versioning.Builder;
 using BuildingBlocks.Abstractions.Web.Module;
 using BuildingBlocks.Core;
-using BuildingBlocks.Monitoring;
-using ECommerce.Services.Catalogs.Shared.Extensions.ApplicationBuilderExtensions;
 using ECommerce.Services.Catalogs.Shared.Extensions.WebApplicationBuilderExtensions;
+using ECommerce.Services.Catalogs.Shared.Extensions.WebApplicationExtensions;
 
 namespace ECommerce.Services.Catalogs.Shared;
 
@@ -16,7 +13,7 @@ public class SharedModulesConfiguration : ISharedModulesConfiguration
     {
         endpoints.MapGet("/", (HttpContext context) =>
         {
-            var requestId = context.Request.Headers.TryGetValue("X-Request-Id", out var requestIdHeader)
+            var requestId = context.Request.Headers.TryGetValue("X-Request-InternalCommandId", out var requestIdHeader)
                 ? requestIdHeader.FirstOrDefault()
                 : string.Empty;
 
@@ -37,15 +34,12 @@ public class SharedModulesConfiguration : ISharedModulesConfiguration
 
     public async Task<WebApplication> ConfigureSharedModule(WebApplication app)
     {
+        await app.UseInfrastructure();
+
         ServiceActivator.Configure(app.Services);
 
-        if (app.Environment.IsEnvironment("test") == false)
-            app.UseMonitoring();
-
-        await app.ApplyDatabaseMigrations(app.Logger);
-        await app.SeedData(app.Logger, app.Environment);
-
-        await app.UseInfrastructure(app.Logger);
+        await app.ApplyDatabaseMigrations();
+        await app.SeedData();
 
         return app;
     }

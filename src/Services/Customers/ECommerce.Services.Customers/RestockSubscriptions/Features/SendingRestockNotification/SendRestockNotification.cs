@@ -7,6 +7,7 @@ using BuildingBlocks.Email;
 using BuildingBlocks.Email.Options;
 using ECommerce.Services.Customers.RestockSubscriptions.Exceptions.Domain;
 using ECommerce.Services.Customers.Shared.Data;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -51,7 +52,7 @@ internal class SendRestockNotificationHandler : ICommandHandler<SendRestockNotif
 
         var restockSubscription =
             await _customersDbContext.RestockSubscriptions
-                .SingleOrDefaultAsync(x => x.Id == command.RestockSubscriptionId, cancellationToken: cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == command.RestockSubscriptionId, cancellationToken: cancellationToken);
 
         if (_emailConfig.Enable && restockSubscription is not null)
         {

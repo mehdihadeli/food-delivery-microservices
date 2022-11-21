@@ -2,7 +2,7 @@ namespace BuildingBlocks.Abstractions.CQRS.Commands;
 
 public interface IInternalCommand : ICommand
 {
-    Guid Id { get; }
+    Guid InternalCommandId { get; }
     DateTime OccurredOn { get; }
     string Type { get; }
 }

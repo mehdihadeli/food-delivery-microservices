@@ -94,7 +94,7 @@ public class MessagePersistenceService : IMessagePersistenceService
         }
         else if (messageEnvelope.Message is IInternalCommand command)
         {
-            id = command.Id;
+            id = command.InternalCommandId;
         }
         else
         {

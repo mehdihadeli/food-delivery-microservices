@@ -15,7 +15,7 @@ public interface IEventStore
     /// <summary>
     /// Gets events for an specific stream.
     /// </summary>
-    /// <param name="streamId">Id of our aggregate or stream.</param>
+    /// <param name="streamId">InternalCommandId of our aggregate or stream.</param>
     /// <param name="fromVersion">All events after this should be returned.</param>
     /// <param name="maxCount">Number of items to read.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
@@ -29,7 +29,7 @@ public interface IEventStore
     /// <summary>
     /// Gets events for an specific stream.
     /// </summary>
-    /// <param name="streamId">Id of our aggregate or stream.</param>
+    /// <param name="streamId">InternalCommandId of our aggregate or stream.</param>
     /// <param name="fromVersion">All events after this should be returned.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
     /// <returns>Task with events for aggregate.</returns>
@@ -41,7 +41,7 @@ public interface IEventStore
     /// <summary>
     /// Append event to aggregate with no stream.
     /// </summary>
-    /// <param name="streamId">Id of our aggregate or stream.</param>
+    /// <param name="streamId">InternalCommandId of our aggregate or stream.</param>
     /// <param name="event">domain event to append the aggregate.</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -53,7 +53,7 @@ public interface IEventStore
     /// <summary>
     /// Append event to aggregate with a existing or none existing stream.
     /// </summary>
-    /// <param name="streamId">Id of our aggregate or stream.</param>
+    /// <param name="streamId">InternalCommandId of our aggregate or stream.</param>
     /// <param name="event">domain event to append the aggregate.</param>
     /// <param name="expectedRevision"></param>
     /// <param name="cancellationToken"></param>
@@ -67,7 +67,7 @@ public interface IEventStore
     /// <summary>
     /// Append events to aggregate with a existing or none existing stream.
     /// </summary>
-    /// <param name="streamId">Id of our aggregate or stream.</param>
+    /// <param name="streamId">InternalCommandId of our aggregate or stream.</param>
     /// <param name="events">domain event to append the aggregate.</param>
     /// <param name="expectedRevision"></param>
     /// <param name="cancellationToken"></param>

@@ -41,14 +41,6 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.Services.AddSingleton<RevokeAccessTokenMiddleware>();
 
-builder.Services.AddCustomJwtAuthentication(builder.Configuration);
-builder.Services.AddCustomAuthorization(
-    rolePolicies: new List<RolePolicy>
-    {
-        new(IdentityConstants.Role.Admin, new List<string> {IdentityConstants.Role.Admin}),
-        new(IdentityConstants.Role.User, new List<string> {IdentityConstants.Role.User})
-    });
-
 /*----------------- Module Services Setup ------------------*/
 builder.AddModulesServices();
 
@@ -61,8 +53,6 @@ var app = builder.Build();
 // in .net 6 and above we don't need UseRouting and UseEndpoints but if ordering is important we should write it
 // app.UseRouting();
 app.UseAppCors();
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseRevokeAccessTokenMiddleware();
 

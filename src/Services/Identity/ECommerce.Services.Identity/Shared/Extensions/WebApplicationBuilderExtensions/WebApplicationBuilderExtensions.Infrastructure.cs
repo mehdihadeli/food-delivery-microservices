@@ -10,6 +10,8 @@ using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.OpenTelemetry;
 using BuildingBlocks.Persistence.EfCore.Postgres;
+using BuildingBlocks.Security.Extensions;
+using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
 using BuildingBlocks.Web.Extensions;
@@ -23,6 +25,14 @@ public static partial class WebApplicationBuilderExtensions
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
         builder.Services.AddCore(builder.Configuration);
+
+        builder.Services.AddCustomJwtAuthentication(builder.Configuration);
+        builder.Services.AddCustomAuthorization(
+            rolePolicies: new List<RolePolicy>
+            {
+                new(IdentityConstants.Role.Admin, new List<string> {IdentityConstants.Role.Admin}),
+                new(IdentityConstants.Role.User, new List<string> {IdentityConstants.Role.User})
+            });
 
         // https://www.michaco.net/blog/EnvironmentVariablesAndConfigurationInASPNETCoreApps#environment-variables-and-configuration
         // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#non-prefixed-environment-variables
@@ -49,22 +59,25 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.Services.AddHttpContextAccessor();
 
-        builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
+        if (builder.Environment.IsTest() == false)
         {
-            var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>();
-            var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>();
+            builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
+            {
+                var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>();
+                var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>();
 
-            healthChecksBuilder
-                .AddNpgSql(
-                    postgresOptions.ConnectionString,
-                    name: "IdentityService-Postgres-Check",
-                    tags: new[] {"postgres", "database", "infra", "identity-service"})
-                .AddRabbitMQ(
-                    rabbitMqOptions.ConnectionString,
-                    name: "IdentityService-RabbitMQ-Check",
-                    timeout: TimeSpan.FromSeconds(3),
-                    tags: new[] {"rabbitmq", "bus", "infra", "identity-service"});
-        });
+                healthChecksBuilder
+                    .AddNpgSql(
+                        postgresOptions.ConnectionString,
+                        name: "IdentityService-Postgres-Check",
+                        tags: new[] {"postgres", "database", "infra", "identity-service"})
+                    .AddRabbitMQ(
+                        rabbitMqOptions.ConnectionString,
+                        name: "IdentityService-RabbitMQ-Check",
+                        timeout: TimeSpan.FromSeconds(3),
+                        tags: new[] {"rabbitmq", "bus", "infra", "identity-service"});
+            });
+        }
 
         builder.Services.AddEmailService(builder.Configuration);
 

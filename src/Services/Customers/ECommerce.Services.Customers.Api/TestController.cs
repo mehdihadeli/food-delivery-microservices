@@ -1,7 +1,6 @@
 using BuildingBlocks.Abstractions.CQRS.Events;
-using ECommerce.Services.Customers;
 
-namespace Customers.Api;
+namespace ECommerce.Services.Customers.Api;
 
 [ApiController]
 [Route("api/[controller]")]

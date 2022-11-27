@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Tests.Shared.Auth;
 using Tests.Shared.Mocks;
 
 namespace Tests.Shared.Extensions;
 
-// Ref: https://blog.joaograssi.com/posts/2021/asp-net-core-testing-permission-protected-api-endpoints/
 public static class AuthServiceCollectionExtensions
 {
-    //https://blog.joaograssi.com/posts/2021/asp-net-core-testing-permission-protected-api-endpoints/
+    //Approach1: https://blog.joaograssi.com/posts/2021/asp-net-core-testing-permission-protected-api-endpoints/
     public static AuthenticationBuilder AddTestAuthentication(this IServiceCollection services)
     {
         services.AddAuthorization(options =>
@@ -25,12 +25,12 @@ public static class AuthServiceCollectionExtensions
                 Constants.AuthConstants.Scheme, options => { });
     }
 
-    //https://stebet.net/mocking-jwt-tokens-in-asp-net-core-integration-tests/
+    //Approach2: https://stebet.net/mocking-jwt-tokens-in-asp-net-core-integration-tests/
     public static IServiceCollection AddAuthenticationWithFakeToken(this IServiceCollection services)
     {
         services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
         {
-            var config = new OpenIdConnectConfiguration() {Issuer = MockJwtTokens.Issuer};
+            var config = new OpenIdConnectConfiguration {Issuer = MockJwtTokens.Issuer};
 
             config.SigningKeys.Add(MockJwtTokens.SecurityKey);
             options.Configuration = config;

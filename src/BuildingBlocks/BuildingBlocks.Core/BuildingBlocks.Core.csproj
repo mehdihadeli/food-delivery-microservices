@@ -19,6 +19,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" />
+    <PackageReference Include="System.Net.Http.Json" />
     <PackageReference Include="EFCore.NamingConventions" />
   </ItemGroup>
 
@@ -27,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoBogus" />
     <PackageReference Include="Bogus" />
     <PackageReference Include="McMaster.NETCore.Plugins" />
     <PackageReference Include="DotNetEnv" />

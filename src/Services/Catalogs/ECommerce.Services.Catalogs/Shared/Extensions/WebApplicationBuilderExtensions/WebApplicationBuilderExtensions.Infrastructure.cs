@@ -12,6 +12,8 @@ using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.OpenTelemetry;
 using BuildingBlocks.Persistence.EfCore.Postgres;
+using BuildingBlocks.Security.Extensions;
+using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
 using BuildingBlocks.Web.Extensions;
@@ -27,6 +29,14 @@ public static partial class WebApplicationBuilderExtensions
         SnowFlakIdGenerator.Configure(1);
 
         builder.Services.AddCore(builder.Configuration);
+
+        builder.Services.AddCustomJwtAuthentication(builder.Configuration);
+        builder.Services.AddCustomAuthorization(
+            rolePolicies: new List<RolePolicy>
+            {
+                new(CatalogConstants.Role.Admin, new List<string> {CatalogConstants.Role.Admin}),
+                new(CatalogConstants.Role.User, new List<string> {CatalogConstants.Role.User})
+            });
 
         builder.Services.AddEmailService(builder.Configuration);
         builder.Services.AddCqrs(pipelines: new[]
@@ -74,25 +84,28 @@ public static partial class WebApplicationBuilderExtensions
                 busFactoryConfigurator.AddProductPublishers();
             });
 
-        builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
+        if (builder.Environment.IsTest() == false)
         {
-            var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>(nameof(PostgresOptions));
-            var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
+            builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
+            {
+                var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>(nameof(PostgresOptions));
+                var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
 
-            Guard.Against.Null(postgresOptions, nameof(postgresOptions));
-            Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));
+                Guard.Against.Null(postgresOptions, nameof(postgresOptions));
+                Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));
 
-            healthChecksBuilder
-                .AddNpgSql(
-                    postgresOptions.ConnectionString,
-                    name: "CatalogsService-Postgres-Check",
-                    tags: new[] {"postgres", "infra", "database", "catalogs-service"})
-                .AddRabbitMQ(
-                    rabbitMqOptions.ConnectionString,
-                    name: "CatalogsService-RabbitMQ-Check",
-                    timeout: TimeSpan.FromSeconds(3),
-                    tags: new[] {"rabbitmq", "infra", "bus", "catalogs-service"});
-        });
+                healthChecksBuilder
+                    .AddNpgSql(
+                        postgresOptions.ConnectionString,
+                        name: "CatalogsService-Postgres-Check",
+                        tags: new[] {"postgres", "infra", "database", "catalogs-service"})
+                    .AddRabbitMQ(
+                        rabbitMqOptions.ConnectionString,
+                        name: "CatalogsService-RabbitMQ-Check",
+                        timeout: TimeSpan.FromSeconds(3),
+                        tags: new[] {"rabbitmq", "infra", "bus", "catalogs-service"});
+            });
+        }
 
         builder.Services.AddCustomValidators(Assembly.GetExecutingAssembly());
         builder.Services.AddAutoMapper(x =>

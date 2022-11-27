@@ -14,8 +14,6 @@ public class CatalogApiClient : ICatalogApiClient
     {
         _httpClient = Guard.Against.Null(httpClient, nameof(httpClient));
         _options = Guard.Against.Null(options.Value, nameof(options));
-
-        _httpClient.BaseAddress = new Uri(_options.BaseApiAddress);
         _httpClient.Timeout = new TimeSpan(0, 0, 30);
         _httpClient.DefaultRequestHeaders.Clear();
     }

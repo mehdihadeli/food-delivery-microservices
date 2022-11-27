@@ -23,12 +23,11 @@
     <ProjectReference Include="..\..\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
   </ItemGroup>
 
+  <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
   <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="..\ECommerce.Services.Orders.Api\appsettings.json"  CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
-
+  
   <ItemGroup>
     <InternalsVisibleTo Include="ECommerce.Services.Orders.IntegrationTests" />
   </ItemGroup>

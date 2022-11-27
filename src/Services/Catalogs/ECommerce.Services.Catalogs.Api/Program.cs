@@ -1,9 +1,6 @@
-using BuildingBlocks.Security.Extensions;
-using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
 using BuildingBlocks.Web.Extensions;
-using ECommerce.Services.Catalogs;
 using ECommerce.Services.Catalogs.Api.Extensions.ApplicationBuilderExtensions;
 using ECommerce.Services.Catalogs.Api.Extensions.ServiceCollectionExtensions;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -41,14 +38,6 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.Services.AddApplicationOptions(builder.Configuration);
 
-builder.Services.AddCustomJwtAuthentication(builder.Configuration);
-builder.Services.AddCustomAuthorization(
-    rolePolicies: new List<RolePolicy>
-    {
-        new(CatalogConstants.Role.Admin, new List<string> {CatalogConstants.Role.Admin}),
-        new(CatalogConstants.Role.User, new List<string> {CatalogConstants.Role.User})
-    });
-
 /*----------------- Module Services Setup ------------------*/
 builder.AddModulesServices();
 
@@ -64,8 +53,6 @@ await app.ConfigureModules();
 // in .net 6 and above we don't need UseRouting and UseEndpoints but if ordering is important we should write it
 // app.UseRouting();
 app.UseAppCors();
-app.UseAuthentication();
-app.UseAuthorization();
 
 /*----------------- Module Routes Setup ------------------*/
 app.MapModulesEndpoints();

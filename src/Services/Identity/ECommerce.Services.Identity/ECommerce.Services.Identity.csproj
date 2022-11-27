@@ -5,12 +5,6 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
   <!--  https://github.com/dotnet/core/issues/907-->
   <PropertyGroup>
     <WarningsAsErrors></WarningsAsErrors>
@@ -43,6 +37,13 @@
     <PackageReference Include="Duende.IdentityServer.AspNetIdentity" />
     <PackageReference Include="Duende.IdentityServer.EntityFramework" />
   </ItemGroup>
+
+  <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
+  <ItemGroup>
+    <Content Include="..\ECommerce.Services.Identity.Api\appsettings.json"  CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
+
+  <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
 
 <!--  https://devblogs.microsoft.com/nuget/introducing-central-package-management/-->
 <!--  <ItemGroup>-->

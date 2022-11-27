@@ -9,7 +9,7 @@ public static class ConfigurationHelper
         var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
         var builder = new ConfigurationBuilder()
-            .SetBasePath(basePath)
+            .SetBasePath(basePath ?? "")
             .AddJsonFile("appsettings.json")
             .AddJsonFile($"appsettings.{environmentName}.json", true)
             .AddEnvironmentVariables();

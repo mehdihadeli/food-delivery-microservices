@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Retry;
 
@@ -30,17 +31,25 @@ public static class ServiceCollectionExtensions
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-        var config = configuration.GetSection(nameof(PostgresOptions)).Get<PostgresOptions>();
-
         services.Configure<PostgresOptions>(configuration.GetSection(nameof(PostgresOptions)));
         if (configurator is { })
             services.Configure(nameof(PostgresOptions), configurator);
 
-        Guard.Against.NullOrEmpty(config.ConnectionString, nameof(config.ConnectionString));
-
-        services.AddDbContext<TDbContext>(options =>
+        services.AddScoped<IEfConnectionFactory>(sp =>
         {
-            options.UseNpgsql(config.ConnectionString, sqlOptions =>
+            var postgresOptions = sp.GetService<IOptions<PostgresOptions>>();
+            Guard.Against.NullOrEmpty(
+                postgresOptions?.Value.ConnectionString,
+                nameof(postgresOptions.Value.ConnectionString));
+            return new EfNpgsqlConnectionFactory(postgresOptions.Value.ConnectionString);
+        });
+
+        services.AddDbContext<TDbContext>((sp, options) =>
+        {
+            var connectionFactory = sp.GetRequiredService<IEfConnectionFactory>();
+            var conn = connectionFactory.GetOrCreateConnectionAsync().GetAwaiter().GetResult();
+
+            options.UseNpgsql(conn, sqlOptions =>
             {
                 sqlOptions.MigrationsAssembly((migrationAssembly ?? typeof(TDbContext).Assembly).GetName().Name);
                 sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
@@ -50,8 +59,6 @@ public static class ServiceCollectionExtensions
 
             builder?.Invoke(options);
         });
-
-        services.AddScoped<IConnectionFactory, NpgsqlConnectionFactory>();
 
         services.AddScoped<IDbFacadeResolver>(provider => provider.GetService<TDbContext>()!);
         services.AddScoped<IDomainEventContext>(provider => provider.GetService<TDbContext>()!);

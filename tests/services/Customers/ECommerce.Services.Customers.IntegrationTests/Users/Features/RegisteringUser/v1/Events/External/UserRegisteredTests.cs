@@ -1,76 +1,48 @@
-using Bogus;
 using ECommerce.Services.Customers.Customers.Features;
-using ECommerce.Services.Customers.Shared.Clients.Identity;
 using ECommerce.Services.Customers.Shared.Clients.Identity.Dtos;
-using ECommerce.Services.Customers.Shared.Data;
 using ECommerce.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
 using ECommerce.Services.Shared.Customers.Customers.Events.v1.Integration;
 using ECommerce.Services.Shared.Identity.Users.Events.v1.Integration;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Tests.Shared.Fixtures;
+using Tests.Shared.Mocks.Customers.Events;
 using Xunit.Abstractions;
 
 namespace ECommerce.Services.Customers.IntegrationTests.Users.Features.RegisteringUser.v1.Events.External;
 
-public class UserRegisteredTests : IntegrationTestBase<Program, CustomersDbContext, CustomersReadDbContext>
+public class UserRegisteredTests : CustomerServiceIntegrationTestBase
 {
-    private static UserRegisteredV1? _userRegistered;
+    private static UserRegisteredV1 _userRegistered = default!;
 
     public UserRegisteredTests(
-        IntegrationTestFixture<Program, CustomersDbContext, CustomersReadDbContext> integrationTestFixture,
-        ITestOutputHelper outputHelper) : base(integrationTestFixture, outputHelper)
+        CustomWebApplicationFactory<Api.Program> webApplicationFactory,
+        SharedFixture sharedFixture,
+        ITestOutputHelper outputHelper) : base(webApplicationFactory, sharedFixture, outputHelper)
     {
-        _userRegistered = new Faker<UserRegisteredV1>().CustomInstantiator(faker =>
-                new UserRegisteredV1(
-                    Guid.NewGuid(),
-                    faker.Person.Email,
-                    faker.Person.UserName,
-                    faker.Person.FirstName,
-                    faker.Person.LastName, new List<string> {"user"}))
-            .Generate();
-    }
-
-    protected override void RegisterTestsServices(IServiceCollection services)
-    {
-        base.RegisterTestsServices(services);
-
-        services.Replace(ServiceDescriptor.Transient<IIdentityApiClient>(x =>
-        {
-            var f = Substitute.For<IIdentityApiClient>();
-            f.GetUserByEmailAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())!
-                .Returns(args =>
-                {
-                    var email = args.Arg<string>();
-
-                    return Task.FromResult(new GetUserByEmailResponse(new UserIdentityDto()
-                    {
-                        Email = _userRegistered.Email,
-                        Id = _userRegistered.IdentityId,
-                        FirstName = _userRegistered.FirstName,
-                        LastName = _userRegistered.LastName,
-                        UserName = _userRegistered.UserName
-                    }));
-                });
-
-            return f;
-        }));
-
-        // services.ReplaceScoped<IDataSeeder, CustomersTestDataSeeder>();
+        _userRegistered = new FakeUserRegisteredV1().Generate();
+        IdentityServiceMock.SetupGetUserByEmail(_userRegistered.Email,
+            response: new GetUserByEmailResponse(new UserIdentityDto
+            {
+                Email = _userRegistered.Email,
+                Id = _userRegistered.IdentityId,
+                FirstName = _userRegistered.FirstName,
+                LastName = _userRegistered.LastName,
+                UserName = _userRegistered.UserName,
+            }));
     }
 
     [Fact]
     public async Task user_registered_message_should_consume_existing_consumer_by_broker()
     {
         // Act
-        await IntegrationTestFixture.PublishMessageAsync(_userRegistered, null, CancellationToken);
+        await PublishMessageAsync(_userRegistered, null, CancellationToken);
 
         // Assert
-        var shouldConsume = await IntegrationTestFixture.IsConsumed<UserRegisteredV1>();
-        shouldConsume.Should().BeTrue();
+        await WaitForConsuming<UserRegisteredV1>();
+        await WaitForPublishing<CustomerCreatedV1>();
     }
 
     // [Fact]
@@ -90,23 +62,22 @@ public class UserRegisteredTests : IntegrationTestBase<Program, CustomersDbConte
     public async Task user_registered_message_should_consume_by_user_registered_consumer()
     {
         // Act
-        await IntegrationTestFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
+        await PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        var shouldConsume = await IntegrationTestFixture.IsConsumed<UserRegisteredV1, UserRegisteredConsumer>();
-        shouldConsume.Should().BeTrue();
+        await WaitForConsuming<UserRegisteredV1, UserRegisteredConsumer>();
     }
 
     [Fact]
     public async Task user_registered_message_should_create_new_customer_in_postgres_write_db()
     {
         // Act
-        await IntegrationTestFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
+        await PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await IntegrationTestFixture.WaitUntilConditionMet(async () =>
+        await WaitUntilConditionMet(async () =>
         {
-            var existsCustomer = await IntegrationTestFixture.ExecuteContextAsync(async ctx =>
+            var existsCustomer = await ExecuteContextAsync(async ctx =>
             {
                 var res = await ctx.Customers.AnyAsync(x => x.Email == _userRegistered.Email.ToLower());
 
@@ -121,12 +92,12 @@ public class UserRegisteredTests : IntegrationTestBase<Program, CustomersDbConte
     public async Task user_registered_message_should_create_new_customer_in_internal_persistence_message_and_mongo()
     {
         // Act
-        await IntegrationTestFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
+        await PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await IntegrationTestFixture.ShouldProcessedPersistInternalCommand<CreateMongoCustomerReadModels>();
+        await ShouldProcessedPersistInternalCommand<CreateMongoCustomerReadModels>();
 
-        var existsCustomer = await IntegrationTestFixture.ExecuteReadContextAsync(async ctx =>
+        var existsCustomer = await ExecuteReadContextAsync(async ctx =>
         {
             var res = await ctx.Customers.AsQueryable().AnyAsync(x => x.Email == _userRegistered.Email.ToLower());
 
@@ -140,18 +111,18 @@ public class UserRegisteredTests : IntegrationTestBase<Program, CustomersDbConte
     public async Task user_registered_message_should_create_customer_created_in_the_outbox()
     {
         // Act
-        await IntegrationTestFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
+        await PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
-        await IntegrationTestFixture.ShouldProcessedOutboxPersistMessage<CustomerCreatedV1>();
+        await ShouldProcessedOutboxPersistMessage<CustomerCreatedV1>();
     }
 
     [Fact]
     public async Task user_registered_should_should_publish_customer_created()
     {
         // Act
-        await IntegrationTestFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
+        await PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await IntegrationTestFixture.WaitForPublishing<CustomerCreatedV1>();
+        await WaitForPublishing<CustomerCreatedV1>();
     }
 }

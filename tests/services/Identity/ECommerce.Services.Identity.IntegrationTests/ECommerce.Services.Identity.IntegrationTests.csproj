@@ -17,11 +17,24 @@
     <ProjectReference Include="..\..\..\shared\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
 
+  <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
+  <!--  https://stackoverflow.com/questions/39791634/read-appsettings-json-values-in-net-core-test-project-->
+  <ItemGroup>
+    <Content Include="..\..\..\..\src\Services\Identity\ECommerce.Services.Identity.Api\appsettings.json"
+             CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="..\..\..\..\src\Services\Identity\ECommerce.Services.Identity.Api\appsettings.test.json"
+             CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
 
 <!--  &lt;!&ndash;  https://devblogs.microsoft.com/nuget/introducing-central-package-management/&ndash;&gt;-->
 <!--  <ItemGroup>-->
 <!--    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" VersionOverride="11.0.0"/>-->
 <!--    <PackageReference Include="AutoMapper" VersionOverride="11.0.0"/>-->
 <!--  </ItemGroup>-->
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.VisualStudio.TestPlatform" />
+  </ItemGroup>
 
 </Project>

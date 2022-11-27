@@ -1,7 +1,6 @@
 using BuildingBlocks.Core.Web;
-using ECommerce.Services.Customers.Shared;
 
-namespace Customers.Api.Extensions.ServiceCollectionExtensions;
+namespace ECommerce.Services.Customers.Api.Extensions.ServiceCollectionExtensions;
 
 public static partial class ServiceCollectionExtensions
 {

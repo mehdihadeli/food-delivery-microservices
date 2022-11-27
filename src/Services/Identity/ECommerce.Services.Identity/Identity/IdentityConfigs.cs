@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
+using BuildingBlocks.Web.Extensions;
 using ECommerce.Services.Identity.Identity.Data;
 using ECommerce.Services.Identity.Identity.Features.GettingClaims.v1;
 using ECommerce.Services.Identity.Identity.Features.Login.v1;
@@ -26,7 +27,7 @@ internal class IdentityConfigs : IModuleConfiguration
 
         builder.Services.AddScoped<IDataSeeder, IdentityDataSeeder>();
 
-        if (builder.Environment.IsEnvironment("test") == false)
+        if (builder.Environment.IsTest() == false)
             builder.AddCustomIdentityServer();
 
         return builder;

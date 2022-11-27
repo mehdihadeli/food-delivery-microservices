@@ -14,11 +14,7 @@ public class IdentityApiClient : IIdentityApiClient
     public IdentityApiClient(HttpClient httpClient, IOptions<IdentityApiClientOptions> options)
     {
         _httpClient = Guard.Against.Null(httpClient, nameof(httpClient));
-        _options = Guard.Against.Null(options.Value, nameof(options));
-
-        _httpClient.BaseAddress = new Uri(_options.BaseApiAddress);
-        _httpClient.Timeout = new TimeSpan(0, 0, 30);
-        _httpClient.DefaultRequestHeaders.Clear();
+        _options = options.Value;
     }
 
     public async Task<GetUserByEmailResponse?> GetUserByEmailAsync(
@@ -29,7 +25,7 @@ public class IdentityApiClient : IIdentityApiClient
         Guard.Against.InvalidEmail(email);
 
         var userIdentity = await _httpClient.GetFromJsonAsync<GetUserByEmailResponse>(
-            $"{_options.UsersEndpoint}/by-email/{email}",
+            $"/{_options.UsersEndpoint}/by-email/{email}",
             cancellationToken);
 
         return userIdentity;

@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Web.Extensions;
 
 namespace ECommerce.Services.Customers.Shared.Extensions.WebApplicationExtensions;
 
@@ -6,7 +7,7 @@ public static partial class WebApplicationExtensions
 {
     public static async Task SeedData(this WebApplication app)
     {
-        if (!app.Environment.IsEnvironment("test"))
+        if (!app.Environment.IsTest())
         {
             // https://stackoverflow.com/questions/38238043/how-and-where-to-call-database-ensurecreated-and-database-migrate
             // https://www.michalbialecki.com/2020/07/20/adding-entity-framework-core-5-migrations-to-net-5-project/

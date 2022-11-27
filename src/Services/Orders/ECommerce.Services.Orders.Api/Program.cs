@@ -41,14 +41,6 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.AddApplicationOptions();
 
-builder.Services.AddCustomJwtAuthentication(builder.Configuration);
-builder.Services.AddCustomAuthorization(
-    rolePolicies: new List<RolePolicy>
-    {
-        new(OrdersConstants.Role.Admin, new List<string> {OrdersConstants.Role.Admin}),
-        new(OrdersConstants.Role.User, new List<string> {OrdersConstants.Role.User})
-    });
-
 /*----------------- Module Services Setup ------------------*/
 builder.AddModulesServices();
 
@@ -64,8 +56,6 @@ await app.ConfigureModules();
 // in .net 6 and above we don't need UseRouting and UseEndpoints but if ordering is important we should write it
 // app.UseRouting();
 app.UseAppCors();
-app.UseAuthentication();
-app.UseAuthorization();
 
 // https://learn.microsoft.com/en-us/aspnet/core/diagnostics/asp0014
 app.MapControllers();

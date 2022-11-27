@@ -2,19 +2,22 @@ using System.Net.Http.Json;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Persistence.Mongo;
 using Microsoft.EntityFrameworkCore;
-using Tests.Shared.Mocks;
-using Xunit.Abstractions;
+using Tests.Shared.Auth;
 
 namespace Tests.Shared.Fixtures;
 
-
+[Trait("Category", "EndToEnd")]
 public class EndToEndTestTestBase<TEntryPoint, TWContext, TRContext> :
     IntegrationTestBase<TEntryPoint, TWContext, TRContext>
     where TWContext : DbContext
     where TRContext : MongoDbContext
     where TEntryPoint : class
 {
-    public EndToEndTestTestBase(IntegrationTestFixture<TEntryPoint, TWContext, TRContext> integrationTestFixture, ITestOutputHelper outputHelper) : base(integrationTestFixture, outputHelper)
+    public EndToEndTestTestBase(
+        CustomWebApplicationFactory<TEntryPoint> integrationTestFixture,
+        SharedFixture sharedFixture,
+        ITestOutputHelper outputHelper)
+        : base(integrationTestFixture, sharedFixture, outputHelper)
     {
     }
 
@@ -53,11 +56,11 @@ public class EndToEndTestTestBase<TEntryPoint, TWContext, TRContext> :
         switch (userType)
         {
             case UserType.Admin:
-                return AdminClient;
+                return AdminHttpClient;
             case UserType.User:
-                return UserClient;
+                return NormalUserHttpClient;
             default:
-                return GuestClient;
+                return HttpClient;
         }
     }
 }

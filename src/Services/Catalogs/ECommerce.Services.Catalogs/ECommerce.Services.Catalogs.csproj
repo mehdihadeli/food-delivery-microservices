@@ -1,17 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <ItemGroup>
-        <Content Include="appsettings.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
     <PropertyGroup>
         <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
     </PropertyGroup>
 
     <ItemGroup>
+        <Folder Include="Shared\Data\Migrations\Catalogs" />
         <Folder Include="Suppliers\Features\SupplierCreated\Events\Integration" />
         <Folder Include="Suppliers\Features\SupplierDeleted\Events\Integration" />
         <Folder Include="Suppliers\Features\SupplierUpdated\Events\Integration" />
@@ -36,6 +31,11 @@
       <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
       <ProjectReference Include="..\..\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
     </ItemGroup>
+
+  <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
+  <ItemGroup>
+    <Content Include="..\ECommerce.Services.Catalogs.Api\appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="ECommerce.Services.Catalogs.IntegrationTests" />

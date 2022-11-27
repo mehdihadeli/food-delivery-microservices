@@ -1,4 +1,6 @@
 {
   "parallelizeAssembly": true,
-  "parallelizeTestCollections": false
+  "parallelizeTestCollections": false,
+  "methodDisplay": "method",
+  "methodDisplayOptions": "all"
 }

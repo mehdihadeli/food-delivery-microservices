@@ -5,10 +5,14 @@
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Integration.MassTransit\BuildingBlocks.Integration.MassTransit.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Logging\BuildingBlocks.Logging.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Messaging.Persistence.Postgres\BuildingBlocks.Messaging.Persistence.Postgres.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.Mongo\BuildingBlocks.Persistence.Mongo.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Security\BuildingBlocks.Security.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\..\src\Services\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoFixture" />
     <PackageReference Include="Hypothesist" />
@@ -16,5 +20,30 @@
     <PackageReference Include="MassTransit" />
     <PackageReference Include="Verify.Xunit" />
     <PackageReference Include="XunitContext" />
+    <PackageReference Include="Mongo2Go" />
+    <PackageReference Include="Respawn" />
+    <PackageReference Include="Squadron.Mongo" />
+    <PackageReference Include="Testcontainers" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="FluentAssertions.Web" />
+    <PackageReference Include="FluentResults.Extensions.FluentAssertions" />
+    <PackageReference Include="NSubstitute.Analyzers.CSharp" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Serilog.Sinks.Debug" />
+    <PackageReference Include="Serilog.Sinks.Xunit2" />
+    <PackageReference Include="MartinCostello.Logging.XUnit" />
+    <PackageReference Include="System.Reactive.Linq" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="AutoBogus" />
+    <PackageReference Include="AutoBogus.NSubstitute" />
+    <PackageReference Include="xunit.analyzers" />
+    <PackageReference Include="WebMotions.Fake.Authentication.JwtBearer" />
+    <PackageReference Include="Bazinga.AspNetCore.Authentication.Basic" />
+    <PackageReference Include="RestAssured.NET" />
+    <PackageReference Include="WireMock.NET" />
+    <PackageReference Include="WireMock.Net.RestClient" />
+    <PackageReference Include="WireMock.Net.FluentAssertions" />
   </ItemGroup>
+
 </Project>

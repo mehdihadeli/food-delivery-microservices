@@ -1,11 +1,8 @@
-using BuildingBlocks.Security.Extensions;
-using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
 using BuildingBlocks.Web.Extensions;
-using Customers.Api.Extensions.ApplicationBuilderExtensions;
-using Customers.Api.Extensions.ServiceCollectionExtensions;
-using ECommerce.Services.Customers;
+using ECommerce.Services.Customers.Api.Extensions.ApplicationBuilderExtensions;
+using ECommerce.Services.Customers.Api.Extensions.ServiceCollectionExtensions;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Spectre.Console;
 
@@ -41,14 +38,6 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.Services.AddApplicationOptions(builder.Configuration);
 
-builder.Services.AddCustomJwtAuthentication(builder.Configuration);
-builder.Services.AddCustomAuthorization(
-    rolePolicies: new List<RolePolicy>
-    {
-        new(CustomersConstants.Role.Admin, new List<string> {CustomersConstants.Role.Admin}),
-        new(CustomersConstants.Role.User, new List<string> {CustomersConstants.Role.User})
-    });
-
 // register endpoints
 builder.AddMinimalEndpoints();
 
@@ -67,8 +56,6 @@ await app.ConfigureModules();
 // in .net 6 and above we don't need UseRouting and UseEndpoints but if ordering is important we should write it
 // app.UseRouting();
 app.UseAppCors();
-app.UseAuthentication();
-app.UseAuthorization();
 
 // https://learn.microsoft.com/en-us/aspnet/core/diagnostics/asp0014
 app.MapControllers();
@@ -79,6 +66,8 @@ app.MapModulesEndpoints();
 // map registered minimal endpoints
 app.MapMinimalEndpoints();
 
+app.MapGet("/test", context => { return Task.FromResult("test");  });
+
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("docker"))
 {
     // swagger middleware should register last to discover all endpoints and its versions correctly
@@ -88,6 +77,9 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("docker"))
 await app.RunAsync();
 
 
-public partial class Program
+namespace ECommerce.Services.Customers.Api
 {
+    public partial class Program
+    {
+    }
 }

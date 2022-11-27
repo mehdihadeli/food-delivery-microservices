@@ -15,7 +15,7 @@ public static class Constants
             public const string Role = "admin";
         }
 
-        public static class User
+        public static class NormalUser
         {
             public const string UserId = "5073f0f0-855a-48e6-9168-d4e20f1d2840";
             public const string UserName = "mehdi2";

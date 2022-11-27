@@ -1,12 +1,12 @@
 using System.Reflection;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
-using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
 using BuildingBlocks.Messaging.Persistence.Postgres.MessagePersistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 
@@ -16,14 +16,21 @@ public static class ServiceCollectionExtensions
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-        var option = configuration.GetOptions<MessagePersistenceOptions>(nameof(MessagePersistenceOptions));
-
-        Guard.Against.Null(option, nameof(MessagePersistenceOptions));
-        Guard.Against.NullOrEmpty(option.ConnectionString, nameof(option.ConnectionString));
-
-        services.AddDbContext<MessagePersistenceDbContext>(options =>
+        services.AddScoped<IMessagePersistenceConnectionFactory>(sp =>
         {
-            options.UseNpgsql(option.ConnectionString, sqlOptions =>
+            var postgresOptions = sp.GetService<IOptions<MessagePersistenceOptions>>();
+            Guard.Against.NullOrEmpty(
+                postgresOptions?.Value.ConnectionString,
+                nameof(postgresOptions.Value.ConnectionString));
+            return new MessagePersistenceConnectionFactory(postgresOptions.Value.ConnectionString);
+        });
+
+        services.AddDbContext<MessagePersistenceDbContext>((sp, options) =>
+        {
+            var connectionFactory = sp.GetRequiredService<IMessagePersistenceConnectionFactory>();
+            var conn = connectionFactory.GetOrCreateConnectionAsync().GetAwaiter().GetResult();
+
+            options.UseNpgsql(conn, sqlOptions =>
             {
                 sqlOptions.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
                 sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);

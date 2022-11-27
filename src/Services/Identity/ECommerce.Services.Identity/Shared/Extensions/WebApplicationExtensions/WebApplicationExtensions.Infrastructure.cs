@@ -15,10 +15,14 @@ public static partial class WebApplicationExtensions
         app.UseProblemDetails();
         app.UseSerilogRequestLogging(opts => opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest);
         app.UseRequestLogContextMiddleware();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
         await app.UsePostgresPersistenceMessage(app.Logger);
         app.UseCustomRateLimit();
 
-        if (app.Environment.IsEnvironment("test") == false)
+        if (app.Environment.IsTest() == false)
         {
             app.UseCustomHealthCheck();
             app.UseIdentityServer();

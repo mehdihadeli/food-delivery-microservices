@@ -6,12 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Products\Features\CreatingProduct\v1" />
     <Folder Include="Products\Features\ReplenishingProductStock\v1" />
     <Folder Include="Users\Features" />
@@ -40,6 +34,11 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Validation\BuildingBlocks.Validation.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\..\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
+  </ItemGroup>
+
+  <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
+  <ItemGroup>
+    <Content Include="..\ECommerce.Services.Customers.Api\appsettings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

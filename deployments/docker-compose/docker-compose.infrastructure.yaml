@@ -35,7 +35,7 @@ services:
     #  postgres
     #######################################################
   postgres:
-    image: postgres:11.1-alpine
+    image: postgres:latest
     container_name: postgres
     restart: on-failure
     ports:

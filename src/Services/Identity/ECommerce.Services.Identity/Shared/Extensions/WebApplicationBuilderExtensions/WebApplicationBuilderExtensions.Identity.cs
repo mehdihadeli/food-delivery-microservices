@@ -23,7 +23,7 @@ public static partial class WebApplicationBuilderExtensions
         else
         {
             // Postgres
-            builder.Services.AddPostgresDbContext<IdentityContext>(builder.Configuration);
+            builder.Services.AddPostgresDbContext<IdentityContext>();
         }
 
         // Problem with .net core identity - will override our default authentication scheme `JwtBearerDefaults.AuthenticationScheme` to unwanted `ECommerce.Services.Identity.Application` in `AddIdentity()` method .net identity

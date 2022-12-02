@@ -38,5 +38,7 @@
     <PackageVersion Include="WireMock.NET" Version="1.5.11" />
     <PackageVersion Include="WireMock.Net.FluentAssertions" Version="1.5.11" />
     <PackageVersion Include="WireMock.Net.RestClient" Version="1.5.11" />
+    <PackageVersion Include="Thinkcode.RabbitMQ.OpenAPI" Version="1.0.8" />
+    <PackageVersion Include="EasyNetQ.Management.Client" Version="1.4.2" />
   </ItemGroup>
 </Project>

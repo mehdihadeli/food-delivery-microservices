@@ -8,6 +8,7 @@
   <ItemGroup>
     <Folder Include="Products\Features\CreatingProduct\v1" />
     <Folder Include="Products\Features\ReplenishingProductStock\v1" />
+    <Folder Include="RestockSubscriptions\Fakes" />
     <Folder Include="Users\Features" />
     <Folder Include="Users\Features\RegisteringUser\v1" />
   </ItemGroup>

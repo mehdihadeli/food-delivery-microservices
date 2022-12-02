@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Hosting;
 
-namespace BuildingBlocks.Core.Extensions;
+namespace Tests.Shared.Extensions;
 
 public static class ServiceProviderExtensions
 {

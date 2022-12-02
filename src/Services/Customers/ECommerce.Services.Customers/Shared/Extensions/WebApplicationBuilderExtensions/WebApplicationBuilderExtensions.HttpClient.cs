@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Resiliency.Extensions;
+using Ardalis.GuardClauses;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using ECommerce.Services.Customers.Shared.Clients.Catalogs;
 using ECommerce.Services.Customers.Shared.Clients.Identity;
 using Microsoft.Extensions.Options;
@@ -11,27 +11,27 @@ public static partial class WebApplicationBuilderExtensions
     public static WebApplicationBuilder AddCustomHttpClients(
         this WebApplicationBuilder builder)
     {
-        builder.Services.AddOptions<IdentityApiClientOptions>()
-            .Bind(builder.Configuration.GetSection(nameof(IdentityApiClientOptions))).ValidateDataAnnotations();
-
-        builder.Services.AddOptions<CatalogsApiClientOptions>()
-            .Bind(builder.Configuration.GetSection(nameof(CatalogsApiClientOptions)))
-            .ValidateDataAnnotations();
+        builder.Services.AddValidatedOptions<IdentityApiClientOptions>();
+        builder.Services.AddValidatedOptions<CatalogsApiClientOptions>();
 
         builder.Services.AddHttpClient<ICatalogApiClient, CatalogApiClient>((client, sp) =>
         {
-            var baseAddress = sp.GetRequiredService<IConfiguration>().GetOptions<CatalogsApiClientOptions>()
-                .BaseApiAddress;
+            var catalogApiOptions = sp.GetRequiredService<IOptions<CatalogsApiClientOptions>>();
+            Guard.Against.Null(catalogApiOptions.Value);
+
+            var baseAddress = catalogApiOptions.Value.BaseApiAddress;
             client.BaseAddress = new Uri(baseAddress);
-            return new CatalogApiClient(client, sp.GetRequiredService<IOptions<CatalogsApiClientOptions>>());
+            return new CatalogApiClient(client, catalogApiOptions);
         });
 
         builder.Services.AddHttpClient<IIdentityApiClient, IdentityApiClient>((client, sp) =>
         {
-            var baseAddress = sp.GetRequiredService<IConfiguration>().GetOptions<IdentityApiClientOptions>()
-                .BaseApiAddress;
+            var identityApiOptions = sp.GetRequiredService<IOptions<IdentityApiClientOptions>>();
+            Guard.Against.Null(identityApiOptions.Value);
+
+            var baseAddress = identityApiOptions.Value.BaseApiAddress;
             client.BaseAddress = new Uri(baseAddress);
-            return new IdentityApiClient(client, sp.GetRequiredService<IOptions<IdentityApiClientOptions>>());
+            return new IdentityApiClient(client, identityApiOptions);
         });
 
         return builder;

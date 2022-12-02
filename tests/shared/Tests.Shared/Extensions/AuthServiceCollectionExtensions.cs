@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Tests.Shared.Auth;
-using Tests.Shared.Mocks;
 
 namespace Tests.Shared.Extensions;
 

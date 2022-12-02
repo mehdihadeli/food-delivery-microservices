@@ -28,7 +28,7 @@ public static partial class WebApplicationBuilderExtensions
         }
         else
         {
-            services.AddPostgresDbContext<CustomersDbContext>(configuration);
+            services.AddPostgresDbContext<CustomersDbContext>();
         }
 
         services.AddScoped<ICustomersDbContext>(provider => provider.GetRequiredService<CustomersDbContext>());
@@ -36,6 +36,6 @@ public static partial class WebApplicationBuilderExtensions
 
     private static void AddMongoReadStorage(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddMongoDbContext<CustomersReadDbContext>(configuration);
+        services.AddMongoDbContext<CustomersReadDbContext>();
     }
 }

@@ -4,7 +4,7 @@ namespace ECommerce.Services.Catalogs.Suppliers;
 
 public class Supplier : Entity<SupplierId>
 {
-    public string Name { get; private set; }
+    public string Name { get; }
 
     public Supplier(SupplierId id, string name)
     {

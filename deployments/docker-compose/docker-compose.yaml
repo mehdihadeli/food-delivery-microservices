@@ -71,7 +71,7 @@ services:
     #  rabbitmq
     #######################################################
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:management
     container_name: rabbitmq
     restart: on-failure
     ports:
@@ -101,7 +101,7 @@ services:
     #  postgres
     #######################################################
   postgres:
-    image: postgres:11.1-alpine
+    image: postgres:latest
     container_name: postgres
     restart: on-failure
     ports:

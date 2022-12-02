@@ -112,7 +112,6 @@ internal static partial class WebApplicationBuilderExtensions
         });
 
         builder.Services.AddCustomMassTransit(
-            builder.Configuration,
             builder.Environment,
             (context, cfg) =>
             {

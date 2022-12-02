@@ -1,3 +1,4 @@
+using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;

@@ -1,7 +1,6 @@
 using AutoBogus;
 using Bogus;
 using ECommerce.Services.Shared.Identity.Users.Events.v1.Integration;
-using Tests.Shared.Mocks.Customers.Events;
 
 namespace ECommerce.Services.Customers.UnitTests;
 

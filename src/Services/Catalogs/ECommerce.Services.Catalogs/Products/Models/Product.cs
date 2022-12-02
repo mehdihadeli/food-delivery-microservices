@@ -35,9 +35,9 @@ public class Product : Aggregate<ProductId>
     public ProductColor Color { get; private set; }
     public ProductStatus ProductStatus { get; private set; }
     public Category? Category { get; private set; }
-    public CategoryId CategoryId { get; private set; } = null!;
+    public CategoryId CategoryId { get; private set;} = null!;
     public SupplierId SupplierId { get; private set; } = null!;
-    public Supplier? Supplier { get; private set; } = null!;
+    public Supplier? Supplier { get; private set; }
     public BrandId BrandId { get; private set; } = null!;
     public Brand? Brand { get; private set; } = null!;
     public Size Size { get; private set; } = null!;
@@ -235,9 +235,7 @@ public class Product : Aggregate<ProductId>
     public void ChangeCategory(CategoryId categoryId)
     {
         Guard.Against.Null(categoryId, new ProductDomainException("CategoryId cannot be null"));
-
-        // raising domain event immediately for checking some validation rule with some dependencies such as database
-        DomainEventsInvoker.RaiseDomainEvent(new ChangingProductCategory(categoryId));
+        Guard.Against.NegativeOrZero(categoryId);
 
         CategoryId = categoryId;
 
@@ -252,8 +250,7 @@ public class Product : Aggregate<ProductId>
     public void ChangeSupplier(SupplierId supplierId)
     {
         Guard.Against.Null(supplierId, new ProductDomainException("SupplierId cannot be null"));
-
-        DomainEventsInvoker.RaiseDomainEvent(new ChangingProductSupplier(supplierId));
+        Guard.Against.NegativeOrZero(supplierId);
 
         SupplierId = supplierId;
 
@@ -267,8 +264,7 @@ public class Product : Aggregate<ProductId>
     public void ChangeBrand(BrandId brandId)
     {
         Guard.Against.Null(brandId, new ProductDomainException("brandId cannot be null"));
-
-        DomainEventsInvoker.RaiseDomainEvent(new ChangingProductBrand(brandId));
+        Guard.Against.NegativeOrZero(brandId);
 
         BrandId = brandId;
 

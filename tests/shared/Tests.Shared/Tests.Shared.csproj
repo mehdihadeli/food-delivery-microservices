@@ -10,9 +10,16 @@
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.Mongo\BuildingBlocks.Persistence.Mongo.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Security\BuildingBlocks.Security.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
-    <ProjectReference Include="..\..\..\src\Services\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Services\Catalogs\ECommerce.Services.Catalogs\ECommerce.Services.Catalogs.csproj" />
+    <ProjectReference Include="..\..\..\src\Services\Customers\ECommerce.Services.Customers\ECommerce.Services.Customers.csproj" />
+    <ProjectReference Include="..\..\..\src\Services\Identity\ECommerce.Services.Identity\ECommerce.Services.Identity.csproj" />
+    <ProjectReference Include="..\..\..\src\Services\Orders\ECommerce.Services.Orders\ECommerce.Services.Orders.csproj" />
+    <ProjectReference Include="..\..\..\src\Services\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="AutoFixture" />
     <PackageReference Include="Hypothesist" />
@@ -44,6 +51,13 @@
     <PackageReference Include="WireMock.NET" />
     <PackageReference Include="WireMock.Net.RestClient" />
     <PackageReference Include="WireMock.Net.FluentAssertions" />
+    <PackageReference Include="Thinkcode.RabbitMQ.OpenAPI" />
+    <PackageReference Include="EasyNetQ.Management.Client" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.TestPlatform" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
   </ItemGroup>
 
 </Project>

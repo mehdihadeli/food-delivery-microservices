@@ -40,7 +40,7 @@
 
   <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
   <ItemGroup>
-    <Content Include="..\ECommerce.Services.Identity.Api\appsettings.json"  CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="..\ECommerce.Services.Identity.Api\appsettings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->

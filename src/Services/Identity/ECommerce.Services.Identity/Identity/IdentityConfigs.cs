@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
+using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Web.Extensions;
 using ECommerce.Services.Identity.Identity.Data;
 using ECommerce.Services.Identity.Identity.Features.GettingClaims.v1;

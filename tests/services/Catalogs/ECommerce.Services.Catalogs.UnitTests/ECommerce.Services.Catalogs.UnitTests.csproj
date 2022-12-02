@@ -22,5 +22,9 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Microsoft.VisualStudio.TestPlatform" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Banners\FakeTests" />
+  </ItemGroup>
   
 </Project>

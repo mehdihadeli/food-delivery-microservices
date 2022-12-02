@@ -3,10 +3,8 @@ using System.Reflection;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Web;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
@@ -28,10 +26,11 @@ public static class RegistrationExtensions
             extraConfigure?.Invoke(loggerConfiguration);
             optionBuilder?.Invoke(new LoggingOptionsBuilder(loggerOptions));
 
+            Enum.TryParse<LogEventLevel>(loggerOptions.Level, true, out var logLevel);
+
             loggerConfiguration
-                .ReadFrom.Configuration(context.Configuration)
-                //.ReadFrom.Services(serviceProvider)
-                .Enrich.WithProperty("Application", appOptions?.Name)
+                .Enrich.WithProperty("Application", appOptions.Name)
+
                 // .Enrich.WithSpan()
                 // .Enrich.WithBaggage()
 
@@ -45,32 +44,25 @@ public static class RegistrationExtensions
 
                 // https://rehansaeed.com/logging-with-serilog-exceptions/
                 .Enrich.WithExceptionDetails();
-                //.ReadFrom.Configuration(context.Configuration);
-
-            var level = Enum.TryParse<LogEventLevel>(loggerOptions?.Level, true, out var logLevel)
-                ? logLevel
-                : LogEventLevel.Information;
 
             // https://andrewlock.net/using-serilog-aspnetcore-in-asp-net-core-3-reducing-log-verbosity/
-            loggerConfiguration.MinimumLevel.Is(level)
+            loggerConfiguration.MinimumLevel.Is(logLevel)
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .MinimumLevel
 
                 // Filter out ASP.NET Core infrastructure logs that are Information and below
-                .Override("Microsoft.AspNetCore", LogEventLevel.Warning);
+                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning);
 
             if (context.HostingEnvironment.IsDevelopment())
             {
                 // https://github.com/serilog/serilog-sinks-async
                 loggerConfiguration.WriteTo.Async(writeTo => writeTo.Console(
-                    level,
-                    loggerOptions?.LogTemplate ??
-                    "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u4}] {Message:lj}{NewLine}{Exception} {Properties:j}"
+                    logLevel,
+                    loggerOptions.LogTemplate
                 ));
             }
 
             // https://github.com/serilog/serilog-sinks-async
-            if (!string.IsNullOrEmpty(loggerOptions?.ElasticSearchUrl))
+            if (!string.IsNullOrEmpty(loggerOptions.ElasticSearchUrl))
             {
                 // https://github.com/serilog-contrib/serilog-sinks-elasticsearch
                 loggerConfiguration.WriteTo.Async(
@@ -80,7 +72,7 @@ public static class RegistrationExtensions
                             context.HostingEnvironment.EnvironmentName)));
             }
 
-            if (!string.IsNullOrEmpty(loggerOptions?.SeqUrl))
+            if (!string.IsNullOrEmpty(loggerOptions.SeqUrl))
             {
                 loggerConfiguration.WriteTo.Async(writeTo => writeTo.Seq(loggerOptions.SeqUrl));
             }
@@ -89,11 +81,13 @@ public static class RegistrationExtensions
             {
                 loggerConfiguration.WriteTo.File(
                     loggerOptions.LogPath,
-                    outputTemplate: loggerOptions.LogTemplate ??
-                                    "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}",
+                    outputTemplate: loggerOptions.LogTemplate,
                     rollingInterval: RollingInterval.Day,
                     rollOnFileSizeLimit: true);
             }
+
+            // https://github.com/serilog/serilog-settings-configuration
+            loggerConfiguration.ReadFrom.Configuration(context.Configuration, sectionName: nameof(LoggerOptions));
         });
 
         return builder;

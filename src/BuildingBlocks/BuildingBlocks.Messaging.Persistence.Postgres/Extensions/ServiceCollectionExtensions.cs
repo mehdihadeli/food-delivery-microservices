@@ -16,23 +16,24 @@ public static class ServiceCollectionExtensions
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+        services.AddValidatedOptions<MessagePersistenceOptions>(nameof(MessagePersistenceOptions));
+
         services.AddScoped<IMessagePersistenceConnectionFactory>(sp =>
         {
-            var postgresOptions = sp.GetService<IOptions<MessagePersistenceOptions>>();
-            Guard.Against.NullOrEmpty(
-                postgresOptions?.Value.ConnectionString,
-                nameof(postgresOptions.Value.ConnectionString));
-            return new MessagePersistenceConnectionFactory(postgresOptions.Value.ConnectionString);
+            var postgresOptions = sp.GetService<MessagePersistenceOptions>();
+            Guard.Against.NullOrEmpty(postgresOptions?.ConnectionString);
+
+            return new NpgsqlMessagePersistenceConnectionFactory(postgresOptions.ConnectionString);
         });
 
         services.AddDbContext<MessagePersistenceDbContext>((sp, options) =>
         {
-            var connectionFactory = sp.GetRequiredService<IMessagePersistenceConnectionFactory>();
-            var conn = connectionFactory.GetOrCreateConnectionAsync().GetAwaiter().GetResult();
+            var postgresOptions = sp.GetRequiredService<MessagePersistenceOptions>();
 
-            options.UseNpgsql(conn, sqlOptions =>
+            options.UseNpgsql(postgresOptions.ConnectionString, sqlOptions =>
             {
-                sqlOptions.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+                sqlOptions.MigrationsAssembly(postgresOptions.MigrationAssembly ??
+                                              Assembly.GetExecutingAssembly().GetName().Name);
                 sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
             }).UseSnakeCaseNamingConvention();
         });

@@ -29,8 +29,9 @@ public class MassTransitBus : IBus
         meta = GetMetadata(message, meta);
 
         var envelope = new MessageEnvelope<TMessage>(message, meta);
-
-        await _publishEndpoint.Publish(message, ctx =>
+        await _publishEndpoint.Publish(
+            message,
+            ctx =>
             {
                 foreach (var header in meta)
                 {

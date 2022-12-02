@@ -1,8 +1,11 @@
+using ECommerce.Services.Customers.Shared.Data;
 using Tests.Shared.Fixtures;
 
 namespace ECommerce.Services.Customers.IntegrationTests;
 
-// [CollectionDefinition(nameof(IntegrationTestFixture<Program>))]
-// public class IntegrationTestCollection : ICollectionFixture<IntegrationTestFixture<Program>>
-// {
-// }
+[CollectionDefinition(Name)]
+public class
+    IntegrationTestCollection : ICollectionFixture<SharedFixture<ECommerce.Services.Customers.Api.Program, CustomersDbContext,CustomersReadDbContext>>
+{
+    public const string Name = "Integration Test";
+}

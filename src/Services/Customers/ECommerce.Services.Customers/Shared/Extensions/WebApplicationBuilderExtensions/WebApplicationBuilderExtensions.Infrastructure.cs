@@ -122,7 +122,6 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomRateLimit();
 
         builder.Services.AddCustomMassTransit(
-            builder.Configuration,
             builder.Environment,
             (context, cfg) =>
             {

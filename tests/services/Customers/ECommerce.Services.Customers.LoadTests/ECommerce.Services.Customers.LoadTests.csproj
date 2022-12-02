@@ -5,6 +5,5 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.VisualStudio.TestPlatform" />
   </ItemGroup>
 </Project>

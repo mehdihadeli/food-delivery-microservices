@@ -1,17 +1,11 @@
-﻿using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.Messaging;
+﻿using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Validation;
 using MassTransit;
-using MassTransit.Configuration;
-using MassTransit.Testing;
-using MassTransit.Testing.Implementations;
-using MassTransit.Transports;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
 
 namespace BuildingBlocks.Integration.MassTransit;
@@ -20,15 +14,12 @@ public static class Extensions
 {
     public static IServiceCollection AddCustomMassTransit(
         this IServiceCollection services,
-        IConfiguration configuration,
         IWebHostEnvironment env,
         Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureReceiveEndpoints = null,
         Action<IBusRegistrationConfigurator>? configureBusRegistration = null,
         bool autoConfigEndpoints = false)
     {
-        var rabbitMqOptions = configuration.GetOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
-
-        Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));
+        services.AddValidatedOptions<RabbitMqOptions>();
 
         void ConfiguratorAction(IBusRegistrationConfigurator busRegistrationConfigurator)
         {
@@ -59,7 +50,10 @@ public static class Extensions
                     cfg.ConfigureEndpoints(context);
                 }
 
-                cfg.Host(rabbitMqOptions.Host, "/", hostConfigurator =>
+                var rabbitMqOptions = context.GetRequiredService<RabbitMqOptions>();
+                //// or
+                //   var rabbitMqOptions = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+                cfg.Host(rabbitMqOptions.Host, rabbitMqOptions.Port, "/", hostConfigurator =>
                 {
                     hostConfigurator.Username(rabbitMqOptions.UserName);
                     hostConfigurator.Password(rabbitMqOptions.Password);
@@ -85,7 +79,7 @@ public static class Extensions
             });
         }
 
-        if (env.IsEnvironment("test") == false)
+        if (env.IsTest() == false)
         {
             services.AddMassTransit(ConfiguratorAction);
         }
@@ -102,11 +96,12 @@ public static class Extensions
     private static IRetryConfigurator AddRetryConfiguration(IRetryConfigurator retryConfigurator)
     {
         retryConfigurator.Exponential(
-            3,
-            TimeSpan.FromMilliseconds(200),
-            TimeSpan.FromMinutes(120),
-            TimeSpan.FromMilliseconds(200))
-            .Ignore<ValidationException>(); // don't retry if we have invalid data and message goes to _error queue masstransit
+                3,
+                TimeSpan.FromMilliseconds(200),
+                TimeSpan.FromMinutes(120),
+                TimeSpan.FromMilliseconds(200))
+            .Ignore<
+                ValidationException>(); // don't retry if we have invalid data and message goes to _error queue masstransit
 
         return retryConfigurator;
     }

@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Web.Extensions;
 
 namespace ECommerce.Services.Catalogs.Shared.Extensions.WebApplicationExtensions;

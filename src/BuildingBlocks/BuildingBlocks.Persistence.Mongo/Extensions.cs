@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Persistence.Mongo;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using Microsoft.Extensions.Configuration;
 
 namespace BuildingBlocks.Persistence.Mongo
@@ -6,29 +7,18 @@ namespace BuildingBlocks.Persistence.Mongo
     public static class Extensions
     {
         public static IServiceCollection AddMongoDbContext<TContext>(
-            this IServiceCollection services, IConfiguration configuration, Action<MongoOptions>? configurator = null)
+            this IServiceCollection services)
             where TContext : MongoDbContext
         {
-            return services.AddMongoDbContext<TContext, TContext>(configuration, configurator);
+            return services.AddMongoDbContext<TContext, TContext>();
         }
 
         public static IServiceCollection AddMongoDbContext<TContextService, TContextImplementation>(
-            this IServiceCollection services, IConfiguration configuration, Action<MongoOptions>? configurator = null)
+            this IServiceCollection services)
             where TContextService : IMongoDbContext
             where TContextImplementation : MongoDbContext, TContextService
         {
-            var mongoOptions = configuration.GetSection(nameof(MongoOptions)).Get<MongoOptions>() ?? new MongoOptions();
-
-            services.Configure<MongoOptions>(configuration.GetSection(nameof(MongoOptions)));
-            if (configurator is { })
-            {
-                services.Configure(nameof(MongoOptions), configurator);
-            }
-            else
-            {
-                services.AddOptions<MongoOptions>().Bind(configuration.GetSection(nameof(MongoOptions)))
-                    .ValidateDataAnnotations();
-            }
+            services.AddValidatedOptions<MongoOptions>(nameof(MongoOptions));
 
             services.AddScoped(typeof(TContextService), typeof(TContextImplementation));
             services.AddScoped(typeof(TContextImplementation));

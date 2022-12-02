@@ -14,10 +14,9 @@ public class EndToEndTestTestBase<TEntryPoint, TWContext, TRContext> :
     where TEntryPoint : class
 {
     public EndToEndTestTestBase(
-        CustomWebApplicationFactory<TEntryPoint> integrationTestFixture,
-        SharedFixture sharedFixture,
+        SharedFixture<TEntryPoint, TWContext, TRContext> sharedFixture,
         ITestOutputHelper outputHelper)
-        : base(integrationTestFixture, sharedFixture, outputHelper)
+        : base(sharedFixture, outputHelper)
     {
     }
 
@@ -56,11 +55,11 @@ public class EndToEndTestTestBase<TEntryPoint, TWContext, TRContext> :
         switch (userType)
         {
             case UserType.Admin:
-                return AdminHttpClient;
+                return Fixture.AdminHttpClient;
             case UserType.User:
-                return NormalUserHttpClient;
+                return Fixture.NormalUserHttpClient;
             default:
-                return HttpClient;
+                return Fixture.GuestClient;
         }
     }
 }

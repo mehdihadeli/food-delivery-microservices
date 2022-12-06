@@ -14,7 +14,7 @@ public class MongoContainerFixture : IAsyncLifetime
 
     public MongoContainerFixture()
     {
-        var mongoContainerOptions = ConfigurationHelper.GetOptions<MongoContainerOptions>();
+        var mongoContainerOptions = ConfigurationHelper.BindOptions<MongoContainerOptions>();
         Guard.Against.Null(mongoContainerOptions);
         _mongoContainerOptions = mongoContainerOptions;
 

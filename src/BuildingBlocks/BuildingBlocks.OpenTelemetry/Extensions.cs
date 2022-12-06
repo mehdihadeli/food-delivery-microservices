@@ -16,7 +16,7 @@ public static class Extensions
     public static WebApplicationBuilder AddCustomOpenTelemetry(this WebApplicationBuilder builder)
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
-        var options = builder.Configuration.GetOptions<OpenTelemetryOptions>();
+        var options = builder.Configuration.BindOptions<OpenTelemetryOptions>();
 
         builder.Services.AddOpenTelemetryTracing(
             tracerProviderBuilder =>

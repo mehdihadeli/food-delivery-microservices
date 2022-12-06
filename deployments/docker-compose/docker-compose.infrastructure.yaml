@@ -113,7 +113,7 @@ services:
   elasticsearch:
     container_name: elastic_search
     restart: on-failure
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.3
+    image: elasticsearch:8.5.2
     environment:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
@@ -136,7 +136,7 @@ services:
    #  kibana
    #######################################################
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.13.3
+    image: kibana:8.5.2
     container_name: kibana
     restart: on-failure
     environment:
@@ -230,6 +230,21 @@ services:
     image: grafana/grafana
     ports:
       - '3000:3000'
+    networks:
+      - ecommerce
+
+  #######################################################
+  # seq
+  #######################################################
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    restart: on-failure
+    ports:
+      - 8081:80
+      - 5341:5341
+    environment:
+      ACCEPT_EULA: Y
     networks:
       - ecommerce
 

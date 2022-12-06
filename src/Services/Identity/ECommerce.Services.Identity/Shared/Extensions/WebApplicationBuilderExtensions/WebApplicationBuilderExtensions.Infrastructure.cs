@@ -45,11 +45,7 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomProblemDetails();
 
-        builder.AddCustomSerilog(
-            optionsBuilder =>
-            {
-                optionsBuilder.SetLevel(LogEventLevel.Information);
-            });
+        builder.AddCustomSerilog();
 
         builder.AddCustomVersioning();
 
@@ -63,8 +59,8 @@ public static partial class WebApplicationBuilderExtensions
         {
             builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
             {
-                var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>();
-                var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>();
+                var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>();
+                var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
 
                 healthChecksBuilder
                     .AddNpgSql(

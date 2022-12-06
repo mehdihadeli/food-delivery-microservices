@@ -139,6 +139,55 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Services.Catalogs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Services.Catalogs.LoadTests", "tests\Services\Catalogs\ECommerce.Services.Catalogs.LoadTests\ECommerce.Services.Catalogs.LoadTests.csproj", "{61B72D59-4B54-42DF-99A5-7C4FAC30B074}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution_items", "solution_items", "{5D021403-D731-4673-BE48-6407504C7709}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		pm2.json = pm2.json
+		pm2.yaml = pm2.yaml
+		readme.md = readme.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployments", "deployments", "{82164318-DB62-4A9E-8599-16931835EA2C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker-compose", "docker-compose", "{90568AC2-B826-4F30-AB54-C7B117D348EE}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\docker-compose\.env = deployments\docker-compose\.env
+		deployments\docker-compose\docker-compose.infrastructure.yaml = deployments\docker-compose\docker-compose.infrastructure.yaml
+		deployments\docker-compose\docker-compose.override.yaml = deployments\docker-compose\docker-compose.override.yaml
+		deployments\docker-compose\docker-compose.services.yaml = deployments\docker-compose\docker-compose.services.yaml
+		deployments\docker-compose\docker-compose.services-development.yaml = deployments\docker-compose\docker-compose.services-development.yaml
+		deployments\docker-compose\docker-compose.yaml = deployments\docker-compose\docker-compose.yaml
+		deployments\docker-compose\otel-collector-config.yaml = deployments\docker-compose\otel-collector-config.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tye", "tye", "{DA4712E6-5DB6-4159-B2A4-AC5549FEA93E}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\tye\.env = deployments\tye\.env
+		deployments\tye\tye.yaml = deployments\tye\tye.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".docker-envs", ".docker-envs", "{0952C659-1412-4AAC-898B-B002D8757C53}"
+	ProjectSection(SolutionItems) = preProject
+		.docker-envs\catalogs.env = .docker-envs\catalogs.env
+		.docker-envs\customers.env = .docker-envs\customers.env
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".devcontainer", ".devcontainer", "{91AC3964-EBE5-4DB5-925A-09F822D48CFF}"
+	ProjectSection(SolutionItems) = preProject
+		.devcontainer\devcontainer.json = .devcontainer\devcontainer.json
+		.devcontainer\Dockerfile = .devcontainer\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{9CF0B364-5E11-424A-BE0A-94AD2AF14D8D}"
+	ProjectSection(SolutionItems) = preProject
+		.config\dotnet-tools.json = .config\dotnet-tools.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "monitoring", "monitoring", "{34C0E02A-0068-4A4B-AD3A-68AED63B27B8}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\docker-compose\monitoring\prometheus.yml = deployments\docker-compose\monitoring\prometheus.yml
+	EndProjectSection
+EndProject
 
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -207,6 +256,14 @@ Global
 		{0A5D1F63-B015-4C41-9584-8936C3B382AE} = {8B618790-D581-4C29-ABBF-8B7225F02F88}
 		{35C5C27C-036F-4DA1-BE3C-C1D14FF06D07} = {8B618790-D581-4C29-ABBF-8B7225F02F88}
 		{61B72D59-4B54-42DF-99A5-7C4FAC30B074} = {8B618790-D581-4C29-ABBF-8B7225F02F88}
+		{4A09493C-0999-474F-AC85-71398BCD69F9} = {5D021403-D731-4673-BE48-6407504C7709}
+		{82164318-DB62-4A9E-8599-16931835EA2C} = {5D021403-D731-4673-BE48-6407504C7709}
+		{90568AC2-B826-4F30-AB54-C7B117D348EE} = {82164318-DB62-4A9E-8599-16931835EA2C}
+		{DA4712E6-5DB6-4159-B2A4-AC5549FEA93E} = {82164318-DB62-4A9E-8599-16931835EA2C}
+		{9CF0B364-5E11-424A-BE0A-94AD2AF14D8D} = {5D021403-D731-4673-BE48-6407504C7709}
+		{91AC3964-EBE5-4DB5-925A-09F822D48CFF} = {5D021403-D731-4673-BE48-6407504C7709}
+		{0952C659-1412-4AAC-898B-B002D8757C53} = {5D021403-D731-4673-BE48-6407504C7709}
+		{34C0E02A-0068-4A4B-AD3A-68AED63B27B8} = {90568AC2-B826-4F30-AB54-C7B117D348EE}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

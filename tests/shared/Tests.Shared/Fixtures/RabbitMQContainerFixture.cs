@@ -19,7 +19,7 @@ public class RabbitMQContainerFixture : IAsyncLifetime
 
     public RabbitMQContainerFixture()
     {
-        var rabbitmqContainerOptions = ConfigurationHelper.GetOptions<RabbitMQContainerOptions>();
+        var rabbitmqContainerOptions = ConfigurationHelper.BindOptions<RabbitMQContainerOptions>();
         Guard.Against.Null(rabbitmqContainerOptions);
         _rabbitMqContainerOptions = rabbitmqContainerOptions;
 

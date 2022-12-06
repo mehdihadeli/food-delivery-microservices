@@ -1,11 +1,9 @@
-using BuildingBlocks.Security.Extensions;
-using BuildingBlocks.Security.Jwt;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
+using BuildingBlocks.Core.Web;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
 using BuildingBlocks.Web.Extensions;
-using ECommerce.Services.Orders;
 using ECommerce.Services.Orders.Api.Extensions.ApplicationBuilderExtensions;
-using ECommerce.Services.Orders.Api.Extensions.ServiceCollectionExtensions;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Spectre.Console;
 
@@ -39,7 +37,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-builder.AddApplicationOptions();
+builder.Services.AddValidatedOptions<AppOptions>();
 
 /*----------------- Module Services Setup ------------------*/
 builder.AddModulesServices();

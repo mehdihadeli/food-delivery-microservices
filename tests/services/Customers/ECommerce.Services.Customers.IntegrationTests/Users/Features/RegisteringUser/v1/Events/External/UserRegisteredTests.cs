@@ -36,7 +36,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
     }
 
     [Fact]
-    public async Task user_registered_message_should_consume_existing_consumer_by_broker()
+    public async Task message_should_consume_by_existing_consumer_through_broker()
     {
         // Act
         await Fixture.PublishMessageAsync(_userRegistered, null, CancellationToken);
@@ -47,7 +47,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
     }
 
     // [Fact]
-    // public async Task user_registered_message_should_consume_new_consumers_by_broker()
+    // public async Task message_should_consume_by_new_consumers_through_broker()
     // {
     //     // Arrange
     //     var shouldConsume = await IntegrationTestFixture.ShouldConsumeWithNewConsumer<UserRegisteredV1>();
@@ -60,7 +60,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
     // }
 
     [Fact]
-    public async Task user_registered_message_should_consume_by_user_registered_consumer()
+    public async Task message_should_consume_by_user_registered_consumer()
     {
         // Act
         await Fixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);

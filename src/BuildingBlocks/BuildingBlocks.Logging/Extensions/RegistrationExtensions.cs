@@ -1,12 +1,8 @@
-using System.Globalization;
-using System.Reflection;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Events;
 using Serilog.Exceptions;
+using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
 
 namespace BuildingBlocks.Logging;
@@ -15,93 +11,85 @@ public static class RegistrationExtensions
 {
     public static WebApplicationBuilder AddCustomSerilog(
         this WebApplicationBuilder builder,
-        Action<LoggingOptionsBuilder>? optionBuilder = null,
+        string sectionName = "Serilog",
         Action<LoggerConfiguration>? extraConfigure = null)
     {
+        var serilogOptions = builder.Configuration.BindOptions<SerilogOptions>(sectionName);
+
+        // https://andrewlock.net/creating-a-rolling-file-logging-provider-for-asp-net-core-2-0/
+        // https://github.com/serilog/serilog-extensions-hosting
+        // https://andrewlock.net/adding-serilog-to-the-asp-net-core-generic-host/
+        // Serilog replace `ILoggerFactory`,It replaces microsoft `LoggerFactory` class with `SerilogLoggerFactory`, so `ConsoleLoggerProvider` and other default microsoft logger providers don't instantiate at all with serilog
         builder.Host.UseSerilog((context, serviceProvider, loggerConfiguration) =>
         {
-            var loggerOptions = context.Configuration.GetOptions<LoggerOptions>();
-            var appOptions = context.Configuration.GetOptions<AppOptions>();
-
             extraConfigure?.Invoke(loggerConfiguration);
-            optionBuilder?.Invoke(new LoggingOptionsBuilder(loggerOptions));
-
-            Enum.TryParse<LogEventLevel>(loggerOptions.Level, true, out var logLevel);
 
             loggerConfiguration
-                .Enrich.WithProperty("Application", appOptions.Name)
+                .Enrich.WithProperty("Application", builder.Environment.ApplicationName)
 
                 // .Enrich.WithSpan()
                 // .Enrich.WithBaggage()
-
-                // .WriteTo.OpenTelemetry(new ConsoleSink())
                 .Enrich.WithCorrelationIdHeader()
                 .Enrich.FromLogContext()
 
                 // https://github.com/serilog/serilog-enrichers-environment
-                // .Enrich.WithEnvironmentName()
-                // .Enrich.WithMachineName()
+                .Enrich.WithEnvironmentName()
+                .Enrich.WithMachineName()
 
                 // https://rehansaeed.com/logging-with-serilog-exceptions/
                 .Enrich.WithExceptionDetails();
 
-            // https://andrewlock.net/using-serilog-aspnetcore-in-asp-net-core-3-reducing-log-verbosity/
-            loggerConfiguration.MinimumLevel.Is(logLevel)
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            // https://github.com/serilog/serilog-settings-configuration
+            loggerConfiguration.ReadFrom.Configuration(context.Configuration, sectionName: sectionName);
 
-                // Filter out ASP.NET Core infrastructure logs that are Information and below
-                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning);
-
-            if (context.HostingEnvironment.IsDevelopment())
+            if (serilogOptions.UseConsole)
             {
-                // https://github.com/serilog/serilog-sinks-async
-                loggerConfiguration.WriteTo.Async(writeTo => writeTo.Console(
-                    logLevel,
-                    loggerOptions.LogTemplate
-                ));
+                if (serilogOptions.UseElasticsearchJsonFormatter)
+                {
+                    // https://github.com/serilog/serilog-sinks-async
+                    // https://github.com/serilog-contrib/serilog-sinks-elasticsearch#elasticsearch-formatters
+                    loggerConfiguration.WriteTo.Async(writeTo =>
+                        writeTo.Console(new ExceptionAsObjectJsonFormatter(renderMessage: true)));
+                }
+                else
+                {
+                    // https://github.com/serilog/serilog-sinks-async
+                    loggerConfiguration.WriteTo.Async(
+                        writeTo => writeTo.Console(outputTemplate: serilogOptions.LogTemplate));
+                }
             }
 
             // https://github.com/serilog/serilog-sinks-async
-            if (!string.IsNullOrEmpty(loggerOptions.ElasticSearchUrl))
+            if (!string.IsNullOrEmpty(serilogOptions.ElasticSearchUrl))
             {
+                // elasticsearch sink internally is async
                 // https://github.com/serilog-contrib/serilog-sinks-elasticsearch
-                loggerConfiguration.WriteTo.Async(
-                    writeTo =>
-                        writeTo.Elasticsearch(ConfigureElasticSink(
-                            loggerOptions.ElasticSearchUrl,
-                            context.HostingEnvironment.EnvironmentName)));
+                loggerConfiguration.WriteTo.Elasticsearch(new(new Uri(serilogOptions.ElasticSearchUrl))
+                {
+                    AutoRegisterTemplate = true,
+                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
+                    CustomFormatter = new ExceptionAsObjectJsonFormatter(renderMessage: true),
+                    IndexFormat = $"{builder.Environment.ApplicationName}-{DateTime.UtcNow:yyyy-MM}"
+                });
             }
 
-            if (!string.IsNullOrEmpty(loggerOptions.SeqUrl))
+            if (!string.IsNullOrEmpty(serilogOptions.SeqUrl))
             {
-                loggerConfiguration.WriteTo.Async(writeTo => writeTo.Seq(loggerOptions.SeqUrl));
+                // seq sink internally is async
+                loggerConfiguration.WriteTo.Seq(serilogOptions.SeqUrl);
             }
 
-            if (!string.IsNullOrEmpty(loggerOptions?.LogPath))
+            if (!string.IsNullOrEmpty(serilogOptions.LogPath))
             {
-                loggerConfiguration.WriteTo.File(
-                    loggerOptions.LogPath,
-                    outputTemplate: loggerOptions.LogTemplate,
-                    rollingInterval: RollingInterval.Day,
-                    rollOnFileSizeLimit: true);
+                loggerConfiguration.WriteTo.Async(writeTo =>
+                    writeTo.File(
+                        serilogOptions.LogPath,
+                        outputTemplate: serilogOptions.LogTemplate,
+                        rollingInterval: RollingInterval.Day,
+                        rollOnFileSizeLimit: true));
             }
-
-            // https://github.com/serilog/serilog-settings-configuration
-            loggerConfiguration.ReadFrom.Configuration(context.Configuration, sectionName: nameof(LoggerOptions));
         });
 
         return builder;
-    }
-
-    private static ElasticsearchSinkOptions ConfigureElasticSink(string elasticUrl, string environment)
-    {
-        return new(new Uri(elasticUrl))
-        {
-            AutoRegisterTemplate = true,
-
-            // we should add corresponding index in kibana also, for example : ecommerce-services-catalogs-api-*
-            IndexFormat =
-                $"{Assembly.GetEntryAssembly()?.GetName().Name?.ToLower(CultureInfo.InvariantCulture).Replace(".", "-", StringComparison.OrdinalIgnoreCase)}-{environment.ToLower(CultureInfo.InvariantCulture).Replace(".", "-", StringComparison.OrdinalIgnoreCase)}-{DateTime.UtcNow:yyyy-MM}"
-        };
     }
 }

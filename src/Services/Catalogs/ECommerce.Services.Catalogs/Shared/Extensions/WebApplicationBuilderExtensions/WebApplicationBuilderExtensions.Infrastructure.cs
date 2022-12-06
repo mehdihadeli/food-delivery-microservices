@@ -64,12 +64,7 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCompression();
         builder.AddCustomProblemDetails();
 
-        builder.AddCustomSerilog(
-            optionsBuilder =>
-            {
-                optionsBuilder
-                    .SetLevel(LogEventLevel.Information);
-            });
+        builder.AddCustomSerilog();
 
         builder.AddCustomOpenTelemetry();
 
@@ -87,8 +82,8 @@ public static partial class WebApplicationBuilderExtensions
         {
             builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
             {
-                var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>(nameof(PostgresOptions));
-                var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
+                var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>(nameof(PostgresOptions));
+                var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
 
                 Guard.Against.Null(postgresOptions, nameof(postgresOptions));
                 Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));

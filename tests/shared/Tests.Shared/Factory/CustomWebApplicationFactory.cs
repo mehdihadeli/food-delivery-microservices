@@ -24,13 +24,12 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
     where TEntryPoint : class
 {
     private ITestOutputHelper? _outputHelper;
-
     private Action<IWebHostBuilder>? _customWebHostBuilder;
     private Action<IHostBuilder>? _customHostBuilder;
     private Action<HostBuilderContext, IConfigurationBuilder>? _configureAppConfigurations;
 
-    public IConfiguration Configuration => Services.GetRequiredService<IConfiguration>();
     public Action<IServiceCollection>? TestConfigureServices { get; set; }
+    public Action<IApplicationBuilder>? TestConfigureApp { get; set; }
 
     public ILogger Logger => Services.GetRequiredService<ILogger<CustomWebApplicationFactory<TEntryPoint>>>();
     public void ClearOutputHelper() => _outputHelper = null;
@@ -57,68 +56,6 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
 
         return this;
     }
-
-    // protected override void ConfigureWebHost(IWebHostBuilder builder)
-    // {
-    //     // //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/
-    //     // //https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration-providers#json-configuration-provider
-    //     builder.ConfigureAppConfiguration((hostingContext, configurationBuilder) =>
-    //     {
-    //         // configurationBuilder.Sources.Clear();
-    //         // IHostEnvironment env = hostingContext.HostingEnvironment;
-    //         //
-    //         // configurationBuilder
-    //         //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    //         //     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
-    //         //     .AddJsonFile("integrationappsettings.json", true, true);
-    //         //
-    //         // var integrationConfig = configurationBuilder.Build();
-    //         //
-    //         // configurationBuilder.AddConfiguration(integrationConfig);
-    //
-    //         //// add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
-    //         //// https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
-    //         // configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?> {});
-    //
-    //         _configureAppConfigurations?.Invoke(hostingContext, configurationBuilder);
-    //     });
-    //
-    //     //https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests#set-the-environment
-    //     //https://stackoverflow.com/questions/43927955/should-getenvironmentvariable-work-in-xunit-test/43951218
-    //
-    //     //we could read env from our test launch setting or we can set it directly here
-    //     builder.UseEnvironment("test");
-    //
-    //     //The test app's builder.ConfigureServices callback is executed before the SUT's Startup.ConfigureServices code.
-    //     builder.ConfigureServices(services =>
-    //     {
-    //         services.AddScoped<TextWriter>(_ => new StringWriter());
-    //         services.AddScoped<TextReader>(sp =>
-    //             new StringReader(sp.GetRequiredService<TextWriter>().ToString() ?? ""));
-    //     });
-    //
-    //     // Is be called after the `ConfigureServices` from the Startup, which allows you to overwrite the DI with mocked instances
-    //     builder.ConfigureTestServices(services =>
-    //     {
-    //
-    //     });
-    //
-    //     builder.Configure(appBuilder =>
-    //     {
-    //         TestConfigureApp?.Invoke(appBuilder);
-    //     });
-    //
-    //     builder.UseDefaultServiceProvider((env, c) =>
-    //     {
-    //         // Handling Captive Dependency Problem
-    //         // https://ankitvijay.net/2020/03/17/net-core-and-di-beware-of-captive-dependency/
-    //         // https://blog.ploeh.dk/2014/06/02/captive-dependency/
-    //         if (env.HostingEnvironment.IsTest() || env.HostingEnvironment.IsDevelopment())
-    //             c.ValidateScopes = true;
-    //     });
-    //
-    //     _customWebHostBuilder?.Invoke(builder);
-    // }
 
     // https://github.com/davidfowl/TodoApi/
     // https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests
@@ -180,13 +117,19 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
                 options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
             }).AddFakeJwtBearer();
-
-            TestConfigureServices?.Invoke(services);
         });
 
         builder.ConfigureWebHost(wb =>
         {
-            wb.ConfigureTestServices(s => { });
+            wb.ConfigureTestServices(services =>
+            {
+                TestConfigureServices?.Invoke(services);
+            });
+
+            // //https://github.com/dotnet/aspnetcore/issues/45372
+            // wb.Configure(x =>
+            // {
+            // });
 
             _customWebHostBuilder?.Invoke(wb);
         });
@@ -199,7 +142,6 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
             if (env.HostingEnvironment.IsTest() || env.HostingEnvironment.IsDevelopment())
                 c.ValidateScopes = true;
         });
-
 
         // //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/
         // //https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration-providers#json-configuration-provider

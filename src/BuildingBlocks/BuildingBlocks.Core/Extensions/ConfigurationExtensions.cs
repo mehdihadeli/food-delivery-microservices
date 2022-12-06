@@ -8,13 +8,13 @@ namespace BuildingBlocks.Core.Extensions;
 public static class ConfigurationExtensions
 {
     /// <summary>
-    /// Attempts to bind the <typeparamref name="TOptions"/> instance to configuration values by matching property names against configuration keys.
+    /// Attempts to bind the <typeparamref name="TOptions"/> instance to configuration section values.
     /// </summary>
     /// <typeparam name="TOptions">The given bind model.</typeparam>
     /// <param name="configuration">The configuration instance to bind.</param>
     /// <param name="section">The configuration section</param>
     /// <returns>The new instance of <typeparamref name="TOptions"/>.</returns>
-    public static TOptions GetOptions<TOptions>(this IConfiguration configuration, string section)
+    public static TOptions BindOptions<TOptions>(this IConfiguration configuration, string section)
         where TOptions : new()
     {
         // note: with using Get<>() if there is no configuration in appsettings it just returns default value (null) for the configuration type
@@ -29,14 +29,14 @@ public static class ConfigurationExtensions
     }
 
     /// <summary>
-    /// Attempts to bind the <typeparamref name="TOptions"/> instance to configuration values by matching property names against configuration keys.
+    /// Attempts to bind the <typeparamref name="TOptions"/> instance to configuration section values.
     /// </summary>
     /// <typeparam name="TOptions">The given bind model.</typeparam>
     /// <param name="configuration">The configuration instance to bind.</param>
     /// <returns>The new instance of <typeparamref name="TOptions"/>.</returns>
-    public static TOptions GetOptions<TOptions>(this IConfiguration configuration)
+    public static TOptions BindOptions<TOptions>(this IConfiguration configuration)
         where TOptions : new()
     {
-        return GetOptions<TOptions>(configuration, typeof(TOptions).Name);
+        return BindOptions<TOptions>(configuration, typeof(TOptions).Name);
     }
 }

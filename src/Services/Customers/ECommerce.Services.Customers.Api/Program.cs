@@ -1,8 +1,9 @@
+using BuildingBlocks.Core.Extensions.ServiceCollection;
+using BuildingBlocks.Core.Web;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
 using BuildingBlocks.Web.Extensions;
 using ECommerce.Services.Customers.Api.Extensions.ApplicationBuilderExtensions;
-using ECommerce.Services.Customers.Api.Extensions.ServiceCollectionExtensions;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Spectre.Console;
 
@@ -36,7 +37,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-builder.Services.AddApplicationOptions(builder.Configuration);
+builder.Services.AddValidatedOptions<AppOptions>();
 
 // register endpoints
 builder.AddMinimalEndpoints();

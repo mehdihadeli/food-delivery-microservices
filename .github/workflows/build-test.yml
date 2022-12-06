@@ -20,11 +20,22 @@ jobs:
       with:
         dotnet-version: 7.0.x
         include-prerelease: true
+        
     - name: Restore dependencies
       run: dotnet restore
+      
     - name: Build
       run: dotnet build --no-restore -c Release
+      
     - name: Test
-      run: dotnet test --filter Category!=Integration -c Release --collect:"XPlat Code Coverage" --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --blame-hang --blame-hang-timeout 2m
+      run: dotnet test --filter Category!=Integration -c Release  --collect:"XPlat Code Coverage" --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --blame-hang --blame-hang-timeout 2m  --logger "trx;LogFileName=test-results.trx"
+      
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      if: success() || failure()
+      with:
+        name: test-results
+        path: '**/test-results.trx'
+                
     - name: Codecov
       uses: codecov/codecov-action@v2

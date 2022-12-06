@@ -5,16 +5,18 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
+      "hotReloadProfile": "aspnetcore",
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:9001;http://localhost:9000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-     "Orders.Api.LiveRecompilation": {
+    "Orders.Api.LiveRecompilation": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
+      "hotReloadProfile": "aspnetcore",
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:9000",
       "environmentVariables": {

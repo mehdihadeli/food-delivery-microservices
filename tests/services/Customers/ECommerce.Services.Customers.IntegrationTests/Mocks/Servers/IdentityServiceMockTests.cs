@@ -14,8 +14,8 @@ public class IdentityServiceMockTests
 
     public IdentityServiceMockTests()
     {
-        _identityServiceMock = IdentityServiceMock.Start(ConfigurationHelper.GetOptions<IdentityApiClientOptions>());
-        _identityApiClientOptions = ConfigurationHelper.GetOptions<IdentityApiClientOptions>();
+        _identityServiceMock = IdentityServiceMock.Start(ConfigurationHelper.BindOptions<IdentityApiClientOptions>());
+        _identityApiClientOptions = ConfigurationHelper.BindOptions<IdentityApiClientOptions>();
     }
 
     [Fact]

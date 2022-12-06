@@ -1,14 +1,18 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Tests.Shared.Extensions;
 
 namespace Tests.Shared.Factory;
 
-// Ref: https://milestone.topics.it/2021/04/28/you-wanna-test-http.html
-// https://github.com/mehdihadeli/WebApplicationFactoryWithHost-Sample
+/// <summary>
+/// This WebApplicationFactory only use for testing web components without needing Program entrypoint and it doesn't work for web app with Program file and for this case we should use original WebApplicationFactory.
+/// </summary>
+/// <typeparam name="TEntryPoint"></typeparam>
 class WebApplicationFactoryWithHost<TEntryPoint> :
     WebApplicationFactory<TEntryPoint>
     where TEntryPoint : class
@@ -21,15 +25,17 @@ class WebApplicationFactoryWithHost<TEntryPoint> :
     public Action<IHostBuilder>? HostBuilderCustomization { get; set; }
     public Action<IWebHostBuilder>? WebHostBuilderCustomization { get; set; }
 
-    public WebApplicationFactoryWithHost(Action<IServiceCollection> configureServices,
-        Action<IApplicationBuilder> configure, string[]? args = null)
+    public WebApplicationFactoryWithHost(
+        Action<IServiceCollection> configureServices,
+        Action<IApplicationBuilder> configure,
+        string[]? args = null)
     {
         _configureServices = configureServices;
         _configure = configure;
         _args = args ?? Array.Empty<string>();
     }
 
-    protected override IHost CreateHost(IHostBuilder builder)
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>
         {
@@ -38,17 +44,37 @@ class WebApplicationFactoryWithHost<TEntryPoint> :
                 services.AddLogging(b => b.AddXUnit(TestOutputHelper));
         });
 
-        return base.CreateHost(builder);
+        builder.ConfigureTestServices(services =>
+        {
+            // change existing services ...
+        });
+
+        //https://github.com/dotnet/aspnetcore/issues/45319
+        builder.Configure(app =>
+        {
+            //https://github.com/dotnet/aspnetcore/issues/37680#issuecomment-1331559463
+            //https://github.com/dotnet/aspnetcore/issues/45319#issuecomment-1334355103
+            //calling test configure setup first and then setup other configuration
+            app.AddTestApplicationBuilder();
+
+            // change application builder
+        });
     }
 
-    // This creates a new host, even if there is no program file or startup (EntryPoint) for finding the CreateDefaultBuilder
+    // This creates a new host, when there is no program file (EntryPoint) for finding the CreateDefaultBuilder - this approach use for testing web components without startup or program
     protected override IHostBuilder CreateHostBuilder()
     {
         var hostBuilder = Host.CreateDefaultBuilder(_args);
         // create startup with these configs
-        hostBuilder.ConfigureWebHostDefaults(webBuilder =>
+        hostBuilder.ConfigureWebHostDefaults((webBuilder) =>
         {
             webBuilder.ConfigureServices(_configureServices);
+
+            //https://github.com/dotnet/aspnetcore/issues/37680#issuecomment-1331559463
+            //https://github.com/dotnet/aspnetcore/issues/45319#issuecomment-1334355103
+            // Set this so that the async context flows
+            _configure.ConfigureTestApplicationBuilder();
+
             webBuilder.Configure(_configure);
 
             WebHostBuilderCustomization?.Invoke(webBuilder);

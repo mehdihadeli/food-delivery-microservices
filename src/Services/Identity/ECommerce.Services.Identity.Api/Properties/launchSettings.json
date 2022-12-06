@@ -4,6 +4,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
+      "hotReloadProfile": "aspnetcore",
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7001;http://localhost:7000",
       "environmentVariables": {
@@ -14,6 +15,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
+      "hotReloadProfile": "aspnetcore",
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:7000",
       "environmentVariables": {

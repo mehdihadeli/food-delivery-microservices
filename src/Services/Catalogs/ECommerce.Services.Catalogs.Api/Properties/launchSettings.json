@@ -1,28 +1,22 @@
 ﻿{
   "$schema": "https://json.schemaecommerce.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:62377",
-      "sslPort": 44397
-    }
-  },
   "profiles": {
     "Catalogs.Api": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
+      "hotReloadProfile": "aspnetcore",
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:4001;http://localhost:4000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-	"Catalogs.Api.LiveRecompilation": {
+    "Catalogs.Api.LiveRecompilation": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
+      "hotReloadProfile": "aspnetcore",
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:4000",
       "environmentVariables": {

@@ -12,7 +12,7 @@ public static class Extensions
         EmailProvider provider = EmailProvider.MimKit,
         Action<EmailOptions>? configureOptions = null)
     {
-        var config = configuration.GetOptions<EmailOptions>(nameof(EmailOptions));
+        var config = configuration.BindOptions<EmailOptions>(nameof(EmailOptions));
         configureOptions?.Invoke(config ?? new EmailOptions());
 
         if (provider == EmailProvider.SendGrid)

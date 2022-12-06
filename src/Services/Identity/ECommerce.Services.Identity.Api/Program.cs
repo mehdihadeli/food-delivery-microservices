@@ -1,3 +1,5 @@
+using BuildingBlocks.Core.Extensions.ServiceCollection;
+using BuildingBlocks.Core.Web;
 using BuildingBlocks.Security.Extensions;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
@@ -41,10 +43,15 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.Services.AddSingleton<RevokeAccessTokenMiddleware>();
 
+builder.Services.AddValidatedOptions<AppOptions>();
+
 /*----------------- Module Services Setup ------------------*/
 builder.AddModulesServices();
 
 var app = builder.Build();
+
+/*----------------- Module Middleware Setup ------------------*/
+await app.ConfigureModules();
 
 // https://thecodeblogger.com/2021/05/27/asp-net-core-web-application-routing-and-endpoint-internals/
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-7.0#routing-basics
@@ -55,9 +62,6 @@ var app = builder.Build();
 app.UseAppCors();
 
 app.UseRevokeAccessTokenMiddleware();
-
-/*----------------- Module Middleware Setup ------------------*/
-await app.ConfigureModules();
 
 // https://learn.microsoft.com/en-us/aspnet/core/diagnostics/asp0014
 app.MapControllers();
@@ -75,7 +79,6 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("docker"))
 }
 
 await app.RunAsync();
-
 
 public partial class Program
 {

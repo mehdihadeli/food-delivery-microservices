@@ -11,7 +11,7 @@ public static class HttpContextExtensions
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
 
-        Endpoint endpoint = httpContext.Features.Get<IEndpointFeature>()?.Endpoint;
+        Endpoint? endpoint = httpContext.Features.Get<IEndpointFeature>()?.Endpoint;
 
         return endpoint?.Metadata.GetMetadata<EndpointNameMetadata>()?.EndpointName;
     }

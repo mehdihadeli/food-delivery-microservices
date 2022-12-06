@@ -1,12 +1,7 @@
-using BuildingBlocks.Core.Extensions;
-using ECommerce.Services.Customers.IntegrationTests.Mocks.Servers;
-using ECommerce.Services.Customers.Shared.Clients.Catalogs;
-using ECommerce.Services.Customers.Shared.Clients.Identity;
 using ECommerce.Services.Customers.Shared.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Tests.Shared.Fixtures;
 using Xunit.Abstractions;
 

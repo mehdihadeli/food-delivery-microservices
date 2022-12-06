@@ -12,9 +12,9 @@ public static class ConfigurationHelper
         _configurationRoot = BuildConfiguration();
     }
 
-    public static TOptions GetOptions<TOptions>() where TOptions : new()
+    public static TOptions BindOptions<TOptions>() where TOptions : new()
     {
-        return _configurationRoot.GetOptions<TOptions>();
+        return _configurationRoot.BindOptions<TOptions>();
     }
 
     //https://stackoverflow.com/questions/39791634/read-appsettings-json-values-in-net-core-test-project

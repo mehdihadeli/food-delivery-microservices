@@ -16,7 +16,7 @@ public class PostgresContainerFixture : IAsyncLifetime
 
     public PostgresContainerFixture()
     {
-        var postgresOptions = ConfigurationHelper.GetOptions<PostgresContainerOptions>();
+        var postgresOptions = ConfigurationHelper.BindOptions<PostgresContainerOptions>();
         Guard.Against.Null(postgresOptions);
         _postgresContainerOptions = postgresOptions;
 

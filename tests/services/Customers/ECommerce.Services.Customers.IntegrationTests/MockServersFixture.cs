@@ -12,8 +12,8 @@ public class MockServersFixture : IAsyncLifetime
 
     public MockServersFixture()
     {
-        IdentityServiceMock = IdentityServiceMock.Start(ConfigurationHelper.GetOptions<IdentityApiClientOptions>());
-        CatalogsServiceMock = CatalogsServiceMock.Start(ConfigurationHelper.GetOptions<CatalogsApiClientOptions>());
+        IdentityServiceMock = IdentityServiceMock.Start(ConfigurationHelper.BindOptions<IdentityApiClientOptions>());
+        CatalogsServiceMock = CatalogsServiceMock.Start(ConfigurationHelper.BindOptions<CatalogsApiClientOptions>());
     }
 
     public Task InitializeAsync()

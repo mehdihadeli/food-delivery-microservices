@@ -55,12 +55,12 @@ public static partial class WebApplicationBuilderExtensions
         {
             builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
             {
-                var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>();
-                var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>();
-                var mongoOptions = builder.Configuration.GetOptions<MongoOptions>();
+                var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>();
+                var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
+                var mongoOptions = builder.Configuration.BindOptions<MongoOptions>();
                 var identityApiClientOptions =
-                    builder.Configuration.GetOptions<IdentityApiClientOptions>("IdentityApiClientOptions");
-                var catalogsApiClientOptions = builder.Configuration.GetOptions<CatalogsApiClientOptions>();
+                    builder.Configuration.BindOptions<IdentityApiClientOptions>("IdentityApiClientOptions");
+                var catalogsApiClientOptions = builder.Configuration.BindOptions<CatalogsApiClientOptions>();
 
                 healthChecksBuilder
                     .AddNpgSql(
@@ -99,11 +99,7 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomOpenTelemetry();
 
-        builder.AddCustomSerilog(
-            optionsBuilder =>
-            {
-                optionsBuilder.SetLevel(LogEventLevel.Information);
-            });
+        builder.AddCustomSerilog();
 
         builder.AddCustomVersioning();
         builder.AddCustomSwagger(typeof(CustomersRoot).Assembly);

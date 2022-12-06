@@ -111,7 +111,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                 name: "access_tokens",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    internalcommandid = table.Column<Guid>(name: "internal_command_id", type: "uuid", nullable: false),
                     userid = table.Column<Guid>(name: "user_id", type: "uuid", nullable: false),
                     token = table.Column<string>(type: "text", nullable: false),
                     createdat = table.Column<DateTime>(name: "created_at", type: "timestamp with time zone", nullable: false),
@@ -120,7 +120,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_access_tokens", x => x.id);
+                    table.PrimaryKey("pk_access_tokens", x => x.internalcommandid);
                     table.ForeignKey(
                         name: "fk_access_tokens_asp_net_users_user_id",
                         column: x => x.userid,
@@ -218,7 +218,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                 name: "refresh_tokens",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    internalcommandid = table.Column<Guid>(name: "internal_command_id", type: "uuid", nullable: false),
                     userid = table.Column<Guid>(name: "user_id", type: "uuid", nullable: false),
                     token = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     createdat = table.Column<DateTime>(name: "created_at", type: "timestamp with time zone", nullable: false),
@@ -228,7 +228,7 @@ namespace ECommerce.Services.Identity.Shared.Data.Migrations.Identity
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_refresh_tokens", x => x.id);
+                    table.PrimaryKey("pk_refresh_tokens", x => x.internalcommandid);
                     table.ForeignKey(
                         name: "fk_refresh_tokens_asp_net_users_user_id",
                         column: x => x.userid,

@@ -13,7 +13,7 @@ public static partial class HttpClientBuilderExtensions
     {
         return httpClientBuilder.AddPolicyHandler((sp, _) =>
         {
-            var options = sp.GetRequiredService<IConfiguration>().GetOptions<PolicyOptions>(nameof(PolicyOptions));
+            var options = sp.GetRequiredService<IConfiguration>().BindOptions<PolicyOptions>(nameof(PolicyOptions));
 
             Guard.Against.Null(options, nameof(options));
 

@@ -1,0 +1,3 @@
+feature: ['feature/*', 'feat/*', 'feat:*']
+fix: ['fix/*','fix:*']
+chore :hammer:: chore/*

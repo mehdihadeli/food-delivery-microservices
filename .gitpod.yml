@@ -1,9 +1,18 @@
 # https://github.com/gitpod-samples/template-dotnet-core-cli-csharp
 # https://www.gitpod.io/docs/introduction/languages/dotnet
+# https://github.com/gitpod-samples/template-docker-compose
+
 image:
   file: .gitpod.Dockerfile
 
+vscode:
+  extensions:
+    - ms-azuretools.vscode-docker
 tasks:
+  - init: |
+      docker-compose pull
+  - command: |
+      docker-compose up
   - name: Restore & Build
     init: |
       dotnet dev-certs https 
@@ -11,6 +20,18 @@ tasks:
       dotnet build
   - name: Run
     command: dotnet run
+
+ports:
+  - port: 5000
+    onOpen: ignore
+  - port: 5601
+    onOpen: open-browser
+  - port: 9200
+    onOpen: open-preview
+  - port: 9300
+    onOpen: ignore
+  - port: 9600
+    onOpen: ignore
 
 vscode:
   extensions:

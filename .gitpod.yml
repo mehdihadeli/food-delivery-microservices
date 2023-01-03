@@ -30,4 +30,4 @@ tasks:
 # https://www.gitpod.io/docs/configure/workspaces/ports
 ports:
   - port: 1000-99999
-  - visibility: private 
+  - visibility: 'private' 

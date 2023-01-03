@@ -26,3 +26,8 @@ tasks:
       dotnet build
   - name: Run
     command: dotnet run
+
+# https://www.gitpod.io/docs/configure/workspaces/ports
+ports:
+  - port: 1000-99999
+  - visibility: private 

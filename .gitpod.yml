@@ -2,6 +2,8 @@
 # https://www.gitpod.io/docs/introduction/languages/dotnet
 # https://github.com/gitpod-samples/template-docker-compose
 # https://www.gitpod.io/docs/references/gitpod-yml
+# https://www.gitpod.io/docs/configure
+# https://www.gitpod.io/docs/configure/workspaces/ports
 
 image:
   file: .gitpod.Dockerfile
@@ -9,6 +11,7 @@ image:
 vscode:
   extensions:
     - ms-azuretools.vscode-docker
+    - muhammad-sammy.csharp
 
 # https://www.gitpod.io/docs/configure/workspaces/tasks#execution-order
 tasks:

@@ -31,3 +31,4 @@ tasks:
 ports:
   - port: 1000-99999
   - visibility: 'private' 
+  - onOpen: ignore

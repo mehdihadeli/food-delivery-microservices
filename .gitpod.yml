@@ -28,3 +28,8 @@ tasks:
       dotnet dev-certs https
       dotnet restore
       dotnet build
+
+ports:
+  - port: 2000-9000
+    onOpen: ignore
+    visibility: private

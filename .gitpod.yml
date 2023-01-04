@@ -17,7 +17,7 @@ vscode:
 # https://www.gitpod.io/docs/configure/projects/prebuilds
 tasks:
   - name: Init Docker-Compose
-  init: |
+    init: |
       docker-compose pull
       docker-compose  -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d
 

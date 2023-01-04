@@ -29,6 +29,8 @@ tasks:
       dotnet restore
       dotnet build
 
+#https://www.gitpod.io/docs/configure/workspaces/ports#exposing-ports
+#https://github.com/gitpod-io/gitpod/issues/1867
 ports:
   - port: 2000-9000
     onOpen: ignore

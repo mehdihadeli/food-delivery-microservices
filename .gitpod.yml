@@ -14,9 +14,11 @@ vscode:
     - muhammad-sammy.csharp
 
 # https://www.gitpod.io/docs/configure/workspaces/tasks#execution-order
-# https://www.gitpod.io/docs/configure/projects/prebuilds
+
 tasks:
   - name: Init Docker-Compose
+    # https://www.gitpod.io/docs/configure/projects/prebuilds
+    # We load docker on pre-build for increasing speed 
     init: |
       docker-compose pull
       docker-compose  -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d
@@ -26,5 +28,3 @@ tasks:
       dotnet dev-certs https
       dotnet restore
       dotnet build
-  - name: Run
-    command: dotnet run

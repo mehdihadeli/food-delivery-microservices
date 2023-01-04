@@ -14,14 +14,16 @@ vscode:
     - muhammad-sammy.csharp
 
 # https://www.gitpod.io/docs/configure/workspaces/tasks#execution-order
+# https://www.gitpod.io/docs/configure/projects/prebuilds
 tasks:
-  - init: |
+  - name: Init Docker-Compose
+  init: |
       docker-compose pull
-  - command: |
       docker-compose  -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d
+
   - name: Restore & Build
     init: |
-      dotnet dev-certs https 
+      dotnet dev-certs https
       dotnet restore
       dotnet build
   - name: Run

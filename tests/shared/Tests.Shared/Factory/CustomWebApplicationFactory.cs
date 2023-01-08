@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NSubstitute;
 using Serilog;
 using Serilog.Events;
 using Tests.Shared.Auth;
@@ -88,22 +89,13 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
 
             // services.RemoveAll(typeof(IHostedService));
 
-            // will add automatically with AddMassTransitTestHarness and AddMassTransit
-            // services.AddHostedService<MassTransitHostedService>();
-
-            var descriptor =
-                services.SingleOrDefault(s => s.ImplementationType == typeof(MessagePersistenceBackgroundService));
-            if (descriptor is { })
-                services.Remove(descriptor);
-
-            services.AddScoped<MessagePersistenceBackgroundService>();
-
             // TODO: Web could use this in E2E test for running another service during our test
             // https://milestone.topics.it/2021/11/10/http-client-factory-in-integration-testing.html
             // services.Replace(new ServiceDescriptor(typeof(IHttpClientFactory),
             //     new DelegateHttpClientFactory(ClientProvider)));
 
-            // // This helper just supports jwt Scheme, and for Identity server Scheme will crash so we should disable AddIdentityServer()
+            //// https://blog.joaograssi.com/posts/2021/asp-net-core-testing-permission-protected-api-endpoints/
+            //// This helper just supports jwt Scheme, and for Identity server Scheme will crash so we should disable AddIdentityServer()
             // services.AddScoped(_ => CreateAnonymouslyUserMock());
             // services.ReplaceSingleton(CreateCustomTestHttpContextAccessorMock);
             // services.AddTestAuthentication();

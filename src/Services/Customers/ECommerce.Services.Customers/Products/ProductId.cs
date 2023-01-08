@@ -5,11 +5,13 @@ namespace ECommerce.Services.Customers.Products;
 
 public record ProductId : AggregateId<long>
 {
-    public ProductId(long value) : base(value)
+    // EF
+    protected ProductId(long value) : base(value)
     {
     }
 
-    public static implicit operator long(ProductId id) => Guard.Against.Null(id.Value, nameof(id.Value));
+    public static implicit operator long(ProductId id) => id.Value;
 
-    public static implicit operator ProductId(long id) => new(id);
+    // validations should be placed here instead of constructor
+    public static ProductId Of(long id) => new(Guard.Against.NegativeOrZero(id));
 }

@@ -1,20 +1,23 @@
-using BuildingBlocks.Core.Domain;
+using Ardalis.GuardClauses;
 
 namespace ECommerce.Services.Orders.Orders.ValueObjects;
 
-public class CustomerInfo : ValueObject
+// https://learn.microsoft.com/en-us/ef/core/modeling/constructors
+public record CustomerInfo
 {
-    public string Name { get; private set; }
-    public long CustomerId { get; private set; }
-
-    public static CustomerInfo Create(string name, long customerId)
+    // EF
+    public CustomerInfo()
     {
-        return new CustomerInfo { Name = name, CustomerId = customerId };
     }
 
-    protected override IEnumerable<object> GetEqualityComponents()
+    public string Name { get; private set; } = default!;
+    public long CustomerId { get; private set; }
+
+    public static CustomerInfo Of(string name, long customerId)
     {
-        yield return Name;
-        yield return CustomerId;
+        Guard.Against.NullOrWhiteSpace(name);
+        Guard.Against.NegativeOrZero(customerId);
+
+        return new CustomerInfo {Name = name, CustomerId = customerId};
     }
 }

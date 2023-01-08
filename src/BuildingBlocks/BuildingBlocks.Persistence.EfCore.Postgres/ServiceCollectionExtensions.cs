@@ -12,6 +12,7 @@ using Core.Persistence.Postgres;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -54,6 +55,9 @@ public static class ServiceCollectionExtensions
 
                 // https://github.com/efcore/EFCore.NamingConventions
                 .UseSnakeCaseNamingConvention();
+
+            // ref: https://andrewlock.net/series/using-strongly-typed-entity-ids-to-avoid-primitive-obsession/
+            options.ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector<long>>();
 
             options.AddInterceptors(new AuditInterceptor(), new SoftDeleteInterceptor(), new ConcurrencyInterceptor());
 

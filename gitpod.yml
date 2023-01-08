@@ -1,0 +1,37 @@
+# https://github.com/gitpod-samples/template-dotnet-core-cli-csharp
+# https://www.gitpod.io/docs/introduction/languages/dotnet
+# https://github.com/gitpod-samples/template-docker-compose
+# https://www.gitpod.io/docs/references/gitpod-yml
+# https://www.gitpod.io/docs/configure
+# https://www.gitpod.io/docs/configure/workspaces/ports
+
+image:
+  file: .gitpod.Dockerfile
+
+vscode:
+  extensions:
+    - ms-azuretools.vscode-docker
+    - muhammad-sammy.csharp
+
+# https://www.gitpod.io/docs/configure/workspaces/tasks#execution-order
+
+tasks:
+  - name: Init Docker-Compose
+    # https://www.gitpod.io/docs/configure/projects/prebuilds
+    # We load docker on pre-build for increasing speed
+    init: |
+      docker-compose pull
+      docker-compose  -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d
+
+  - name: Restore & Build
+    init: |
+      dotnet dev-certs https
+      dotnet restore
+      dotnet build
+
+#https://www.gitpod.io/docs/configure/workspaces/ports#exposing-ports
+#https://github.com/gitpod-io/gitpod/issues/1867
+ports:
+  - port: 2000-9000
+    onOpen: ignore
+    visibility: private

@@ -28,7 +28,7 @@ internal class RevokeRefreshTokenHandler : ICommandHandler<RevokeRefreshToken>
             .FirstOrDefaultAsync(x => x.Token == request.RefreshToken, cancellationToken: cancellationToken);
 
         if (refreshToken == null)
-            throw new RefreshTokenCustomNotFoundException(refreshToken);
+            throw new RefreshTokenNotFoundException(refreshToken);
 
         if (!refreshToken.IsRefreshTokenValid())
             throw new InvalidRefreshTokenException(refreshToken);

@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using ECommerce.Services.Identity.Users.Features.RegisteringUser.v1;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Identity.Users.Features.UpdatingUserState.v1;
@@ -11,8 +12,8 @@ public static class UpdateUserStateEndpoint
         return endpoints.MapPut("/{userId:guid}/state", UpdateUserState)
             .AllowAnonymous()
             .Produces<RegisterUserResponse>(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithName("UpdateUserState")
             .WithDisplayName("Update User State.")
             .WithMetadata(new SwaggerOperationAttribute("Updating User State.", "Updating User State"));

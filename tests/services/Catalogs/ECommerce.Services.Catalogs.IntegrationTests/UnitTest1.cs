@@ -1,4 +1,3 @@
-using System.Globalization;
 using Bogus;
 using ECommerce.Services.Catalogs.Brands;
 using ECommerce.Services.Catalogs.Categories;
@@ -18,18 +17,18 @@ public class UnitTest1
         // Call for objects that have complex initialization
         var productFaker = new Faker<Product>()
             .CustomInstantiator(faker => Product.Create(
-                id++,
-                faker.Commerce.ProductName(),
-                Stock.Create(faker.Random.Int(10, 20), 5, 20),
+                ProductId.Of(id++),
+                Name.Of(faker.Commerce.ProductName()),
+                Stock.Of(faker.Random.Int(10, 20), 5, 20),
                 ProductStatus.Available,
-                Dimensions.Create(faker.Random.Int(10, 50), faker.Random.Int(10, 50), faker.Random.Int(10, 50)),
-                faker.PickRandom<string>("M", "S", "L"),
+                Dimensions.Of(faker.Random.Int(10, 50), faker.Random.Int(10, 50), faker.Random.Int(10, 50)),
+                Size.Of(faker.PickRandom<string>("M", "S", "L")),
                 faker.Random.Enum<ProductColor>(),
                 faker.Commerce.ProductDescription(),
-                Price.Create(faker.PickRandom<decimal>(100, 200, 500)),
-                new CategoryId(faker.Random.Long(1, 3)),
-                new SupplierId(faker.Random.Long(1, 5)),
-                new BrandId(faker.Random.Long(1, 5))));
+                Price.Of(faker.PickRandom<decimal>(100, 200, 500)),
+                CategoryId.Of(faker.Random.Long(1, 3)),
+                SupplierId.Of(faker.Random.Long(1, 5)),
+                BrandId.Of(faker.Random.Long(1, 5))));
 
         var s = productFaker.Generate(5);
     }

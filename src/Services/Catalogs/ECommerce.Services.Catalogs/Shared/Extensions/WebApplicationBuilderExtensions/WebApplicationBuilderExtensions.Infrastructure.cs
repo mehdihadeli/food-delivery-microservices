@@ -71,8 +71,7 @@ public static partial class WebApplicationBuilderExtensions
         // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
         builder.AddCustomRateLimit();
 
-        builder.Services.AddCustomMassTransit(
-            builder.Environment,
+        builder.AddCustomMassTransit(
             (busRegistrationContext, busFactoryConfigurator) =>
             {
                 busFactoryConfigurator.AddProductPublishers();
@@ -80,7 +79,7 @@ public static partial class WebApplicationBuilderExtensions
 
         if (builder.Environment.IsTest() == false)
         {
-            builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
+            builder.AddCustomHealthCheck(healthChecksBuilder =>
             {
                 var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>(nameof(PostgresOptions));
                 var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>(nameof(RabbitMqOptions));

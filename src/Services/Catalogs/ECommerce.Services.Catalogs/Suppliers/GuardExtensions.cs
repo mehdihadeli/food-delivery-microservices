@@ -8,6 +8,6 @@ public static class GuardExtensions
     public static void ExistsSupplier(this IGuardClause guardClause, bool exists, long supplierId)
     {
         if (exists == false)
-            throw new SupplierCustomNotFoundException(supplierId);
+            throw new SupplierNotFoundException(supplierId);
     }
 }

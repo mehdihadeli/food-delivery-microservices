@@ -1,32 +1,47 @@
-﻿using BuildingBlocks.Abstractions.Messaging;
+﻿using System.Reflection;
+using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Messaging;
+using BuildingBlocks.Core.Utils;
 using BuildingBlocks.Validation;
 using MassTransit;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
 using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
 
 namespace BuildingBlocks.Integration.MassTransit;
 
 public static class Extensions
 {
-    public static IServiceCollection AddCustomMassTransit(
-        this IServiceCollection services,
-        IWebHostEnvironment env,
+    public static WebApplicationBuilder AddCustomMassTransit(
+        this WebApplicationBuilder builder,
         Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureReceiveEndpoints = null,
         Action<IBusRegistrationConfigurator>? configureBusRegistration = null,
-        bool autoConfigEndpoints = false)
+        bool autoConfigEndpoints = false,
+        params Assembly[] scanAssemblies)
     {
-        services.AddValidatedOptions<RabbitMqOptions>();
+        // - should be placed out of action delegate for getting correct calling assembly
+        // - Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
+        // load all referenced assemblies explicitly.
+        var assemblies = scanAssemblies.Any()
+            ? scanAssemblies
+            : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).ToArray();
+
+        if (!builder.Environment.IsTest())
+        {
+            builder.Services.AddMassTransit(ConfiguratorAction);
+        }
+        else
+        {
+            builder.Services.AddMassTransitTestHarness(ConfiguratorAction);
+        }
 
         void ConfiguratorAction(IBusRegistrationConfigurator busRegistrationConfigurator)
         {
             configureBusRegistration?.Invoke(busRegistrationConfigurator);
 
             // https://masstransit-project.com/usage/configuration.html#receive-endpoints
-            busRegistrationConfigurator.AddConsumers(AppDomain.CurrentDomain.GetAssemblies());
+            busRegistrationConfigurator.AddConsumers(assemblies);
 
             // exclude namespace for the messages
             busRegistrationConfigurator.SetEndpointNameFormatter(new SnakeCaseEndpointNameFormatter(false));
@@ -50,9 +65,8 @@ public static class Extensions
                     cfg.ConfigureEndpoints(context);
                 }
 
-                var rabbitMqOptions = context.GetRequiredService<RabbitMqOptions>();
-                //// or
-                //   var rabbitMqOptions = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+                var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
+
                 cfg.Host(rabbitMqOptions.Host, rabbitMqOptions.Port, "/", hostConfigurator =>
                 {
                     hostConfigurator.Username(rabbitMqOptions.UserName);
@@ -79,18 +93,9 @@ public static class Extensions
             });
         }
 
-        if (env.IsTest() == false)
-        {
-            services.AddMassTransit(ConfiguratorAction);
-        }
-        else
-        {
-            services.AddMassTransitTestHarness(ConfiguratorAction);
-        }
+        builder.Services.AddTransient<IBus, MassTransitBus>();
 
-        services.AddTransient<IBus, MassTransitBus>();
-
-        return services;
+        return builder;
     }
 
     private static IRetryConfigurator AddRetryConfiguration(IRetryConfigurator retryConfigurator)

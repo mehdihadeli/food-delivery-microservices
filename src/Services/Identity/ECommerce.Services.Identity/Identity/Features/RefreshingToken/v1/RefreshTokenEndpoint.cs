@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Identity.Identity.Features.RefreshingToken.v1;
@@ -10,8 +11,8 @@ public static class RefreshTokenEndpoint
         return endpoints.MapPost("/refresh-token", RefreshToken)
             .RequireAuthorization()
             .Produces<RefreshTokenResponse>()
-            .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithName("RefreshToken")
             .WithDisplayName("Refresh Token.")
             .WithMetadata(new SwaggerOperationAttribute("Refreshing Token", "Refreshing Token"));

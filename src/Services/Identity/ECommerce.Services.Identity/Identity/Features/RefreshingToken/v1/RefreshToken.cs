@@ -58,7 +58,7 @@ internal class RefreshTokenHandler : ICommandHandler<RefreshToken, RefreshTokenR
         var identityUser = await _userManager.FindByIdAsync(userId);
 
         if (identityUser == null)
-            throw new UserCustomNotFoundException(userId);
+            throw new IdentityUserNotFoundException(userId);
 
         var refreshToken =
             (await _commandProcessor.SendAsync(

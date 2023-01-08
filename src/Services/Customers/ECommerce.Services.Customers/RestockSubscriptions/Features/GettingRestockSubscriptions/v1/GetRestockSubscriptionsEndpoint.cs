@@ -2,6 +2,7 @@ using Ardalis.ApiEndpoints;
 using Ardalis.GuardClauses;
 using Asp.Versioning;
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptions.v1;
@@ -19,16 +20,17 @@ public class GetRestockSubscriptionsEndpoint : EndpointBaseAsync
         _queryProcessor = queryProcessor;
     }
 
-    [HttpGet(RestockSubscriptionsConfigs.RestockSubscriptionsUrl, Name = "GetRestockSubscriptions")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ApiVersion(1.0)]
+    // We could use `SwaggerResponse` form `Swashbuckle.AspNetCore` package instead of `ProducesResponseType` for supporting custom description for status codes
+    [ProducesResponseType(typeof(GetRestockSubscriptionsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(StatusCodeProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(StatusCodeProblemDetails), StatusCodes.Status400BadRequest)]
     [SwaggerOperation(
         Summary = "Getting Restock Subscriptions.",
         Description = "Getting Restock Subscriptions.",
         OperationId = "GetRestockSubscriptions",
         Tags = new[] {RestockSubscriptionsConfigs.Tag})]
+    [HttpGet(RestockSubscriptionsConfigs.RestockSubscriptionsUrl, Name = "GetRestockSubscriptions")]
+    [ApiVersion(1.0)]
     [Authorize(Roles = CustomersConstants.Role.Admin)]
     public override async Task<ActionResult<GetRestockSubscriptionsResponse>> HandleAsync(
         [FromQuery] GetRestockSubscriptionsRequest? request,

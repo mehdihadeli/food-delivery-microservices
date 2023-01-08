@@ -2,6 +2,7 @@ using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Core.CQRS.Events.Internal;
+using ECommerce.Services.Customers.RestockSubscriptions.Features.UpdatingRestockSubscription;
 using ECommerce.Services.Customers.RestockSubscriptions.Models.Write;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification;

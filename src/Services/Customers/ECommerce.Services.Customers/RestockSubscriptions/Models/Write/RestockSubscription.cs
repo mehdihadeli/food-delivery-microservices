@@ -13,11 +13,19 @@ using ECommerce.Services.Customers.RestockSubscriptions.ValueObjects;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Models.Write;
 
+// https://learn.microsoft.com/en-us/ef/core/modeling/constructors
+// https://github.com/dotnet/efcore/issues/29940
 public class RestockSubscription : Aggregate<RestockSubscriptionId>, IHaveSoftDelete
 {
-    public CustomerId CustomerId { get; private set; } = null!;
-    public Email Email { get; private set; } = null!;
-    public ProductInformation ProductInformation { get; private set; } = null!;
+    // EF
+    // this constructor is needed when we have a parameter constructor that has some navigation property classes in the parameters and ef will skip it and try to find other constructor, here default constructor (maybe will fix .net 8)
+    public RestockSubscription()
+    {
+    }
+
+    public CustomerId CustomerId { get; private set; } = default!;
+    public Email Email { get; private set; } = default!;
+    public ProductInformation ProductInformation { get; private set; } = default!;
     public bool Processed { get; private set; }
     public DateTime? ProcessedTime { get; private set; }
 

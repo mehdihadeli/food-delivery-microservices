@@ -3,14 +3,16 @@ using BuildingBlocks.Abstractions.Domain;
 
 namespace ECommerce.Services.Catalogs.Products.ValueObjects;
 
+// https://learn.microsoft.com/en-us/ef/core/modeling/constructors
 public record ProductId : AggregateId
 {
-    public ProductId(long value) : base(value)
+    // EF
+    private ProductId(long value) : base(value)
     {
-        Guard.Against.NegativeOrZero(value, nameof(value));
     }
 
-    public static implicit operator long(ProductId id) => id.Value;
+    // validations should be placed here instead of constructor
+    public static ProductId Of(long id) => new(Guard.Against.NegativeOrZero(id));
 
-    public static implicit operator ProductId(long id) => new(id);
+    public static implicit operator long(ProductId id) => id.Value;
 }

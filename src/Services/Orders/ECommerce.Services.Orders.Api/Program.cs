@@ -1,3 +1,5 @@
+using Bogus;
+using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Web;
 using BuildingBlocks.Swagger;
@@ -7,29 +9,35 @@ using ECommerce.Services.Orders.Api.Extensions.ApplicationBuilderExtensions;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Spectre.Console;
 
-AnsiConsole.Write(new FigletText("Orders Service").Centered().Color(Color.Green));
+AnsiConsole.Write(new FigletText("Orders Service").Centered().Color(Color.FromInt32(new Faker().Random.Int(1, 255))));
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
 // https://benfoster.io/blog/mvc-to-minimal-apis-aspnet-6/
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseDefaultServiceProvider((env, c) =>
+builder.Host.UseDefaultServiceProvider((context, options) =>
 {
     // Handling Captive Dependency Problem
     // https://ankitvijay.net/2020/03/17/net-core-and-di-beware-of-captive-dependency/
     // https://levelup.gitconnected.com/top-misconceptions-about-dependency-injection-in-asp-net-core-c6a7afd14eb4
     // https://blog.ploeh.dk/2014/06/02/captive-dependency/
-    if (env.HostingEnvironment.IsDevelopment() || env.HostingEnvironment.IsEnvironment("tests") ||
-        env.HostingEnvironment.IsStaging())
-    {
-        c.ValidateScopes = true;
-    }
+    // https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/
+    options.ValidateScopes = context.HostingEnvironment.IsDevelopment() || context.HostingEnvironment.IsTest() ||
+                             context.HostingEnvironment.IsStaging();
+
+    // Issue with masstransit #85
+    // options.ValidateOnBuild = true;
 });
 
 builder.Services.AddControllers(options =>
         options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer())))
     .AddNewtonsoftJson(options =>
-        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+    {
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+        // https://stackoverflow.com/questions/36452468/swagger-ui-web-api-documentation-present-enums-as-strings
+        // options.SerializerSettings.Converters.Add(new StringEnumConverter()); // sending enum string to and from client instead of number
+    })
+    .AddControllersAsServices();
 
 // https://www.talkingdotnet.com/disable-automatic-model-state-validation-in-asp-net-core-2-1/
 builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -38,6 +46,9 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 
 builder.Services.AddValidatedOptions<AppOptions>();
+
+// register endpoints
+builder.AddMinimalEndpoints();
 
 /*----------------- Module Services Setup ------------------*/
 builder.AddModulesServices();

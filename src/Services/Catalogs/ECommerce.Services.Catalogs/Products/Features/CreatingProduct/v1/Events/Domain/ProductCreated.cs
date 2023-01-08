@@ -35,7 +35,7 @@ internal class ProductCreatedHandler : IDomainEventHandler<ProductCreated>
                 .Include(x => x.Supplier)
                 .SingleOrDefaultAsync(x => x.Id == notification.Product.Id.Value, cancellationToken);
 
-            Guard.Against.NotFound(product, new ProductCustomNotFoundException(notification.Product.Id));
+            Guard.Against.NotFound(product, new ProductNotFoundException(notification.Product.Id));
 
             var productView = new ProductView
             {

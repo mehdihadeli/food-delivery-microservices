@@ -52,6 +52,7 @@
     <PackageReference Include="Nito.AsyncEx" />
     <PackageReference Include="Nito.AsyncEx.Context" />
     <PackageReference Include="Nito.AsyncEx.Tasks" />
+    <PackageReference Include="FluentValidation.AspNetCore" />
   </ItemGroup>
 
 </Project>

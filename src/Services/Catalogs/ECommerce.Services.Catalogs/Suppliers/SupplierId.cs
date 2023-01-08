@@ -1,14 +1,17 @@
+using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Domain;
 
 namespace ECommerce.Services.Catalogs.Suppliers;
 
 public record SupplierId : AggregateId
 {
-    public SupplierId(long value) : base(value)
+    // EF
+    private SupplierId(long value) : base(value)
     {
     }
 
-    public static implicit operator long(SupplierId id) => id.Value;
+    // validations should be placed here instead of constructor
+    public static SupplierId Of(long id) => new(Guard.Against.NegativeOrZero(id));
 
-    public static implicit operator SupplierId(long id) => new(id);
+    public static implicit operator long(SupplierId id) => id.Value;
 }

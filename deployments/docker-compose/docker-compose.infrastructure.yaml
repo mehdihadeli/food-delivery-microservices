@@ -49,6 +49,10 @@ services:
   #######################################################
   #  eventstore-db
   #######################################################
+  # https://developers.eventstore.com/server/v21.10/installation.html#insecure-single-node
+  # https://hub.docker.com/r/eventstore/eventstore/tags
+  # https://stackoverflow.com/questions/65272764/ports-are-not-available-listen-tcp-0-0-0-0-50070-bind-an-attempt-was-made-to
+
   eventstore:
     image: eventstore/eventstore:latest
     container_name: eventstore

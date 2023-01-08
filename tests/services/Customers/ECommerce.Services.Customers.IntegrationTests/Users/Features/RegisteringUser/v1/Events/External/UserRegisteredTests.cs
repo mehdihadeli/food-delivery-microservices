@@ -1,14 +1,14 @@
-using ECommerce.Services.Customers.Customers.Features;
-using ECommerce.Services.Customers.Shared.Clients.Identity.Dtos;
+using ECommerce.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using ECommerce.Services.Customers.Shared.Data;
+using ECommerce.Services.Customers.TestShared.Fakes.Customers.Events;
 using ECommerce.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
 using ECommerce.Services.Shared.Customers.Customers.Events.v1.Integration;
 using ECommerce.Services.Shared.Identity.Users.Events.v1.Integration;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
-using Tests.Shared.Fakes.Customers.Customers.Events;
+using MongoDB.Driver.Linq;
 using Tests.Shared.Fixtures;
+using Tests.Shared.XunitCategories;
 using Xunit.Abstractions;
 
 namespace ECommerce.Services.Customers.IntegrationTests.Users.Features.RegisteringUser.v1.Events.External;
@@ -18,36 +18,29 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
     private static UserRegisteredV1 _userRegistered = default!;
 
     public UserRegisteredTests(
-        SharedFixture<Api.Program, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-        MockServersFixture mockServersFixture,
+        SharedFixtureWithEfCoreAndMongo<Api.Program, CustomersDbContext, CustomersReadDbContext> sharedFixture,
         ITestOutputHelper outputHelper)
-        : base(sharedFixture, mockServersFixture, outputHelper)
+        : base(sharedFixture, outputHelper)
     {
         _userRegistered = new FakeUserRegisteredV1().Generate();
-        MockServersFixture.IdentityServiceMock.SetupGetUserByEmail(_userRegistered.Email,
-            response: new GetUserByEmailResponse(new UserIdentityDto
-            {
-                Email = _userRegistered.Email,
-                Id = _userRegistered.IdentityId,
-                FirstName = _userRegistered.FirstName,
-                LastName = _userRegistered.LastName,
-                UserName = _userRegistered.UserName,
-            }));
+
+        CustomersServiceMockServersFixture.IdentityServiceMock.SetupGetUserByEmail(_userRegistered);
     }
 
     [Fact]
-    public async Task message_should_consume_by_existing_consumer_through_broker()
+    [CategoryTrait(TestCategory.Integration)]
+    public async Task should_consume_by_existing_consumer_through_the_broker()
     {
         // Act
-        await Fixture.PublishMessageAsync(_userRegistered, null, CancellationToken);
+        await SharedFixture.PublishMessageAsync(_userRegistered, null, CancellationToken);
 
         // Assert
-        await Fixture.WaitForConsuming<UserRegisteredV1>();
-        await Fixture.WaitForPublishing<CustomerCreatedV1>();
+        await SharedFixture.WaitForConsuming<UserRegisteredV1>();
     }
 
     // [Fact]
-    // public async Task message_should_consume_by_new_consumers_through_broker()
+    // [CategoryTrait(TestCategory.Integration)]
+    // public async Task should_consume_by_new_consumers_through_broker()
     // {
     //     // Arrange
     //     var shouldConsume = await IntegrationTestFixture.ShouldConsumeWithNewConsumer<UserRegisteredV1>();
@@ -60,28 +53,29 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
     // }
 
     [Fact]
-    public async Task message_should_consume_by_user_registered_consumer()
+    [CategoryTrait(TestCategory.Integration)]
+    public async Task should_consume_by_user_registered_consumer_through_the_broker()
     {
         // Act
-        await Fixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
+        await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await Fixture.WaitForConsuming<UserRegisteredV1, UserRegisteredConsumer>();
-        await Fixture.WaitForPublishing<CustomerCreatedV1>();
+        await SharedFixture.WaitForConsuming<UserRegisteredV1, UserRegisteredConsumer>();
     }
 
     [Fact]
-    public async Task user_registered_message_should_create_new_customer_in_postgres_write_db()
+    [CategoryTrait(TestCategory.Integration)]
+    public async Task should_create_new_customer_in_postgres_write_db_when_after_consuming_message()
     {
         // Act
-        await Fixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
+        await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await Fixture.WaitUntilConditionMet(async () =>
+        await SharedFixture.WaitUntilConditionMet(async () =>
         {
-            var existsCustomer = await Fixture.ExecuteContextAsync(async ctx =>
+            var existsCustomer = await SharedFixture.ExecuteEfDbContextAsync(async ctx =>
             {
-                var res = await ctx.Customers.AnyAsync(x => x.Email == _userRegistered.Email.ToLower());
+                var res = await ctx.Customers.AnyAsync(x => x.Email.Value == _userRegistered.Email);
 
                 return res;
             });
@@ -91,40 +85,56 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
     }
 
     [Fact]
-    public async Task user_registered_message_should_create_new_customer_in_internal_persistence_message_and_mongo()
+    [CategoryTrait(TestCategory.Integration)]
+    public async Task should_save_mongo_customer_read_model_in_internal_persistence_message_after_consuming_message()
     {
         // Act
-        await Fixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
+        await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await Fixture.ShouldProcessedPersistInternalCommand<CreateMongoCustomerReadModels>();
+        await SharedFixture.ShouldProcessedPersistInternalCommand<CreateMongoCustomerReadModels>();
+    }
 
-        var existsCustomer = await Fixture.ExecuteReadContextAsync(async ctx =>
+    [Fact]
+    [CategoryTrait(TestCategory.Integration)]
+    public async Task should_create_new_mongo_customer_read_model_in_the_mongodb_after_consuming_message()
+    {
+        // Act
+        await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
+
+        // Assert
+        await SharedFixture.WaitUntilConditionMet(async () =>
         {
-            var res = await ctx.Customers.AsQueryable().AnyAsync(x => x.Email == _userRegistered.Email.ToLower());
+            var existsCustomer = await SharedFixture.ExecuteMongoDbContextAsync(async ctx =>
+            {
+                var res = await ctx.Customers.AsQueryable().AnyAsync(x => x.Email == _userRegistered.Email);
 
-            return res;
+                return res;
+            });
+
+            return existsCustomer;
         });
-
-        existsCustomer.Should().BeTrue();
     }
 
     [Fact]
-    public async Task user_registered_message_should_create_customer_created_in_the_outbox()
+    [CategoryTrait(TestCategory.Integration)]
+    public async Task should_save_customer_created_integration_event_in_the_outbox_after_consuming_message()
     {
         // Act
-        await Fixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
-
-        await Fixture.ShouldProcessedOutboxPersistMessage<CustomerCreatedV1>();
-    }
-
-    [Fact]
-    public async Task user_registered_should_should_publish_customer_created()
-    {
-        // Act
-        await Fixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
+        await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await Fixture.WaitForPublishing<CustomerCreatedV1>();
+        await SharedFixture.ShouldProcessedOutboxPersistMessage<CustomerCreatedV1>();
+    }
+
+    [Fact]
+    [CategoryTrait(TestCategory.Integration)]
+    public async Task should_publish_customer_created_integration_event_after_consuming_message()
+    {
+        // Act
+        await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
+
+        // Assert
+        await SharedFixture.WaitForPublishing<CustomerCreatedV1>();
     }
 }

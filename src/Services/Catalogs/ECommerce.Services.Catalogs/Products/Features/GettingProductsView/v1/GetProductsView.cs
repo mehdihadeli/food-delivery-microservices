@@ -4,6 +4,7 @@ using BuildingBlocks.Abstractions.Persistence;
 using Dapper;
 using ECommerce.Services.Catalogs.Products.Models;
 using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProductsView.v1;

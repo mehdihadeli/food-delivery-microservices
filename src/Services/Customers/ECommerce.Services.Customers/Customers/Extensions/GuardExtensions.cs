@@ -1,7 +1,4 @@
-using Ardalis.GuardClauses;
-using ECommerce.Services.Customers.Customers.Exceptions;
-
-namespace ECommerce.Services.Customers.Customers;
+namespace ECommerce.Services.Customers.Customers.Extensions;
 
 public static class GuardExtensions
 {

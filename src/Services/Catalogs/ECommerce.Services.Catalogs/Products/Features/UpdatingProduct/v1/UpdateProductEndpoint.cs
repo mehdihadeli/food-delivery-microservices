@@ -1,5 +1,6 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Catalogs.Products.Features.UpdatingProduct.v1;
@@ -11,8 +12,8 @@ public static class UpdateProductEndpoint
     {
         return endpoints.MapPost("/{id}", UpdateProducts)
             .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .HasApiVersion(2.0)
             .WithMetadata(new SwaggerOperationAttribute("Updating Product", "Updating Product"))
             .WithName("UpdateProduct")

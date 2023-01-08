@@ -1,18 +1,14 @@
 using Ardalis.GuardClauses;
-using BuildingBlocks.Core.CQRS.Events.Internal;
 using BuildingBlocks.Core.Domain;
 using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Catalogs.Brands;
 using ECommerce.Services.Catalogs.Categories;
 using ECommerce.Services.Catalogs.Products.Exceptions.Domain;
-using ECommerce.Services.Catalogs.Products.Features.ChangingMaxThreshold;
 using ECommerce.Services.Catalogs.Products.Features.ChangingMaxThreshold.v1;
 using ECommerce.Services.Catalogs.Products.Features.ChangingProductBrand.v1.Events.Domain;
 using ECommerce.Services.Catalogs.Products.Features.ChangingProductCategory.v1.Events;
-using ECommerce.Services.Catalogs.Products.Features.ChangingProductPrice;
 using ECommerce.Services.Catalogs.Products.Features.ChangingProductPrice.v1;
 using ECommerce.Services.Catalogs.Products.Features.ChangingProductSupplier.v1.Events;
-using ECommerce.Services.Catalogs.Products.Features.ChangingRestockThreshold;
 using ECommerce.Services.Catalogs.Products.Features.ChangingRestockThreshold.v1;
 using ECommerce.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Domain;
 using ECommerce.Services.Catalogs.Products.Features.DebitingProductStock.v1.Events.Domain;
@@ -25,24 +21,32 @@ namespace ECommerce.Services.Catalogs.Products.Models;
 // https://event-driven.io/en/notes_about_csharp_records_and_nullable_reference_types/
 // https://enterprisecraftsmanship.com/posts/link-to-an-aggregate-reference-or-id/
 // https://ardalis.com/avoid-collections-as-properties/?utm_sq=grcpqjyka3
+// https://learn.microsoft.com/en-us/ef/core/modeling/constructors
+// https://github.com/dotnet/efcore/issues/29940
 public class Product : Aggregate<ProductId>
 {
     private List<ProductImage> _images = new();
 
+    // EF
+    // this constructor is needed when we have a parameter constructor that has some navigation property classes in the parameters and ef will skip it and try to find other constructor, here default constructor (maybe will fix .net 8)
+    public Product()
+    {
+    }
+
     public Name Name { get; private set; } = default!;
     public string? Description { get; private set; }
-    public Price Price { get; private set; } = null!;
+    public Price Price { get; private set; } = default!;
     public ProductColor Color { get; private set; }
     public ProductStatus ProductStatus { get; private set; }
     public Category? Category { get; private set; }
-    public CategoryId CategoryId { get; private set;} = null!;
-    public SupplierId SupplierId { get; private set; } = null!;
+    public CategoryId CategoryId { get; private set; } = default!;
+    public SupplierId SupplierId { get; private set; } = default!;
     public Supplier? Supplier { get; private set; }
-    public BrandId BrandId { get; private set; } = null!;
-    public Brand? Brand { get; private set; } = null!;
-    public Size Size { get; private set; } = null!;
-    public Stock Stock { get; set; } = null!;
-    public Dimensions Dimensions { get; private set; } = null!;
+    public BrandId BrandId { get; private set; } = default!;
+    public Brand? Brand { get; private set; }
+    public Size Size { get; private set; } = default!;
+    public Stock Stock { get; set; } = default!;
+    public Dimensions Dimensions { get; private set; } = default!;
     public IReadOnlyList<ProductImage> Images => _images;
 
     public static Product Create(
@@ -60,11 +64,10 @@ public class Product : Aggregate<ProductId>
         BrandId brandId,
         IList<ProductImage>? images = null)
     {
-        var product = new Product
-        {
-            Id = Guard.Against.Null(id, new ProductDomainException("Product id can not be null")),
-            Stock = Guard.Against.Null(stock, new ProductDomainException("Product stock can not be null"))
-        };
+        Guard.Against.Null(id, new ProductDomainException("Product id can not be null"));
+        Guard.Against.Null(stock, new ProductDomainException("Product stock can not be null"));
+
+        var product = new Product {Id = id, Stock = stock};
 
         product.ChangeName(name);
         product.ChangeSize(size);
@@ -164,7 +167,7 @@ public class Product : Aggregate<ProductId>
 
         int removed = Math.Min(quantity, Stock.Available);
 
-        Stock = Stock.Create(Stock.Available - removed, Stock.RestockThreshold, Stock.MaxStockThreshold);
+        Stock = Stock.Of(Stock.Available - removed, Stock.RestockThreshold, Stock.MaxStockThreshold);
 
         if (Stock.Available <= Stock.RestockThreshold)
         {
@@ -190,7 +193,7 @@ public class Product : Aggregate<ProductId>
                 $"Max stock threshold has been reached. Max stock threshold is {Stock.MaxStockThreshold}");
         }
 
-        Stock = Stock.Create(Stock.Available + quantity, Stock.RestockThreshold, Stock.MaxStockThreshold);
+        Stock = Stock.Of(Stock.Available + quantity, Stock.RestockThreshold, Stock.MaxStockThreshold);
 
         AddDomainEvents(new ProductStockReplenished(Id, Stock, quantity));
 
@@ -201,7 +204,7 @@ public class Product : Aggregate<ProductId>
     {
         Guard.Against.NegativeOrZero(maxStockThreshold, nameof(maxStockThreshold));
 
-        Stock = Stock.Create(Stock.Available, Stock.RestockThreshold, maxStockThreshold);
+        Stock = Stock.Of(Stock.Available, Stock.RestockThreshold, maxStockThreshold);
 
         AddDomainEvents(new MaxThresholdChanged(Id, maxStockThreshold));
 
@@ -212,7 +215,7 @@ public class Product : Aggregate<ProductId>
     {
         Guard.Against.NegativeOrZero(restockThreshold, nameof(restockThreshold));
 
-        Stock = Stock.Create(Stock.Available, restockThreshold, Stock.MaxStockThreshold);
+        Stock = Stock.Of(Stock.Available, restockThreshold, Stock.MaxStockThreshold);
 
         AddDomainEvents(new RestockThresholdChanged(Id, restockThreshold));
 

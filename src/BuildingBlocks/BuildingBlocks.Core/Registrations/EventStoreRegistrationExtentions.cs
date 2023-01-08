@@ -4,6 +4,7 @@ using BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Persistence.EventStore;
 using BuildingBlocks.Core.Persistence.EventStore.InMemory;
+using BuildingBlocks.Core.Utils;
 
 namespace BuildingBlocks.Core.Registrations;
 
@@ -25,12 +26,16 @@ public static class EventStoreRegistrationExtentions
             .Add<IEventStore>(sp => sp.GetRequiredService<TEventStore>(), withLifetime);
     }
 
-    public static IServiceCollection AddReadProjections(this IServiceCollection services, params Assembly[] assemblies)
+    public static IServiceCollection AddReadProjections(this IServiceCollection services, params Assembly[] scanAssemblies)
     {
         services.AddSingleton<IReadProjectionPublisher, ReadProjectionPublisher>();
-        var assembliesToScan = assemblies.Any() ? assemblies : new[] { Assembly.GetEntryAssembly() };
 
-        RegisterProjections(services, assembliesToScan!);
+        // Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable.
+        var assemblies = scanAssemblies.Any()
+            ? scanAssemblies
+            : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).ToArray();
+
+        RegisterProjections(services, assemblies!);
 
         return services;
     }

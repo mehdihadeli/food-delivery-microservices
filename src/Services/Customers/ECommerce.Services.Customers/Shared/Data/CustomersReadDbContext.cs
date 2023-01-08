@@ -1,9 +1,9 @@
 using BuildingBlocks.Persistence.Mongo;
+using ECommerce.Services.Customers.Customers.Models.Reads;
+using ECommerce.Services.Customers.RestockSubscriptions.Models.Read;
 using Humanizer;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using ECommerce.Services.Customers.Customers.Models.Reads;
-using ECommerce.Services.Customers.RestockSubscriptions.Models.Read;
 
 namespace ECommerce.Services.Customers.Shared.Data;
 

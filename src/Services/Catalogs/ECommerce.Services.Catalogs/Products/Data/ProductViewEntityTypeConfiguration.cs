@@ -1,5 +1,6 @@
 using ECommerce.Services.Catalogs.Products.Models;
 using ECommerce.Services.Catalogs.Shared.Data;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,7 +10,7 @@ public class ProductViewEntityTypeConfiguration : IEntityTypeConfiguration<Produ
 {
     public void Configure(EntityTypeBuilder<ProductView> builder)
     {
-        builder.ToTable("product_views", CatalogDbContext.DefaultSchema);
+        builder.ToTable(nameof(ProductView).Pluralize().Underscore(), CatalogDbContext.DefaultSchema);
         builder.HasKey(x => x.ProductId);
         builder.HasIndex(x => x.ProductId).IsUnique();
     }

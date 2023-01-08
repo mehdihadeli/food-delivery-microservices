@@ -9,9 +9,4 @@
 	  <NoWarn>CS1587,CS1591,CS1998,NU5105</NoWarn>
   </PropertyGroup>
 
- <ItemGroup Label="Implicit usings">
-    <Using Include="NSubstitute" />
-    <Using Include="Xunit" />
-  </ItemGroup>
-
 </Project>

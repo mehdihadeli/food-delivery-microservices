@@ -5,6 +5,7 @@ using ECommerce.Services.Catalogs.Products.Models;
 using ECommerce.Services.Catalogs.Products.ValueObjects;
 using ECommerce.Services.Catalogs.Shared.Data;
 using ECommerce.Services.Catalogs.Suppliers;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,28 +15,36 @@ public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
 {
     public void Configure(EntityTypeBuilder<Product> builder)
     {
-        builder.ToTable("products", CatalogDbContext.DefaultSchema);
+        builder.ToTable(nameof(Product).Pluralize().Underscore(), CatalogDbContext.DefaultSchema);
 
-        builder.HasKey(c => c.Id);
+        builder.Property(x => x.Id).ValueGeneratedNever();
+        builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.Id).IsUnique();
 
-        builder.Property(x => x.Id)
-            .HasConversion(x => x.Value, id => id)
-            .ValueGeneratedNever();
+        builder.OwnsOne(ci => ci.Name, a =>
+        {
+            // configuration just for  changing column name in db (instead of name_value)
+            a.Property(p => p.Value)
+                .HasColumnName(nameof(Product.Name).Underscore())
+                .IsRequired();
+        });
 
-        builder.Property(x => x.Name)
-            .HasColumnType(EfConstants.ColumnTypes.NormalText)
-            .HasConversion(name => name.Value, name => Name.Create(name))
-            .IsRequired();
+        builder.OwnsOne(ci => ci.Price, a =>
+        {
+            // configuration just for  changing column name in db (instead of price_value)
+            a.Property(p => p.Value)
+                .HasColumnType(EfConstants.ColumnTypes.PriceDecimal)
+                .HasColumnName(nameof(Product.Price).Underscore())
+                .IsRequired();
+        });
 
-        builder.Property(ci => ci.Price)
-            .HasColumnType(EfConstants.ColumnTypes.PriceDecimal)
-            .HasConversion(price => price.Value, price => price)
-            .IsRequired();
-
-        builder.Property(ci => ci.Size)
-            .HasConversion(size => size.Value, size => Size.Create(size))
-            .IsRequired();
+        builder.OwnsOne(ci => ci.Size, a =>
+        {
+            // configuration just for  changing column name in db (instead of size_value)
+            a.Property(p => p.Value)
+                .HasColumnName(nameof(Product.Size).Underscore())
+                .IsRequired();
+        });
 
         builder.Property(x => x.ProductStatus)
             .HasDefaultValue(ProductStatus.Available)
@@ -51,38 +60,25 @@ public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
                 x => x.ToString(),
                 x => (ProductColor)Enum.Parse(typeof(ProductColor), x));
 
-        builder.OwnsOne(c => c.Dimensions, cm =>
-        {
-            cm.Property(c => c.Height);
-            cm.Property(c => c.Width);
-            cm.Property(c => c.Depth);
-        });
+        builder.OwnsOne(c => c.Dimensions);
 
-        builder.OwnsOne(c => c.Stock, cm =>
-        {
-            cm.Property(c => c.Available);
-            cm.Property(c => c.RestockThreshold);
-            cm.Property(c => c.MaxStockThreshold);
-        });
+        builder.OwnsOne(c => c.Stock);
 
-        builder.Property(x => x.CategoryId)
-            .HasConversion(categoryId => categoryId.Value, categoryId => categoryId);
+        builder.Property(x => x.CategoryId);
 
-        builder.HasOne<Category>(x => x.Category)
+        builder.HasOne(x => x.Category)
             .WithMany()
-            .HasForeignKey(x => (long)x.CategoryId);
+            .HasForeignKey(x => x.CategoryId);
 
-        builder.Property(x => x.BrandId)
-            .HasConversion(brandId => brandId.Value, brandId => brandId);
+        builder.Property(x => x.BrandId);
 
-        builder.HasOne<Brand>(x => x.Brand)
+        builder.HasOne(x => x.Brand)
             .WithMany()
             .HasForeignKey(x => x.BrandId);
 
-        builder.Property(x => x.SupplierId)
-            .HasConversion(supplierId => supplierId.Value, supplierId => supplierId);
+        builder.Property(x => x.SupplierId);
 
-        builder.HasOne<Supplier>(x => x.Supplier)
+        builder.HasOne(x => x.Supplier)
             .WithMany()
             .HasForeignKey(x => x.SupplierId);
 

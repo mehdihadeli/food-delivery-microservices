@@ -1,11 +1,10 @@
-using System.Text.RegularExpressions;
-using Asp.Versioning.Builder;
+using System.Reflection;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using BuildingBlocks.Core.Utils;
 using LinqKit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using MongoDB.Driver;
 using Scrutor;
 
 namespace BuildingBlocks.Web.Extensions;
@@ -14,28 +13,46 @@ public static class MinimalApiExtensions
 {
     public static IServiceCollection AddMinimalEndpoints(
         this WebApplicationBuilder applicationBuilder,
-        ServiceLifetime lifetime = ServiceLifetime.Scoped)
+        params Assembly[] scanAssemblies)
     {
+        // Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
+        // load all referenced assemblies explicitly.
+        var assemblies = scanAssemblies.Any()
+            ? scanAssemblies
+            : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly())
+                .Concat(ReflectionUtilities.GetApplicationPartAssemblies(Assembly.GetCallingAssembly()))
+                .Distinct()
+                .ToArray();
+
         applicationBuilder.Services.Scan(scan => scan
-            .FromAssemblies(AppDomain.CurrentDomain.GetAssemblies())
+            .FromAssemblies(assemblies)
             .AddClasses(classes => classes.AssignableTo(typeof(IMinimalEndpoint)))
             .UsingRegistrationStrategy(RegistrationStrategy.Append)
             .As<IMinimalEndpoint>()
-            .WithLifetime(lifetime));
+            .WithLifetime(ServiceLifetime.Scoped));
 
         return applicationBuilder.Services;
     }
 
     public static IServiceCollection AddMinimalEndpoints(
         this IServiceCollection services,
-        ServiceLifetime lifetime = ServiceLifetime.Scoped)
+        params Assembly[] scanAssemblies)
     {
+        // Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
+        // load all referenced assemblies explicitly.
+        var assemblies = scanAssemblies.Any()
+            ? scanAssemblies
+            : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly())
+                .Concat(ReflectionUtilities.GetApplicationPartAssemblies(Assembly.GetCallingAssembly()))
+                .Distinct()
+                .ToArray();
+
         services.Scan(scan => scan
-            .FromAssemblies(AppDomain.CurrentDomain.GetAssemblies())
+            .FromAssemblies(assemblies)
             .AddClasses(classes => classes.AssignableTo(typeof(IMinimalEndpoint)))
             .UsingRegistrationStrategy(RegistrationStrategy.Append)
             .As<IMinimalEndpoint>()
-            .WithLifetime(lifetime));
+            .WithLifetime(ServiceLifetime.Scoped));
 
         return services;
     }

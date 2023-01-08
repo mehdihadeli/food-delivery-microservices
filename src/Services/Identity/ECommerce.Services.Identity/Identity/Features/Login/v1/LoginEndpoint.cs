@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using Hellang.Middleware.ProblemDetails;
 
 namespace ECommerce.Services.Identity.Identity.Features.Login.v1;
 
@@ -12,9 +13,9 @@ public static class LoginEndpoint
         return endpoints.MapPost("/login", LoginUser)
             .AllowAnonymous()
             .Produces<LoginResponse>()
-            .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status500InternalServerError)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status500InternalServerError)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithOpenApi(operation => new(operation)
             {
                 Summary = "Login User", Description = "Login User"

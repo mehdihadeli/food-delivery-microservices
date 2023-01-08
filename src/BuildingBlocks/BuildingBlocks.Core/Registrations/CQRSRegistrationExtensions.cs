@@ -44,7 +44,8 @@ public static class CQRSRegistrationExtensions
             services.AddScoped(typeof(IPipelineBehavior<,>), pipeline);
         }
 
-        services.Add<ICommandProcessor, CommandProcessor>(serviceLifetime)
+        services
+            .Add<ICommandProcessor, CommandProcessor>(serviceLifetime)
             .Add<IQueryProcessor, QueryProcessor>(serviceLifetime)
             .Add<IEventProcessor, EventProcessor>(serviceLifetime)
             .Add<ICommandScheduler, NullCommandScheduler>(serviceLifetime)

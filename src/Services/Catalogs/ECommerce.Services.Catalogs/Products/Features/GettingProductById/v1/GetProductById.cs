@@ -3,9 +3,9 @@ using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Exception;
-using ECommerce.Services.Catalogs.Products.Dtos;
 using ECommerce.Services.Catalogs.Products.Dtos.v1;
 using ECommerce.Services.Catalogs.Products.Exceptions.Application;
+using ECommerce.Services.Catalogs.Products.ValueObjects;
 using ECommerce.Services.Catalogs.Shared.Contracts;
 using ECommerce.Services.Catalogs.Shared.Extensions;
 using FluentValidation;
@@ -47,8 +47,8 @@ public record GetProductById(long Id) : IQuery<GetProductByIdResponse>
         {
             Guard.Against.Null(query, nameof(query));
 
-            var product = await _catalogDbContext.FindProductByIdAsync(query.Id);
-            Guard.Against.NotFound(product, new ProductCustomNotFoundException(query.Id));
+            var product = await _catalogDbContext.FindProductByIdAsync(ProductId.Of(query.Id));
+            Guard.Against.NotFound(product, new ProductNotFoundException(query.Id));
 
             var productsDto = _mapper.Map<ProductDto>(product);
 

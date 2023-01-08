@@ -1,8 +1,7 @@
-using System.Reflection;
 using BuildingBlocks.Core.Persistence.EfCore;
-using Microsoft.EntityFrameworkCore;
 using ECommerce.Services.Orders.Orders.Models;
 using ECommerce.Services.Orders.Shared.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Orders.Shared.Data;
 
@@ -10,7 +9,7 @@ public class OrdersDbContext : EfDbContextBase, IOrdersDbContext
 {
     public const string DefaultSchema = "order";
 
-    public OrdersDbContext(DbContextOptions options) : base(options)
+    public OrdersDbContext(DbContextOptions<OrdersDbContext> options) : base(options)
     {
     }
 

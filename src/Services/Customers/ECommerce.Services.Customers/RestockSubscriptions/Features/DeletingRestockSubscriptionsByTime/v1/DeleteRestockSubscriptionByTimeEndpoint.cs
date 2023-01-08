@@ -2,6 +2,7 @@ using Ardalis.GuardClauses;
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using Hellang.Middleware.ProblemDetails;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime.v1;
 
@@ -16,8 +17,8 @@ public class DeleteRestockSubscriptionByTimeEndpoint :
     {
         return builder.MapDelete("/", HandleAsync)
             .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             .WithName("DeleteRestockSubscriptionByTime")
             .WithDisplayName("Delete RestockSubscriptions by time range.");
     }

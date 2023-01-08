@@ -1,3 +1,4 @@
+using System.Net;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
 using ECommerce.Services.Identity.Shared.Models;
@@ -10,7 +11,9 @@ internal class UserStateCannotBeChangedException : AppException
     public Guid UserId { get; }
 
     public UserStateCannotBeChangedException(UserState state, Guid userId)
-        : base($"User state cannot be changed to: '{state.ToName()}' for user with ID: '{userId}'.")
+        : base(
+            $"User state cannot be changed to: '{state.ToName()}' for user with ID: '{userId}'.",
+            HttpStatusCode.InternalServerError)
     {
         State = state;
         UserId = userId;

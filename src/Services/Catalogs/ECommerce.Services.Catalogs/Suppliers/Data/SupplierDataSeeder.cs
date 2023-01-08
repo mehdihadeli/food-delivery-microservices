@@ -1,4 +1,3 @@
-using AutoBogus;
 using Bogus;
 using BuildingBlocks.Abstractions.Persistence;
 using ECommerce.Services.Catalogs.Shared.Contracts;
@@ -9,9 +8,9 @@ namespace ECommerce.Services.Catalogs.Suppliers.Data;
 public class SupplierDataSeeder : IDataSeeder
 {
     // because AutoFaker generate data also for private set and init members (not read only get) it doesn't work properly with CustomInstantiator
-    public sealed class SupplierFaker : Faker<Supplier>
+    public sealed class SupplierSeedFaker : Faker<Supplier>
     {
-        public SupplierFaker()
+        public SupplierSeedFaker()
         {
             long id = 1;
 
@@ -25,7 +24,7 @@ public class SupplierDataSeeder : IDataSeeder
             // faker doesn't work with normal syntax because it has no default constructor
             CustomInstantiator(faker =>
             {
-                var supplier = new Supplier(id++, faker.Person.FullName);
+                var supplier = new Supplier(SupplierId.Of(id++), faker.Person.FullName);
                 return supplier;
             });
         }
@@ -43,7 +42,7 @@ public class SupplierDataSeeder : IDataSeeder
         if (await _dbContext.Suppliers.AnyAsync())
             return;
 
-        var suppliers = new SupplierFaker().Generate(5);
+        var suppliers = new SupplierSeedFaker().Generate(5);
         await _dbContext.Suppliers.AddRangeAsync(suppliers);
 
         await _dbContext.SaveChangesAsync();

@@ -1,8 +1,8 @@
-using BuildingBlocks.Core.Persistence.EfCore;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ECommerce.Services.Orders.Orders.Models;
 using ECommerce.Services.Orders.Shared.Data;
+using Humanizer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ECommerce.Services.Orders.Orders.Data.EntityConfigurations;
 
@@ -10,31 +10,15 @@ public class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
 {
     public void Configure(EntityTypeBuilder<Order> builder)
     {
-        builder.ToTable("orders", OrdersDbContext.DefaultSchema);
+        builder.ToTable(nameof(Order).Pluralize().Underscore(), OrdersDbContext.DefaultSchema);
 
-        builder.HasKey(c => c.Id);
+        // ids will use strongly typed-id value converter selector globally
+        builder.Property(x => x.Id).ValueGeneratedNever();
+        builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.Id).IsUnique();
 
-        builder.Property(x => x.Id)
-            .HasConversion(x => x.Value, id => id)
-            .ValueGeneratedNever();
+        builder.OwnsOne(x => x.Customer);
 
-        builder.OwnsOne(m => m.Customer, a =>
-        {
-            a.Property(p => p.Name)
-                .HasMaxLength(EfConstants.Lenght.Medium);
-
-            a.Property(p => p.CustomerId);
-        });
-
-        builder.OwnsOne(m => m.Product, a =>
-        {
-            a.Property(p => p.Name)
-                .HasMaxLength(EfConstants.Lenght.Medium);
-
-            a.Property(p => p.Price);
-
-            a.Property(p => p.ProductId);
-        });
+        builder.OwnsOne(m => m.Product);
     }
 }

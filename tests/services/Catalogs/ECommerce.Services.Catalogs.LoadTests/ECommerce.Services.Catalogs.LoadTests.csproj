@@ -1,24 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\ECommerce.Services.Catalogs.TestShared\ECommerce.Services.Catalogs.TestShared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
-  <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
-  <!--  https://stackoverflow.com/questions/39791634/read-appsettings-json-values-in-net-core-test-project-->
-  <ItemGroup>
-    <Content Include="..\..\..\..\src\Services\Customers\ECommerce.Services.Customers.Api\appsettings.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\..\..\src\Services\Customers\ECommerce.Services.Customers.Api\appsettings.test.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\shared\Tests.Shared\Tests.Shared.csproj" />
-  </ItemGroup>
-
+  <!--  We should add this reference in each test project-->
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.VisualStudio.TestPlatform" />
+    <PackageReference Include="coverlet.msbuild">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
+
 </Project>

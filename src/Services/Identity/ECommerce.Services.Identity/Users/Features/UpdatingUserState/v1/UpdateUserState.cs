@@ -44,23 +44,23 @@ internal class UpdateUserStateHandler : ICommandHandler<UpdateUserState>
 
     public async Task<Unit> Handle(UpdateUserState request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByIdAsync(request.UserId.ToString());
-        Guard.Against.Null(user, new UserCustomNotFoundException(request.UserId));
+        var identityUser = await _userManager.FindByIdAsync(request.UserId.ToString());
+        Guard.Against.NotFound(identityUser, new IdentityUserNotFoundException(request.UserId));
 
-        var previousState = user.UserState;
+        var previousState = identityUser!.UserState;
         if (previousState == request.State)
         {
             return Unit.Value;
         }
 
-        if (await _userManager.IsInRoleAsync(user, IdentityConstants.Role.Admin))
+        if (await _userManager.IsInRoleAsync(identityUser, IdentityConstants.Role.Admin))
         {
             throw new UserStateCannotBeChangedException(request.State, request.UserId);
         }
 
-        user.UserState = request.State;
+        identityUser.UserState = request.State;
 
-        await _userManager.UpdateAsync(user);
+        await _userManager.UpdateAsync(identityUser);
 
         var userStateUpdated = new UserStateUpdated(
             request.UserId,
@@ -72,9 +72,9 @@ internal class UpdateUserStateHandler : ICommandHandler<UpdateUserState>
 
         _logger.LogInformation(
             "Updated state for user with ID: '{UserId}', '{PreviousState}' -> '{UserState}'",
-            user.Id,
+            identityUser.Id,
             previousState,
-            user.UserState);
+            identityUser.UserState);
 
         return Unit.Value;
     }

@@ -1,6 +1,7 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using Hellang.Middleware.ProblemDetails;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription.v1;
 
@@ -15,8 +16,8 @@ public class DeleteRestockSubscriptionEndpoint : ICommandMinimalEndpoint<long>
         return builder.MapDelete("/{id}", HandleAsync)
             .RequireAuthorization(CustomersConstants.Role.Admin)
             .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             .WithName("DeleteRestockSubscription")
             .WithDisplayName("Delete RestockSubscription for Customer.");
     }

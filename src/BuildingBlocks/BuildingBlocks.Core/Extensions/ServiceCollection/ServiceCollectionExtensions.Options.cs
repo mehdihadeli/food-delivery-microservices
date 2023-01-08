@@ -6,6 +6,23 @@ namespace BuildingBlocks.Core.Extensions.ServiceCollection;
 
 public static partial class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddConfigurationOptions<T>(
+        this IServiceCollection services)
+        where T : class
+    {
+        return services.AddConfigurationOptions<T>(typeof(T).Name);
+    }
+
+    public static IServiceCollection AddConfigurationOptions<T>(
+        this IServiceCollection services, string key)
+        where T : class
+    {
+        services.AddOptions<T>()
+            .BindConfiguration(key);
+
+        return services.AddSingleton(x => x.GetRequiredService<IOptions<T>>().Value);
+    }
+
     public static IServiceCollection AddValidatedOptions<T>(
         this IServiceCollection services)
         where T : class

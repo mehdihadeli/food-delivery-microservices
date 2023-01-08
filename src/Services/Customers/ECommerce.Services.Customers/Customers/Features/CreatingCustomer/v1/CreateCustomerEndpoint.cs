@@ -2,6 +2,7 @@ using Ardalis.GuardClauses;
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Customers.Customers.Features.CreatingCustomer.v1;
@@ -17,7 +18,7 @@ public class CreateCustomerEndpoint : ICommandMinimalEndpoint<CreateCustomerRequ
         return builder.MapPost("/", HandleAsync)
             .AllowAnonymous()
             .Produces<CreateCustomerResponse>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithMetadata(new SwaggerOperationAttribute("Creating a Customer", "Creating a Customer"))
             .WithName("CreateCustomer")
             .WithDisplayName("Register New Customer.");

@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Identity.Identity.Features.SendingEmailVerificationCode.v1;
@@ -10,8 +11,8 @@ public static class SendEmailVerificationCodeEndpoint
         return endpoints.MapPost("/send-email-verification-code", SendEmailVerificationCode)
             .AllowAnonymous()
             .Produces(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status409Conflict)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status409Conflict)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithName("SendEmailVerificationCode")
             .WithDisplayName("Send Email Verification Code.")
             .WithMetadata(new SwaggerOperationAttribute(
@@ -26,8 +27,8 @@ public static class SendEmailVerificationCodeEndpoint
     {
         var command = new SendEmailVerificationCode(request.Email);
 
-        var result = await commandProcessor.SendAsync(command, cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken);
 
-        return Results.Ok(result);
+        return Results.Ok();
     }
 }

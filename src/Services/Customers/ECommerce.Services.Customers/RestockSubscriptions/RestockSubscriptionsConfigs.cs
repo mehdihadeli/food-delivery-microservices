@@ -1,4 +1,3 @@
-using Asp.Versioning.Builder;
 using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Customers.Shared;
 
@@ -13,6 +12,9 @@ public class RestockSubscriptionsConfigs : IModuleConfiguration
 
     public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
+        //// we could add event mappers manually, also they can find automatically by scanning assemblies
+        // builder.Services.AddSingleton<IEventMapper, RestockSubscriptionsEventMapper>();
+
         return builder;
     }
 

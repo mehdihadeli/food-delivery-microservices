@@ -1,4 +1,5 @@
 using Asp.Versioning.Builder;
+using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Customers.Customers.Data;
@@ -15,6 +16,10 @@ internal class CustomersConfigs : IModuleConfiguration
     public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IDataSeeder, CustomersDataSeeder>();
+
+        //// we could add event mappers manually, also they can find automatically by scanning assemblies
+        // builder.Services.AddSingleton<IIntegrationEventMapper, CustomersEventMapper>();
+
         return builder;
     }
 

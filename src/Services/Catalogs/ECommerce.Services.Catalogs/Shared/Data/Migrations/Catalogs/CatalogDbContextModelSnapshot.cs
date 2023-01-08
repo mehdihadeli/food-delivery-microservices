@@ -140,19 +140,10 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
                         .HasColumnType("text")
                         .HasColumnName("description");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("name");
-
                     b.Property<long>("OriginalVersion")
                         .IsConcurrencyToken()
                         .HasColumnType("bigint")
                         .HasColumnName("original_version");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("price");
 
                     b.Property<string>("ProductStatus")
                         .IsRequired()
@@ -161,11 +152,6 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
                         .HasColumnType("character varying(25)")
                         .HasDefaultValue("Available")
                         .HasColumnName("product_status");
-
-                    b.Property<string>("Size")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("size");
 
                     b.Property<long>("SupplierId")
                         .HasColumnType("bigint")
@@ -319,21 +305,21 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_products_brands_brand_temp_id");
+                        .HasConstraintName("fk_products_brands_brand_id");
 
                     b.HasOne("ECommerce.Services.Catalogs.Categories.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_products_categories_category_temp_id");
+                        .HasConstraintName("fk_products_categories_category_id");
 
                     b.HasOne("ECommerce.Services.Catalogs.Suppliers.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_products_suppliers_supplier_temp_id");
+                        .HasConstraintName("fk_products_suppliers_supplier_id");
 
                     b.OwnsOne("ECommerce.Services.Catalogs.Products.ValueObjects.Dimensions", "Dimensions", b1 =>
                         {
@@ -352,6 +338,65 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
                             b1.Property<int>("Width")
                                 .HasColumnType("integer")
                                 .HasColumnName("dimensions_width");
+
+                            b1.HasKey("ProductId");
+
+                            b1.ToTable("products", "catalog");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId")
+                                .HasConstraintName("fk_products_products_id");
+                        });
+
+                    b.OwnsOne("ECommerce.Services.Catalogs.Products.ValueObjects.Name", "Name", b1 =>
+                        {
+                            b1.Property<long>("ProductId")
+                                .HasColumnType("bigint")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("name");
+
+                            b1.HasKey("ProductId");
+
+                            b1.ToTable("products", "catalog");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId")
+                                .HasConstraintName("fk_products_products_id");
+                        });
+
+                    b.OwnsOne("ECommerce.Services.Catalogs.Products.ValueObjects.Price", "Price", b1 =>
+                        {
+                            b1.Property<long>("ProductId")
+                                .HasColumnType("bigint")
+                                .HasColumnName("id");
+
+                            b1.Property<decimal>("Value")
+                                .HasColumnType("decimal(18,2)")
+                                .HasColumnName("price");
+
+                            b1.HasKey("ProductId");
+
+                            b1.ToTable("products", "catalog");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId")
+                                .HasConstraintName("fk_products_products_id");
+                        });
+
+                    b.OwnsOne("ECommerce.Services.Catalogs.Products.ValueObjects.Size", "Size", b1 =>
+                        {
+                            b1.Property<long>("ProductId")
+                                .HasColumnType("bigint")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("size");
 
                             b1.HasKey("ProductId");
 
@@ -394,6 +439,15 @@ namespace ECommerce.Services.Catalogs.Shared.Data.Migrations.Catalogs
                     b.Navigation("Category");
 
                     b.Navigation("Dimensions")
+                        .IsRequired();
+
+                    b.Navigation("Name")
+                        .IsRequired();
+
+                    b.Navigation("Price")
+                        .IsRequired();
+
+                    b.Navigation("Size")
                         .IsRequired();
 
                     b.Navigation("Stock")

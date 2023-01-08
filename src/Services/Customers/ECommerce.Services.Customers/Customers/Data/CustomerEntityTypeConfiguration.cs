@@ -1,10 +1,10 @@
 using BuildingBlocks.Core.Domain.ValueObjects;
 using BuildingBlocks.Core.Persistence.EfCore;
+using ECommerce.Services.Customers.Customers.Models;
+using ECommerce.Services.Customers.Shared.Data;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ECommerce.Services.Customers.Customers.Models;
-using ECommerce.Services.Customers.Customers.ValueObjects;
-using ECommerce.Services.Customers.Shared.Data;
 
 namespace ECommerce.Services.Customers.Customers.Data;
 
@@ -12,61 +12,81 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
 {
     public void Configure(EntityTypeBuilder<Customer> builder)
     {
-        builder.ToTable("customers", CustomersDbContext.DefaultSchema);
+        builder.ToTable(nameof(Customer).Pluralize().Underscore(), CustomersDbContext.DefaultSchema);
 
-        builder.HasKey(c => c.Id);
+        // ids will use strongly typed-id value converter selector globally
+        builder.Property(x => x.Id).ValueGeneratedNever();
+        builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.Id).IsUnique();
 
-        builder.Property(x => x.Id)
-            .HasConversion(id => id.Value, id => new CustomerId(id))
-            .ValueGeneratedNever();
-
+        builder.Property(x => x.IdentityId);
         builder.HasIndex(x => x.IdentityId).IsUnique();
 
-        builder.HasIndex(x => x.Email).IsUnique();
-        builder.Property(x => x.Email).IsRequired()
-            .HasMaxLength(EfConstants.Lenght.Medium)
-            .HasConversion(email => email.Value, email => Email.Create(email)); // converting mandatory value objects
+        builder.OwnsOne(
+            x => x.Email,
+            a =>
+            {
+                a.Property(p => p.Value)
+                    .HasColumnName(nameof(Customer.Email).Underscore())
+                    .IsRequired()
+                    .HasMaxLength(EfConstants.Lenght.Medium);
 
-        builder.HasIndex(x => x.PhoneNumber).IsUnique();
-        builder.Property(x => x.PhoneNumber)
-            .IsRequired(false)
-            .HasMaxLength(EfConstants.Lenght.Tiny)
-            .HasConversion(x => (string?)x, x => (PhoneNumber?)x);
+                // supporting index on owned types:
+                // https://github.com/dotnet/efcore/issues/11336
+                // https://github.com/dotnet/efcore/issues/12637
+                a.HasIndex(p => p.Value).IsUnique();
+            });
 
-        builder.OwnsOne(m => m.Name, a =>
-        {
-            a.Property(p => p.FirstName)
-                .HasMaxLength(EfConstants.Lenght.Medium);
+        builder.OwnsOne(
+            x => x.PhoneNumber,
+            a =>
+            {
+                a.Property(p => p.Value)
+                    .HasColumnName(nameof(Customer.PhoneNumber).Underscore())
+                    .IsRequired()
+                    .HasMaxLength(EfConstants.Lenght.Tiny);
 
-            a.Property(p => p.LastName)
-                .HasMaxLength(EfConstants.Lenght.Medium);
+                // supporting index on owned types:
+                // https://github.com/dotnet/efcore/issues/11336
+                // https://github.com/dotnet/efcore/issues/12637
+                a.HasIndex(p => p.Value).IsUnique();
+            });
 
-            a.Ignore(p => p.FullName);
-        });
+        builder.OwnsOne(m => m.Name);
 
-        builder.OwnsOne(m => m.Address, a =>
-        {
-            a.Property(p => p.City)
-                .HasMaxLength(EfConstants.Lenght.Short);
+        builder.OwnsOne(
+            m => m.Address,
+            a =>
+            {
+                a.Property(p => p.City)
+                    .HasMaxLength(EfConstants.Lenght.Short);
+                a.Property(p => p.Country)
+                    .HasMaxLength(EfConstants.Lenght.Medium);
+                a.Property(p => p.Detail)
+                    .HasMaxLength(EfConstants.Lenght.Medium);
+                a.Property(p => p.PostalCode)
+                    .HasConversion(s => s.Value, v => new PostalCode {Value = v})
+                    .IsRequired(false);
+            });
 
-            a.Property(p => p.Country)
-                .HasMaxLength(EfConstants.Lenght.Medium);
+        builder.OwnsOne(
+            x => x.Nationality,
+            a =>
+            {
+                // configuration just for  changing column name in db (instead of nationality_value)
+                a.Property(x => x.Value)
+                    .HasColumnName(nameof(Customer.Nationality).Underscore())
+                    .HasMaxLength(EfConstants.Lenght.Short);
+            });
 
-            a.Property(p => p.Detail)
-                .HasMaxLength(EfConstants.Lenght.Medium);
-        });
-
-        builder.Property(x => x.Nationality)
-            .IsRequired(false)
-            .HasMaxLength(EfConstants.Lenght.Short)
-            .HasConversion(
-                nationality => (string?)nationality,
-                nationality => (Nationality?)nationality); // converting optional value objects
-
-        builder.Property(x => x.BirthDate)
-            .IsRequired(false)
-            .HasConversion(x => (DateTime?)x, x => (BirthDate?)x);
+        builder.OwnsOne(
+            x => x.BirthDate,
+            a =>
+            {
+                // configuration just for  changing column name in db (instead of birthDate_value)
+                a.Property(x => x.Value)
+                    .HasColumnName(nameof(Customer.BirthDate).Underscore());
+            });
 
         builder.Property(x => x.Created).HasDefaultValueSql(EfConstants.DateAlgorithm);
     }

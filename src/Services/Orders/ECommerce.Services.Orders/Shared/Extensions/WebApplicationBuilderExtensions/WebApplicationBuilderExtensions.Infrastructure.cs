@@ -62,7 +62,7 @@ internal static partial class WebApplicationBuilderExtensions
 
         if (builder.Environment.IsTest() == false)
         {
-            builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
+            builder.AddCustomHealthCheck(healthChecksBuilder =>
             {
                 var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>(nameof(PostgresOptions));
                 var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
@@ -107,8 +107,7 @@ internal static partial class WebApplicationBuilderExtensions
                     }));
         });
 
-        builder.Services.AddCustomMassTransit(
-            builder.Environment,
+        builder.AddCustomMassTransit(
             (context, cfg) =>
             {
                 cfg.AddCustomerEndpoints(context);

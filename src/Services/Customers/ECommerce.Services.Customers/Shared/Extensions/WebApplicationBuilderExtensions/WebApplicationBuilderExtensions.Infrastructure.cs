@@ -18,6 +18,7 @@ using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
 using BuildingBlocks.Web.Extensions;
 using ECommerce.Services.Customers.Customers;
+using ECommerce.Services.Customers.Customers.Extensions;
 using ECommerce.Services.Customers.Products;
 using ECommerce.Services.Customers.RestockSubscriptions;
 using ECommerce.Services.Customers.Shared.Clients.Catalogs;
@@ -53,7 +54,7 @@ public static partial class WebApplicationBuilderExtensions
 
         if (builder.Environment.IsTest() == false)
         {
-            builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
+            builder.AddCustomHealthCheck(healthChecksBuilder =>
             {
                 var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>();
                 var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
@@ -117,8 +118,7 @@ public static partial class WebApplicationBuilderExtensions
         // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
         builder.AddCustomRateLimit();
 
-        builder.Services.AddCustomMassTransit(
-            builder.Environment,
+        builder.AddCustomMassTransit(
             (context, cfg) =>
             {
                 cfg.AddUsersEndpoints(context);

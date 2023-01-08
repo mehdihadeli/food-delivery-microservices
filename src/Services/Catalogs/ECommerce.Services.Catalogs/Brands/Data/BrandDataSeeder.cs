@@ -7,12 +7,12 @@ namespace ECommerce.Services.Catalogs.Brands.Data;
 
 public class BrandDataSeeder : IDataSeeder
 {
-    public sealed class BrandFaker : AutoFaker<Brand>
+    public sealed class BrandSeedFaker : AutoFaker<Brand>
     {
-        public BrandFaker()
+        public BrandSeedFaker()
         {
             long id = 1;
-            RuleFor(m => m.Id, f => new BrandId(id++));
+            RuleFor(m => m.Id, f => BrandId.Of(id++));
             RuleFor(m => m.Name, f => f.Company.CompanyName());
         }
     }
@@ -36,7 +36,7 @@ public class BrandDataSeeder : IDataSeeder
         // https://github.com/bchavez/Bogus/blob/master/Examples/EFCoreSeedDb/Program.cs#L74
 
         // faker works with normal syntax because brand has a default constructor
-        var brands = new BrandFaker().Generate(5);
+        var brands = new BrandSeedFaker().Generate(5);
 
         await _context.Brands.AddRangeAsync(brands);
         await _context.SaveChangesAsync();

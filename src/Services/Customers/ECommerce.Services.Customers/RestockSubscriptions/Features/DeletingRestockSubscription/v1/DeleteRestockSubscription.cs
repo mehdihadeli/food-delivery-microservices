@@ -39,7 +39,7 @@ internal class DeleteRestockSubscriptionHandler : ICommandHandler<DeleteRestockS
         var exists = await _customersDbContext.RestockSubscriptions.IgnoreAutoIncludes()
             .SingleOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
 
-        Guard.Against.NotFound(exists, new RestockSubscriptionCustomNotFoundException(command.Id));
+        Guard.Against.NotFound(exists, new RestockSubscriptionNotFoundException(command.Id));
 
         // for raising a deleted domain event
         exists!.Delete();

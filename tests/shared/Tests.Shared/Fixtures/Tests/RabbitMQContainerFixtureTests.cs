@@ -16,7 +16,7 @@ public class RabbitMQContainerFixtureTests : IAsyncLifetime
     [Fact]
     public async Task cleanup_messaging()
     {
-        await _fixture.CleanupAsync();
+        await _fixture.CleanupQueuesAsync();
     }
 
     public async Task InitializeAsync()

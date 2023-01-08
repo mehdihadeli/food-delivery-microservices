@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\ECommerce.Services.Identity.TestShared\ECommerce.Services.Identity.TestShared.csproj" />
   </ItemGroup>
 
   <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
@@ -12,14 +10,21 @@
     <Content Include="..\..\..\..\src\Services\Identity\ECommerce.Services.Identity.Api\appsettings.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\..\..\src\Services\Identity\ECommerce.Services.Identity.Api\appsettings.test.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\shared\Tests.Shared\Tests.Shared.csproj" />
-  </ItemGroup>
 
+  <!--  We should add this reference in each test project-->
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.VisualStudio.TestPlatform" />
+    <PackageReference Include="coverlet.msbuild">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
-  
+
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

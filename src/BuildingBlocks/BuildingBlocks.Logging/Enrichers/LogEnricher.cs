@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Serilog;
 using Serilog.Events;
@@ -31,6 +32,11 @@ public static class LogEnricher
 
         // Set the content-type of the Response at this point
         diagnosticContext.Set("ContentType", httpContext.Response.ContentType);
+
+        // Set userId
+        diagnosticContext.Set(
+            "UserId",
+            httpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier)?.Value);
 
         // Retrieve the IEndpointFeature selected for the request
         var endpoint = httpContext.GetEndpoint();

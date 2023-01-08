@@ -1,9 +1,9 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Web.Module;
+using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Utils;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
 
 namespace BuildingBlocks.Web.Extensions;
 
@@ -13,17 +13,26 @@ public static class ModuleExtensions
         this WebApplicationBuilder webApplicationBuilder,
         params Assembly[] scanAssemblies)
     {
-        var assemblies = scanAssemblies.Any() ? scanAssemblies : AppDomain.CurrentDomain.GetAssemblies();
+        // Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
+        // load all referenced assemblies explicitly.
+        var assemblies = scanAssemblies.Any()
+            ? scanAssemblies
+            : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly())
+                .Concat(ReflectionUtilities.GetApplicationPartAssemblies(Assembly.GetCallingAssembly()))
+                .Distinct()
+                .ToArray();
 
-        var modulesConfiguration = assemblies.SelectMany(x => x.GetTypes()).Where(t =>
-            t.IsClass && !t.IsAbstract && !t.IsGenericType && !t.IsInterface
-            && t.GetConstructor(Type.EmptyTypes) != null
-            && typeof(IModuleConfiguration).IsAssignableFrom(t)).ToList();
+        var modulesConfiguration = assemblies.SelectMany(x => x.GetLoadableTypes())
+            .Where(t =>
+                t!.IsClass && !t.IsAbstract && !t.IsGenericType && !t.IsInterface
+                && t.GetConstructor(Type.EmptyTypes) != null
+                && typeof(IModuleConfiguration).IsAssignableFrom(t)).ToList();
 
-        var sharedModulesConfiguration = assemblies.SelectMany(x => x.GetTypes()).Where(t =>
-            t.IsClass && !t.IsAbstract && !t.IsGenericType && !t.IsInterface
-            && t.GetConstructor(Type.EmptyTypes) != null
-            && typeof(ISharedModulesConfiguration).IsAssignableFrom(t)).ToList();
+        var sharedModulesConfiguration = assemblies.SelectMany(x => x.GetLoadableTypes())
+            .Where(t =>
+                t!.IsClass && !t.IsAbstract && !t.IsGenericType && !t.IsInterface
+                && t.GetConstructor(Type.EmptyTypes) != null
+                && typeof(ISharedModulesConfiguration).IsAssignableFrom(t)).ToList();
 
         foreach (var sharedModule in sharedModulesConfiguration)
         {

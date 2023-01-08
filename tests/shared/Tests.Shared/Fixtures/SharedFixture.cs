@@ -2,25 +2,27 @@ using System.Net;
 using System.Security.Claims;
 using Ardalis.GuardClauses;
 using AutoBogus;
-using AutoFixture;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Core.Types;
 using BuildingBlocks.Persistence.Mongo;
+using FluentAssertions;
+using FluentAssertions.Extensions;
 using MassTransit;
 using MassTransit.Testing;
 using MediatR;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
 using Tests.Shared.Auth;
 using Tests.Shared.Factory;
+using Tests.Shared.TestBase;
 using WireMock.Server;
 using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
 
@@ -35,19 +37,24 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
     private HttpClient? _adminClient;
     private HttpClient? _normalClient;
     private HttpClient? _guestClient;
+    private ILogger? _logger;
 
     public Func<Task>? OnSharedFixtureInitialized;
     public Func<Task>? OnSharedFixtureDisposed;
-    public int Timeout { get; set; } = 180;
+
+    public ILogger Logger =>
+        _logger ??= ServiceProvider.GetRequiredService<ILogger<IntegrationTest<TEntryPoint>>>();
+
     public PostgresContainerFixture PostgresContainerFixture { get; }
     public Mongo2GoFixture Mongo2GoFixture { get; }
     public RabbitMQContainerFixture RabbitMqContainerFixture { get; }
     public CustomWebApplicationFactory<TEntryPoint> Factory { get; private set; }
-
     public IServiceProvider ServiceProvider => _serviceProvider ??= Factory.Services;
 
-    public IConfiguration Configuration => _configuration ??= ServiceProvider.GetRequiredService<IConfiguration>();
-    public ITestHarness Harness => _harness ??= ServiceProvider.GetRequiredService<ITestHarness>();
+    public IConfiguration Configuration =>
+        _configuration ??= ServiceProvider.GetRequiredService<IConfiguration>();
+
+    public ITestHarness MasstransitHarness => _harness ??= ServiceProvider.GetRequiredService<ITestHarness>();
 
     public IHttpContextAccessor HttpContextAccessor => _httpContextAccessor ??=
         ServiceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -60,6 +67,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
 
     public SharedFixture()
     {
+        // Service provider will build after getting with get accessors, we don't want to build our service provider here
         PostgresContainerFixture = new PostgresContainerFixture();
         Mongo2GoFixture = new Mongo2GoFixture();
         RabbitMqContainerFixture = new RabbitMQContainerFixture();
@@ -73,6 +81,19 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
                     .WithTreeDepth(1)
                     .WithRepeatCount(1);
             });
+
+        // close to equivalency required to reconcile precision differences between EF and Postgres
+        AssertionOptions.AssertEquivalencyUsing(options =>
+        {
+            options.Using<DateTime>(ctx => ctx.Subject
+                .Should()
+                .BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTime>();
+            options.Using<DateTimeOffset>(ctx => ctx.Subject
+                .Should()
+                .BeCloseTo(ctx.Expectation, 1.Seconds())).WhenTypeIs<DateTimeOffset>();
+
+            return options;
+        });
 
         // new WireMockServer() is equivalent to call WireMockServer.Start()
         WireMockServer = WireMockServer.Start();
@@ -101,8 +122,8 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
 
     public async Task InitializeAsync()
     {
+        // Service provider will build after getting with get accessors, we don't want to build our service provider here
         await Factory.InitializeAsync();
-        // Service provider will build after getting with get accessors
         await PostgresContainerFixture.InitializeAsync();
         await Mongo2GoFixture.InitializeAsync();
         await RabbitMqContainerFixture.InitializeAsync();
@@ -114,6 +135,8 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
 
     public async Task DisposeAsync()
     {
+        await MasstransitHarness.Stop();
+
         await PostgresContainerFixture.DisposeAsync();
         await Mongo2GoFixture.DisposeAsync();
         await RabbitMqContainerFixture.DisposeAsync();
@@ -131,7 +154,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
 
     public async Task CleanupMessaging(CancellationToken cancellationToken = default)
     {
-        await RabbitMqContainerFixture.CleanupAsync(cancellationToken);
+        await RabbitMqContainerFixture.CleanupQueuesAsync(cancellationToken);
     }
 
     public async Task ResetDatabasesAsync(CancellationToken cancellationToken = default)
@@ -191,13 +214,13 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
         httpContextAccessor.HttpContext = httpContext;
     }
 
-    public async ValueTask ExecuteScopeAsync(Func<IServiceProvider, ValueTask> action)
+    public async Task ExecuteScopeAsync(Func<IServiceProvider, Task> action)
     {
         await using var scope = ServiceProvider.CreateAsyncScope();
         await action(scope.ServiceProvider);
     }
 
-    public async ValueTask<T> ExecuteScopeAsync<T>(Func<IServiceProvider, ValueTask<T>> action)
+    public async Task<T> ExecuteScopeAsync<T>(Func<IServiceProvider, Task<T>> action)
     {
         await using var scope = ServiceProvider.CreateAsyncScope();
 
@@ -272,7 +295,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
     // Ref: https://tech.energyhelpline.com/in-memory-testing-with-masstransit/
     public async ValueTask WaitUntilConditionMet(Func<Task<bool>> conditionToMet, int? timeoutSecond = null)
     {
-        var time = timeoutSecond ?? Timeout;
+        var time = timeoutSecond ?? 300;
 
         var startTime = DateTime.Now;
         var timeoutExpired = false;
@@ -296,13 +319,11 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
         await WaitUntilConditionMet(async () =>
         {
             // message has been published for this harness.
-            var published = await Harness.Published.Any<TMessage>(cancellationToken);
-            // // there is a fault when publishing for this harness.
-            // var faulty = await Harness.Published.Any<Fault<TMessage>>(cancellationToken);
-            //
-            // return published && faulty == false;
+            var published = await MasstransitHarness.Published.Any<TMessage>(cancellationToken);
+            // there is a fault when publishing for this harness.
+            var faulty = await MasstransitHarness.Published.Any<Fault<TMessage>>(cancellationToken);
 
-            return published;
+            return published & !faulty;
         });
     }
 
@@ -312,11 +333,11 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
         await WaitUntilConditionMet(async () =>
         {
             //consumer consumed the message.
-            var consumed = await Harness.Consumed.Any<TMessage>(cancellationToken);
+            var consumed = await MasstransitHarness.Consumed.Any<TMessage>(cancellationToken);
             //there was a fault when consuming for this harness.
-            var faulty = await Harness.Consumed.Any<Fault<TMessage>>(cancellationToken);
+            var faulty = await MasstransitHarness.Consumed.Any<Fault<TMessage>>(cancellationToken);
 
-            return consumed && faulty == false;
+            return consumed && !faulty;
         });
     }
 
@@ -332,7 +353,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
             //there was a fault when consuming for this harness.
             var faulty = await consumerHarness.Consumed.Any<Fault<TMessage>>(cancellationToken);
 
-            return consumed && faulty == false;
+            return consumed && !faulty;
         });
     }
 
@@ -356,7 +377,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
     //     return hypothesis;
     // }
     //
-    // public async ValueTask<IHypothesis<TMessage>> ShouldConsumeWithNewConsumer<TMessage, TConsumer>(
+    // public  async ValueTask<IHypothesis<TMessage>> ShouldConsumeWithNewConsumer<TMessage, TConsumer>(
     //     Predicate<TMessage>? match = null)
     //     where TMessage : class, IMessage
     //     where TConsumer : class, IConsumer<TMessage>
@@ -468,167 +489,4 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
 
         return _ = new MockAuthUser(otherClaims.Concat(new[] {roleClaim}).ToArray());
     }
-}
-
-public class SharedFixture<TEntryPoint, TContext> : SharedFixture<TEntryPoint>
-    where TContext : DbContext
-    where TEntryPoint : class
-{
-    public async Task ExecuteTxContextAsync(Func<IServiceProvider, TContext, ValueTask> action)
-    {
-        await using var scope = ServiceProvider.CreateAsyncScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<TContext>();
-        var strategy = dbContext.Database.CreateExecutionStrategy();
-        await strategy.ExecuteAsync(async () =>
-        {
-            try
-            {
-                await dbContext.Database.BeginTransactionAsync();
-
-                await action(scope.ServiceProvider, dbContext);
-
-                await dbContext.Database.CommitTransactionAsync();
-            }
-            catch (Exception ex)
-            {
-                dbContext.Database?.RollbackTransactionAsync();
-                throw;
-            }
-        });
-    }
-
-    public async Task<T> ExecuteTxContextAsync<T>(Func<IServiceProvider, TContext, ValueTask<T>> action)
-    {
-        await using var scope = ServiceProvider.CreateAsyncScope();
-        //https://weblogs.asp.net/dixin/entity-framework-core-and-linq-to-entities-7-data-changes-and-transactions
-        var dbContext = scope.ServiceProvider.GetRequiredService<TContext>();
-        var strategy = dbContext.Database.CreateExecutionStrategy();
-        return await strategy.ExecuteAsync(async () =>
-        {
-            try
-            {
-                await dbContext.Database.BeginTransactionAsync();
-
-                var result = await action(scope.ServiceProvider, dbContext);
-
-                await dbContext.Database.CommitTransactionAsync();
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                dbContext.Database?.RollbackTransactionAsync();
-                throw;
-            }
-        });
-    }
-
-    public ValueTask ExecuteContextAsync(Func<TContext, ValueTask> action)
-        => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TContext>()));
-
-    public ValueTask ExecuteContextAsync(Func<TContext, ICommandProcessor, ValueTask> action)
-        => ExecuteScopeAsync(sp =>
-            action(sp.GetRequiredService<TContext>(), sp.GetRequiredService<ICommandProcessor>()));
-
-    public ValueTask<T> ExecuteContextAsync<T>(Func<TContext, ValueTask<T>> action)
-        => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TContext>()));
-
-    public ValueTask<T> ExecuteContextAsync<T>(Func<TContext, ICommandProcessor, ValueTask<T>> action)
-        => ExecuteScopeAsync(sp =>
-            action(sp.GetRequiredService<TContext>(), sp.GetRequiredService<ICommandProcessor>()));
-
-    public async ValueTask<int> InsertAsync<T>(params T[] entities) where T : class
-    {
-        return await ExecuteContextAsync(async db =>
-        {
-            foreach (var entity in entities)
-            {
-                db.Set<T>().Add(entity);
-            }
-
-            return await db.SaveChangesAsync();
-        });
-    }
-
-    public async ValueTask<int> InsertAsync<TEntity>(TEntity entity) where TEntity : class
-    {
-        return await ExecuteContextAsync(async db =>
-        {
-            db.Set<TEntity>().Add(entity);
-
-            return await db.SaveChangesAsync();
-        });
-    }
-
-    public async ValueTask<int> InsertAsync<TEntity, TEntity2>(TEntity entity, TEntity2 entity2)
-        where TEntity : class
-        where TEntity2 : class
-    {
-        return await ExecuteContextAsync(async db =>
-        {
-            db.Set<TEntity>().Add(entity);
-            db.Set<TEntity2>().Add(entity2);
-
-            return await db.SaveChangesAsync();
-        });
-    }
-
-    public async ValueTask<int> InsertAsync<TEntity, TEntity2, TEntity3>(TEntity entity, TEntity2 entity2, TEntity3
-        entity3)
-        where TEntity : class
-        where TEntity2 : class
-        where TEntity3 : class
-    {
-        return await ExecuteContextAsync(async db =>
-        {
-            db.Set<TEntity>().Add(entity);
-            db.Set<TEntity2>().Add(entity2);
-            db.Set<TEntity3>().Add(entity3);
-
-            return await db.SaveChangesAsync();
-        });
-    }
-
-    public async ValueTask<int> InsertAsync<TEntity, TEntity2, TEntity3, TEntity4>(TEntity entity, TEntity2 entity2,
-        TEntity3 entity3, TEntity4 entity4)
-        where TEntity : class
-        where TEntity2 : class
-        where TEntity3 : class
-        where TEntity4 : class
-    {
-        return await ExecuteContextAsync(async db =>
-        {
-            db.Set<TEntity>().Add(entity);
-            db.Set<TEntity2>().Add(entity2);
-            db.Set<TEntity3>().Add(entity3);
-            db.Set<TEntity4>().Add(entity4);
-
-            return await db.SaveChangesAsync();
-        });
-    }
-
-    public ValueTask<T?> FindAsync<T>(object id) where T : class
-    {
-        return ExecuteContextAsync(db => db.Set<T>().FindAsync(id));
-    }
-}
-
-public class SharedFixture<TEntryPoint, TWContext, TRContext> : SharedFixture<TEntryPoint, TWContext>
-    where TWContext : DbContext
-    where TRContext : MongoDbContext
-    where TEntryPoint : class
-{
-    public ValueTask ExecuteReadContextAsync(Func<TRContext, ValueTask> action)
-        => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TRContext>()));
-
-    public ValueTask ExecuteReadContextAsync(Func<TRContext, ICommandProcessor, ValueTask> action)
-        => ExecuteScopeAsync(sp =>
-            action(sp.GetRequiredService<TRContext>(), sp.GetRequiredService<ICommandProcessor>()));
-
-    public ValueTask<T> ExecuteReadContextAsync<T>(Func<TRContext, ValueTask<T>> action)
-        => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TRContext>()));
-
-    public ValueTask<T> ExecuteReadContextAsync<T>(Func<TRContext, ICommandProcessor, ValueTask<T>> action)
-        => ExecuteScopeAsync(sp =>
-            action(sp.GetRequiredService<TRContext>(), sp.GetRequiredService<ICommandProcessor>()));
 }

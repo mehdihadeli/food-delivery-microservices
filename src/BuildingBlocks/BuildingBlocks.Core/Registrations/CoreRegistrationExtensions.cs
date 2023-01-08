@@ -14,6 +14,7 @@ using BuildingBlocks.Core.Messaging.MessagePersistence;
 using BuildingBlocks.Core.Messaging.MessagePersistence.InMemory;
 using BuildingBlocks.Core.Serialization;
 using BuildingBlocks.Core.Types;
+using BuildingBlocks.Core.Utils;
 using Microsoft.Extensions.Configuration;
 using Scrutor;
 
@@ -24,9 +25,17 @@ public static class CoreRegistrationExtensions
     public static IServiceCollection AddCore(
         this IServiceCollection services,
         IConfiguration configuration,
-        params Assembly[] assembliesToScan)
+        params Assembly[] scanAssemblies)
     {
         var systemInfo = MachineInstanceInfo.New();
+
+        // Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
+        // load all referenced assemblies explicitly.
+        var assemblies = scanAssemblies.Any()
+            ? scanAssemblies
+            : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly())
+                .Distinct()
+                .ToArray();
 
         services.AddSingleton<IMachineInstanceInfo>(systemInfo);
         services.AddSingleton(systemInfo);
@@ -38,9 +47,9 @@ public static class CoreRegistrationExtensions
 
         AddDefaultSerializer(services);
 
-        AddMessagingCore(services, configuration, ServiceLifetime.Transient, assembliesToScan);
+        AddMessagingCore(services, configuration, assemblies);
 
-        RegisterEventMappers(services, assembliesToScan);
+        RegisterEventMappers(services, assemblies);
 
         switch (configuration["IdGenerator:Type"])
         {
@@ -55,10 +64,10 @@ public static class CoreRegistrationExtensions
         return services;
     }
 
-    private static void RegisterEventMappers(IServiceCollection services, params Assembly[] assembliesToScan)
+    private static void RegisterEventMappers(IServiceCollection services, Assembly[] scanAssemblies)
     {
         services.Scan(scan => scan
-            .FromAssemblies(assembliesToScan.Any() ? assembliesToScan : AppDomain.CurrentDomain.GetAssemblies())
+            .FromAssemblies(scanAssemblies)
             .AddClasses(classes => classes.AssignableTo(typeof(IEventMapper)), false)
             .AsImplementedInterfaces()
             .WithSingletonLifetime()
@@ -73,10 +82,10 @@ public static class CoreRegistrationExtensions
     private static void AddMessagingCore(
         this IServiceCollection services,
         IConfiguration configuration,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Transient,
-        params Assembly[] assembliesToScan)
+        Assembly[] scanAssemblies,
+        ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
     {
-        AddMessagingMediator(services, serviceLifetime, assembliesToScan);
+        AddMessagingMediator(services, serviceLifetime, scanAssemblies);
 
         AddPersistenceMessage(services, configuration);
     }
@@ -96,10 +105,10 @@ public static class CoreRegistrationExtensions
     private static void AddMessagingMediator(
         IServiceCollection services,
         ServiceLifetime serviceLifetime,
-        Assembly[] assembliesToScan)
+        Assembly[] scanAssemblies)
     {
         services.Scan(scan => scan
-            .FromAssemblies(assembliesToScan.Any() ? assembliesToScan : AppDomain.CurrentDomain.GetAssemblies())
+            .FromAssemblies(scanAssemblies)
             .AddClasses(classes => classes.AssignableTo(typeof(IMessageHandler<>)))
             .UsingRegistrationStrategy(RegistrationStrategy.Append)
             .AsClosedTypeOf(typeof(IMessageHandler<>))

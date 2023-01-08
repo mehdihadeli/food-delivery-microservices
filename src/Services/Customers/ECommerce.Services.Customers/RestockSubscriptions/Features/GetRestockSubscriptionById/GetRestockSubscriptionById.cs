@@ -50,7 +50,7 @@ public record GetRestockSubscriptionById
 
                 Guard.Against.NotFound(
                     restockSubscription,
-                    new RestockSubscriptionCustomNotFoundException(query.Id));
+                    new RestockSubscriptionNotFoundException(query.Id));
 
                 var subscriptionDto = _mapper.Map<RestockSubscriptionDto>(restockSubscription);
 

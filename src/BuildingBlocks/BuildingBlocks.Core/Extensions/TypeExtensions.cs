@@ -5,14 +5,24 @@ using System.Runtime.CompilerServices;
 using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Scheduler;
+using BuildingBlocks.Core.Utils;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace BuildingBlocks.Core.Extensions;
 
 public static class TypeExtensions
 {
-    private static readonly ConcurrentDictionary<Type, string> TypeCacheKeys = new();
-    private static readonly ConcurrentDictionary<Type, string> PrettyPrintCache = new();
+    private static readonly ConcurrentDictionary<Type, string> _typeCacheKeys = new();
+    private static readonly ConcurrentDictionary<Type, string> _prettyPrintCache = new();
+
+    private const BindingFlags PublicInstanceMembersFlag =
+        BindingFlags.Public | BindingFlags.Instance;
+
+    private const BindingFlags AllInstanceMembersFlag =
+        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
+    private const BindingFlags AllStaticAndInstanceMembersFlag =
+        PublicInstanceMembersFlag | BindingFlags.NonPublic | BindingFlags.Static;
 
     /// <summary>
     /// Invoke a static generic method
@@ -131,7 +141,7 @@ public static class TypeExtensions
 
     public static string GetCacheKey(this Type type)
     {
-        return TypeCacheKeys.GetOrAdd(type, t => $"{t.PrettyPrint()}");
+        return _typeCacheKeys.GetOrAdd(type, t => $"{t.PrettyPrint()}");
     }
 
     /// <summary>
@@ -831,7 +841,7 @@ public static class TypeExtensions
 
     public static string PrettyPrint(this Type type)
     {
-        return PrettyPrintCache.GetOrAdd(
+        return _prettyPrintCache.GetOrAdd(
             type,
             t =>
             {
@@ -915,6 +925,17 @@ public static class TypeExtensions
             throw new ArgumentException($"Type '{type.PrettyPrint()}' doesn't have a method called '{methodName}'");
         }
 
-        return methodInfo.CompileMethodInvocation<TResult>();
+        return ReflectionUtilities.CompileMethodInvocation<TResult>(methodInfo);
+    }
+
+    public static PropertyInfo? FindProperty(this Type type, string propertyName)
+    {
+        PropertyInfo? res = null;
+        foreach (var prop in propertyName.Split('.'))
+        {
+            res = res == null ? type.GetProperty(prop) : res.PropertyType.GetProperty(prop);
+        }
+
+        return res;
     }
 }

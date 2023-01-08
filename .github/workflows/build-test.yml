@@ -9,33 +9,59 @@ on:
 
 jobs:
   build:
-
+    # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
+    # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Check out code
+      uses: actions/checkout@v2
 
-    - name: Setup .NET
+    - name: set release date
+        run: |
+          echo "BUILD_VERSION=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
+
+    - name: Install .NET Core SDK
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 7.0.x
         include-prerelease: true
-        
-    - name: Restore dependencies
+
+    - name: Restore NuGet packages
       run: dotnet restore
-      
+
     - name: Build
-      run: dotnet build --no-restore -c Release
-      
-    - name: Test
-      run: dotnet test --filter Category!=Integration -c Release  --collect:"XPlat Code Coverage" --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --blame-hang --blame-hang-timeout 2m  --logger "trx;LogFileName=test-results.trx"
-      
-    - name: Upload test results
-      uses: actions/upload-artifact@v2
-      if: success() || failure()
+      run: dotnet build -c Release --no-restore
+
+    # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
+    # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+    # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
+    # https://josef.codes/dotnet-core-filter-out-specific-test-projects-when-running-dotnet-test/
+    # https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
+    # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+    - name: Run Unit Tests with Coverage
+      run: dotnet test -c Release --no-build --filter "Category=Unit&FullyQualifiedName~UnitTests"
+      /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov
+
+    - name: Run Integration And EndToEnd Tests with Coverage
+      run: dotnet test -c Release --no-build --filter "(Category=Integration&FullyQualifiedName~IntegrationTests)|
+      (Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
+      /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov
+
+    # https://github.com/danielpalme/ReportGenerator
+    # https://github.com/danielpalme/ReportGenerator-GitHub-Action
+    # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+    # https://dotnetthoughts.net/generating-code-coverage-reports-in-dotnet-core/
+    # merging all coverage in a single coverage file and generating html files for downloading as artifacts
+    - name: Generate Report
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.1.13
       with:
-        name: test-results
-        path: '**/test-results.trx'
-                
-    - name: Codecov
-      uses: codecov/codecov-action@v2
+        reports: '${{ github.workspace }}/**/*.cobertura.xml'
+        targetdir: '${{ github.workspace }}/tests/CoverageResults'
+        reporttypes: 'Cobertura;lcov;MarkdownSummaryGithub;Html'
+
+      - name: Publish coverage report to coveralls.io
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov:  '${{ github.workspace }}/tests/CoverageResults'

@@ -1,10 +1,12 @@
 using System.Reflection;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 
 namespace BuildingBlocks.Swagger;
 
@@ -12,33 +14,44 @@ public static class Extensions
 {
     // https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/README.md
     // https://github.com/dotnet/aspnet-api-versioning/tree/88323136a97a59fcee24517a514c1a445530c7e2/examples/AspNetCore/WebApi/MinimalOpenApiExample
-    public static WebApplicationBuilder AddCustomSwagger(this WebApplicationBuilder builder, Assembly assembly)
+    public static WebApplicationBuilder AddCustomSwagger(
+        this WebApplicationBuilder builder,
+        params Assembly[] assemblies)
     {
-        builder.Services.AddCustomSwagger(builder.Configuration, assembly);
+        builder.Services.AddCustomSwagger(assemblies);
 
         return builder;
     }
 
     public static IServiceCollection AddCustomSwagger(
         this IServiceCollection services,
-        IConfiguration configuration,
-        Assembly assembly)
+        params Assembly[] assemblies)
     {
+        var scanAssemblies = assemblies.Any() ? assemblies : new[] {Assembly.GetExecutingAssembly()};
+
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi
         services.AddEndpointsApiExplorer();
 
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-        services.AddOptions<SwaggerOptions>().Bind(configuration.GetSection(nameof(SwaggerOptions)))
-            .ValidateDataAnnotations();
+        services.AddValidatedOptions<SwaggerOptions>();
 
         services.AddSwaggerGen(
             options =>
             {
+                // // https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/1269#issuecomment-577182931
+                // options.SchemaFilter<EnumSchemaFilter>();
+
+                // https://github.com/unchase/Unchase.Swashbuckle.AspNetCore.Extensions#fix-enums
+                options.AddEnumsWithValuesFixFilters();
+
                 options.OperationFilter<SwaggerDefaultValues>();
                 options.OperationFilter<ApiVersionOperationFilter>();
 
-                var xmlFile = XmlCommentsFilePath(assembly);
-                if (File.Exists(xmlFile)) options.IncludeXmlComments(xmlFile);
+                foreach (var assembly in scanAssemblies)
+                {
+                    var xmlFile = XmlCommentsFilePath(assembly);
+                    if (File.Exists(xmlFile)) options.IncludeXmlComments(xmlFile);
+                }
 
                 // https://github.com/domaindrivendev/Swashbuckle.AspNetCore#add-security-definitions-and-requirements
                 // https://swagger.io/docs/specification/authentication/

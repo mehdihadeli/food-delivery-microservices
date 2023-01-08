@@ -1,22 +1,26 @@
-using BuildingBlocks.Core.Domain;
+using Ardalis.GuardClauses;
 
 namespace ECommerce.Services.Orders.Orders.ValueObjects;
 
 // https://ardalis.com/working-with-value-objects/
-public class ProductInfo : ValueObject
+// https://learn.microsoft.com/en-us/ef/core/modeling/constructors
+public record ProductInfo
 {
-    public string Name { get; private set; }
+    // EF
+    public ProductInfo()
+    {
+    }
+
+    public string Name { get; private set; } = default!;
     public long ProductId { get; private set; }
     public decimal Price { get; private set; }
 
-    public static ProductInfo Create(string name, long productId, decimal price)
+    public static ProductInfo Of(string name, long productId, decimal price)
     {
-        return new ProductInfo { Name = name, ProductId = productId, Price = price };
-    }
+        Guard.Against.NullOrWhiteSpace(name);
+        Guard.Against.NegativeOrZero(productId);
+        Guard.Against.NegativeOrZero(price);
 
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Name;
-        yield return ProductId;
+        return new ProductInfo {Name = name, ProductId = productId, Price = price};
     }
 }

@@ -1,17 +1,20 @@
 using Ardalis.GuardClauses;
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Core.Exception;
 using BuildingBlocks.Core.IdsGenerator;
+using ECommerce.Services.Catalogs.Brands;
 using ECommerce.Services.Catalogs.Brands.Exceptions.Application;
+using ECommerce.Services.Catalogs.Categories;
 using ECommerce.Services.Catalogs.Categories.Exceptions.Domain;
-using ECommerce.Services.Catalogs.Products.Dtos;
 using ECommerce.Services.Catalogs.Products.Dtos.v1;
 using ECommerce.Services.Catalogs.Products.Features.CreatingProduct.v1.Requests;
 using ECommerce.Services.Catalogs.Products.Models;
 using ECommerce.Services.Catalogs.Products.ValueObjects;
 using ECommerce.Services.Catalogs.Shared.Contracts;
 using ECommerce.Services.Catalogs.Shared.Extensions;
+using ECommerce.Services.Catalogs.Suppliers;
 using ECommerce.Services.Catalogs.Suppliers.Exceptions.Application;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -111,28 +114,33 @@ public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProduct
         Guard.Against.Null(command, nameof(command));
 
         var images = command.Images?.Select(x =>
-            new ProductImage(SnowFlakIdGenerator.NewId(), x.ImageUrl, x.IsMain, command.Id)).ToList();
+                new ProductImage(
+                    EntityId.CreateEntityId(SnowFlakIdGenerator.NewId()),
+                    x.ImageUrl,
+                    x.IsMain,
+                    ProductId.Of(command.Id)))
+            .ToList();
 
-        var category = await _catalogDbContext.FindCategoryAsync(command.CategoryId);
+        var category = await _catalogDbContext.FindCategoryAsync(CategoryId.Of(command.CategoryId));
         Guard.Against.NotFound(category, new CategoryDomainException(command.CategoryId));
 
-        var brand = await _catalogDbContext.FindBrandAsync(command.BrandId);
-        Guard.Against.NotFound(brand, new BrandCustomNotFoundException(command.BrandId));
+        var brand = await _catalogDbContext.FindBrandAsync(BrandId.Of(command.BrandId));
+        Guard.Against.NotFound(brand, new BrandNotFoundException(command.BrandId));
 
-        var supplier = await _catalogDbContext.FindSupplierByIdAsync(command.SupplierId);
-        Guard.Against.NotFound(supplier, new SupplierCustomNotFoundException(command.SupplierId));
+        var supplier = await _catalogDbContext.FindSupplierByIdAsync(SupplierId.Of(command.SupplierId));
+        Guard.Against.NotFound(supplier, new SupplierNotFoundException(command.SupplierId));
 
         // await _domainEventDispatcher.DispatchAsync(cancellationToken, new Events.Domain.CreatingProduct());
         var product = Product.Create(
-            command.Id,
-            command.Name,
-            Stock.Create(command.Stock, command.RestockThreshold, command.MaxStockThreshold),
+            ProductId.Of(command.Id),
+            Name.Of(command.Name),
+            Stock.Of(command.Stock, command.RestockThreshold, command.MaxStockThreshold),
             command.Status,
-            Dimensions.Create(command.Width, command.Height, command.Depth),
-            command.Size,
+            Dimensions.Of(command.Width, command.Height, command.Depth),
+            Size.Of(command.Size),
             command.Color,
             command.Description,
-            command.Price,
+            Price.Of(command.Price),
             category!.Id,
             supplier!.Id,
             brand!.Id,

@@ -1,25 +1,24 @@
 using Ardalis.GuardClauses;
-using BuildingBlocks.Core.Exception;
-using ECommerce.Services.Catalogs.Products.Exceptions.Domain;
 
 namespace ECommerce.Services.Catalogs.Products.ValueObjects;
 
+// https://learn.microsoft.com/en-us/ef/core/modeling/constructors
 public record Name
 {
-    public string Value { get; private set; }
-
-    public Name? Null => null;
-
-    public static Name Create(string value)
+    // EF
+    public Name()
     {
-        return new Name
-        {
-            Value = Guard.Against.NullOrEmpty(value, new ProductDomainException("Name can't be null mor empty."))
-        };
     }
 
-    public static implicit operator Name(string value) => Create(value);
+    public string Value { get; private set; } = default!;
 
-    public static implicit operator string(Name value) =>
-        Guard.Against.Null(value.Value, new ProductDomainException("Name can't be null."));
+    public static Name Of(string value)
+    {
+        // validations should be placed here instead of constructor
+        Guard.Against.NullOrEmpty(value);
+
+        return new Name {Value = value};
+    }
+
+    public static implicit operator string(Name value) => value.Value;
 }

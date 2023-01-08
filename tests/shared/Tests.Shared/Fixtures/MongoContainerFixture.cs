@@ -45,7 +45,7 @@ public class MongoContainerFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await Container.StopAsync();
-        await Container.DisposeAsync();
+        await Container.DisposeAsync(); //important for the event to cleanup to be fired!
     }
 
     private async Task DropDatabaseCollections(CancellationToken cancellationToken)
@@ -60,13 +60,12 @@ public class MongoContainerFixture : IAsyncLifetime
             await dbClient.GetDatabase(Container.Database).DropCollectionAsync(collection["name"].AsString, cancellationToken);
         }
     }
-}
-
-public class MongoContainerOptions
-{
-    public string Name { get; set; } = "mongo_" + Guid.NewGuid();
-    public string ImageName { get; set; } = "mongo:latest";
-    public string DatabaseName { get; set; } = "test_db";
-    public string UserName { get; set; } = "admin";
-    public string Password { get; set; } = "admin";
+    private  sealed class MongoContainerOptions
+    {
+        public string Name { get; set; } = "mongo_" + Guid.NewGuid();
+        public string ImageName { get; set; } = "mongo:latest";
+        public string DatabaseName { get; set; } = "test_db";
+        public string UserName { get; set; } = "admin";
+        public string Password { get; set; } = "admin";
+    }
 }

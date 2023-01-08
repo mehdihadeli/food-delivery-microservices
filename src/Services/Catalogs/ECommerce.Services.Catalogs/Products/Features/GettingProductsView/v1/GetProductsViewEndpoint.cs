@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProductsView.v1;
@@ -11,8 +12,8 @@ public static class GetProductsViewEndpoint
         return endpoints.MapGet("/products-view/{page}/{pageSize}", GetProductsView)
             // .RequireAuthorization()
             .Produces<GetProductsViewResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithDisplayName("Get Products View.")
             .WithName("GetProductsView")
             .WithMetadata(new SwaggerOperationAttribute("Getting Products View", "Getting Products View"));

@@ -29,7 +29,7 @@ public class RabbitMQContainerFixture : IAsyncLifetime
                 Username = rabbitmqContainerOptions.UserName, Password = rabbitmqContainerOptions.Password,
             })
             // set custom host http port for container http port 15672, beside of automatic tcp port will assign for container port 5672 (default port)
-            .WithPortBinding(15672, true)
+            .WithPortBinding(15673, 15672)
             // we could comment this line, this is default port for testcontainer
             .WithPortBinding(5672, true)
             .WithCleanUp(true)
@@ -39,7 +39,7 @@ public class RabbitMQContainerFixture : IAsyncLifetime
         Container = rabbitmqContainerBuilder.Build();
     }
 
-    public async Task CleanupAsync(CancellationToken cancellationToken = default)
+    public async Task CleanupQueuesAsync(CancellationToken cancellationToken = default)
     {
         // https://www.rabbitmq.com/dotnet-api-guide.html#exchanges-and-queues
         // https://www.rabbitmq.com/management.html#http-api
@@ -48,6 +48,27 @@ public class RabbitMQContainerFixture : IAsyncLifetime
         // https://www.planetgeek.ch/2015/08/16/cleaning-up-queues-and-exchanges-on-rabbitmq/
         // https://www.planetgeek.ch/2015/08/31/cleanup-code-for-cleaning-up-queues-and-exchanges-on-rabbitmq/
 
+        var apiPort = Container.GetMappedPublicPort(15672);
+
+        // here I used rabbitmq http apis (Management Plugin) but also we can also use RabbitMQ client library and channel.ExchangeDelete(), channel.QueueDelete(), official client
+        // is not complete for administrative works for example it doesn't have GetAllQueues, GetAllExchanges
+        var managementClient = new ManagementClient(
+            $"http://{Container.Hostname}",
+            Container.Username,
+            Container.Password,
+            apiPort);
+
+        //Creating new exchange after each publish doesn't support by masstransit and it just creates exchanges in init phase but works for queues
+        var queues = await managementClient.GetQueuesAsync(cancellationToken);
+        foreach (var queue in queues)
+        {
+            await managementClient.PurgeAsync(queue, cancellationToken);
+        }
+    }
+
+    // we can use this method also for when we don't use docker testcontainer
+    public async Task DropElementsAsync(CancellationToken cancellationToken = default)
+    {
         var apiPort = Container.GetMappedPublicPort(15672);
 
         // here I used rabbitmq http apis (Management Plugin) but also we can also use RabbitMQ client library and channel.ExchangeDelete(), channel.QueueDelete(), official client
@@ -72,15 +93,15 @@ public class RabbitMQContainerFixture : IAsyncLifetime
             await managementClient.DeleteQueueAsync(queue, cancellationToken);
         }
 
-        ////Creating new exchange after each publish doesn't support by masstransit and it just creates exchanges in init phase but works for queues
-        // var ex = await managementClient.GetExchangesAsync(cancellationToken);
-        // // ignore default rabbitmq exchanges for deleting
-        // var exchanges = ex.Where(x => !x.Name.StartsWith("amq.") && !string.IsNullOrWhiteSpace(x.Name));
-        //
-        // foreach (var exchange in exchanges)
-        // {
-        //     await managementClient.DeleteExchangeAsync(exchange, cancellationToken);
-        // }
+        //Creating new exchange after each publish doesn't support by masstransit and it just creates exchanges in init phase but works for queues
+        var ex = await managementClient.GetExchangesAsync(cancellationToken);
+        // ignore default rabbitmq exchanges for deleting
+        var exchanges = ex.Where(x => !x.Name.StartsWith("amq.") && !string.IsNullOrWhiteSpace(x.Name));
+
+        foreach (var exchange in exchanges)
+        {
+            await managementClient.DeleteExchangeAsync(exchange, cancellationToken);
+        }
     }
 
     public async Task InitializeAsync()
@@ -91,14 +112,15 @@ public class RabbitMQContainerFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await Container.StopAsync();
+        await Container.DisposeAsync(); //important for the event to cleanup to be fired!
     }
-}
 
-public class RabbitMQContainerOptions
-{
-    public string Name { get; set; } = "rabbitmq_" + Guid.NewGuid();
-    public ushort Port { get; set; } = 5672;
-    public string ImageName { get; set; } = "rabbitmq:management";
-    public string UserName { get; set; } = "guest";
-    public string Password { get; set; } = "guest";
+    private sealed class RabbitMQContainerOptions
+    {
+        public string Name { get; set; } = "rabbitmq_" + Guid.NewGuid();
+        public ushort Port { get; set; } = 5672;
+        public string ImageName { get; set; } = "rabbitmq:management";
+        public string UserName { get; set; } = "guest";
+        public string Password { get; set; } = "guest";
+    }
 }

@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
@@ -13,14 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Services\Catalogs\ECommerce.Services.Catalogs\ECommerce.Services.Catalogs.csproj" />
-    <ProjectReference Include="..\..\..\src\Services\Customers\ECommerce.Services.Customers\ECommerce.Services.Customers.csproj" />
-    <ProjectReference Include="..\..\..\src\Services\Identity\ECommerce.Services.Identity\ECommerce.Services.Identity.csproj" />
-    <ProjectReference Include="..\..\..\src\Services\Orders\ECommerce.Services.Orders\ECommerce.Services.Orders.csproj" />
-    <ProjectReference Include="..\..\..\src\Services\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <PackageReference Include="AutoFixture" />
     <PackageReference Include="Hypothesist" />
     <PackageReference Include="Hypothesist.MassTransit" />
@@ -31,7 +22,6 @@
     <PackageReference Include="Respawn" />
     <PackageReference Include="Squadron.Mongo" />
     <PackageReference Include="Testcontainers" />
-    <PackageReference Include="xunit" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="FluentAssertions.Web" />
     <PackageReference Include="FluentResults.Extensions.FluentAssertions" />
@@ -44,7 +34,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="AutoBogus" />
     <PackageReference Include="AutoBogus.NSubstitute" />
-    <PackageReference Include="xunit.analyzers" />
     <PackageReference Include="WebMotions.Fake.Authentication.JwtBearer" />
     <PackageReference Include="Bazinga.AspNetCore.Authentication.Basic" />
     <PackageReference Include="RestAssured.NET" />
@@ -54,10 +43,13 @@
     <PackageReference Include="Thinkcode.RabbitMQ.OpenAPI" />
     <PackageReference Include="EasyNetQ.Management.Client" />
   </ItemGroup>
-  
+
+<!-- What xunit NuGet Packages Should I Use? - https://xunit.net/docs/nuget-packages-->
   <ItemGroup>
+    <PackageReference Include="xunit" />
+    <!-- https://xunit.net/docs/nuget-packages#xunit.runner.visualstudio-->
+    <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Microsoft.VisualStudio.TestPlatform" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
   </ItemGroup>
 
 </Project>

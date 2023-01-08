@@ -1,4 +1,3 @@
-using System.Reflection;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Core.Extensions.ServiceCollection;
@@ -6,7 +5,6 @@ using BuildingBlocks.Core.Messaging.MessagePersistence;
 using BuildingBlocks.Messaging.Persistence.Postgres.MessagePersistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 
 namespace BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 
@@ -33,7 +31,7 @@ public static class ServiceCollectionExtensions
             options.UseNpgsql(postgresOptions.ConnectionString, sqlOptions =>
             {
                 sqlOptions.MigrationsAssembly(postgresOptions.MigrationAssembly ??
-                                              Assembly.GetExecutingAssembly().GetName().Name);
+                                              typeof(MessagePersistenceDbContext).Assembly.GetName().Name);
                 sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
             }).UseSnakeCaseNamingConvention();
         });

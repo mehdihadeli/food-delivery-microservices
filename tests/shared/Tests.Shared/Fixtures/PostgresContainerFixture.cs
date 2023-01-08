@@ -54,7 +54,7 @@ public class PostgresContainerFixture : IAsyncLifetime
         }
         catch (Exception e)
         {
-            throw new Exception("Error in ResetPostgresState of ReSpawner.");
+            throw new Exception(e.Message);
         }
     }
 
@@ -85,13 +85,13 @@ public class PostgresContainerFixture : IAsyncLifetime
         //         "create table \"foo\" (value int)");
         // }
     }
-}
 
-public class PostgresContainerOptions
-{
-    public string Name { get; set; } = "postgres_" + Guid.NewGuid();
-    public string ImageName { get; set; } = "postgres:latest";
-    public string DatabaseName { get; set; } = "test_db";
-    public string UserName { get; set; } = "postgres";
-    public string Password { get; set; } = "postgres";
+    private sealed class PostgresContainerOptions
+    {
+        public string Name { get; set; } = "postgres_" + Guid.NewGuid();
+        public string ImageName { get; set; } = "postgres:latest";
+        public string DatabaseName { get; set; } = "test_db";
+        public string UserName { get; set; } = "postgres";
+        public string Password { get; set; } = "postgres";
+    }
 }

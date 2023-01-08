@@ -1,27 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <AssemblyName>BuildingBlocks.Integration.MassTransit.IntegrationTests</AssemblyName>
-    <RootNamespace>BuildingBlocks.Integration.MassTransit.IntegrationTests</RootNamespace>
-  </PropertyGroup>
-
   <!--  https://github.com/dotnet/core/issues/907-->
   <PropertyGroup>
     <WarningsAsErrors></WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Services\Catalogs\ECommerce.Services.Catalogs.Api\ECommerce.Services.Catalogs.Api.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Services\Customers\ECommerce.Services.Customers.Api\ECommerce.Services.Customers.Api.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Services\Identity\ECommerce.Services.Identity.Api\ECommerce.Services.Identity.Api.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Services\Shared\ECommerce.Services.Shared\ECommerce.Services.Shared.csproj" />
     <ProjectReference Include="..\..\..\shared\Tests.Shared\Tests.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 <!--  &lt;!&ndash;  https://devblogs.microsoft.com/nuget/introducing-central-package-management/&ndash;&gt;-->
@@ -29,5 +14,20 @@
 <!--    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" VersionOverride="11.0.0"/>-->
 <!--    <PackageReference Include="AutoMapper" VersionOverride="11.0.0"/>-->
 <!--  </ItemGroup>-->
+
+  <!--  We should add this reference in each test project-->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="coverlet.msbuild">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

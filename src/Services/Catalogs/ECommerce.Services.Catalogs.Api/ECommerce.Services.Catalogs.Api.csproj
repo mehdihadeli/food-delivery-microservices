@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\ECommerce.Services.Catalogs\ECommerce.Services.Catalogs.csproj" />
+    <ProjectReference Include="..\Minimal\Minimal.csproj" />
   </ItemGroup>
 
   <ItemGroup>

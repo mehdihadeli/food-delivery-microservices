@@ -15,6 +15,7 @@ public class MessagePersistenceDbContext : DbContext
 
     public MessagePersistenceDbContext(DbContextOptions<MessagePersistenceDbContext> options) : base(options)
     {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

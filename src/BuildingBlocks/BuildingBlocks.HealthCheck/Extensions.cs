@@ -1,9 +1,11 @@
 using System.Text;
 using System.Text.Json;
+using BuildingBlocks.Core.Extensions;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Prometheus;
 
@@ -16,17 +18,24 @@ namespace BuildingBlocks.HealthCheck;
 // https://github.com/prometheus-net/prometheus-net
 public static class Extensions
 {
-    public static IServiceCollection AddCustomHealthCheck(
-        this IServiceCollection services,
-        Action<IHealthChecksBuilder>? healthChecksBuilder = null)
+    public static WebApplicationBuilder AddCustomHealthCheck(
+        this WebApplicationBuilder builder,
+        Action<IHealthChecksBuilder>? healthChecksBuilder = null,
+        string sectionName = nameof(HealthOptions))
     {
+        var healthOptions = builder.Configuration.BindOptions<HealthOptions>(sectionName);
+        if (!healthOptions.Enabled)
+        {
+            return builder;
+        }
+
         var healCheckBuilder =
-            services.AddHealthChecks()
+            builder.Services.AddHealthChecks()
                 .ForwardToPrometheus();
 
         healthChecksBuilder?.Invoke(healCheckBuilder);
 
-        services.AddHealthChecksUI(setup =>
+        builder.Services.AddHealthChecksUI(setup =>
         {
             setup.SetEvaluationTimeInSeconds(60); // time in seconds between check
             setup.AddHealthCheckEndpoint("All Checks", "/healthz");
@@ -36,11 +45,17 @@ public static class Extensions
             setup.AddHealthCheckEndpoint("Downstream Services", "/health/downstream-services");
         }).AddInMemoryStorage();
 
-        return services;
+        return builder;
     }
 
-    public static IApplicationBuilder UseCustomHealthCheck(this IApplicationBuilder app)
+    public static WebApplication UseCustomHealthCheck(this WebApplication app)
     {
+        var healthOptions = app.Configuration.BindOptions<HealthOptions>();
+        if (!healthOptions.Enabled)
+        {
+            return app;
+        }
+
         app.UseHttpMetrics();
         app.UseGrpcMetrics();
 

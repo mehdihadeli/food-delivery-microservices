@@ -1,27 +1,28 @@
 using Ardalis.GuardClauses;
-using BuildingBlocks.Core.Exception;
-using ECommerce.Services.Catalogs.Products.Exceptions.Domain;
 
+// https://learn.microsoft.com/en-us/ef/core/modeling/constructors
+
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 namespace ECommerce.Services.Catalogs.Products.ValueObjects;
 
 public record Size
 {
-    public string Value { get; private set; }
-
-    public Size? Null => null;
-
-    public static Size Create(string value)
+    private Size(string value)
     {
-        return new Size
-        {
-            Value = Guard.Against.NullOrWhiteSpace(
-                value,
-                new string("Size can not be empty or null."))
-        };
+        Value = value;
     }
 
-    public static implicit operator Size(string value) => Create(value);
+    // Note: in entities with none default constructor, for setting constructor parameter, we need a private set property
+    // when we didn't define this property in fluent configuration mapping (if so we can remove private set) , because for getting mapping list of properties to set
+    // in the constructor it should not be read only without set (for bypassing calculate fields)- https://learn.microsoft.com/en-us/ef/core/modeling/constructors#read-only-properties
+    public string Value { get; private set; }
 
-    public static implicit operator string(Size value) =>
-        Guard.Against.Null(value.Value, new ProductDomainException("Size can't be null."));
+    public static Size Of(string value)
+    {
+        // validations should be placed here instead of constructor
+        Guard.Against.NullOrWhiteSpace(value);
+        return new Size(value);
+    }
+
+    public static implicit operator string(Size value) => value.Value;
 }

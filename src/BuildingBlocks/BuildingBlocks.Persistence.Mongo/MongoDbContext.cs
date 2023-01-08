@@ -1,7 +1,10 @@
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Persistence.Mongo;
+using BuildingBlocks.Persistence.Mongo.Serializers;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace BuildingBlocks.Persistence.Mongo;
@@ -16,31 +19,12 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
 
     public MongoDbContext(MongoOptions options)
     {
-        // Set Guid to CSharp style (with dash -)
-        BsonDefaults.GuidRepresentation = GuidRepresentation.CSharpLegacy;
-
-        RegisterConventions();
-
         MongoClient = new MongoClient(options.ConnectionString);
         var databaseName = options.DatabaseName;
         Database = MongoClient.GetDatabase(databaseName);
 
         // Every command will be stored and it'll be processed at SaveChanges
         _commands = new List<Func<Task>>();
-    }
-
-    private static void RegisterConventions()
-    {
-        ConventionRegistry.Register(
-            "conventions",
-            new ConventionPack
-            {
-                new CamelCaseElementNameConvention(),
-                new IgnoreExtraElementsConvention(true),
-                new EnumRepresentationConvention(BsonType.String),
-                new IgnoreIfDefaultConvention(false),
-                new ImmutablePocoConvention()
-            }, _ => true);
     }
 
     public IMongoCollection<T> GetCollection<T>(string? name = null)
@@ -50,7 +34,7 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
 
     public void Dispose()
     {
-        while (Session is { IsInTransaction: true })
+        while (Session is {IsInTransaction: true})
             Thread.Sleep(TimeSpan.FromMilliseconds(100));
 
         GC.SuppressFinalize(this);
@@ -92,7 +76,7 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
-        if (Session is { IsInTransaction: true })
+        if (Session is {IsInTransaction: true})
             await Session.CommitTransactionAsync(cancellationToken);
 
         Session?.Dispose();

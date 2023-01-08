@@ -2,6 +2,7 @@ using Ardalis.ApiEndpoints;
 using Ardalis.GuardClauses;
 using Asp.Versioning;
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Catalogs.Products.Features.GettingProducts.v1;
@@ -20,10 +21,11 @@ public class GetProductsEndpoint : EndpointBaseAsync
         _queryProcessor = queryProcessor;
     }
 
+    // We could use `SwaggerResponse` form `Swashbuckle.AspNetCore` package instead of `ProducesResponseType` for supporting custom description for status codes
     [HttpGet(ProductsConfigs.ProductsPrefixUri, Name = "GetProducts")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(GetProductsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(StatusCodeProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(StatusCodeProblemDetails), StatusCodes.Status400BadRequest)]
     [ApiVersion(1.0)]
     [SwaggerOperation(
         Summary = "Getting All Products",

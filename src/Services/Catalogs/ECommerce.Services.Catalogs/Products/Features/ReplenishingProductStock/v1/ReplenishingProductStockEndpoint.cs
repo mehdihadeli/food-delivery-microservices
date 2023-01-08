@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Catalogs.Products.Features.ReplenishingProductStock.v1;
@@ -11,9 +12,9 @@ public static class ReplenishingProductStockEndpoint
         return endpoints.MapPost("/{productId}/replenish-stock", ReplenishProductStock)
             .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
             .WithMetadata(new SwaggerOperationAttribute(
                 "Replenishing ProductStock Products ",
                 "Replenishing ProductStock Products"))

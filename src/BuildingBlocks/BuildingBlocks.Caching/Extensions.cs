@@ -2,6 +2,7 @@ using System.Reflection;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Caching;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Utils;
 using EasyCaching.Redis;
 using Microsoft.AspNetCore.Builder;
 
@@ -11,13 +12,11 @@ public static class Extensions
 {
     public static WebApplicationBuilder AddCustomCaching(
         this WebApplicationBuilder builder,
-        params Assembly[] assemblies)
+        params Assembly[] scanAssemblies)
     {
         // https://www.twilio.com/blog/provide-default-configuration-to-dotnet-applications
         var cacheOptions = builder.Configuration.BindOptions<CacheOptions>();
         Guard.Against.Null(cacheOptions);
-
-        var scanAssemblies = assemblies.Any() ? assemblies : AppDomain.CurrentDomain.GetAssemblies();
 
         AddCachingRequests(builder.Services, scanAssemblies);
 
@@ -63,11 +62,17 @@ public static class Extensions
 
     private static IServiceCollection AddCachingRequests(
         this IServiceCollection services,
-        params Assembly[] assembliesToScan)
+        params Assembly[] scanAssemblies)
     {
+        // Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
+        // load all referenced assemblies explicitly.
+        var assemblies = scanAssemblies.Any()
+            ? scanAssemblies
+            : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).ToArray();
+
         // ICacheRequest discovery and registration
         services.Scan(scan => scan
-            .FromAssemblies(assembliesToScan.Any() ? assembliesToScan : AppDomain.CurrentDomain.GetAssemblies())
+            .FromAssemblies(assemblies)
             .AddClasses(
                 classes => classes.AssignableTo(typeof(ICacheRequest<,>)),
                 false)
@@ -76,7 +81,7 @@ public static class Extensions
 
         // IInvalidateCacheRequest discovery and registration
         services.Scan(scan => scan
-            .FromAssemblies(assembliesToScan.Any() ? assembliesToScan : AppDomain.CurrentDomain.GetAssemblies())
+            .FromAssemblies(assemblies)
             .AddClasses(
                 classes => classes.AssignableTo(typeof(IInvalidateCacheRequest<,>)),
                 false)

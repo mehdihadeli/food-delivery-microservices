@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Core.Exception;
+using BuildingBlocks.Core.Extensions;
 using ECommerce.Services.Customers.Shared.Clients.Identity.Dtos;
 using Microsoft.Extensions.Options;
 
@@ -21,33 +22,41 @@ public class IdentityApiClient : IIdentityApiClient
         string email,
         CancellationToken cancellationToken = default)
     {
-        Guard.Against.NullOrEmpty(email, nameof(email));
+        Guard.Against.NullOrEmpty(email);
         Guard.Against.InvalidEmail(email);
 
-        var userIdentity = await _httpClient.GetFromJsonAsync<GetUserByEmailResponse>(
+        // https://stackoverflow.com/questions/21097730/usage-of-ensuresuccessstatuscode-and-handling-of-httprequestexception-it-throws
+        // https: //github.com/App-vNext/Polly#step-1--specify-the--exceptionsfaults-you-want-the-policy-to-handle
+        var httpResponse = await _httpClient.GetAsync(
             $"/{_options.UsersEndpoint}/by-email/{email}",
             cancellationToken);
 
-        return userIdentity;
+        // https://stackoverflow.com/questions/21097730/usage-of-ensuresuccessstatuscode-and-handling-of-httprequestexception-it-throws
+        // throw HttpResponseException instead of HttpRequestException (because we want detail response exception) with corresponding status code
+        await httpResponse.EnsureSuccessStatusCodeWithDetailAsync();
+
+        return await httpResponse.Content.ReadFromJsonAsync<GetUserByEmailResponse>(
+            cancellationToken: cancellationToken);
     }
 
     public async Task<CreateUserResponse?> CreateUserIdentityAsync(
         CreateUserRequest createUserRequest,
         CancellationToken cancellationToken = default)
     {
-        Guard.Against.Null(createUserRequest, nameof(createUserRequest));
+        Guard.Against.Null(createUserRequest);
 
-        var response = await _httpClient.PostAsJsonAsync(
+        // https://stackoverflow.com/questions/21097730/usage-of-ensuresuccessstatuscode-and-handling-of-httprequestexception-it-throws
+        // https: //github.com/App-vNext/Polly#step-1--specify-the--exceptionsfaults-you-want-the-policy-to-handle
+        var httpResponse = await _httpClient.PostAsJsonAsync(
             _options.UsersEndpoint,
             createUserRequest,
             cancellationToken);
 
-        // throws if not 200-299
-        response.EnsureSuccessStatusCode();
+        // https://stackoverflow.com/questions/21097730/usage-of-ensuresuccessstatuscode-and-handling-of-httprequestexception-it-throws
+        // throw HttpResponseException instead of HttpRequestException (because we want detail response exception) with corresponding status code
+        await httpResponse.EnsureSuccessStatusCodeWithDetailAsync();
 
-        var createdUser =
-            await response.Content.ReadFromJsonAsync<CreateUserResponse?>(cancellationToken: cancellationToken);
-
-        return createdUser;
+        return await httpResponse.Content.ReadFromJsonAsync<CreateUserResponse>(
+            cancellationToken: cancellationToken);
     }
 }

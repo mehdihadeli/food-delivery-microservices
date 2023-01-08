@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Identity.Identity.Features.RevokingRefreshToken.v1;
@@ -9,9 +10,9 @@ public static class RevokeRefreshTokenEndpoint
     {
         endpoints.MapPost("/revoke-refresh-token", RevokeToken)
             .RequireAuthorization()
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status204NoContent)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithDisplayName("Revoke refresh token.")
             .WithMetadata(new SwaggerOperationAttribute("Revoking Refresh Token", "Revoking Refresh Token"));
 

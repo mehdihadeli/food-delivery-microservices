@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Identity.Identity.Features.VerifyingEmail.v1;
@@ -10,9 +11,9 @@ public static class VerifyEmailEndpoint
         return endpoints.MapPost("/verify-email", VerifyEmail)
             .AllowAnonymous()
             .Produces(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status409Conflict)
-            .Produces(StatusCodes.Status500InternalServerError)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status409Conflict)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status500InternalServerError)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithName("VerifyEmail")
             .WithDisplayName("Verify Email.")
             .WithMetadata(new SwaggerOperationAttribute(

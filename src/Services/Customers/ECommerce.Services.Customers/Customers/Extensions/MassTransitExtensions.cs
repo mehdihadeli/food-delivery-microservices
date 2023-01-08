@@ -3,7 +3,7 @@ using Humanizer;
 using MassTransit;
 using RabbitMQ.Client;
 
-namespace ECommerce.Services.Customers.Customers;
+namespace ECommerce.Services.Customers.Customers.Extensions;
 
 internal static class MassTransitExtensions
 {

@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Core.Extensions;
 using ECommerce.Services.Identity.Identity.Features.RevokingAccessToken.v1;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Identity.Identity.Features.RevokingAllAccessTokens.v1;
@@ -12,7 +13,7 @@ public static class RevokeAllAccessTokensEndpoint
         endpoints.MapPost("/revoke-all-tokens", RevokeAllAccessTokens)
             .RequireAuthorization(IdentityConstants.Role.User)
             .Produces<bool>()
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status200OK)
             .WithDisplayName("Revoke All Access Tokens.")
             .WithMetadata(new SwaggerOperationAttribute("Revoking All Tokens", "Revoking All Tokens"));
@@ -28,9 +29,9 @@ public static class RevokeAllAccessTokensEndpoint
     {
         var command = new RevokeAllAccessTokens(httpContext.User.Identity!.Name!);
 
-        var result = await commandProcessor.SendAsync(command, cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken);
 
-        return Results.Ok(result);
+        return Results.Ok();
     }
 
     private static string GetTokenFromHeader(HttpContext context)

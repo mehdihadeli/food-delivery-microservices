@@ -1,10 +1,10 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Core.Domain.ValueObjects;
-using BuildingBlocks.Core.Exception;
 using BuildingBlocks.Core.IdsGenerator;
 using ECommerce.Services.Customers.Customers.Exceptions.Application;
 using ECommerce.Services.Customers.Customers.Models;
+using ECommerce.Services.Customers.Customers.ValueObjects;
 using ECommerce.Services.Customers.Shared.Clients.Identity;
 using ECommerce.Services.Customers.Shared.Data;
 using FluentValidation;
@@ -52,20 +52,17 @@ internal class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCus
 
         Guard.Against.Null(command, nameof(command));
 
-        if (_customersDbContext.Customers.Any(x => x.Email == command.Email))
+        if (_customersDbContext.Customers.Any(x => x.Email.Value == command.Email))
             throw new CustomerAlreadyExistsException($"Customer with email '{command.Email}' already exists.");
 
         var identityUser = (await _identityApiClient.GetUserByEmailAsync(command.Email, cancellationToken))
             ?.UserIdentity;
 
-        Guard.Against.NotFound(
-            identityUser,
-            new CustomerNotFoundException($"Identity user with email '{command.Email}' not found."));
-
         var customer = Customer.Create(
-            command.Id,
-            Email.Create(identityUser!.Email),
-            CustomerName.Create(identityUser.FirstName, identityUser.LastName),
+            CustomerId.Of(command.Id),
+            Email.Of(identityUser!.Email),
+            PhoneNumber.Of(identityUser.PhoneNumber),
+            CustomerName.Of(identityUser.FirstName, identityUser.LastName),
             identityUser.Id);
 
         await _customersDbContext.AddAsync(customer, cancellationToken);
@@ -74,11 +71,6 @@ internal class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCus
 
         _logger.LogInformation("Created a customer with ID: '{@CustomerId}'", customer.Id);
 
-        return new CreateCustomerResponse(
-            customer.Id,
-            customer.Email!,
-            customer.Name.FirstName,
-            customer.Name.LastName,
-            customer.IdentityId);
+        return new CreateCustomerResponse(customer.Id, customer.IdentityId);
     }
 }

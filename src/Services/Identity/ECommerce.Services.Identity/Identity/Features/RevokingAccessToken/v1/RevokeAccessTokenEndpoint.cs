@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Core.Extensions;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Identity.Identity.Features.RevokingAccessToken.v1;
@@ -10,7 +11,7 @@ public static class RevokeAccessTokenEndpoint
     {
         return endpoints.MapPost("/revoke-token", RevokeAccessToken)
             .RequireAuthorization(IdentityConstants.Role.User)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithDisplayName("Revoke Current User Access Token From the Header.")
             .WithName("RevokeAccessToken")
             .WithMetadata(new SwaggerOperationAttribute(
@@ -36,9 +37,9 @@ public static class RevokeAccessTokenEndpoint
 
         var command = new RevokeAccessToken(token, httpContext.User.Identity!.Name!);
 
-        var result = await commandProcessor.SendAsync(command, cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken);
 
-        return Results.Ok(result);
+        return Results.Ok();
     }
 
     private static string GetTokenFromHeader(HttpContext context)

@@ -1,49 +1,69 @@
 using System.Net.Http.Json;
+using BuildingBlocks.Core.Extensions;
 using ECommerce.Services.Customers.Shared.Clients.Identity;
 using ECommerce.Services.Customers.Shared.Clients.Identity.Dtos;
+using ECommerce.Services.Customers.TestShared.Fakes.Customers.Events;
 using FluentAssertions;
 using Tests.Shared.Helpers;
+using Tests.Shared.XunitCategories;
 
 namespace ECommerce.Services.Customers.IntegrationTests.Mocks.Servers;
 
 public class IdentityServiceMockTests
 {
     private readonly IdentityServiceMock _identityServiceMock;
-    private readonly IdentityApiClientOptions _identityApiClientOptions;
-
 
     public IdentityServiceMockTests()
     {
         _identityServiceMock = IdentityServiceMock.Start(ConfigurationHelper.BindOptions<IdentityApiClientOptions>());
-        _identityApiClientOptions = ConfigurationHelper.BindOptions<IdentityApiClientOptions>();
     }
 
     [Fact]
-    public async Task Root_Address()
+    public async Task root_address()
     {
-        var client = new HttpClient {BaseAddress = new Uri(_identityServiceMock.Url)};
+        var client = new HttpClient {BaseAddress = new Uri(_identityServiceMock.Url!)};
         var res = await client.GetAsync("/");
         res.EnsureSuccessStatusCode();
 
         var g = await res.Content.ReadAsStringAsync();
         g.Should().NotBeEmpty();
+        g.Should().Be("Identity Service!");
     }
 
+    [Fact]
+    [CategoryTrait(TestCategory.Unit)]
+    public async Task get_by_email()
+    {
+        var (response, endpoint) = _identityServiceMock.SetupGetUserByEmail();
+        var fakeIdentityUser = response.UserIdentity;
+
+        var client = new HttpClient {BaseAddress = new Uri(_identityServiceMock.Url!)};
+        var httpResponse = await client.GetAsync(endpoint);
+
+        await httpResponse.EnsureSuccessStatusCodeWithDetailAsync();
+        var data = await httpResponse.Content.ReadFromJsonAsync<GetUserByEmailResponse>();
+        data.Should().NotBeNull();
+        data!.UserIdentity.Should().BeEquivalentTo(
+            fakeIdentityUser,
+            options => options.ExcludingMissingMembers());
+    }
 
     [Fact]
-    public async Task Get_By_Email()
+    [CategoryTrait(TestCategory.Unit)]
+    public async Task get_by_email_and_user_registered()
     {
-        var email = "test@example.com";
-        _identityServiceMock.SetupGetUserByEmail(email,
-            new GetUserByEmailResponse(new UserIdentityDto {Email = email}));
+        var userRegistered = new FakeUserRegisteredV1().Generate();
+        var (response, endpoint) = _identityServiceMock.SetupGetUserByEmail(userRegistered);
+        var fakeIdentityUser = response.UserIdentity;
 
-        var endpointPath = $"{_identityApiClientOptions.UsersEndpoint}/by-email/{email}";
-
-        var client = new HttpClient {BaseAddress = new Uri(_identityServiceMock.Url)};
-        var res = await client.GetAsync(endpointPath);
+        var client = new HttpClient {BaseAddress = new Uri(_identityServiceMock.Url!)};
+        var res = await client.GetAsync(endpoint);
         res.EnsureSuccessStatusCode();
 
         var g = await res.Content.ReadFromJsonAsync<GetUserByEmailResponse>();
         g.Should().NotBeNull();
+        g!.UserIdentity.Should().BeEquivalentTo(
+            fakeIdentityUser,
+            options => options.ExcludingMissingMembers());
     }
 }

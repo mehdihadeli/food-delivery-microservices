@@ -2,6 +2,7 @@ using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using ECommerce.Services.Customers.Customers.Features.GettingCustomerById.v1;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Customers.Customers.Features.GettingCustomerByCustomerId.v1;
@@ -17,9 +18,9 @@ public class GetCustomerByCustomerIdEndpointEndpoint : IQueryMinimalEndpoint<lon
         return builder.MapGet("/{customerId}", HandleAsync)
             // .RequireAuthorization()
             .Produces<GetCustomerByCustomerIdResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
             .WithMetadata(new SwaggerOperationAttribute(
                 "Getting a Customer By CustomerId",
                 "Getting a Customer By CustomerId"))

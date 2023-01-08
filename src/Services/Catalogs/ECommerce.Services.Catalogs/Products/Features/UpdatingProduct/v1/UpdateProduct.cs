@@ -2,7 +2,9 @@ using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Exception;
+using ECommerce.Services.Catalogs.Brands;
 using ECommerce.Services.Catalogs.Brands.Exceptions.Application;
+using ECommerce.Services.Catalogs.Categories;
 using ECommerce.Services.Catalogs.Categories.Exceptions.Application;
 using ECommerce.Services.Catalogs.Products.Exceptions.Application;
 using ECommerce.Services.Catalogs.Products.Features.GettingProductById.v1;
@@ -10,8 +12,10 @@ using ECommerce.Services.Catalogs.Products.Models;
 using ECommerce.Services.Catalogs.Products.ValueObjects;
 using ECommerce.Services.Catalogs.Shared.Contracts;
 using ECommerce.Services.Catalogs.Shared.Extensions;
+using ECommerce.Services.Catalogs.Suppliers;
 using ECommerce.Services.Catalogs.Suppliers.Exceptions.Application;
 using FluentValidation;
+using MediatR;
 
 namespace ECommerce.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 
@@ -61,28 +65,28 @@ internal class UpdateProductCommandHandler : ICommandHandler<UpdateProduct>
     {
         Guard.Against.Null(command, nameof(command));
 
-        var product = await _catalogDbContext.FindProductByIdAsync(command.Id);
-        Guard.Against.NotFound(product, new ProductCustomNotFoundException(command.Id));
+        var product = await _catalogDbContext.FindProductByIdAsync(ProductId.Of(command.Id));
+        Guard.Against.NotFound(product, new ProductNotFoundException(command.Id));
 
-        var category = await _catalogDbContext.FindCategoryAsync(command.CategoryId);
-        Guard.Against.NotFound(category, new CategoryCustomNotFoundException(command.CategoryId));
+        var category = await _catalogDbContext.FindCategoryAsync(CategoryId.Of(command.CategoryId));
+        Guard.Against.NotFound(category, new CategoryNotFoundException(command.CategoryId));
 
-        var brand = await _catalogDbContext.FindBrandAsync(command.BrandId);
-        Guard.Against.NotFound(brand, new BrandCustomNotFoundException(command.BrandId));
+        var brand = await _catalogDbContext.FindBrandAsync(BrandId.Of(command.BrandId));
+        Guard.Against.NotFound(brand, new BrandNotFoundException(command.BrandId));
 
-        var supplier = await _catalogDbContext.FindSupplierByIdAsync(command.SupplierId);
-        Guard.Against.NotFound(supplier, new SupplierCustomNotFoundException(command.SupplierId));
+        var supplier = await _catalogDbContext.FindSupplierByIdAsync(SupplierId.Of(command.SupplierId));
+        Guard.Against.NotFound(supplier, new SupplierNotFoundException(command.SupplierId));
 
-        product!.ChangeCategory(command.CategoryId);
-        product.ChangeBrand(command.BrandId);
-        product.ChangeSupplier(command.SupplierId);
+        product!.ChangeCategory(CategoryId.Of(command.CategoryId));
+        product.ChangeBrand(BrandId.Of(command.BrandId));
+        product.ChangeSupplier(SupplierId.Of(command.SupplierId));
 
         product.ChangeDescription(command.Description);
-        product.ChangeName(command.Name);
-        product.ChangePrice(command.Price);
-        product.ChangeSize(command.Size);
+        product.ChangeName(Name.Of(command.Name));
+        product.ChangePrice(Price.Of(command.Price));
+        product.ChangeSize(Size.Of(command.Size));
         product.ChangeStatus(command.Status);
-        product.ChangeDimensions(Dimensions.Create(command.Width, command.Height, command.Depth));
+        product.ChangeDimensions(Dimensions.Of(command.Width, command.Height, command.Depth));
         product.ChangeMaxStockThreshold(command.MaxStockThreshold);
         product.ChangeRestockThreshold(command.RestockThreshold);
 

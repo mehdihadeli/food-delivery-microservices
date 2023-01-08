@@ -2,25 +2,28 @@ using Ardalis.GuardClauses;
 
 namespace BuildingBlocks.Core.Domain.ValueObjects;
 
+// https://learn.microsoft.com/en-us/ef/core/modeling/constructors
 public record Money
 {
-    public static Money? Null => null;
+    // EF
+    private Money()
+    {
+    }
 
     public decimal Value { get; private set; }
+    public string Currency { get; private set;} = default!;
 
-    public string Currency { get; private set; }
-
-    public static Money Create(decimal value, string currency)
+    public static Money Of(decimal value, string currency)
     {
-        return new Money()
-        {
-            Value = Guard.Against.NegativeOrZero(value, nameof(value)),
-            Currency = Guard.Against.NullOrWhiteSpace(currency, nameof(currency))
-        };
+        // validations should be placed here instead of constructor
+        Guard.Against.NegativeOrZero(value, nameof(value));
+        Guard.Against.NullOrWhiteSpace(currency, nameof(currency));
+
+        return new Money {Currency = currency, Value = value};
     }
 
     public static Money operator *(int left, Money right)
     {
-        return Create(right.Value * left, right.Currency);
+        return Of(right.Value * left, right.Currency);
     }
 }

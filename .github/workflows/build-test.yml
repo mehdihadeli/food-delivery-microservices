@@ -5,10 +5,12 @@ on:
     branches:
       - develop
       - main
+      - devops/ci
   pull_request:
     branches:
       - develop
       - main
+      - devops/ci
 
 jobs:
   build:
@@ -19,10 +21,6 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v2
-
-    - name: set release date
-        run: |
-          echo "BUILD_VERSION=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
 
     - name: Install .NET Core SDK
       uses: actions/setup-dotnet@v1

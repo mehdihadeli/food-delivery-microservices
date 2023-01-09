@@ -6,6 +6,7 @@
    push:
      branches:
        - develop
+       - devops/ci
 
  jobs:
    update_release_draft:

@@ -15,7 +15,7 @@ jobs:
   build:
     # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Check out code
@@ -32,7 +32,7 @@ jobs:
       uses: actions/setup-dotnet@v3
 
     - name: Restore NuGet packages
-      run: dotnet restore
+      run: dotnet restore ecommerce.sln
 
     - name: Build
       run: dotnet build -c Release --no-restore

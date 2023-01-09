@@ -31,9 +31,6 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
 
-    - name: Restore NuGet packages
-      run: dotnet restore
-
     - name: Build
       run: dotnet build -c Release
 

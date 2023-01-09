@@ -47,12 +47,6 @@ jobs:
       run: dotnet test -c Release --no-build --filter "(Category=Integration&FullyQualifiedName~IntegrationTests)|
             (Category=EndToEnd&FullyQualifiedName~EndToEndTests)" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov
 
-    # https://github.com/danielpalme/ReportGenerator
-    # https://github.com/danielpalme/ReportGenerator-GitHub-Action
-    # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
-    # https://dotnetthoughts.net/generating-code-coverage-reports-in-dotnet-core/
-    # merging all coverage in a single coverage file and generating html files for downloading as artifacts
-
     - name: Generate Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.13
       with:
@@ -60,8 +54,14 @@ jobs:
         targetdir: '${{ github.workspace }}/tests/CoverageResults'
         reporttypes: 'Cobertura;lcov;MarkdownSummaryGithub;Html'
 
-      - name: Publish coverage report to coveralls.io
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov:  '${{ github.workspace }}/tests/CoverageResults'
+    # https://github.com/danielpalme/ReportGenerator
+    # https://github.com/danielpalme/ReportGenerator-GitHub-Action
+    # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+    # https://dotnetthoughts.net/generating-code-coverage-reports-in-dotnet-core/
+    # merging all coverage in a single coverage file and generating html files for downloading as artifacts
+    - name: Publish coverage report to coveralls.io
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov:  '${{ github.workspace }}/tests/CoverageResults'
+

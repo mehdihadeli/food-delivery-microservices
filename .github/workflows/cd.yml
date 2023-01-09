@@ -15,7 +15,6 @@ on:
      - "rollback-*"
 
 # Every push to main will create a new release and deploy to production.
-
 jobs:
 
   update-changelog:

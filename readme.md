@@ -1,7 +1,6 @@
 # 🛍️ ECommerece Microservices Sample
 
 [![.NET](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml/badge.svg?branch=main&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml)
-[![Coverage Status](https://coveralls.io/repos/github/mehdihadeli/ecommerce-microservices/badge.svg?branch=main&style=flat-square)](https://coveralls.io/github/mehdihadeli/ecommerce-microservices?branch=main)
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-Open%20in%20Gitpod-blue?logo=gitpod&style=flat-square&color=ff69b4)](https://gitpod.io/#https://github.com/mehdihadeli/ecommerce-microservices-sample)
 [![GitHub Dev](https://img.shields.io/static/v1?label=GitHub&message=Open%20in%20GitHub%20Dev&color=blueviolet&logo=GitHub)](https://github.dev/mehdihadeli/ecommerce-microservices)
 [![Open in Remote - Containers](https://img.shields.io/static/v1?label=VsCode&message=Open%20Remote%20-%20Containers&color=orange&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/mehdihadeli/ecommerce-microservices)
@@ -38,9 +37,9 @@ Thanks a bunch for supporting me!
 
 ## Features
 - ✅ Using `Vertical Slice Architecture` as a high level architecture
-- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit
+- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit 
 - ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
-- ✅ Using `Event Sourcing` in `Audit Based` services like Orders, Payment
+- ✅ Using `Event Sourcing` in `Audit Based` services like Orders, Payment 
 - ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
 - ✅ Using `CQRS Pattern` on top of `MediatR` library
 - ✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
@@ -58,7 +57,7 @@ Thanks a bunch for supporting me!
 
 High-level plan is represented in the table
 
-| Feature | Architecture Pattern | Status |
+| Feature | Architecture Pattern | Status |  
 | ------- | ------ | ------ |
 | Building Blocks  | | Completed ✔️ |
 | API Gateway | | Completed ✔️ |

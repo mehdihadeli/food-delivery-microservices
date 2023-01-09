@@ -1,13 +1,13 @@
 # https://johanneskonings.dev/github/2021/02/28/github_automatic_releases_and-changelog/
 # https://tiagomichaelsousa.dev/articles/stop-writing-your-changelogs-manually
-
-# This release drafter follows the conventions
-# from https://keepachangelog.com
-
 # https://github.com/release-drafter/release-drafter/issues/551
 # https://github.com/release-drafter/release-drafter/pull/1013
 # https://github.com/release-drafter/release-drafter/issues/139
 # https://github.com/atk4/data/blob/develop/.github/release-drafter.yml
+
+# This release drafter follows the conventions from https://keepachangelog.com, https://common-changelog.org/
+# https://www.conventionalcommits.org
+
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 template: |
@@ -19,14 +19,15 @@ categories:
   - title: 🚀 Features
     labels:
       - feature
-      - enhancement
   - title: 🐛 Bug Fixes
     labels:
       - fix
       - bug
-  - title: ⚠️ Changes
+  - title: ♻️ Changes
     labels:
       - changed
+      - enhancement
+      - refactor
   - title: ⛔️ Deprecated
     labels:
       - deprecated
@@ -48,33 +49,33 @@ categories:
     label: 'chore'
   - title: 🧺 Miscellaneous #Everything except ABAP
     label: misc
-  - title: "Other changes"
+  - title: 📝 Other changes
 ## putting no labels pr to `Other Changes` category with no label - https://github.com/release-drafter/release-drafter/issues/139#issuecomment-480473934
 
 # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
 # https://github.com/release-drafter/release-drafter#autolabeler
 # https://github.com/fuxingloh/multi-labeler
 
-# Using regex for defining rules - https://regexr.com/
+# Using regex for defining rules - https://regexr.com/ - https://regex101.com/
 autolabeler:
   - label: 'chore'
     branch:
-      - '/^chore/.*/'
+      - '/(chore)\/.*/'
     title:
       - '/^chore: .*/'
   - label: 'docs'
     branch:
-      - '/^docs/.*/'
+      - '/(docs)\/.*/'
     title:
       - '/^docs: .*/'
   - label: 'bug'
     branch:
-      - '/^fix/.*/'
+      - '/(fix)\/.*/'
     title:
       - '/^fix: .*/'
   - label: 'feature'
     branch:
-      - '/^feat/.*/'
+      - '/(feat)\/.*/'
     title:
       - '/^feat: .*/'
     body:

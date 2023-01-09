@@ -2,6 +2,8 @@
 # https://github.com/bcoe/conventional-release-labels
 # https://dev.to/github/how-to-automatically-generate-release-notes-for-your-project-2ng8
 # https://www.conventionalcommits.org/en/v1.0.0/
+
+# github release pre-defined template
 changelog:
   exclude:
     labels:

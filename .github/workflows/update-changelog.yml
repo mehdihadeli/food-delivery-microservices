@@ -4,7 +4,11 @@
    release:
      types:
        - released
+   push:
+     branches:
+       - main
 
+# Every push to main will create a new release and deploy to production.
  jobs:
    update:
      name: Update Changelog

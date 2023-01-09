@@ -3,7 +3,7 @@
 #on:
 #  pull_request:
 #    types: [ opened, edited, synchronize, ready_for_review ]
-#    branches: [ develop, main ]
+#    branches: [ develop ]
 #
 #jobs:
 #  labeler:

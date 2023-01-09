@@ -7,12 +7,15 @@ on:
    types:
      - "released"
  push:
+   branches:
+     - main
    tags:
      - "release-*"
      - "rollback-*"
 
 jobs:
 
+# Every push to main will create a new release and deploy to production.
  deploy-production:
    needs:
      - ci-checks

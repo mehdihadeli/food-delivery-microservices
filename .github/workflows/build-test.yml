@@ -31,6 +31,8 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
 
+    - run: ls
+
     - name: Restore NuGet packages
       run: dotnet restore
 

@@ -176,7 +176,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{93
 		.github\workflows\services\catalogs.yml = .github\workflows\services\catalogs.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ts", "ts", "{22F07A80-31B8-4196-8DCD-CB6E3F888BEA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{22F07A80-31B8-4196-8DCD-CB6E3F888BEA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{61D81E61-C917-45B3-93C2-40DAFB07339D}"
 EndProject

@@ -52,6 +52,7 @@ jobs:
     # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
     # https://dotnetthoughts.net/generating-code-coverage-reports-in-dotnet-core/
     # merging all coverage in a single coverage file and generating html files for downloading as artifacts
+
     - name: Generate Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.13
       with:

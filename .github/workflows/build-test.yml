@@ -33,7 +33,7 @@ jobs:
 
     - run: ls tests
 
-    - run: ls tests/Shared
+    - run: ls tests/shared
 
     - name: Restore NuGet packages
       run: dotnet restore

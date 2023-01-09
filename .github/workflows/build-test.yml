@@ -32,10 +32,10 @@ jobs:
       uses: actions/setup-dotnet@v3
 
     - name: Restore NuGet packages
-      run: dotnet restore ecommerce.sln
+      run: dotnet restore
 
     - name: Build
-      run: dotnet build -c Release --no-restore
+      run: dotnet build -c Release
 
     # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
     # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/

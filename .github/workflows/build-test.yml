@@ -31,7 +31,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
 
-    - run: ls tests/Shared/Tests.Shared
+    - run: ls tests
+
+    - run: ls tests/Shared
 
     - name: Restore NuGet packages
       run: dotnet restore

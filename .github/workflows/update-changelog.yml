@@ -1,5 +1,3 @@
- # https://tiagomichaelsousa.dev/articles/stop-writing-your-changelogs-manually
-
  on:
    release:
      types:

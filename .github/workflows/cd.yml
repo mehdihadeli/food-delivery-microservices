@@ -6,6 +6,7 @@ on:
  release:
    types:
      - "released"
+     - "published"
  push:
    branches:
      - main
@@ -13,21 +14,43 @@ on:
      - "release-*"
      - "rollback-*"
 
+# Every push to main will create a new release and deploy to production.
+
 jobs:
 
-# Every push to main will create a new release and deploy to production.
- deploy-production:
-   needs:
-     - ci-checks
-     - lint
-   runs-on: ubuntu-latest
-   timeout-minutes: 15
-   steps:
-     - uses: actions/checkout@v2
-     - uses: akhileshns/heroku-deploy@v3.12.12
-       with:
-         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-         heroku_app_name: "<your app name here>"
-         heroku_email: "<your email address>"
-         team: "<team name>"
-         dontautocreate: true # do not create the app if it doesn't exist
+  update-changelog:
+    name: Update Changelog
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Update Changelog
+        uses: stefanzweifel/changelog-updater-action@v1
+        with:
+          latest-version: ${{ github.event.release.name }}
+          release-notes: ${{ github.event.release.body }}
+
+      - name: Commit updated Changelog
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: main
+          commit_message: 'docs(changelog): update changelog'
+          file_pattern: CHANGELOG.md
+
+# deploy-production:
+#   needs:
+#     - ci-checks
+#     - lint
+#   runs-on: ubuntu-latest
+#   timeout-minutes: 15
+#   steps:
+#     - uses: actions/checkout@v2
+#     - uses: akhileshns/heroku-deploy@v3.12.12
+#       with:
+#         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+#         heroku_app_name: "<your app name here>"
+#         heroku_email: "<your email address>"
+#         team: "<team name>"
+#         dontautocreate: true # do not create the app if it doesn't exist

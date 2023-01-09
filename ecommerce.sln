@@ -180,18 +180,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D87B
 	ProjectSection(SolutionItems) = preProject
 		.github\release.yml = .github\release.yml
 		.github\release-drafter.yml = .github\release-drafter.yml
-		.github\multi-labeler.yml = .github\multi-labeler.yml
+		.github\dependabot.yml = .github\dependabot.yml
+		.github\pull_request_template.md = .github\pull_request_template.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3CC5AECD-915C-4CCB-90AA-EF29EBD9A3E5}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build-test.yml = .github\workflows\build-test.yml
 		.github\workflows\release-drafter.yml = .github\workflows\release-drafter.yml
-		.github\workflows\multi-labeler.yml = .github\workflows\multi-labeler.yml
 		.github\workflows\release-drafter-labeler.yml = .github\workflows\release-drafter-labeler.yml
-		.github\workflows\lint-pr.yml = .github\workflows\lint-pr.yml
 		.github\workflows\update-changelog.yml = .github\workflows\update-changelog.yml
 		.github\workflows\cd.yml = .github\workflows\cd.yml
+		.github\workflows\codeql-analysis.yml = .github\workflows\codeql-analysis.yml
+		.github\workflows\checker.yml = .github\workflows\checker.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Services.Catalogs.TestShared", "tests\Services\Catalogs\ECommerce.Services.Catalogs.TestShared\ECommerce.Services.Catalogs.TestShared.csproj", "{AF7DE99E-B3AC-43AA-BA0E-7530837757A0}"

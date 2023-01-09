@@ -1,7 +1,13 @@
 name: Release Drafter Auto Labeler
+
 on:
- pull_request:
-   types: [opened]
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - unlabeled
 
 jobs:
  auto-labeler:

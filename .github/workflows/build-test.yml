@@ -31,8 +31,11 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
 
+    - name: Restore NuGet packages
+      run: dotnet restore
+
     - name: Build
-      run: dotnet build -c Release
+      run: dotnet build -c Release --no-restore
 
     # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
     # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/

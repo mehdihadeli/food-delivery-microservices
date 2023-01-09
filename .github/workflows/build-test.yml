@@ -5,11 +5,12 @@ on:
     branches:
       - develop
       - main
+      - devops/ci
   pull_request:
     branches:
       - develop
       - main
-
+      - devops/ci
 jobs:
   build:
     # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md

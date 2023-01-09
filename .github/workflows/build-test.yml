@@ -40,12 +40,14 @@ jobs:
     # https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
     # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
     - name: Run Unit Tests with Coverage
-      run: dotnet test -c Release --no-build --filter "Category=Unit&FullyQualifiedName~UnitTests" \
+      run: >
+      dotnet test -c Release --no-build --filter "Category=Unit&FullyQualifiedName~UnitTests"
       /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov
 
     - name: Run Integration And EndToEnd Tests with Coverage
-      run: dotnet test -c Release --no-build --filter "(Category=Integration&FullyQualifiedName~IntegrationTests)| \
-      (Category=EndToEnd&FullyQualifiedName~EndToEndTests)" \
+      run: >
+      dotnet test -c Release --no-build --filter "(Category=Integration&FullyQualifiedName~IntegrationTests)|
+      (Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
       /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov
 
     # https://github.com/danielpalme/ReportGenerator

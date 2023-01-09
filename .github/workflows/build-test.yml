@@ -18,8 +18,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - run : git config core.ignorecase false
+
     - name: Check out code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
 #    # https://github.com/actions/cache
 #    - name: Cache NuGet Packages

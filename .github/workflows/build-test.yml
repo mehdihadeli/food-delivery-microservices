@@ -19,14 +19,14 @@ jobs:
 
     steps:
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
-    # https://github.com/actions/cache
-    - name: Cache NuGet Packages
-      uses: actions/cache@v3
-      with:
-        key: ${{ runner.os }}-nuget
-        path: ~/.nuget/packages
+#    # https://github.com/actions/cache
+#    - name: Cache NuGet Packages
+#      uses: actions/cache@v3
+#      with:
+#        key: ${{ runner.os }}-nuget
+#        path: ~/.nuget/packages
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3

@@ -17,6 +17,7 @@ jobs:
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest
 
+    steps:
     - name: Check out code
       uses: actions/checkout@v3
 
@@ -72,4 +73,3 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov:  '${{ github.workspace }}/tests/CoverageResults'
-

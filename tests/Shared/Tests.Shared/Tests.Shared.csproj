@@ -10,7 +10,7 @@
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Security\BuildingBlocks.Security.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="AutoFixture" />
     <PackageReference Include="Hypothesist" />

@@ -1,5 +1,4 @@
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Messaging.BackgroundServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,9 +11,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Serilog;
-using Serilog.Events;
 using Tests.Shared.Auth;
 using WebMotions.Fake.Authentication.JwtBearer;
+using Xunit;
+using Xunit.Abstractions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Tests.Shared.Factory;

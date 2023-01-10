@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
@@ -10,9 +11,10 @@
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Security\BuildingBlocks.Security.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="AutoFixture" />
+    <PackageReference Include="WireMock.Net" />
     <PackageReference Include="Hypothesist" />
     <PackageReference Include="Hypothesist.MassTransit" />
     <PackageReference Include="MassTransit" />
@@ -37,9 +39,6 @@
     <PackageReference Include="WebMotions.Fake.Authentication.JwtBearer" />
     <PackageReference Include="Bazinga.AspNetCore.Authentication.Basic" />
     <PackageReference Include="RestAssured.NET" />
-    <PackageReference Include="WireMock.NET" />
-    <PackageReference Include="WireMock.Net.RestClient" />
-    <PackageReference Include="WireMock.Net.FluentAssertions" />
     <PackageReference Include="Thinkcode.RabbitMQ.OpenAPI" />
     <PackageReference Include="EasyNetQ.Management.Client" />
   </ItemGroup>
@@ -50,6 +49,7 @@
     <!-- https://xunit.net/docs/nuget-packages#xunit.runner.visualstudio-->
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Microsoft.VisualStudio.TestPlatform" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
   </ItemGroup>
 
 </Project>

@@ -36,6 +36,7 @@ jobs:
     - run: ls tests/Shared
 
     # Note: `Ubuntu` file and folder names are case sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
+    # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476
     - name: Restore NuGet packages
       run: dotnet restore
 

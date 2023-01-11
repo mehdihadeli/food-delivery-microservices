@@ -31,10 +31,6 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
 
-    - run: ls tests
-
-    - run: ls tests/Shared
-
     # Note: `Ubuntu` file and folder names are case sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
     # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476
     - name: Restore NuGet packages
@@ -50,7 +46,7 @@ jobs:
     # https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
     # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
     - name: Run Unit Tests with Coverage
-      run: dotnet test -c Release --no-build --filter "(Category=Unit)|(Category=Unit&FullyQualifiedName~UnitTests)"
+      run: dotnet test -c Release --no-build --filter "(Category=Unit&FullyQualifiedName~UnitTests)"
 
     - name: Run Integration And EndToEnd Tests with Coverage
       run: dotnet test -c Release --no-build --filter "(Category=Integration&FullyQualifiedName~IntegrationTests)|

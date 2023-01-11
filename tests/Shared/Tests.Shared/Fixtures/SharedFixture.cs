@@ -24,12 +24,14 @@ using Tests.Shared.Auth;
 using Tests.Shared.Factory;
 using Tests.Shared.TestBase;
 using WireMock.Server;
+using Xunit.Sdk;
 using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
 
 namespace Tests.Shared.Fixtures;
 
 public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : class
 {
+    private readonly IMessageSink _messageSink;
     private ITestHarness? _harness;
     private IHttpContextAccessor? _httpContextAccessor;
     private IServiceProvider? _serviceProvider;
@@ -65,8 +67,14 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
     public WireMockServer WireMockServer { get; }
     public string? WireMockServerUrl { get; }
 
-    public SharedFixture()
+    //https://github.com/xunit/xunit/issues/565
+    //https://github.com/xunit/xunit/pull/1705
+    public SharedFixture(IMessageSink messageSink)
     {
+        _messageSink = messageSink;
+
+        messageSink.OnMessage(new DiagnosticMessage("Constructing SharedFixture..."));
+
         // Service provider will build after getting with get accessors, we don't want to build our service provider here
         PostgresContainerFixture = new PostgresContainerFixture();
         Mongo2GoFixture = new Mongo2GoFixture();

@@ -3,6 +3,7 @@ using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Persistence.Mongo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit.Sdk;
 
 namespace Tests.Shared.Fixtures;
 
@@ -49,5 +50,10 @@ public class
         {
             await db.GetCollection<T>(collectionName).InsertManyAsync(entities.ToList());
         });
+    }
+
+    public SharedFixtureWithEfCoreAndMongo(IMessageSink messageSink) : base(messageSink)
+    {
+        messageSink.OnMessage(new DiagnosticMessage("Constructing SharedFixtureWithEfCoreAndMongo ..."));
     }
 }

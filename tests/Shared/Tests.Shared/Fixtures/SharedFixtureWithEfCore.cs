@@ -3,6 +3,7 @@ using BuildingBlocks.Abstractions.CQRS.Queries;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit.Sdk;
 
 namespace Tests.Shared.Fixtures;
 
@@ -224,5 +225,10 @@ public class SharedFixtureWithEfCore<TEntryPoint, TEfCoreDbContext> : SharedFixt
     public Task<T?> FindEfDbContextAsync<T>(object id) where T : class
     {
         return ExecuteEfDbContextAsync(db => db.Set<T>().FindAsync(id).AsTask());
+    }
+
+    public SharedFixtureWithEfCore(IMessageSink messageSink) : base(messageSink)
+    {
+        messageSink.OnMessage(new DiagnosticMessage("Constructing SharedFixtureWithEfCore ..."));
     }
 }

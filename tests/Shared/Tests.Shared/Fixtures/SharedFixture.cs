@@ -69,6 +69,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
 
     //https://github.com/xunit/xunit/issues/565
     //https://github.com/xunit/xunit/pull/1705
+    //https://xunit.net/docs/capturing-output#output-in-extensions
     public SharedFixture(IMessageSink messageSink)
     {
         _messageSink = messageSink;

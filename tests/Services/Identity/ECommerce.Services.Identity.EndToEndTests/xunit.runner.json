@@ -3,5 +3,6 @@
   "parallelizeAssembly": true,
   "parallelizeTestCollections": false,
   "methodDisplay": "method",
-  "methodDisplayOptions": "all"
+  "methodDisplayOptions": "all",
+  "diagnosticMessages" : true
 }

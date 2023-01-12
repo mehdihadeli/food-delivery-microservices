@@ -67,9 +67,16 @@ jobs:
         targetdir: '${{ github.workspace }}/tests/CoverageResults'
         reporttypes: 'Cobertura;lcov;MarkdownSummaryGithub;Html'
 
+    # https://github.com/actions/runner/issues/946#issuecomment-900193569
     - name: Ls Report Output Files
       run: ls -la
       working-directory: ${{ github.workspace }}/tests/CoverageResults
+
+    - name: Upload Test And Coverage Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: ${{ github.workspace }}/tests/CoverageResults
 
     # merging all coverage in a single coverage file and generating html files for downloading as artifacts
     - name: Publish coverage report to coveralls.io

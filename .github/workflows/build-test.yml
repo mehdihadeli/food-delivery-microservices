@@ -34,9 +34,11 @@ jobs:
     # Note: `Ubuntu` file and folder names are case sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
     # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476
     - name: Restore NuGet packages
+      continue-on-error: false
       run: dotnet restore
 
     - name: Build
+      continue-on-error: false
       run: dotnet build -c Release --no-restore
 
     # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
@@ -47,11 +49,13 @@ jobs:
     # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
     # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md
     - name: Run Unit Tests with Coverage
+      continue-on-error: false
       run: dotnet test -c Release --no-build --filter "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
            /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*  /p:CollectCoverage=true
            /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
 
     - name: Run Integration And EndToEnd Tests with Coverage
+      continue-on-error: false
       run: dotnet test -c Release --no-build --filter "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|
             (Category=EndToEnd&FullyQualifiedName~EndToEndTests)" /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]* /p:CollectCoverage=true
             /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
@@ -62,6 +66,7 @@ jobs:
       # https://dotnetthoughts.net/generating-code-coverage-reports-in-dotnet-core/
     - name: Generate Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.13
+      if: success()
       with:
         reports: '${{ github.workspace }}/**/*.cobertura.xml'
         targetdir: '${{ github.workspace }}/tests/CoverageResults'
@@ -74,6 +79,7 @@ jobs:
 
     - name: Upload Test And Coverage Results
       uses: actions/upload-artifact@v3
+      if: steps.Generate Report.outcome == 'success'
       with:
         name: test-results
         path: ${{ github.workspace }}/tests/CoverageResults
@@ -81,6 +87,7 @@ jobs:
     # merging all coverage in a single coverage file and generating html files for downloading as artifacts
     - name: Publish coverage report to coveralls.io
       uses: coverallsapp/github-action@master
+      if: steps.Generate Report.outcome == 'success'
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov:  '${{ github.workspace }}/tests/CoverageResults/lcov.info'

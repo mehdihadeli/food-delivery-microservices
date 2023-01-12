@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NSubstitute;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -21,7 +22,8 @@ public class RabbitMQContainerFixtureTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        _fixture = new RabbitMQContainerFixture();
+        var sink = Substitute.For<IMessageSink>();
+        _fixture = new RabbitMQContainerFixture(sink);
         await _fixture.InitializeAsync();
     }
 

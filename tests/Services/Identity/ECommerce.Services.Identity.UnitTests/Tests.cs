@@ -8,6 +8,5 @@ public class Tests
     [CategoryTrait(TestCategory.Unit)]
     public void Test1()
     {
-
     }
 }

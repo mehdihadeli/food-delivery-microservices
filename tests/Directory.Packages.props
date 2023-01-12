@@ -23,7 +23,7 @@
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.15" />
     <PackageVersion Include="Respawn" Version="6.0.0" />
     <PackageVersion Include="Serilog.Sinks.Debug" Version="2.0.0" />
-    <PackageVersion Include="Serilog.Sinks.Xunit2" Version="1.1.0" />
+    <PackageVersion Include="Serilog.Sinks.XUnit" Version="3.0.3" />
     <PackageVersion Include="Squadron.Mongo" Version="0.17.0" />
     <PackageVersion Include="System.Reactive.Linq" Version="5.0.0" />
     <PackageVersion Include="Verify.Xunit" Version="19.1.0" />

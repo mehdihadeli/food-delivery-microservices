@@ -4,6 +4,7 @@ using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using EasyNetQ.Management.Client;
 using Tests.Shared.Helpers;
+using Xunit.Sdk;
 
 namespace Tests.Shared.Fixtures;
 
@@ -14,11 +15,14 @@ namespace Tests.Shared.Fixtures;
 
 public class RabbitMQContainerFixture : IAsyncLifetime
 {
+    private readonly IMessageSink _messageSink;
     private readonly RabbitMQContainerOptions _rabbitMqContainerOptions;
     public RabbitMqTestcontainer Container { get; }
+    public int ApiPort => Container.GetMappedPublicPort(15672);
 
-    public RabbitMQContainerFixture()
+    public RabbitMQContainerFixture(IMessageSink messageSink)
     {
+        _messageSink = messageSink;
         var rabbitmqContainerOptions = ConfigurationHelper.BindOptions<RabbitMQContainerOptions>();
         Guard.Against.Null(rabbitmqContainerOptions);
         _rabbitMqContainerOptions = rabbitmqContainerOptions;
@@ -29,7 +33,7 @@ public class RabbitMQContainerFixture : IAsyncLifetime
                 Username = rabbitmqContainerOptions.UserName, Password = rabbitmqContainerOptions.Password,
             })
             // set custom host http port for container http port 15672, beside of automatic tcp port will assign for container port 5672 (default port)
-            .WithPortBinding(15673, 15672)
+            .WithPortBinding(15672, true)
             // we could comment this line, this is default port for testcontainer
             .WithPortBinding(5672, true)
             .WithCleanUp(true)
@@ -48,7 +52,6 @@ public class RabbitMQContainerFixture : IAsyncLifetime
         // https://www.planetgeek.ch/2015/08/16/cleaning-up-queues-and-exchanges-on-rabbitmq/
         // https://www.planetgeek.ch/2015/08/31/cleanup-code-for-cleaning-up-queues-and-exchanges-on-rabbitmq/
 
-        var apiPort = Container.GetMappedPublicPort(15672);
 
         // here I used rabbitmq http apis (Management Plugin) but also we can also use RabbitMQ client library and channel.ExchangeDelete(), channel.QueueDelete(), official client
         // is not complete for administrative works for example it doesn't have GetAllQueues, GetAllExchanges
@@ -56,7 +59,7 @@ public class RabbitMQContainerFixture : IAsyncLifetime
             $"http://{Container.Hostname}",
             Container.Username,
             Container.Password,
-            apiPort);
+            ApiPort);
 
         //Creating new exchange after each publish doesn't support by masstransit and it just creates exchanges in init phase but works for queues
         var queues = await managementClient.GetQueuesAsync(cancellationToken);
@@ -107,12 +110,14 @@ public class RabbitMQContainerFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         await Container.StartAsync();
+        _messageSink.OnMessage(new DiagnosticMessage($"RabbitMq fixture started on Host port {Container.Port} and Api Port {ApiPort}..."));
     }
 
     public async Task DisposeAsync()
     {
         await Container.StopAsync();
         await Container.DisposeAsync(); //important for the event to cleanup to be fired!
+        _messageSink.OnMessage(new DiagnosticMessage("RabbitMq fixture stopped."));
     }
 
     private sealed class RabbitMQContainerOptions

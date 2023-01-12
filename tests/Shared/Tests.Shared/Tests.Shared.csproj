@@ -30,7 +30,7 @@
     <PackageReference Include="NSubstitute.Analyzers.CSharp" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Serilog.Sinks.Debug" />
-    <PackageReference Include="Serilog.Sinks.Xunit2" />
+    <PackageReference Include="Serilog.Sinks.Xunit" />
     <PackageReference Include="MartinCostello.Logging.XUnit" />
     <PackageReference Include="System.Reactive.Linq" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />

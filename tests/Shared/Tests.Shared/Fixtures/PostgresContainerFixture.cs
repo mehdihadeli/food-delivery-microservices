@@ -6,16 +6,19 @@ using DotNet.Testcontainers.Containers;
 using Npgsql;
 using Respawn;
 using Tests.Shared.Helpers;
+using Xunit.Sdk;
 
 namespace Tests.Shared.Fixtures;
 
 public class PostgresContainerFixture : IAsyncLifetime
 {
+    private readonly IMessageSink _messageSink;
     private readonly PostgresContainerOptions _postgresContainerOptions;
     public PostgreSqlTestcontainer Container { get; }
 
-    public PostgresContainerFixture()
+    public PostgresContainerFixture(IMessageSink messageSink)
     {
+        _messageSink = messageSink;
         var postgresOptions = ConfigurationHelper.BindOptions<PostgresContainerOptions>();
         Guard.Against.Null(postgresOptions);
         _postgresContainerOptions = postgresOptions;
@@ -37,6 +40,7 @@ public class PostgresContainerFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         await Container.StartAsync();
+        _messageSink.OnMessage(new DiagnosticMessage($"Postgres fixture started on Host port {Container.Port}..."));
     }
 
     public async Task ResetDbAsync(CancellationToken cancellationToken = default)
@@ -62,6 +66,7 @@ public class PostgresContainerFixture : IAsyncLifetime
     {
         await Container.StopAsync();
         await Container.DisposeAsync(); //important for the event to cleanup to be fired!
+        _messageSink.OnMessage(new DiagnosticMessage("Postgres fixture stopped."));
     }
 
     private async Task CheckForExistingDatabase(NpgsqlConnection connection)

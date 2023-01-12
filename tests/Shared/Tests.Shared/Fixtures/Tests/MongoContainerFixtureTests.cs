@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Humanizer;
 using MongoDB.Driver;
+using NSubstitute;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -34,7 +35,8 @@ public class MongoContainerFixtureTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        _fixture = new MongoContainerFixture();
+        var sink = Substitute.For<IMessageSink>();
+        _fixture = new MongoContainerFixture(sink);
         await _fixture.InitializeAsync();
     }
 

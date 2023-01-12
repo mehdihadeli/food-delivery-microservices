@@ -9,4 +9,9 @@
 	  <NoWarn>CS1587,CS1591,CS1998,NU5105</NoWarn>
   </PropertyGroup>
 
+<!-- https://codyanhorn.tech/blog/excluding-your-net-test-project-from-code-coverage -->
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+    </ItemGroup>
+
 </Project>

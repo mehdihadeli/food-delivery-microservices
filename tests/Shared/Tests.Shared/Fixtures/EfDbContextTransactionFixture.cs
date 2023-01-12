@@ -7,6 +7,7 @@ using DotNet.Testcontainers.Containers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Tests.Shared.Helpers;
+using Xunit.Sdk;
 
 namespace Tests.Shared.Fixtures;
 
@@ -14,14 +15,16 @@ namespace Tests.Shared.Fixtures;
 public class EfDbContextTransactionFixture<TContext> : IAsyncLifetime
     where TContext : DbContext
 {
+    private readonly IMessageSink _messageSink;
     private readonly string? _migrationAssembly;
     private bool _isInnerTransaction;
     private IDbContextTransaction _transaction = null!;
     public TContext DbContext { get; private set; } = default!;
     public PostgreSqlTestcontainer Container { get; }
 
-    public EfDbContextTransactionFixture()
+    public EfDbContextTransactionFixture(IMessageSink messageSink)
     {
+        _messageSink = messageSink;
         _migrationAssembly = typeof(TContext).Assembly.GetName().Name;
         var postgresOptions = ConfigurationHelper.BindOptions<PostgresContainerOptions>();
         Guard.Against.Null(postgresOptions);
@@ -77,6 +80,7 @@ public class EfDbContextTransactionFixture<TContext> : IAsyncLifetime
         DbContext = typeof(TContext).CreateInstanceFromType<TContext>(optionBuilder);
         await DbContext.Database.MigrateAsync();
         await ConfigTransaction();
+        _messageSink.OnMessage(new DiagnosticMessage($"EfDbContextTransactionFixture fixture started..."));
     }
 
     public async Task DisposeAsync()
@@ -84,6 +88,7 @@ public class EfDbContextTransactionFixture<TContext> : IAsyncLifetime
         await DbContext.DisposeAsync();
         await Container.StopAsync();
         await Container.DisposeAsync(); //important for the event to cleanup to be fired!
+        _messageSink.OnMessage(new DiagnosticMessage($"EfDbContextTransactionFixture fixture stopped"));
     }
 
     private async Task ConfigTransaction()

@@ -7,7 +7,6 @@ using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Core.Types;
-using BuildingBlocks.Persistence.Mongo;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using MassTransit;
@@ -18,11 +17,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
+using Serilog;
 using Tests.Shared.Auth;
 using Tests.Shared.Factory;
-using Tests.Shared.TestBase;
 using WireMock.Server;
 using Xunit.Sdk;
 using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
@@ -39,16 +37,15 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
     private HttpClient? _adminClient;
     private HttpClient? _normalClient;
     private HttpClient? _guestClient;
-    private ILogger? _logger;
 
     public Func<Task>? OnSharedFixtureInitialized;
     public Func<Task>? OnSharedFixtureDisposed;
 
-    public ILogger Logger =>
-        _logger ??= ServiceProvider.GetRequiredService<ILogger<IntegrationTest<TEntryPoint>>>();
-
+    public ILogger Logger { get; }
     public PostgresContainerFixture PostgresContainerFixture { get; }
-    public Mongo2GoFixture Mongo2GoFixture { get; }
+    public MongoContainerFixture MongoContainerFixture { get; }
+
+    public Mongo2GoFixture Mongo2GoFixture { get; } = default!;
     public RabbitMQContainerFixture RabbitMqContainerFixture { get; }
     public CustomWebApplicationFactory<TEntryPoint> Factory { get; private set; }
     public IServiceProvider ServiceProvider => _serviceProvider ??= Factory.Services;
@@ -70,16 +67,24 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
     //https://github.com/xunit/xunit/issues/565
     //https://github.com/xunit/xunit/pull/1705
     //https://xunit.net/docs/capturing-output#output-in-extensions
+    //https://andrewlock.net/tracking-down-a-hanging-xunit-test-in-ci-building-a-custom-test-framework/
     public SharedFixture(IMessageSink messageSink)
     {
         _messageSink = messageSink;
-
         messageSink.OnMessage(new DiagnosticMessage("Constructing SharedFixture..."));
 
+        //https://github.com/trbenning/serilog-sinks-xunit
+        Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .WriteTo.TestOutput(messageSink)
+            .CreateLogger()
+            .ForContext<SharedFixture<TEntryPoint>>();
+
         // Service provider will build after getting with get accessors, we don't want to build our service provider here
-        PostgresContainerFixture = new PostgresContainerFixture();
-        Mongo2GoFixture = new Mongo2GoFixture();
-        RabbitMqContainerFixture = new RabbitMQContainerFixture();
+        PostgresContainerFixture = new PostgresContainerFixture(messageSink);
+        MongoContainerFixture = new MongoContainerFixture(messageSink);
+        //Mongo2GoFixture = new Mongo2GoFixture(messageSink);
+        RabbitMqContainerFixture = new RabbitMQContainerFixture(messageSink);
 
         Factory = new CustomWebApplicationFactory<TEntryPoint>();
         AutoFaker.Configure(
@@ -117,7 +122,8 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
                 {
                     {"PostgresOptions:ConnectionString", PostgresContainerFixture.Container.ConnectionString},
                     {"MessagePersistenceOptions:ConnectionString", PostgresContainerFixture.Container.ConnectionString},
-                    {"MongoOptions:ConnectionString", Mongo2GoFixture.MongoDbRunner.ConnectionString},
+                    {"MongoOptions:ConnectionString", MongoContainerFixture.Container.ConnectionString},
+                    //{"MongoOptions:ConnectionString", Mongo2GoFixture.MongoDbRunner.ConnectionString}, //initialize mongo2go connection
                     {"RabbitMqOptions:UserName", RabbitMqContainerFixture.Container.Username},
                     {"RabbitMqOptions:Password", RabbitMqContainerFixture.Container.Password},
                     {"RabbitMqOptions:Host", RabbitMqContainerFixture.Container.Hostname},
@@ -131,10 +137,13 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
 
     public async Task InitializeAsync()
     {
+        _messageSink.OnMessage(new DiagnosticMessage("SharedFixture Started..."));
+
         // Service provider will build after getting with get accessors, we don't want to build our service provider here
         await Factory.InitializeAsync();
         await PostgresContainerFixture.InitializeAsync();
-        await Mongo2GoFixture.InitializeAsync();
+        await MongoContainerFixture.InitializeAsync();
+        //await Mongo2GoFixture.InitializeAsync();
         await RabbitMqContainerFixture.InitializeAsync();
 
         var initCallback = OnSharedFixtureInitialized?.Invoke();
@@ -147,7 +156,8 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
         await MasstransitHarness.Stop();
 
         await PostgresContainerFixture.DisposeAsync();
-        await Mongo2GoFixture.DisposeAsync();
+        await MongoContainerFixture.DisposeAsync();
+        //await Mongo2GoFixture.DisposeAsync();
         await RabbitMqContainerFixture.DisposeAsync();
         WireMockServer.Stop();
         AdminHttpClient.Dispose();
@@ -159,6 +169,8 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
             await disposeCallback;
 
         await Factory.DisposeAsync();
+
+        _messageSink.OnMessage(new DiagnosticMessage("SharedFixture Stopped..."));
     }
 
     public async Task CleanupMessaging(CancellationToken cancellationToken = default)
@@ -169,10 +181,12 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
     public async Task ResetDatabasesAsync(CancellationToken cancellationToken = default)
     {
         await PostgresContainerFixture.ResetDbAsync(cancellationToken);
-        await Mongo2GoFixture.ResetDbAsync(cancellationToken);
+        await MongoContainerFixture.ResetDbAsync(cancellationToken);
+        //await Mongo2GoFixture.ResetDbAsync(cancellationToken); //get new connection for mongo2go with clean db
 
-        var mongoOptions = ServiceProvider.GetRequiredService<MongoOptions>();
-        mongoOptions.ConnectionString = Mongo2GoFixture.MongoDbRunner.ConnectionString;
+        ////Mongo2Go - set new connection with clean db from mongo2go to our app
+        // var mongoOptions = ServiceProvider.GetRequiredService<MongoOptions>();
+        // mongoOptions.ConnectionString = Mongo2GoFixture.MongoDbRunner.ConnectionString;
     }
 
     /// <summary>

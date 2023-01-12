@@ -4,16 +4,19 @@ using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using Tests.Shared.Helpers;
 using MongoDB.Driver;
+using Xunit.Sdk;
 
 namespace Tests.Shared.Fixtures;
 
 public class MongoContainerFixture : IAsyncLifetime
 {
+    private readonly IMessageSink _messageSink;
     private readonly MongoContainerOptions _mongoContainerOptions;
     public MongoDbTestcontainer Container { get; }
 
-    public MongoContainerFixture()
+    public MongoContainerFixture(IMessageSink messageSink)
     {
+        _messageSink = messageSink;
         var mongoContainerOptions = ConfigurationHelper.BindOptions<MongoContainerOptions>();
         Guard.Against.Null(mongoContainerOptions);
         _mongoContainerOptions = mongoContainerOptions;
@@ -27,7 +30,10 @@ public class MongoContainerFixture : IAsyncLifetime
             })
             .WithName(mongoContainerOptions.Name)
             .WithCleanUp(true)
-            .WithImage(mongoContainerOptions.ImageName);
+            // https://github.com/testcontainers/testcontainers-dotnet/issues/734
+            // testcontainers has a problem with using mongo:latest version for now we use testcontainer default image
+            //.WithImage(mongoContainerOptions.ImageName)
+            ;
 
         Container = postgresContainerBuilder.Build();
     }
@@ -40,12 +46,14 @@ public class MongoContainerFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         await Container.StartAsync();
+        _messageSink.OnMessage(new DiagnosticMessage($"Mongo fixture started on Host port {Container.Port}..."));
     }
 
     public async Task DisposeAsync()
     {
         await Container.StopAsync();
         await Container.DisposeAsync(); //important for the event to cleanup to be fired!
+        _messageSink.OnMessage(new DiagnosticMessage("Mongo fixture stopped."));
     }
 
     private async Task DropDatabaseCollections(CancellationToken cancellationToken)

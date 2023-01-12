@@ -1,6 +1,4 @@
-namespace ECommerce.Services.Identity.UnitTests;
+using Tests.Shared.XunitFramework;
 
-public class XunitMetadata
-{
-    
-}
+[assembly:
+    TestFramework($"{nameof(Tests)}.{nameof(Tests.Shared)}.{nameof(Tests.Shared.XunitFramework)}.{nameof(CustomTestFramework)}", $"{nameof(Tests)}.{nameof(Tests.Shared)}")]

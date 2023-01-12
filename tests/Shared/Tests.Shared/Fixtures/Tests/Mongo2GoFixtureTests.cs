@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Mongo2Go;
+using NSubstitute;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -23,7 +24,8 @@ public class Mongo2GoFixtureTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        _fixture = new Mongo2GoFixture();
+        var sink = Substitute.For<IMessageSink>();
+        _fixture = new Mongo2GoFixture(sink);
         await _fixture.InitializeAsync();
     }
 

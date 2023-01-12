@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NSubstitute;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -21,7 +22,8 @@ public class PostgresContainerFixtureTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        _fixture = new PostgresContainerFixture();
+        var sink = Substitute.For<IMessageSink>();
+        _fixture = new PostgresContainerFixture(sink);
         await _fixture.InitializeAsync();
     }
 

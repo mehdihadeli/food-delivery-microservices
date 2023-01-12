@@ -11,7 +11,7 @@ namespace Tests.Shared.TestBase;
 //https://bartwullems.blogspot.com/2019/09/xunit-async-lifetime.html
 //https://www.danclarke.com/cleaner-tests-with-iasynclifetime
 //https://xunit.net/docs/shared-context
-public abstract class IntegrationTest<TEntryPoint> : IAsyncLifetime
+public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLifetime
     where TEntryPoint : class
 {
     protected CancellationToken CancellationToken => CancellationTokenSource.Token;
@@ -21,7 +21,7 @@ public abstract class IntegrationTest<TEntryPoint> : IAsyncLifetime
     protected SharedFixture<TEntryPoint> SharedFixture { get; }
     protected IntegrationTest(
         SharedFixture<TEntryPoint> sharedFixture,
-        ITestOutputHelper outputHelper)
+        ITestOutputHelper outputHelper): base(outputHelper)
     {
         SharedFixture = sharedFixture;
         SharedFixture.SetOutputHelper(outputHelper);

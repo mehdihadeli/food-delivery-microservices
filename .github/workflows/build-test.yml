@@ -45,13 +45,16 @@ jobs:
     # https://josef.codes/dotnet-core-filter-out-specific-test-projects-when-running-dotnet-test/
     # https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
     # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+    # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md
     - name: Run Unit Tests with Coverage
-      run: dotnet test -c Release --no-build --filter "(Category=Unit&FullyQualifiedName~UnitTests)"
-           /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov
+      run: dotnet test -c Release --no-build --filter "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
+           /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*  /p:CollectCoverage=true
+           /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
 
     - name: Run Integration And EndToEnd Tests with Coverage
-      run: dotnet test -c Release --no-build --filter "(Category=Integration&FullyQualifiedName~IntegrationTests)|
-            (Category=EndToEnd&FullyQualifiedName~EndToEndTests)"  /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov
+      run: dotnet test -c Release --no-build --filter "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|
+            (Category=EndToEnd&FullyQualifiedName~EndToEndTests)" /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]* /p:CollectCoverage=true
+            /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
 
     - name: Generate Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.13

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Serilog;
+using Serilog.Events;
 using Tests.Shared.Auth;
 using WebMotions.Fake.Authentication.JwtBearer;
 using Xunit;
@@ -74,10 +75,13 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
         // UseSerilog on WebHostBuilder is absolute so we should use IHostBuilder
         builder.UseSerilog((ctx, loggerConfiguration) =>
         {
-            //https://github.com/jhquirino/Serilog.Sinks.Xunit2
+            //https://github.com/trbenning/serilog-sinks-xunit
             if (_outputHelper is { })
             {
-                loggerConfiguration.WriteTo.Xunit(_outputHelper);
+                loggerConfiguration.WriteTo.TestOutput(
+                    _outputHelper,
+                    LogEventLevel.Information,
+                    "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}");
             }
         });
 

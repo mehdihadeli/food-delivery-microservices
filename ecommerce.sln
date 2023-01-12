@@ -164,7 +164,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\release-drafter-labeler.yml = .github\workflows\release-drafter-labeler.yml
 		.github\workflows\update-changelog.yml = .github\workflows\update-changelog.yml
 		.github\workflows\cd.yml = .github\workflows\cd.yml
-		.github\workflows\codeql-analysis.yml = .github\workflows\codeql-analysis.yml
 		.github\workflows\checker.yml = .github\workflows\checker.yml
 	EndProjectSection
 EndProject

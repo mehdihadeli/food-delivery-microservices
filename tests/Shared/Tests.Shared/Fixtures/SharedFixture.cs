@@ -123,6 +123,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
                     {"PostgresOptions:ConnectionString", PostgresContainerFixture.Container.ConnectionString},
                     {"MessagePersistenceOptions:ConnectionString", PostgresContainerFixture.Container.ConnectionString},
                     {"MongoOptions:ConnectionString", MongoContainerFixture.Container.ConnectionString},
+                    {"MongoOptions:DatabaseName", MongoContainerFixture.Container.Database},
                     //{"MongoOptions:ConnectionString", Mongo2GoFixture.MongoDbRunner.ConnectionString}, //initialize mongo2go connection
                     {"RabbitMqOptions:UserName", RabbitMqContainerFixture.Container.Username},
                     {"RabbitMqOptions:Password", RabbitMqContainerFixture.Container.Password},
@@ -153,7 +154,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime where TEntryPoint : cla
 
     public async Task DisposeAsync()
     {
-        await MasstransitHarness.Stop();
+        await MasstransitHarness.Stop(cancellationToken:CancellationToken.None);
 
         await PostgresContainerFixture.DisposeAsync();
         await MongoContainerFixture.DisposeAsync();

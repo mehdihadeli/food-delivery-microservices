@@ -3,6 +3,7 @@ using ECommerce.Services.Customers.Shared.Data;
 using ECommerce.Services.Customers.TestShared.Fakes.Customers.Entities;
 using FluentAssertions;
 using Humanizer;
+using MongoDB.Driver;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
 using Xunit.Abstractions;
@@ -22,6 +23,7 @@ public class GetCustomersTests : CustomerServiceIntegrationTestBase
     [CategoryTrait(TestCategory.Integration)]
     internal async Task should_get_existing_customers_list_from_db()
     {
+        var res = await SharedFixture.ExecuteMongoDbContextAsync(x => x.Customers.AsQueryable().ToListAsync());
         // Arrange
         var fakeCustomers = new FakeCustomerReadModel().Generate(3);
         await SharedFixture.InsertMongoDbContextAsync(

@@ -2,6 +2,7 @@ using FluentAssertions;
 using Humanizer;
 using MongoDB.Driver;
 using NSubstitute;
+using Tests.Shared.XunitCategories;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -10,6 +11,7 @@ public class MongoContainerFixtureTests : IAsyncLifetime
     private MongoContainerFixture _fixture = default!;
 
     [Fact]
+    [CategoryTrait(TestCategory.Unit)]
     public async Task init_container()
     {
         _fixture.Container.Should().NotBeNull();
@@ -17,6 +19,7 @@ public class MongoContainerFixtureTests : IAsyncLifetime
     }
 
     [Fact]
+    [CategoryTrait(TestCategory.Unit)]
     public async Task reset_database()
     {
         MongoClient dbClient = new MongoClient(_fixture.Container.ConnectionString);

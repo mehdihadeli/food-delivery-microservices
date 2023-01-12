@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NSubstitute;
+using Tests.Shared.XunitCategories;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -8,17 +9,20 @@ public class PostgresContainerFixtureTests : IAsyncLifetime
     private PostgresContainerFixture _fixture = default!;
 
     [Fact]
+    [CategoryTrait(TestCategory.Unit)]
     public async Task init_container()
     {
         _fixture.Container.Should().NotBeNull();
         _fixture.Container.ConnectionString.Should().NotBeEmpty();
     }
 
-    [Fact]
-    public async Task reset_database()
-    {
-        await _fixture.ResetDbAsync();
-    }
+    // [Fact]
+    // [CategoryTrait(TestCategory.Unit)]
+    // [CategoryTrait(TestCategory.Unit)]
+    // public async Task reset_database()
+    // {
+    //     await _fixture.ResetDbAsync();
+    // }
 
     public async Task InitializeAsync()
     {

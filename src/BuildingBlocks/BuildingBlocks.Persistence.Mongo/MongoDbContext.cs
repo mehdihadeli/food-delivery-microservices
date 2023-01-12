@@ -15,7 +15,7 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
     public IClientSessionHandle? Session { get; set; }
     public IMongoDatabase Database { get; }
     public IMongoClient MongoClient { get; }
-    protected readonly IList<Func<Task>> _commands;
+    protected readonly List<Func<Task>> _commands;
 
     public MongoDbContext(MongoOptions options)
     {

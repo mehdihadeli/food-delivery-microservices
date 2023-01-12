@@ -60,6 +60,10 @@ public class MongoContainerFixture : IAsyncLifetime
     {
         //https://stackoverflow.com/questions/3366397/delete-everything-in-a-mongodb-database
         MongoClient dbClient = new MongoClient(Container.ConnectionString);
+
+        //// Drop database completely in each run or drop only the collections in exisitng database
+        //await dbClient.DropDatabaseAsync(Container.Database, cancellationToken);
+
         var collections = await dbClient.GetDatabase(Container.Database)
             .ListCollectionsAsync(cancellationToken: cancellationToken);
 

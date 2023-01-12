@@ -2,6 +2,7 @@ using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Messaging.Persistence.Postgres.MessagePersistence;
 using FluentAssertions;
 using NSubstitute;
+using Tests.Shared.XunitCategories;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -10,6 +11,7 @@ public class EfDbContextTransactionFixture : IAsyncLifetime
     private EfDbContextTransactionFixture<MessagePersistenceDbContext> _fixture = default!;
 
     [Fact]
+    [CategoryTrait(TestCategory.Unit)]
     public async Task init_container()
     {
         _fixture.Container.Should().NotBeNull();
@@ -18,6 +20,7 @@ public class EfDbContextTransactionFixture : IAsyncLifetime
     }
 
     [Fact]
+    [CategoryTrait(TestCategory.Unit)]
     public async Task reset_database()
     {
         _fixture.DbContext.StoreMessages.Add(new StoreMessage(Guid.NewGuid(), "ss", "ss", MessageDeliveryType.Inbox));

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Mongo2Go;
 using NSubstitute;
+using Tests.Shared.XunitCategories;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -9,6 +10,7 @@ public class Mongo2GoFixtureTests : IAsyncLifetime
     private Mongo2GoFixture _fixture = default!;
 
     [Fact]
+    [CategoryTrait(TestCategory.Unit)]
     public async Task init_fixture()
     {
         _fixture.MongoDbRunner.Should().NotBeNull();
@@ -16,6 +18,7 @@ public class Mongo2GoFixtureTests : IAsyncLifetime
     }
 
     [Fact]
+    [CategoryTrait(TestCategory.Unit)]
     public async Task reset_database()
     {
        await _fixture.ResetDbAsync();

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NSubstitute;
+using Tests.Shared.XunitCategories;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -8,6 +9,7 @@ public class RabbitMQContainerFixtureTests : IAsyncLifetime
     private RabbitMQContainerFixture _fixture = default!;
 
     [Fact]
+    [CategoryTrait(TestCategory.Unit)]
     public async Task init_container()
     {
         _fixture.Container.Should().NotBeNull();
@@ -15,6 +17,7 @@ public class RabbitMQContainerFixtureTests : IAsyncLifetime
     }
 
     [Fact]
+    [CategoryTrait(TestCategory.Unit)]
     public async Task cleanup_messaging()
     {
         await _fixture.CleanupQueuesAsync();

@@ -17,16 +17,18 @@ on:
 # https://docs.github.com/en/actions/using-workflows/about-workflows
 jobs:
 
-#  permissions:
-#    contents: write
-#    pull-requests: read
-
   build-test:
     # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest
 
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    permissions:
+      contents: read
+      packages: write
+
     env:
+      REGISTRY: ghcr.io
       IMG_NAME: ${{ github.repository }}
 
     steps:
@@ -133,19 +135,23 @@ jobs:
 
     # https://github.com/docker/metadata-action
     # https://josephrodriguezg.medium.com/build-and-publish-docker-images-with-github-actions-78be3b3fbb9b
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
     - name: Docker Meta
       id: meta
       uses: docker/metadata-action@v4
+      if: github.event_name != 'pull_request'
       with:
         images: ${{ env.IMG_NAME }}
         tags: |
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
-          type=raw,value={{sha}},enable=${{ github.ref_type != 'tag' }}
+          type=raw,value={{branch}}-{{sha}},enable=${{ github.ref_type != 'tag' }}
 
     # https://docs.docker.com/engine/reference/commandline/build/
     # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
     -  name: docker build
+       if: github.event_name != 'pull_request'
        run: |
           docker build . --tag  ghcr.io/${{ github.repository }}/catalogs-service:latest  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
           docker build . --tag  ghcr.io/${{ github.repository }}/customers-service:latest -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
@@ -153,12 +159,15 @@ jobs:
 
     - name: 'Login to GitHub Container Registry'
       uses: docker/login-action@v1
+      if: github.event_name != 'pull_request'
       with:
        registry: ghcr.io
        username: ${{github.actor}}
        password: ${{secrets.GITHUB_TOKEN}}
 
+      # github.ref == 'refs/heads/main'
     - name: docker publish
+      if: github.event_name != 'pull_request'
       run: |
         docker push   ghcr.io/${{ github.repository }}/catalogs-service:latest
         docker push   ghcr.io/${{ github.repository }}/customers-service:latest

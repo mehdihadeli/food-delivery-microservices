@@ -112,12 +112,12 @@ jobs:
       id: publish-services
       if: success()
       run: |
-        dotnet publish -c Release --no-build --no-restore  ${{ github.workspace }}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
-        -o ${{ github.workspace }}/Services/Catalogs
-        dotnet publish -c Release --no-build --no-restore  ${{ github.workspace }}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
-        -o ${{ github.workspace }}/Services/Customers
-        dotnet publish -c Release --no-build --no-restore  ${{ github.workspace }}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
-        -o ${{ github.workspace }}/Services/Identity
+        dotnet publish -c Release --no-build --no-restore  ${{ github.workspace }}/src/Services/Catalogs/ECommerce
+            .Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj -o ${{ github.workspace }}/Services/Catalogs
+        dotnet publish -c Release --no-build --no-restore  ${{ github.workspace }}/src/Services/Customers/ECommerce
+            .Services.Customers.Api/ECommerce.Services.Customers.Api.csproj  -o ${{ github.workspace }}/Services/Customers
+        dotnet publish -c Release --no-build --no-restore  ${{ github.workspace }}/src/Services/Identity/ECommerce
+            .Services.Identity.Api/ECommerce.Services.Identity.Api.csproj -o ${{ github.workspace }}/Services/Identity
 
     - name: Upload Services Publish Artifacts
       uses: actions/upload-artifact@v2
@@ -129,9 +129,8 @@ jobs:
     # -  name: docker build
     #    run: |
 
-  publish-test-result:
+  publish:
     runs-on: ubuntu-latest
-
     # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs
     needs: build-test
     steps:
@@ -141,3 +140,6 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov:  '${{ github.workspace }}/tests/CoverageResults/lcov.info'
+
+    # -  name: publish docker image
+    #    run: |

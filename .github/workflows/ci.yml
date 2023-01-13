@@ -133,9 +133,9 @@ jobs:
     # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
     -  name: docker build
        run: |
-          docker build . --tag  ghcr.io/${{ github.repository }}/catalogs-service:latest  -f "src\Services\Catalogs\Dockerfile"
-          docker build . --tag  ghcr.io/${{ github.repository }}/customers-service:latest -f "src\Services\Customers\Dockerfile"
-          docker build . --tag  ghcr.io/${{ github.repository }}/identity-service:latest  -f "src\Services\Identity\Dockerfile"
+          docker build . --tag  ghcr.io/${{ github.repository }}/catalogs-service:latest  -f "${{ github.workspace }}/src/Services/Catalogs\Dockerfile"
+          docker build . --tag  ghcr.io/${{ github.repository }}/customers-service:latest -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
+          docker build . --tag  ghcr.io/${{ github.repository }}/identity-service:latest  -f "${{ github.workspace }}/src/Services/Identity/Dockerfile"
 
     - name: 'Login to GitHub Container Registry'
       uses: docker/login-action@v1

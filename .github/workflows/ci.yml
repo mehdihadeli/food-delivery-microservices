@@ -120,7 +120,7 @@ jobs:
       uses: actions/upload-artifact@v2
       if: steps.publish-services.outcome == 'success'
       with:
-        name: publish-services-artifact
+        name: publish-services
         path: ${{ github.workspace }}/Services
 
     # -  name: docker build
@@ -131,12 +131,19 @@ jobs:
     # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs
     needs: build-test
     steps:
+
+    - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: artifacts
+          path: artifacts
+
     # merging all coverage in a single coverage file and generating html files for downloading as artifacts
     - name: Publish coverage report to coveralls.io
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov:  '${{ github.workspace }}/tests/CoverageResults/lcov.info'
+        path-to-lcov:  'artifacts/test-results/lcov.info'
 
     # -  name: publish docker image
     #    run: |

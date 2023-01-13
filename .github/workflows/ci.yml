@@ -99,12 +99,14 @@ jobs:
       working-directory: ${{ github.workspace }}/tests/CoverageResults
 
     # https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
+    # https://github.blog/changelog/2020-10-08-github-actions-ability-to-change-retention-days-for-artifacts-and-logs/
     - name: Upload Test And Coverage Results Artifacts
       uses: actions/upload-artifact@v3
       continue-on-error: false
       if: steps.generate-report.outcome == 'success'
       with:
         name: test-results
+        retention-days: 5
         path: ${{ github.workspace }}/tests/CoverageResults
 
     - name: dotnet publish
@@ -135,7 +137,6 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v3
       with:
-        name: artifacts
         path: artifacts
 
     # merging all coverage in a single coverage file and generating html files for downloading as artifacts

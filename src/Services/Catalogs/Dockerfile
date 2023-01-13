@@ -49,7 +49,7 @@ WORKDIR /src/Services/Catalogs/ECommerce.Services.Catalogs.Api/
 # Publish project to output folder
 # and no build, as we did it already
 RUN ls
-RUN dotnet publish -c Release --no-build -o out
+RUN dotnet publish -c Release --no-build --no-restore -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:latest
 # Setup working directory for the project

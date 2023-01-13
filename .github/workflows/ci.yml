@@ -24,6 +24,9 @@ jobs:
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest
 
+    env:
+      IMG_NAME: ${{ github.repository }}
+
     steps:
     - name: Check out code
       uses: actions/checkout@v3
@@ -123,10 +126,29 @@ jobs:
       if: steps.publish-services.outcome == 'success'
       with:
         name: publish-services
+        retention-days: 1
         path: ${{ github.workspace }}/Services
 
-    # -  name: docker build
-    #    run: |
+    # https://docs.docker.com/engine/reference/commandline/build/
+    # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
+    -  name: docker build
+       run: |
+          docker build . --tag  ghcr.io/${{ github.repository }}/catalogs-service:latest  -f "src\Services\Catalogs\Dockerfile"
+          docker build . --tag  ghcr.io/${{ github.repository }}/customers-service:latest -f "src\Services\Customers\Dockerfile"
+          docker build . --tag  ghcr.io/${{ github.repository }}/identity-service:latest  -f "src\Services\Identity\Dockerfile"
+
+    - name: 'Login to GitHub Container Registry'
+      uses: docker/login-action@v1
+      with:
+       registry: ghcr.io
+       username: ${{github.actor}}
+       password: ${{secrets.GITHUB_TOKEN}}
+
+    - name: docker publish
+      run: |
+        docker push   ghcr.io/${{ github.repository }}/catalogs-service:latest
+        docker push   ghcr.io/${{ github.repository }}/customers-service:latest
+        docker push   ghcr.io/${{ github.repository }}/identity-service:latest
 
   publish:
     runs-on: ubuntu-latest
@@ -134,6 +156,7 @@ jobs:
     needs: build-test
     steps:
 
+    # https://github.com/actions/download-artifact#download-all-artifacts
     - name: Download Artifacts
       uses: actions/download-artifact@v3
       with:

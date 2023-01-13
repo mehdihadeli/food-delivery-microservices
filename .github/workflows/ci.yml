@@ -11,6 +11,8 @@ on:
       - develop
       - main
       - devops/ci
+    tags:
+      - 'v*'
 
 # https://docs.github.com/en/actions/using-workflows/about-workflows
 jobs:

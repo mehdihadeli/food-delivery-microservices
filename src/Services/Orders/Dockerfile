@@ -25,6 +25,8 @@ COPY ./src/BuildingBlocks/BuildingBlocks.Security/BuildingBlocks.Security.csproj
 COPY ./src/BuildingBlocks/BuildingBlocks.Swagger/BuildingBlocks.Swagger.csproj ./BuildingBlocks/BuildingBlocks.Swagger/
 COPY ./src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj ./BuildingBlocks/BuildingBlocks.Validation/
 COPY ./src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj ./BuildingBlocks/BuildingBlocks.Web/
+COPY ./src/BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/BuildingBlocks.Messaging.Persistence.Postgres.csproj ./BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/
+COPY ./src/BuildingBlocks/BuildingBlocks.OpenTelemetry/BuildingBlocks.OpenTelemetry.csproj ./BuildingBlocks/BuildingBlocks.OpenTelemetry/
 
 COPY ./src/Services/Orders/ECommerce.Services.Orders/ECommerce.Services.Orders.csproj ./Services/Orders/ECommerce.Services.Orders/
 COPY ./src/Services/Orders/ECommerce.Services.Orders.Api/ECommerce.Services.Orders.Api.csproj ./Services/Orders/ECommerce.Services.Orders.Api/

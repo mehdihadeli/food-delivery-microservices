@@ -133,10 +133,10 @@ jobs:
     steps:
 
     - name: Download Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: artifacts
-          path: artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: artifacts
+        path: artifacts
 
     # merging all coverage in a single coverage file and generating html files for downloading as artifacts
     - name: Publish coverage report to coveralls.io

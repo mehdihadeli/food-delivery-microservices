@@ -129,11 +129,23 @@ jobs:
         retention-days: 1
         path: ${{ github.workspace }}/Services
 
+    # https://github.com/docker/metadata-action
+    # https://josephrodriguezg.medium.com/build-and-publish-docker-images-with-github-actions-78be3b3fbb9b
+    - name: Docker Meta
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ env.IMG_NAME }}
+        tags: |
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value={{sha}},enable=${{ github.ref_type != 'tag' }}
+
     # https://docs.docker.com/engine/reference/commandline/build/
     # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
     -  name: docker build
        run: |
-          docker build . --tag  ghcr.io/${{ github.repository }}/catalogs-service:latest  -f "${{ github.workspace }}/src/Services/Catalogs\Dockerfile"
+          docker build . --tag  ghcr.io/${{ github.repository }}/catalogs-service:latest  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
           docker build . --tag  ghcr.io/${{ github.repository }}/customers-service:latest -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
           docker build . --tag  ghcr.io/${{ github.repository }}/identity-service:latest  -f "${{ github.workspace }}/src/Services/Identity/Dockerfile"
 

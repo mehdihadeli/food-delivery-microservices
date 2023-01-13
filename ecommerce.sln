@@ -159,12 +159,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D87B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3CC5AECD-915C-4CCB-90AA-EF29EBD9A3E5}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\build-test.yml = .github\workflows\build-test.yml
 		.github\workflows\release-drafter.yml = .github\workflows\release-drafter.yml
 		.github\workflows\release-drafter-labeler.yml = .github\workflows\release-drafter-labeler.yml
-		.github\workflows\update-changelog.yml = .github\workflows\update-changelog.yml
 		.github\workflows\cd.yml = .github\workflows\cd.yml
-		.github\workflows\checker.yml = .github\workflows\checker.yml
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+		.github\workflows\conventional-commits.yml = .github\workflows\conventional-commits.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{93409B05-C828-4815-9684-FD3E7E248A3F}"

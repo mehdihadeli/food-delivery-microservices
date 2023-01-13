@@ -1,18 +1,19 @@
 # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
-name: Continuous Deployment
+# https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
+name: CD
 
 # This action works when creating a tag or release
 on:
- release:
-   types:
-     - "released"
-     - "published"
- push:
-   branches:
-     - main
-   tags:
-     - "release-*"
-     - "rollback-*"
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: production
+  cancel-in-progress: true
 
 # Every push to main will create a new release and deploy to production.
 jobs:
@@ -20,6 +21,7 @@ jobs:
   update-changelog:
     name: Update Changelog
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
       - name: Checkout code
@@ -38,10 +40,33 @@ jobs:
           commit_message: 'docs(changelog): update changelog'
           file_pattern: CHANGELOG.md
 
-# deploy-production:
+# https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
+# https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+
+# deploy-development:
+#   environment: development
 #   needs:
 #     - ci-checks
 #     - lint
+#   runs-on: ubuntu-latest
+#   timeout-minutes: 15
+#   steps:
+#     - uses: actions/checkout@v2
+#     - uses: akhileshns/heroku-deploy@v3.12.12
+#       with:
+#         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+#         heroku_app_name: "<your app name here>"
+#         heroku_email: "<your email address>"
+#         team: "<team name>"
+#         dontautocreate: true # do not create the app if it doesn't exist
+
+
+# deploy-production:
+#   environment: production
+#   needs:
+#     - ci-checks
+#     - lint
+#     - deploy-development
 #   runs-on: ubuntu-latest
 #   timeout-minutes: 15
 #   steps:

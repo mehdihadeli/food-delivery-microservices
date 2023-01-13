@@ -1,15 +1,18 @@
 # 🛍️ ECommerece Microservices Sample
 
-[![.NET](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml/badge.svg?branch=main&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml)
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-Open%20in%20Gitpod-blue?logo=gitpod&style=flat-square&color=ff69b4)](https://gitpod.io/#https://github.com/mehdihadeli/ecommerce-microservices-sample)
-[![GitHub Dev](https://img.shields.io/static/v1?label=GitHub&message=Open%20in%20GitHub%20Dev&color=blueviolet&logo=GitHub)](https://github.dev/mehdihadeli/ecommerce-microservices)
-[![Open in Remote - Containers](https://img.shields.io/static/v1?label=VsCode&message=Open%20Remote%20-%20Containers&color=orange&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/mehdihadeli/ecommerce-microservices)
+[![CI](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/ci.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/mehdihadeli/ecommerce-microservices/badge.svg?branch=develop&style=flat-square)](https://coveralls.io/github/mehdihadeli/ecommerce-microservices?branch=develop)
 
 > `ECommerece Microservices` is a fictional ecommerce sample, built with .Net Core and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
 
 💡 This application is not business oriented and my focus is mostly on technical part, I just want to implement a sample with using different technologies, software architecture design, principles and all the thing we need for creating a microservices app.
 
-🎯 This Application will port to `modular monolith` approach also, in [ecommerce-modular-monolith-sample](https://github.com/mehdihadeli/ecommerce-modular-monolith-sample) repository for comparing their differences.
+🎯 This Application ported to `modular monolith` approach in [ecommerce-modular-monolith](https://github.com/mehdihadeli/ecommerce-modular-monolith) repository, we can choose best fit architecture for our projects based on production needs.
+
+# Development Ready
+Start to develop with a pre config environment contains all needed infrastructures in the Gitpod:
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/https://github.com/mehdihadeli/ecommerce-microservices)
 
 # ⭐ Support
 If you like feel free to ⭐ this repository, It helps out :)
@@ -37,9 +40,9 @@ Thanks a bunch for supporting me!
 
 ## Features
 - ✅ Using `Vertical Slice Architecture` as a high level architecture
-- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit 
+- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit
 - ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
-- ✅ Using `Event Sourcing` in `Audit Based` services like Orders, Payment 
+- ✅ Using `Event Sourcing` in `Audit Based` services like Orders, Payment
 - ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
 - ✅ Using `CQRS Pattern` on top of `MediatR` library
 - ✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
@@ -57,7 +60,7 @@ Thanks a bunch for supporting me!
 
 High-level plan is represented in the table
 
-| Feature | Architecture Pattern | Status |  
+| Feature | Architecture Pattern | Status |
 | ------- | ------ | ------ |
 | Building Blocks  | | Completed ✔️ |
 | API Gateway | | Completed ✔️ |

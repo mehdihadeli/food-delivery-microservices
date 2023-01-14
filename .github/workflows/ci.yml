@@ -6,14 +6,23 @@ on:
       - develop
       - main
       - devops/ci
+      - fix/*
+      - feat/*
+    paths-ignore:
+      - "readme.md"
   pull_request:
     branches:
       - develop
       - main
-      - devops/ci
+    paths-ignore:
+      - "readme.md"
     tags:
       - 'v*'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
+  
 # https://docs.github.com/en/actions/using-workflows/about-workflows
 jobs:
 
@@ -21,6 +30,11 @@ jobs:
     # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest
+    
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idcontinue-on-error
+    strategy:
+      fail-fast: true
 
     # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
     permissions:
@@ -30,6 +44,8 @@ jobs:
     env:
       REGISTRY: ghcr.io
       IMG_NAME: ${{ github.repository }}
+      IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
+      BRANCHE_NAME: ${{ github.ref_name }}
 
     steps:
     - name: Check out code
@@ -165,7 +181,7 @@ jobs:
        username: ${{github.actor}}
        password: ${{secrets.GITHUB_TOKEN}}
 
-      # github.ref == 'refs/heads/main'
+      # if: ${{ contains(fromJson('["develop", "main"]'), github.ref_name) }}
     - name: docker publish
       if: github.event_name != 'pull_request'
       run: |

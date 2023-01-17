@@ -46,7 +46,7 @@ concurrency:
 # https://docs.github.com/en/actions/using-workflows/about-workflows
 jobs:
 
-   # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
+  # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
   prepare:
      runs-on: ubuntu-latest
      if: "! contains(github.event.head_commit.message, '[skip ci]')"

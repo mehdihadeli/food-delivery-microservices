@@ -4,6 +4,15 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <EnablePackageVersionOverride>true</EnablePackageVersionOverride>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <PackageVersion>1.0.0</PackageVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
+    <Version>1.0.0</Version>
+	<IsPublishable>false</IsPublishable>
+	<IsPackable>true</IsPackable>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageVersion Include="AutoBogus" Version="2.13.1" />
     <PackageVersion Include="AutoBogus.NSubstitute" Version="2.13.1" />

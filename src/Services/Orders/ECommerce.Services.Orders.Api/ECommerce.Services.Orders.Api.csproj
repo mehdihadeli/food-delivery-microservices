@@ -6,6 +6,10 @@
     <ContainerBaseImage>mcr.microsoft.com/dotnet/nightly/runtime-deps:7.0</ContainerBaseImage>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <IsPublishable>true</IsPublishable>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\ECommerce.Services.Orders\ECommerce.Services.Orders.csproj" />

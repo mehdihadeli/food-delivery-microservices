@@ -6,4 +6,8 @@
     <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
 </Project>

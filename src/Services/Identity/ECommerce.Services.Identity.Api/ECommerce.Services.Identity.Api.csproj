@@ -7,6 +7,10 @@
     <UserSecretsId>526a05d0-3da0-4d64-b60b-47482dd0cbc0</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <IsPublishable>true</IsPublishable>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\ECommerce.Services.Identity\ECommerce.Services.Identity.csproj" />

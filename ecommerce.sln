@@ -106,6 +106,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution_items", "solution_
 		gitpod.Dockerfile = gitpod.Dockerfile
 		gitpod.yml = gitpod.yml
 		global.json = global.json
+		.pre-commit-config.yaml = .pre-commit-config.yaml
+		.releaserc.yaml = .releaserc.yaml
+		update-version.sh = update-version.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployments", "deployments", "{82164318-DB62-4A9E-8599-16931835EA2C}"
@@ -164,6 +167,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\cd.yml = .github\workflows\cd.yml
 		.github\workflows\ci.yml = .github\workflows\ci.yml
 		.github\workflows\conventional-commits.yml = .github\workflows\conventional-commits.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{93409B05-C828-4815-9684-FD3E7E248A3F}"

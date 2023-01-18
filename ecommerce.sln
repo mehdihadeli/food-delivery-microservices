@@ -163,7 +163,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3CC5AECD-915C-4CCB-90AA-EF29EBD9A3E5}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\conventional-commits.yml = .github\workflows\conventional-commits.yml
-		.github\workflows\release.yml = .github\workflows\release.yml
 		.github\workflows\ci-cd.yml = .github\workflows\ci-cd.yml
 	EndProjectSection
 EndProject

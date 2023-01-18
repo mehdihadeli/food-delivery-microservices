@@ -149,19 +149,19 @@ jobs:
         targetdir: '${{ github.workspace }}/output/test-results'
         reporttypes: 'Cobertura;lcov;MarkdownSummaryGithub;Html'
 
-    # https://github.com/actions/runner/issues/946#issuecomment-900193569
-    # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
-    - name: Ls Report Output Files
-      if: success()
-      run: ls -la
-      working-directory: ${{ github.workspace }}/output/test-results
-
     # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
     # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
     # # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
     - name: Zip test-results Artifacts
       run: |
-          zip -r test-results.zip ${{ github.workspace }}/output/test-results/*
+          zip -r ${{ github.workspace }}/output/test-results.zip ${{ github.workspace }}/output/test-results/
+
+      # https://github.com/actions/runner/issues/946#issuecomment-900193569
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
+    - name: Ls Report Output Files
+      if: success()
+      run: ls -R
+      working-directory: ${{ github.workspace }}/output/test-results
 
     # https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
     # https://github.blog/changelog/2020-10-08-github-actions-ability-to-change-retention-days-for-artifacts-and-logs/

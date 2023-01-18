@@ -6,6 +6,7 @@
 branches:
  - '+([0-9])?(.{+([0-9]),x}).x'
  - main
+ - devops/ci
  - name: beta
    prerelease: true
  - name: alpha

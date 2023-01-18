@@ -155,9 +155,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D87BDBDB-89BA-4703-B11D-E79A0935A909}"
 	ProjectSection(SolutionItems) = preProject
 		.github\release.yml = .github\release.yml
-		.github\release-drafter.yml = .github\release-drafter.yml
 		.github\dependabot.yml = .github\dependabot.yml
 		.github\pull_request_template.md = .github\pull_request_template.md
+		.github\multi-labeler.yml = .github\multi-labeler.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3CC5AECD-915C-4CCB-90AA-EF29EBD9A3E5}"

@@ -172,7 +172,7 @@ jobs:
       continue-on-error: false
       if: steps.generate-report.outcome == 'success'
       with:
-        name: test-results
+        name: build-test-artifacts
         retention-days: 5
         path: |
             ${{ github.workspace }}/output/CoverageResults/test-results.zip
@@ -220,6 +220,7 @@ jobs:
         path: ~/.nuget/packages
 
       # https://github.com/actions/download-artifact#download-all-artifacts
+      # download artifacts without name will download all artifacts
     - name: Download All Artifacts
       uses: actions/download-artifact@v3
       with:
@@ -228,7 +229,7 @@ jobs:
     - name: unzip artifacts
       run: |
           mkdir ${{ github.workspace }}/output
-          unzip {{ github.workspace }}/artifacts/test-results.zip -d ${{ github.workspace }}/output
+          unzip {{ github.workspace }}/artifacts/build-test-artifacts/test-results.zip -d ${{ github.workspace }}/output
 
     # merging all coverage in a single coverage file and generating html files for downloading as artifacts
     - name: Publish coverage report to coveralls.io
@@ -284,7 +285,7 @@ jobs:
         zip -r publish-services.zip ./*
 
     - name: Upload Publish Services Artifacts For Deployment Jobs
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       if: (steps.publish-services.outcome == 'success' && ${{ inputs.publish_build_artifact }})
       with:
         name: publish-services

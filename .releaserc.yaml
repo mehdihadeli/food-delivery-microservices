@@ -161,6 +161,7 @@ plugins:
     - assets:
         - path: release/**
         - path: artifacts/test-results.zip
+          label: test-results
         # The comment to add to each issue and pull request resolved by the release. Set to false to disable commenting on issues and pull requests
       successComment: false
       # The content of the issue created when a release fails. Set to false to disable opening an issue when a release fails

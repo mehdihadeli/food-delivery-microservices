@@ -166,7 +166,7 @@ jobs:
   # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
   # https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
   release-development:
-    if: ${{ contains(fromJson('["develop"]'), github.ref_name) }}
+    if: ${{ contains(fromJson('["develop", "devops/ci"]'), github.ref_name) }}
     runs-on: ubuntu-latest
 
     # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs

@@ -5,12 +5,16 @@ namespace ECommerce.Services.Customers.TestShared.Fakes.Shared.Dtos;
 
 //https://github.com/bchavez/Bogus#the-great-c-example
 //https://github.com/bchavez/Bogus#bogus-api-support
+//https://github.com/nickdodd79/AutoBogus/issues/99
 public sealed class FakeProductDto : AutoFaker<ProductDto>
 {
     public FakeProductDto()
     {
         long id = 1;
         RuleFor(x => x.ProductStatus, f => f.PickRandom<ProductStatus>())
+             //https://github.com/nickdodd79/AutoBogus/issues/99
+            .RuleForType(typeof(int), faker => faker.Random.Int(min: 1, max: int.MaxValue))
+            .RuleForType(typeof(long), faker => faker.Random.Long(min: 1, max: long.MaxValue))
             .RuleFor(x => x.Name, f => f.Commerce.ProductName())
             .RuleFor(x => x.Description, f => f.Commerce.ProductDescription())
             .RuleFor(x => x.Id, f => id++)

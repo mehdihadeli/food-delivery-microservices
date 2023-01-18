@@ -1,3 +1,5 @@
+# Linting workflow: https://github.com/rhysd/actionlint
+
 name: CI-CD
 
 on:
@@ -12,6 +14,8 @@ on:
       - feat/*
     paths-ignore:
       - "readme.md"
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - develop
@@ -20,25 +24,34 @@ on:
       - beta
     paths-ignore:
       - "readme.md"
-    tags:
-      - 'v*'
 
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-          - info
-          - warning
-          - debug
-      publish_nuget_package:
-        description: Publish docker-images?
-        required: false
-        type: boolean
+   inputs:
+     logLevel:
+       description: 'Log level'
+       required: true
+       default: 'warning'
+       type: choice
+       options:
+         - info
+         - warning
+         - debug
+     publish_nuget_package:
+       description: Publish docker-images?
+       required: false
+       type: boolean
 
+# https://docs.github.com/en/actions/learn-github-actions/variables#defining-environment-variables-for-a-single-workflow
+# we could also define env in scope a job or step
+env:
+ REGISTRY: ghcr.io
+ IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
+ BRANCH_NAME: ${{ github.ref_name }}
+ CATALOG_SVC_PATH: ${{ github.workspace }}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
+ CUSTOMERS_SVC_PATH: ${{ github.workspace }}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
+ IDENTITY_SVC_PATH: ${{ github.workspace }}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
   cancel-in-progress: true
@@ -47,30 +60,18 @@ concurrency:
 jobs:
 
   # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
+  # Skipping workflow runs for chore commits
   prepare:
      runs-on: ubuntu-latest
-     if: "! contains(github.event.head_commit.message, '[skip ci]')"
+     if: (! contains(github.event.head_commit.message, '[skip ci]')) || (! contains(github.event.head_commit.message, 'chore'))
      steps:
-       - run: echo "${{ github.event.head_commit.message }}"
+       - run: echo "There is no chore commit message"
 
   build-test:
     needs: prepare
     # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest
-
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idcontinue-on-error
-    strategy:
-      fail-fast: true
-
-    env:
-      REGISTRY: ghcr.io
-      IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
-      BRANCH_NAME: ${{ github.ref_name }}
-      CATALOG_SVC_PATH: ${{ github.workspace }}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
-      CUSTOMERS_SVC_PATH: ${{ github.workspace }}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
-      IDENTITY_SVC_PATH: ${{ github.workspace }}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
 
     steps:
     - name: Check out code
@@ -88,7 +89,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget
 
-   - name: Setup .NET
+    - name: Setup .NET
       uses: actions/setup-dotnet@v3
 
     # Note: `Ubuntu` file and folder names are case sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
@@ -159,7 +160,6 @@ jobs:
         retention-days: 5
         path: ${{ github.workspace }}/tests/CoverageResults
 
-
   # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
   # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
   # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
@@ -168,8 +168,11 @@ jobs:
   release-development:
     if: ${{ contains(fromJson('["develop"]'), github.ref_name) }}
     runs-on: ubuntu-latest
+
     # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs
     needs: build-test
+
+    # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
     environment:
       name: development
       # url: ${ {  steps.deploy-to-heroku.outputs.webapp-url  } }
@@ -186,7 +189,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v3
 
     - name: Setup Node.js
       uses: actions/setup-node@v2

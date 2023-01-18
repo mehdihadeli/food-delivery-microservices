@@ -25,7 +25,7 @@ tagFormat: 'v${version}'
 # https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits
 # https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular
 # with set this to `angular` instead of `conventionalcommits` writes feat, fix or perf in the change logs and build, ci, docs ,style, refactor, and test are non-changelog related.
-preset: 'angular'
+preset: 'conventionalcommits'
 
 ###
 # Setup plugins:
@@ -112,7 +112,7 @@ plugins:
           hidden: false
         - type: 'chore'
           section: '🧰 Miscellaneous'
-          hidden: false
+          hidden: true
         - type: 'fix'
           section: '🐛 Bug Fixes'
           hidden: false
@@ -127,8 +127,8 @@ plugins:
         - type: 'revert'
           section: '⏪️ Reverts'
         - type: 'style'
-          section: '💄 Styles'
-          hidden: false
+          section: '💄 Styles & Formatting'
+          hidden: true
         - type: 'test'
           section: '🧪 Tests'
           hidden: false
@@ -154,10 +154,14 @@ plugins:
         - CHANGELOG.md
         - '**/Directory.Packages.props'
       message: |-
-        chore(release): ${nextRelease.version} [skip ci] ${nextRelease.notes}
+        chore(release): ${nextRelease.version} [skip ci]
 
       # https://github.com/semantic-release/github
   - - '@semantic-release/github'
     - assets:
         - path: release/**
-        - path: artifacts/**
+        - path: artifacts/test-results.zip
+        # The comment to add to each issue and pull request resolved by the release. Set to false to disable commenting on issues and pull requests
+      successComment: false
+      # The content of the issue created when a release fails. Set to false to disable opening an issue when a release fails
+      failComment: false

@@ -227,8 +227,12 @@ jobs:
 
     - name: unzip artifacts
       run: |
-          mkdir ${{ github.workspace }}/output
-          unzip ${{ github.workspace }}/artifacts/build-test-artifacts/test-results.zip -d ${{ github.workspace }}/output
+          unzip ${{ github.workspace }}/artifacts/build-test-artifacts/test-results.zip -d /output
+
+    - name: Ls Report Output Files
+      if: success()
+      run: ls -R
+      working-directory: ${{ github.workspace }}/output/
 
     # merging all coverage in a single coverage file and generating html files for downloading as artifacts
     - name: Publish coverage report to coveralls.io

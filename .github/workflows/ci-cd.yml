@@ -154,7 +154,7 @@ jobs:
     # # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
     - name: Zip test-results Artifacts
       run: |
-          zip -r ${{ github.workspace }}/output/test-results.zip ${{ github.workspace }}/output/test-results/
+          zip -r ${{ github.workspace }}/output/test-results.zip ${{ github.workspace }}/output/test-results/*
 
       # https://github.com/actions/runner/issues/946#issuecomment-900193569
       # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
@@ -232,12 +232,11 @@ jobs:
     - name: unzip artifacts
       run: |
           mkdir "${{ github.workspace }}/output"
-          unzip ${{ github.workspace }}/artifacts/build-test-artifacts/test-results.zip -d ${{ github.workspace }}/output
+          unzip "${{ github.workspace }}/artifacts/build-test-artifacts/test-results.zip" -d "${{ github.workspace }}/output"
 
     - name: Ls test-result Output Files
       if: success()
-      run: ls -R
-      working-directory: ${{ github.workspace }}/output/test-results
+      run: ls -R ${{ github.workspace }}/output
 
     # merging all coverage in a single coverage file and generating html files for downloading as artifacts
     - name: Publish coverage report to coveralls.io

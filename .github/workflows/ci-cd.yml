@@ -99,9 +99,7 @@ jobs:
       with:
         path: ~/.nuget/packages
         # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-nuget
-        restore-keys: |
-          ${{ runner.os }}-nuget
+        key: ${{ runner.os }}-build-test-nuget
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -230,7 +228,7 @@ jobs:
     - name: Cache NuGet Packages
       uses: actions/cache@v3
       with:
-        key: Linux-nuget
+        key: ${{ runner.os }}-release-dev-nuget
         path: ~/.nuget/packages
 
     - name: create dir

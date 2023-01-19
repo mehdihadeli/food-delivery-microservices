@@ -236,8 +236,8 @@ jobs:
 
     - name: Ls test-result Output Files
       if: success()
-      run: ls -R ${{ github.workspace }}/output/test-results
-#      working-directory: ${{ github.workspace }}/output/test-results
+      run: ls -R
+      working-directory: ${{ github.workspace }}/output
 
     # merging all coverage in a single coverage file and generating html files for downloading as artifacts
     - name: Publish coverage report to coveralls.io

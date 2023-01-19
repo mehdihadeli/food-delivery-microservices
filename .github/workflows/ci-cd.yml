@@ -98,8 +98,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.nuget/packages
-        # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-build-test-nuget
+        key: ${{ runner.os }}-dotnet-nuget
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -131,13 +130,13 @@ jobs:
            /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*  /p:CollectCoverage=true
            /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
 
-#    - name: Run Integration And EndToEnd Tests with Coverage
-#      continue-on-error: false
-#      id: integration-tests
-#      if: success()
-#      run: dotnet test -c Release --no-build --no-restore --filter "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|
-#            (Category=EndToEnd&FullyQualifiedName~EndToEndTests)" /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]* /p:CollectCoverage=true
-#            /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
+    - name: Run Integration And EndToEnd Tests with Coverage
+      continue-on-error: false
+      id: integration-tests
+      if: success()
+      run: dotnet test -c Release --no-build --no-restore --filter "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|
+            (Category=EndToEnd&FullyQualifiedName~EndToEndTests)" /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]* /p:CollectCoverage=true
+            /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
 
       # https://github.com/danielpalme/ReportGenerator
       # https://github.com/danielpalme/ReportGenerator-GitHub-Action
@@ -149,20 +148,17 @@ jobs:
     - name: Generate Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.13
       id: generate-report
-      # if: (steps.unit-tests.outcome == 'success' && steps.integration-tests.outcome == 'success')
+      if: (steps.unit-tests.outcome == 'success' && steps.integration-tests.outcome == 'success')
       with:
         reports: '${{ github.workspace }}/**/*.cobertura.xml'
         targetdir: '${{ github.workspace }}/output/test-results'
         reporttypes: 'Cobertura;lcov;MarkdownSummaryGithub;Html'
 
-    - name: Ls Report Files
-      if: success()
-      run: ls -R
-      working-directory: ${{ github.workspace }}/output/test-results
-
     # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
     # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
-    # # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
+    # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
+    # note: we should zip inner (test-results) folder and for doing this we use  `cd output` first then zip
+    # `test-results/*` folder, otherwise with zip `output/test-results` it zip output folder and inner `test-results`folder together
     - name: Zip test-results Artifacts
       run: |
           cd output
@@ -210,6 +206,7 @@ jobs:
       contents: write #  to be able to publish a GitHub release
       issues: write #  to be able to comment on released issues
       pull-requests: write #  to be able to comment on released pull requests
+      packages: write # for publishing packages
 
     runs-on: ubuntu-latest
 
@@ -228,10 +225,10 @@ jobs:
     - name: Cache NuGet Packages
       uses: actions/cache@v3
       with:
-        key: ${{ runner.os }}-release-dev-nuget
+        key: ${{ runner.os }}-dotnet-nuget
         path: ~/.nuget/packages
 
-    - name: create dir
+    - name: create output dir
       run: mkdir  "output"
 
       # https://github.com/actions/download-artifact#download-all-artifacts
@@ -296,14 +293,26 @@ jobs:
       id: publish-services
       if: success()
       run: |
-        dotnet publish -c Release --no-restore  ${{ env.CATALOG_SVC_PATH }} -o ${{ github.workspace }}/output/Services/Catalogs /p:Version=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }}
-        dotnet publish -c Release --no-restore  ${{ env.CUSTOMERS_SVC_PATH }}  -o ${{ github.workspace }}/output/Services/Customers /p:Version=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }}
-        dotnet publish -c Release --no-restore  ${{ env.IDENTITY_SVC_PATH }} -o ${{ github.workspace }}/output/Services/Identity /p:Version=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }}
+        dotnet publish -c Release --no-restore  ${{ env.CATALOG_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Catalogs /p:Version=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }}
+        dotnet publish -c Release --no-restore  ${{ env.CUSTOMERS_SVC_PATH }}  -o ${{ github.workspace }}/output/publish-services/Customers /p:Version=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }}
+        dotnet publish -c Release --no-restore  ${{ env.IDENTITY_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Identity /p:Version=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }}
 
+      # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
+      # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
+      # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
+      # note: we should zip inner (publish-services) folder and for doing this we use  `cd output` first then zip
+      # `publish-services/*` folder, otherwise with zip `output/publish-services` it zip output folder and inner `publish-services`folder together
     - name: Zip publish-services Artifacts
       run: |
-        cd ${{ github.workspace }}/output/Services
-        zip -r publish-services.zip ./*
+        cd output
+        zip -r publish-services.zip publish-services/*
+
+      # https://github.com/actions/runner/issues/946#issuecomment-900193569
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
+    - name: Ls Output Files
+      if: success()
+      run: ls -R
+      working-directory: ${{ github.workspace }}/output
 
     - name: Upload Publish Services Artifacts For Deployment Jobs
       uses: actions/upload-artifact@v3
@@ -312,7 +321,7 @@ jobs:
         name: publish-services
         retention-days: 1
         path: |
-          ${{ github.workspace }}/output/Services/publish-services.zip
+            output/publish-services.zip
 
       # https://docs.docker.com/engine/reference/commandline/build/
       # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b

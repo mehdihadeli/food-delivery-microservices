@@ -228,7 +228,8 @@ jobs:
       # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
     - name: unzip artifacts
       run: |
-          mkdir  output
+          mkdir  "${{ github.workspace }}/output"
+          ls "${{ github.workspace }}"
           unzip ${{ github.workspace }}/artifacts/build-test-artifacts/test-results.zip -d /output
 
     - name: Ls Report Output Files

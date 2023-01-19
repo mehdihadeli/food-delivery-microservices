@@ -286,7 +286,6 @@ jobs:
 
     - name: Restore NuGet packages
       continue-on-error: false
-      if: ${{ inputs.publish_build_artifact }}
       run: dotnet restore
 
      # https://garywoodfine.com/how-to-use-github-actions-to-build-deploy-github-nuget-packages/
@@ -295,7 +294,7 @@ jobs:
     - name: dotnet publish
       continue-on-error: false
       id: publish-services
-      if: (success()  && ${{ inputs.publish_build_artifact }})
+      if: success()
       run: |
         dotnet publish -c Release --no-restore  ${{ env.CATALOG_SVC_PATH }} -o ${{ github.workspace }}/output/Services/Catalogs /p:Version=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }}
         dotnet publish -c Release --no-restore  ${{ env.CUSTOMERS_SVC_PATH }}  -o ${{ github.workspace }}/output/Services/Customers /p:Version=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }}
@@ -308,7 +307,7 @@ jobs:
 
     - name: Upload Publish Services Artifacts For Deployment Jobs
       uses: actions/upload-artifact@v3
-      if: (steps.publish-services.outcome == 'success' && ${{ inputs.publish_build_artifact }})
+      if: (steps.publish-services.outcome == 'success')
       with:
         name: publish-services
         retention-days: 1
@@ -319,7 +318,6 @@ jobs:
       # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
       # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
     -  name: docker build
-       if: ${{ inputs.publish_docker }}
        run: |
          docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic-nextRelease-version }}  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
          docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic-nextRelease-version }} -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
@@ -327,14 +325,14 @@ jobs:
 
     - name: 'Login to GitHub Container Registry'
       uses: docker/login-action@v1
-      if: (success() && ${{ inputs.publish_docker }})
+      if: success()
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{github.actor}}
         password: ${{secrets.GITHUB_TOKEN}}
 
     - name: docker publish
-      if: (success() && ${{ inputs.publish_docker }})
+      if: success()
       run: |
         docker push   ghcr.io/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic-nextRelease-version }}
         docker push   ghcr.io/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic-nextRelease-version }}

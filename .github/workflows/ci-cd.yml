@@ -167,7 +167,7 @@ jobs:
     # # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
     - name: Zip test-results Artifacts
       run: |
-          zip -r "output/test-results.zip" "output/test-results/*
+          zip -r output/test-results.zip output/test-results/*
 
       # https://github.com/actions/runner/issues/946#issuecomment-900193569
       # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context

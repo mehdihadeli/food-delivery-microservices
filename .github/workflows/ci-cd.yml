@@ -225,12 +225,15 @@ jobs:
       with:
         path: artifacts
 
+    - name: dir
+      run: ls "${{ github.workspace }}/artifacts/build-test-artifacts"
+
       # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
     - name: unzip artifacts
       run: |
-          mkdir  "${{ github.workspace }}/output"
+          mkdir "${{ github.workspace }}/output"
           ls "${{ github.workspace }}"
-          unzip ${{ github.workspace }}/artifacts/build-test-artifacts/test-results.zip -d /output
+          unzip ${{ github.workspace }}/artifacts/build-test-artifacts/test-results.zip -d ${{ github.workspace }}/output
 
     - name: Ls Report Output Files
       if: success()

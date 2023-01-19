@@ -237,7 +237,7 @@ jobs:
     - name: Ls test-result Output Files
       if: success()
       run: ls -R
-      working-directory: ${{ github.workspace }}/output
+      working-directory: ${{ github.workspace }}/output/test-results
 
     # merging all coverage in a single coverage file and generating html files for downloading as artifacts
     - name: Publish coverage report to coveralls.io
@@ -245,7 +245,7 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: "output/test-results/lcov.info"
+        path-to-lcov: ${{ github.workspace }}/output/test-results/lcov.info
 
     # https://thecodinganalyst.github.io/knowledgebase/Basic-guide-to-Semantic-Release/
     # https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b

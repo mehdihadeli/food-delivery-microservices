@@ -75,11 +75,19 @@ jobs:
 
   build-test:
     needs: prepare
+
     # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest
 
     steps:
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+      # The `default working directory` on the runner for `steps`, and the default location of your repository when using the checkout action
+      # it is `defualt root path` if we don't specify a working directory
+    - name: Ls default workspace for steps
+      run: ls -R ${{ github.workspace }}
+
+        # checkout store repository in default workspace for steps `{{ github.workspace }}`
     - name: Check out code
       uses: actions/checkout@v3
 
@@ -183,7 +191,6 @@ jobs:
   # https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
   release-development:
     if: ${{ contains(fromJson('["develop", "devops/ci"]'), github.ref_name) && github.event_name != 'pull_request' }}
-    runs-on: ubuntu-latest
 
     # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs
     needs: build-test
@@ -199,6 +206,8 @@ jobs:
       contents: write #  to be able to publish a GitHub release
       issues: write #  to be able to comment on released issues
       pull-requests: write #  to be able to comment on released pull requests
+
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Repository
@@ -218,6 +227,9 @@ jobs:
         key: Linux-nuget
         path: ~/.nuget/packages
 
+    - name: create dir
+      run: mkdir  "output"
+
       # https://github.com/actions/download-artifact#download-all-artifacts
       # download artifacts without name will download all artifacts
     - name: Download All Artifacts
@@ -226,15 +238,14 @@ jobs:
         path: artifacts
 
     - name: dir
-      run: ls "${{ github.workspace }}/artifacts/build-test-artifacts"
+      run: ls -R "${{ github.workspace }}/artifacts/build-test-artifacts"
 
       # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
     - name: unzip artifacts
       run: |
-          mkdir "${{ github.workspace }}/output"
-          unzip "${{ github.workspace }}/artifacts/build-test-artifacts/test-results.zip" -d "${{ github.workspace }}/output"
+          unzip "artifacts/build-test-artifacts/test-results.zip" -d "output"
 
-    - name: Ls test-result Output Files
+    - name: Ls Output Files
       if: success()
       run: ls -R ${{ github.workspace }}/output
 
@@ -244,7 +255,7 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ${{ github.workspace }}/output/test-results/lcov.info
+        path-to-lcov: "output/test-results/lcov.info"
 
     # https://thecodinganalyst.github.io/knowledgebase/Basic-guide-to-Semantic-Release/
     # https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b

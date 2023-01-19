@@ -157,16 +157,21 @@ jobs:
         targetdir: '${{ github.workspace }}/output/test-results'
         reporttypes: 'Cobertura;lcov;MarkdownSummaryGithub;Html'
 
+    - name: Ls Report Files
+      if: success()
+      run: ls -R
+      working-directory: ${{ github.workspace }}/output/test-results
+
     # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
     # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
     # # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
     - name: Zip test-results Artifacts
       run: |
-          zip -r ${{ github.workspace }}/output/test-results.zip ${{ github.workspace }}/output/test-results/*
+          zip -r "output/test-results.zip" "output/test-results/*
 
       # https://github.com/actions/runner/issues/946#issuecomment-900193569
       # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
-    - name: Ls Report Output Files
+    - name: Ls Output Files
       if: success()
       run: ls -R
       working-directory: ${{ github.workspace }}/output
@@ -182,7 +187,7 @@ jobs:
         name: build-test-artifacts
         retention-days: 5
         path: |
-            ${{ github.workspace }}/output/test-results.zip
+              output/test-results.zip
 
   # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
   # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment

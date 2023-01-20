@@ -237,7 +237,7 @@ jobs:
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     name: calling-deployment
-    uses:  ./.github/workflows/composite/deploy/reusable-deploy.yml
+    uses:  ./.github/workflows/reusable-deploy.yml
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
     with:
       environment_name: ${{ needs.build-test.outputs.environment_name }}

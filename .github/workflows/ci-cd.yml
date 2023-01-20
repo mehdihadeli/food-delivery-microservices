@@ -253,6 +253,6 @@ jobs:
       environment_name: ${{ needs.build-test.outputs.environment_name }}
       environment_tag: ${{ needs.build-test.outputs.environment_tag }}
     secrets:
-      token: ${{ github.token }}
+      token: ${{ github.GITHUB_TOKEN }}
 
 

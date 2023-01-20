@@ -164,6 +164,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\conventional-commits.yml = .github\workflows\conventional-commits.yml
 		.github\workflows\ci-cd.yml = .github\workflows\ci-cd.yml
+		.github\workflows\reusable-deploy.yml = .github\workflows\reusable-deploy.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{93409B05-C828-4815-9684-FD3E7E248A3F}"
@@ -223,9 +224,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "composite", "composite", "{5D7678E0-36F9-453A-9211-39BD4ACD0BBB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy", "deploy", "{D029D027-C381-42EF-A289-8B3AB82758AC}"
-	ProjectSection(SolutionItems) = preProject
-		.github\workflows\composite\deploy\reusable-deploy.yml = .github\workflows\composite\deploy\reusable-deploy.yml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{D04AB414-7955-49E1-91CC-891247CD780E}"
 	ProjectSection(SolutionItems) = preProject

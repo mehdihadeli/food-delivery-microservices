@@ -1,0 +1,24 @@
+name: Build dotnet application
+
+on:
+  workflow_call:
+    inputs:
+      dotnet-version:
+        description: Version of dotnet to use
+        type: string
+        default: 7.X.x
+
+      runs-on:
+        description: Platform to execute on
+        type: string
+        default: ubuntu-latest
+
+      project-folder:
+        description: The folder containing the project to build
+        type: string
+        default: .
+
+      run-tests:
+        description: Run tests
+        type: boolean
+        default: true

@@ -1,6 +1,9 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Web.Module;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Reflection;
+using BuildingBlocks.Core.Reflection.Extensions;
+using BuildingBlocks.Core.Types.Extensions;
 using BuildingBlocks.Core.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;

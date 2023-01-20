@@ -5,7 +5,7 @@ using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace BuildingBlocks.Web.Extensions;
+namespace BuildingBlocks.Core.Web.Extenions;
 
 public static class HttpContextExtensions
 {

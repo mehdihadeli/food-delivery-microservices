@@ -1,7 +1,7 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
+using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 using BuildingBlocks.Messaging.Persistence.Postgres.MessagePersistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

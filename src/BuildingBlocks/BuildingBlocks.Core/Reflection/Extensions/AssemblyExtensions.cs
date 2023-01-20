@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace BuildingBlocks.Core.Extensions;
+namespace BuildingBlocks.Core.Reflection.Extensions;
 
 public static class AssemblyExtensions
 {

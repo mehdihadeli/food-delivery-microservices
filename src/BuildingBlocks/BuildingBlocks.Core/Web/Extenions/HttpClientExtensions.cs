@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 
-namespace BuildingBlocks.Core.Extensions;
+namespace BuildingBlocks.Core.Web.Extenions;
 
 public static class HttpClientExtensions
 {

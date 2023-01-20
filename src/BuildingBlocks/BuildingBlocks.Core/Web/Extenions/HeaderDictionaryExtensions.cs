@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace BuildingBlocks.Core.Extensions;
+namespace BuildingBlocks.Core.Web.Extenions;
 
 // https://khalidabuhakmeh.com/read-and-convert-querycollection-values-in-aspnet
 public static class HeaderDictionaryExtensions

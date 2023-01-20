@@ -7,14 +7,15 @@ using BuildingBlocks.Abstractions.Serialization;
 using BuildingBlocks.Abstractions.Types;
 using BuildingBlocks.Core.CQRS.Events;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Messaging.BackgroundServices;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
 using BuildingBlocks.Core.Messaging.MessagePersistence.InMemory;
+using BuildingBlocks.Core.Reflection;
 using BuildingBlocks.Core.Serialization;
 using BuildingBlocks.Core.Types;
 using BuildingBlocks.Core.Utils;
+using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 using Microsoft.Extensions.Configuration;
 using Scrutor;
 

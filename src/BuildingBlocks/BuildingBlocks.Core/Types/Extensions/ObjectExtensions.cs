@@ -1,7 +1,8 @@
 using System.Reflection;
 using System.Web;
+using BuildingBlocks.Core.Reflection.Extensions;
 
-namespace BuildingBlocks.Core.Extensions;
+namespace BuildingBlocks.Core.Types.Extensions;
 
 public static class ObjectExtensions
 {

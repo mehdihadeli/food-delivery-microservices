@@ -1,4 +1,4 @@
-namespace BuildingBlocks.Core.Extensions;
+namespace BuildingBlocks.Core.Types.Extensions;
 
 public static class DateTimeExtensions
 {

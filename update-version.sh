@@ -7,14 +7,14 @@
 #https://medium.com/@gpanga/automating-releases-of-net-sdks-using-semantic-release-e3df46013876
 #https://github.com/Gabrielpanga/dotnet-nuget-example/blob/main/updateVersion.sh
 
-echo "semantic-nextRelease-version=$1" >> $GITHUB_OUTPUT
-echo "semantic-nextRelease-channel=$2" >> $GITHUB_OUTPUT
-echo "semantic-nextRelease-gitHead=$3" >> $GITHUB_OUTPUT
-echo "semantic-nextRelease-gitTag=$4" >> $GITHUB_OUTPUT
-echo "semantic-lastRelease-version=$5" >> $GITHUB_OUTPUT
-echo "semantic-lastRelease-channel=$6" >> $GITHUB_OUTPUT
-echo "semantic-lastRelease-gitHead=$7" >> $GITHUB_OUTPUT
-echo "semantic-lastRelease-gitTag=$8" >> $GITHUB_OUTPUT
+echo "semantic_nextRelease_version=$1" >> $GITHUB_OUTPUT
+echo "semantic_nextRelease_channel=$2" >> $GITHUB_OUTPUT
+echo "semantic_nextRelease_gitHead=$3" >> $GITHUB_OUTPUT
+echo "semantic_nextRelease_gitTag=$4" >> $GITHUB_OUTPUT
+echo "semantic_lastRelease_version=$5" >> $GITHUB_OUTPUT
+echo "semantic_lastRelease_channel=$6" >> $GITHUB_OUTPUT
+echo "semantic_lastRelease_gitHead=$7" >> $GITHUB_OUTPUT
+echo "semantic_lastRelease_gitTag=$8" >> $GITHUB_OUTPUT
 
 # update package version and version for in the csproj file to new version and commit it again with using https://github.com/semantic-release/git plugin
 # https://unix.stackexchange.com/questions/50313/how-do-i-perform-an-action-on-all-files-with-a-specific-extension-in-subfolders

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace BuildingBlocks.Core.Extensions.ServiceCollection;
+namespace BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 
 public static partial class ServiceCollectionExtensions
 {

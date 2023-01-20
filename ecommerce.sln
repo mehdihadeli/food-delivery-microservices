@@ -220,6 +220,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{10D42B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Shared", "tests\Shared\Tests.Shared\Tests.Shared.csproj", "{CBF89154-C73E-4A22-9F89-2AA4A7EC5333}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "composite", "composite", "{5D7678E0-36F9-453A-9211-39BD4ACD0BBB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy", "deploy", "{D029D027-C381-42EF-A289-8B3AB82758AC}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\composite\deploy\reusable-deploy.yml = .github\workflows\composite\deploy\reusable-deploy.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{D04AB414-7955-49E1-91CC-891247CD780E}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\composite\build\reusable-build.yml = .github\workflows\composite\build\reusable-build.yml
+	EndProjectSection
+EndProject
 
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -301,6 +313,9 @@ Global
 		{8E56D5F0-07CC-46D5-86E4-599060198971} = {CFC90B50-E918-4ABD-B27B-CA87F12BAF89}
 		{10D42B11-A3EA-4969-9782-EE60EA7A8448} = {9EEA45F9-0190-4CCD-908F-ED883FE66DE0}
 		{CBF89154-C73E-4A22-9F89-2AA4A7EC5333} = {10D42B11-A3EA-4969-9782-EE60EA7A8448}
+		{5D7678E0-36F9-453A-9211-39BD4ACD0BBB} = {3CC5AECD-915C-4CCB-90AA-EF29EBD9A3E5}
+		{D029D027-C381-42EF-A289-8B3AB82758AC} = {5D7678E0-36F9-453A-9211-39BD4ACD0BBB}
+		{D04AB414-7955-49E1-91CC-891247CD780E} = {5D7678E0-36F9-453A-9211-39BD4ACD0BBB}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

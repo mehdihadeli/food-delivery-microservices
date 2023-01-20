@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.Context;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Types.Extensions;
 using Hypothesist;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;

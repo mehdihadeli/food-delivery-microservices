@@ -1,10 +1,11 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 using BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Persistence.EventStore;
 using BuildingBlocks.Core.Persistence.EventStore.InMemory;
+using BuildingBlocks.Core.Reflection;
 using BuildingBlocks.Core.Utils;
+using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 
 namespace BuildingBlocks.Core.Registrations;
 

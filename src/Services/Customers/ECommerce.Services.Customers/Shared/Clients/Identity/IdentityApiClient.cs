@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Core.Exception;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extenions;
 using ECommerce.Services.Customers.Shared.Clients.Identity.Dtos;
 using Microsoft.Extensions.Options;
 

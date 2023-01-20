@@ -5,10 +5,9 @@ using System.Runtime.CompilerServices;
 using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Scheduler;
-using BuildingBlocks.Core.Utils;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace BuildingBlocks.Core.Extensions;
+namespace BuildingBlocks.Core.Reflection.Extensions;
 
 public static class TypeExtensions
 {

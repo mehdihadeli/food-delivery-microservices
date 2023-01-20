@@ -2,6 +2,7 @@
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging.Extensions;
 using BuildingBlocks.Core.Types;
+using BuildingBlocks.Core.Types.Extensions;
 using Humanizer;
 using MassTransit;
 using IBus = BuildingBlocks.Abstractions.Messaging.IBus;

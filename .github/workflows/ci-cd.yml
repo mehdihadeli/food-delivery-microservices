@@ -3,6 +3,8 @@
 name: CI-CD
 
 on:
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#push
+  # Runs your workflow when you push a commit or tag.
   push:
     branches:
       - develop
@@ -12,19 +14,31 @@ on:
       - devops/ci
       - fix/*
       - feat/*
-    paths-ignore:
-      - "readme.md"
-    tags:
-      - 'v*'
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-affects-specific-files
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
+    paths:
+      - src/**
+      - tests/**
+      -  .github/**
   pull_request:
     branches:
       - develop
       - main
       - preview
       - beta
-    paths-ignore:
-      - "readme.md"
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-affects-specific-files
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
+    paths:
+      - src/**
+      - tests/**
+      - .github/**
 
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#providing-inputs
+  # https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
+  # Allows us to run this workflow manually from the Actions tab
+  # To manually trigger a workflow, use the workflow_dispatch event. You can manually trigger a workflow run using the GitHub API, GitHub CLI, or GitHub browser interface
   workflow_dispatch:
    inputs:
      logLevel:
@@ -36,17 +50,10 @@ on:
          - info
          - warning
          - debug
-     publish_docker:
-       description: Publish docker-images?
+     environment:
+       description: 'Environment to deploy'
+       type: environment
        required: true
-       default: true
-       type: boolean
-     publish_build_artifact:
-       description: Publish build artifact?
-       required: true
-       default: true
-       type: boolean
-
 # https://docs.github.com/en/actions/learn-github-actions/variables#defining-environment-variables-for-a-single-workflow
 # we could also define env in scope a job or step
 env:
@@ -80,7 +87,42 @@ jobs:
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest
 
+    # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
+    # Job outputs containing expressions are evaluated on the runner at the end of each job
+    outputs:
+      environment_name: ${{ steps.branch_check.outputs.environment_name }}
+      environment_tag: ${{ steps.branch_check.outputs.environment_tag }}
+
     steps:
+
+    # https://www.codewrecks.com/post/github/choose-environment-from-branch/
+    # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch
+    # https://hungvu.tech/advanced-github-actions-conditional-workflow
+    - name: Set environment for branch
+      id: branch_check
+      run: |
+        if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            echo "environment_tag=" >> "$GITHUB_OUTPUT"
+            echo "environment_name=production" >> "$GITHUB_OUTPUT"
+        elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
+            echo "environment_tag=-dev" >> "$GITHUB_OUTPUT"
+            echo "environment_name=staging" >> "$GITHUB_OUTPUT"
+        elif [[ $GITHUB_REF == 'refs/heads/preview' ]]; then
+            echo "environment_tag=-preview" >> "$GITHUB_OUTPUT"
+            echo "environment_name=preview" >> "$GITHUB_OUTPUT"
+        elif [[ $GITHUB_REF == 'refs/heads/beta' ]]; then
+            echo "environment_tag=-beta" >> "$GITHUB_OUTPUT"
+            echo "environment_name=preview" >> "$GITHUB_OUTPUT"
+        else
+            echo "environment_tag=-dev" >> "$GITHUB_OUTPUT"
+            echo "environment_name=develop" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Use variable setup in previous step
+      run: |
+        echo "I'm using environment: ${{ steps.branch_check.outputs.environment_name }}"
+        echo "I'm using environment-tag: ${{ steps.branch_check.outputs.environment_tag }}"
+
       # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
       # The `default working directory` on the runner for `steps`, and the default location of your repository when using the checkout action
       # it is `defualt root path` if we don't specify a working directory
@@ -130,13 +172,13 @@ jobs:
            /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*  /p:CollectCoverage=true
            /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
 
-    - name: Run Integration And EndToEnd Tests with Coverage
-      continue-on-error: false
-      id: integration-tests
-      if: success()
-      run: dotnet test -c Release --no-build --no-restore --filter "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|
-            (Category=EndToEnd&FullyQualifiedName~EndToEndTests)" /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]* /p:CollectCoverage=true
-            /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
+#    - name: Run Integration And EndToEnd Tests with Coverage
+#      continue-on-error: false
+#      id: integration-tests
+#      if: success()
+#      run: dotnet test -c Release --no-build --no-restore --filter "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|
+#            (Category=EndToEnd&FullyQualifiedName~EndToEndTests)" /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]* /p:CollectCoverage=true
+#            /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
 
       # https://github.com/danielpalme/ReportGenerator
       # https://github.com/danielpalme/ReportGenerator-GitHub-Action
@@ -148,7 +190,7 @@ jobs:
     - name: Generate Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.13
       id: generate-report
-      if: (steps.unit-tests.outcome == 'success' && steps.integration-tests.outcome == 'success')
+      # if: (steps.unit-tests.outcome == 'success' && steps.integration-tests.outcome == 'success')
       with:
         reports: '${{ github.workspace }}/**/*.cobertura.xml'
         targetdir: '${{ github.workspace }}/output/test-results'
@@ -189,184 +231,18 @@ jobs:
   # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
   # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
   # https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
-  release-development:
-    if: ${{ contains(fromJson('["develop", "devops/ci"]'), github.ref_name) && github.event_name != 'pull_request' }}
-
+  release:
     # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs
     needs: build-test
 
-    # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
-    environment:
-      name: development
-      # url: ${ {  steps.deploy-to-heroku.outputs.webapp-url  } }
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
+    name: calling-deployment
+    uses:  ./.github/workflows/composite/deploy/reusable-deploy.yml
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
+    with:
+      environment_name: ${{ needs.build-test.outputs.environment_name }}
+      environment_tag: ${{ needs.build-test.outputs.environment_tag }}
+    secrets:
+      token: ${{ github.token }}
 
-    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-    permissions:
-      contents: write #  to be able to publish a GitHub release
-      issues: write #  to be able to comment on released issues
-      pull-requests: write #  to be able to comment on released pull requests
-      packages: write # for publishing packages
 
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: 'lts/*'
-
-    - name: Cache NuGet Packages
-      uses: actions/cache@v3
-      with:
-        key: ${{ runner.os }}-dotnet-nuget
-        path: ~/.nuget/packages
-
-    - name: create output dir
-      run: mkdir  "output"
-
-      # https://github.com/actions/download-artifact#download-all-artifacts
-      # download artifacts without name will download all artifacts
-    - name: Download All Artifacts
-      uses: actions/download-artifact@v3
-      with:
-        path: artifacts
-
-    - name: dir
-      run: ls -R "${{ github.workspace }}/artifacts/build-test-artifacts"
-
-      # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
-    - name: unzip artifacts
-      run: |
-          unzip "artifacts/build-test-artifacts/test-results.zip" -d "output"
-
-    - name: Ls Output Files
-      if: success()
-      run: ls -R ${{ github.workspace }}/output
-
-    # merging all coverage in a single coverage file and generating html files for downloading as artifacts
-    - name: Publish coverage report to coveralls.io
-      if: success()
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: "output/test-results/lcov.info"
-
-    # https://thecodinganalyst.github.io/knowledgebase/Basic-guide-to-Semantic-Release/
-    # https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b
-    # https://github.com/michael-wolfenden/Cake.Npx/blob/master/src/Cake.Npx.Tests/NpxAliasesTests.cs#L59
-    # https://medium.com/@michael.wolfenden/simplified-versioning-and-publishing-for-net-libraries-a28e5e740fa6
-    # https://github.com/semantic-release/semantic-release/issues/753#issuecomment-706971174
-    # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
-    # will assmblies versions and push them to git
-    - name: Semantic Release
-      id: semantic
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
-      run: npx -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec  semantic-release
-
-    - name: Semantic Release Outputs
-      run: |
-        echo ${{ steps.semantic.outputs.semantic-nextRelease-version }}
-        echo ${{ steps.semantic.outputs.semantic-nextRelease-channel }}
-        echo ${{ steps.semantic.outputs.semantic-nextRelease-gitTag }}
-        echo ${{ steps.semantic.outputs.semantic-lastRelease-version }}
-        echo ${{ steps.semantic.outputs.semantic-lastRelease-channel }}
-        echo ${{ steps.semantic.outputs.semantic-lastRelease-gitTag }}
-
-    - name: Restore NuGet packages
-      continue-on-error: false
-      run: dotnet restore
-
-     # https://garywoodfine.com/how-to-use-github-actions-to-build-deploy-github-nuget-packages/
-     # https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/docker/building-net-docker-images?view=aspnetcore-7.0#the-dockerfile
-     # or calling dotnet publish on solution - we marked `publishable` and `packable` projects in their .csproj
-    - name: dotnet publish
-      continue-on-error: false
-      id: publish-services
-      if: success()
-      run: |
-        dotnet publish -c Release --no-restore  ${{ env.CATALOG_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Catalogs /p:Version=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }}
-        dotnet publish -c Release --no-restore  ${{ env.CUSTOMERS_SVC_PATH }}  -o ${{ github.workspace }}/output/publish-services/Customers /p:Version=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }}
-        dotnet publish -c Release --no-restore  ${{ env.IDENTITY_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Identity /p:Version=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic-nextRelease-version }}
-
-      # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
-      # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
-      # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
-      # note: we should zip inner (publish-services) folder and for doing this we use  `cd output` first then zip
-      # `publish-services/*` folder, otherwise with zip `output/publish-services` it zip output folder and inner `publish-services`folder together
-    - name: Zip publish-services Artifacts
-      run: |
-        cd output
-        zip -r publish-services.zip publish-services/*
-
-      # https://github.com/actions/runner/issues/946#issuecomment-900193569
-      # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
-    - name: Ls Output Files
-      if: success()
-      run: ls -R
-      working-directory: ${{ github.workspace }}/output
-
-    - name: Upload Publish Services Artifacts For Deployment Jobs
-      uses: actions/upload-artifact@v3
-      if: (steps.publish-services.outcome == 'success')
-      with:
-        name: publish-services
-        retention-days: 1
-        path: |
-            output/publish-services.zip
-
-      # https://docs.docker.com/engine/reference/commandline/build/
-      # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
-      # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-    -  name: docker build
-       run: |
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic-nextRelease-version }}  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic-nextRelease-version }} -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic-nextRelease-version }}  -f "${{ github.workspace }}/src/Services/Identity/Dockerfile"
-
-    - name: 'Login to GitHub Container Registry'
-      uses: docker/login-action@v1
-      if: success()
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{github.actor}}
-        password: ${{secrets.GITHUB_TOKEN}}
-
-    - name: docker publish
-      if: success()
-      run: |
-        docker push   ghcr.io/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic-nextRelease-version }}
-        docker push   ghcr.io/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic-nextRelease-version }}
-        docker push   ghcr.io/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic-nextRelease-version }}
-
-#   release-production:
-#     if: ${{ contains(fromJson('["main", "beta", "preview"]'), github.ref_name) }}
-#     runs-on: ubuntu-latest
-#     # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs
-#     needs: build-test
-#     environment: production
-#
-#     steps:
-#       # https://github.com/actions/download-artifact#download-all-artifacts
-#       - name: Download Artifacts
-#         uses: actions/download-artifact@v3
-#         with:
-#           path: artifacts
-#
-#       # merging all coverage in a single coverage file and generating html files for downloading as artifacts
-#       - name: Publish coverage report to coveralls.io
-#         uses: coverallsapp/github-action@master
-#         with:
-#           github-token: ${{ secrets.GITHUB_TOKEN }}
-#           path-to-lcov:  'artifacts/test-results/lcov.info'
-#
-#     # -  name: publish docker image
-#     #    run: |

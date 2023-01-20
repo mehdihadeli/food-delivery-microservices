@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extenions;
 
 namespace Tests.Shared.Helpers;
 

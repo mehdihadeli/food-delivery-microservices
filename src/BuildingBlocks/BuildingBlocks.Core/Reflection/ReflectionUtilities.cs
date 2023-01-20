@@ -1,9 +1,8 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using MongoDB.Driver.Linq;
 
-namespace BuildingBlocks.Core.Utils;
+namespace BuildingBlocks.Core.Reflection;
 
 public static class ReflectionUtilities
 {

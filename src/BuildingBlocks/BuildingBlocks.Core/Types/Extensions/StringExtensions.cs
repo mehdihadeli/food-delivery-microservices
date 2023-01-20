@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace BuildingBlocks.Core.Extensions;
+namespace BuildingBlocks.Core.Types.Extensions;
 
 public static class StringExtensions
 {

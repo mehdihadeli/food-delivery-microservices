@@ -142,14 +142,19 @@ jobs:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-dotnet-nuget
 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 'lts/*'
+
     - name: Determine next version
       run: |
         version=$(npx semantic-release --dry-run --config ./.releaserc.yaml  --no-verify "@semantic-release/release-notes-generator,@semantic-release/changelog,@semantic-release/github" | grep 'New version  will be' | awk '{ print $5 }')
         echo $version
         echo "version=$version" >> "$GITHUB_OUTPUT"
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
 
     # Note: `Ubuntu` file and folder names are case sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
     # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476

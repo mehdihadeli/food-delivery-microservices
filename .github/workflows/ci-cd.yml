@@ -150,7 +150,6 @@ jobs:
       with:
         node-version: 'lts/*'
 
-
     # https://github.com/semantic-release/semantic-release/discussions/2674
     # https://medium.com/@michael.wolfenden/simplified-versioning-and-publishing-for-net-libraries-a28e5e740fa6
     # https://github.com/semantic-release/semantic-release/issues/753

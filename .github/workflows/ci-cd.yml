@@ -54,15 +54,12 @@ on:
        description: 'Environment to deploy'
        type: environment
        required: true
+
 # https://docs.github.com/en/actions/learn-github-actions/variables#defining-environment-variables-for-a-single-workflow
 # we could also define env in scope a job or step
 env:
- REGISTRY: ghcr.io
  IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
  BRANCH_NAME: ${{ github.ref_name }}
- CATALOG_SVC_PATH: ${{ github.workspace }}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
- CUSTOMERS_SVC_PATH: ${{ github.workspace }}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
- IDENTITY_SVC_PATH: ${{ github.workspace }}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
 
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
 concurrency:

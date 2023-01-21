@@ -13,14 +13,23 @@ on:
         required: true
 
 jobs:
-  deploy:
-    name: Deploy to ${{ inputs.environment_name }}
-    runs-on: ubuntu-latest
 
+  deploy:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idif
     if: ${{ contains(fromJson('["develop", "devops/ci", "main", "beta", "preview"]'), github.ref_name) && github.event_name != 'pull_request' }}
 
-    # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+    name: Deploy to ${{ inputs.environment_name }}
+    runs-on: ubuntu-latest
+
+    # https://docs.github.com/en/actions/learn-github-actions/variables#defining-environment-variables-for-a-single-workflow
+    # we could also define env in scope a job or step
+    env:
+      REGISTRY: ghcr.io
+      CATALOG_SVC_PATH: ${{ github.workspace }}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
+      CUSTOMERS_SVC_PATH: ${{ github.workspace }}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
+      IDENTITY_SVC_PATH: ${{ github.workspace }}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
+
+      # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
     environment:
       name: ${{ inputs.environment_name }}
       # url: ${{ steps.deploy-to-heroku.outputs.webapp-url }}
@@ -156,9 +165,9 @@ jobs:
     - name: docker publish
       if: success()
       run: |
-        docker push   ghcr.io/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}
-        docker push   ghcr.io/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}
-        docker push   ghcr.io/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}
 
 #   release-production:
 #     if: ${{ contains(fromJson('["main", "beta", "preview"]'), github.ref_name) }}

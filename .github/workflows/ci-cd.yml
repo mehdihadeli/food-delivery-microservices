@@ -155,7 +155,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        npx semantic-release --dry-run --config ./.releaserc.yaml  --no-verify "@semantic-release/release-notes-generator,@semantic-release/changelog,@semantic-release/github"
+        npx semantic-release --dry-run --config ./.releaserc.yaml --plugins "@semantic-release/commit-analyzer,@semantic-release/exec,@semantic-release/git" --no-verify "@semantic-release/release-notes-generator,@semantic-release/changelog,@semantic-release/github"
 
     - name: Semantic Release Outputs
       run: |

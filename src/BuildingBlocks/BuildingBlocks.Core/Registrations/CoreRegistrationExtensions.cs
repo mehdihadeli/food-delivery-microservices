@@ -11,7 +11,6 @@ using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Messaging.BackgroundServices;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
-using BuildingBlocks.Core.Messaging.MessagePersistence.InMemory;
 using BuildingBlocks.Core.Serialization;
 using BuildingBlocks.Core.Types;
 using BuildingBlocks.Core.Utils;
@@ -39,7 +38,6 @@ public static class CoreRegistrationExtensions
 
         services.AddSingleton<IMachineInstanceInfo>(systemInfo);
         services.AddSingleton(systemInfo);
-        services.AddSingleton<IExclusiveLock, ExclusiveLock>();
 
         services.AddTransient<IAggregatesDomainEventsRequestStore, AggregatesDomainEventsStore>();
 

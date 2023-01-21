@@ -83,6 +83,12 @@ jobs:
   build-test:
     needs: prepare
 
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    permissions:
+      contents: write #  to be able to publish a GitHub release
+      issues: write #  to be able to comment on released issues
+      pull-requests: write #  to be able to comment on released pull requests
+
     # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest

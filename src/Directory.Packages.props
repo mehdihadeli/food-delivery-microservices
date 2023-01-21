@@ -7,9 +7,9 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <PackageVersion>1.1.5</PackageVersion>
-    <InformationalVersion>1.1.5</InformationalVersion>
-    <Version>1.1.5</Version>
+    <PackageVersion>1.1.6</PackageVersion>
+    <InformationalVersion>1.1.6</InformationalVersion>
+    <Version>1.1.6</Version>
   </PropertyGroup>
 
   <PropertyGroup>  

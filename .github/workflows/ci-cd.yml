@@ -151,13 +151,24 @@ jobs:
         node-version: 'lts/*'
 
     - name: Determine next version
+      id: semantic
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        version=$(npx semantic-release --dry-run --config ./.releaserc.yaml  --no-verify "@semantic-release/release-notes-generator,@semantic-release/changelog,@semantic-release/github" | grep 'New version  will be' | awk '{ print $5 }')
-        echo $version
-        echo "version=$version" >> "$GITHUB_OUTPUT"
+        npx semantic-release --dry-run --config ./.releaserc.yaml  --no-verify "@semantic-release/release-notes-generator,@semantic-release/changelog,@semantic-release/github"
 
-    # Note: `Ubuntu` file and folder names are case sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
-    # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476
+    - name: Semantic Release Outputs
+      run: |
+        echo ${{ steps.semantic.outputs.semantic_nextRelease_version }}
+        echo ${{ steps.semantic.outputs.semantic_nextRelease_channel }}
+        echo ${{ steps.semantic.outputs.semantic_nextRelease_gitTag }}
+        echo ${{ steps.semantic.outputs.semantic_lastRelease_version }}
+        echo ${{ steps.semantic.outputs.semantic_lastRelease_channel }}
+        echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
+
+
+      # Note: `Ubuntu` file and folder names are case sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
+      # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476
     - name: Restore NuGet packages
       continue-on-error: false
       if: success()

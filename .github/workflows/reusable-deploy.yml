@@ -11,9 +11,6 @@ on:
         type: string
         description: environment tag fo publishing
         required: true
-    secrets:
-      token:
-        required: true
 
 jobs:
   deploy:
@@ -73,20 +70,18 @@ jobs:
       if: success()
       uses: coverallsapp/github-action@master
       with:
-        github-token: ${{ secrets.token }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: "output/test-results/lcov.info"
 
     # https://thecodinganalyst.github.io/knowledgebase/Basic-guide-to-Semantic-Release/
     # https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b
-    # https://github.com/michael-wolfenden/Cake.Npx/blob/master/src/Cake.Npx.Tests/NpxAliasesTests.cs#L59
-    # https://medium.com/@michael.wolfenden/simplified-versioning-and-publishing-for-net-libraries-a28e5e740fa6
+    # https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
     # https://github.com/semantic-release/semantic-release/issues/753#issuecomment-706971174
     # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
-    # will assmblies versions and push them to git
     - name: Semantic Release
       id: semantic
       env:
-        GITHUB_TOKEN: ${{ secrets.token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
       run: npx -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec  semantic-release
 
@@ -156,7 +151,7 @@ jobs:
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
-        password: ${{ secrets.token }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: docker publish
       if: success()

@@ -27,10 +27,26 @@ tagFormat: 'v${version}'
 # with set this to `angular` instead of `conventionalcommits` writes feat, fix or perf in the change logs and build, ci, docs ,style, refactor, and test are non-changelog related.
 preset: 'conventionalcommits'
 
-###
-# Setup plugins:
-#   https://github.com/semantic-release/semantic-release/blob/caribou/docs/usage/plugins.md
-###
+# https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
+# https://semantic-release.gitbook.io/semantic-release/usage/plugins
+# https://github.com/semantic-release/semantic-release/discussions/2683
+verifyRelease:
+
+    # https://github.com/semantic-release/exec
+    # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
+    # https://stackoverflow.com/questions/72343466/while-using-github-actions-im-facing-permission-denied-error
+    # https://medium.com/@gpanga/automating-releases-of-net-sdks-using-semantic-release-e3df46013876
+    # https://github.com/semantic-release/semantic-release/issues/753
+    # https://github.com/semantic-release/semantic-release/issues/1647
+    # https://semantic-release.gitbook.io/semantic-release/usage/plugins
+    # https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun
+    # verifyReleaseCmd event works also on dry-run mode (just for reading version instead of publishing)
+  - path: '@semantic-release/exec'
+    cmd:  >-
+      ./set-output-version.sh ${nextRelease.version}
+      ${nextRelease.channel} ${nextRelease.gitHead} ${nextRelease.gitTag}
+      ${lastRelease.version} ${lastRelease.channel} ${lastRelease.gitHead}
+      ${lastRelease.gitTag}
 
 # https://github.com/semantic-release/semantic-release/discussions/2522
 plugins:
@@ -38,6 +54,7 @@ plugins:
       # https://github.com/semantic-release/commit-analyzer#configuration
       # https://github.com/semantic-release/commit-analyzer/blob/master/lib/default-release-rules.js
       # https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit-message-header
+      # https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
       # just type that their release type is not `release: false` will trigger release and create change log, but if other release type trigger a release maybe types with `release: false` and presetConfig:type `hidden: false` will show in the release note
 
   - - "@semantic-release/commit-analyzer"
@@ -91,6 +108,7 @@ plugins:
         mergePattern: "^Merge branch '(.*)' into (.*)$"
         mergeCorrespondence: ['branch_src', 'branch_dst']
       # https://github.com/semantic-release/release-notes-generator#options
+      # https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
       # https://github.com/conventional-changelog/conventional-changelog-config-spec/blob/master/versions/2.0.0/README.md#types
       # https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#type
       # https://github.com/conventional-changelog/commitlint/tree/master/@commitlint/config-conventional#type-enum
@@ -137,22 +155,10 @@ plugins:
     - changelogFile: CHANGELOG.md
       changelogTitle: '# Semantic Versioning Changelog'
 
-       # https://github.com/semantic-release/exec
-       # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
-       # https://stackoverflow.com/questions/72343466/while-using-github-actions-im-facing-permission-denied-error
-       # https://medium.com/@gpanga/automating-releases-of-net-sdks-using-semantic-release-e3df46013876
-  -  - '@semantic-release/exec'
-     - prepareCmd: >-
-        ./update-version.sh  ${nextRelease.version}
-        ${nextRelease.channel} ${nextRelease.gitHead} ${nextRelease.gitTag}
-        ${lastRelease.version} ${lastRelease.channel} ${lastRelease.gitHead}
-        ${lastRelease.gitTag}
-
       # https://github.com/semantic-release/git
   - - '@semantic-release/git'
     - assets:
         - CHANGELOG.md
-        - '**/Directory.Packages.props'
       message: |-
         chore(release): ${nextRelease.version} [skip ci]
 

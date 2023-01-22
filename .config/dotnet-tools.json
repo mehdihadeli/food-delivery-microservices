@@ -8,16 +8,22 @@
         "dotnet-format"
       ]
     },
+    "csharpier": {
+      "version": "0.22.1",
+      "commands": [
+        "dotnet-csharpier"
+      ]
+    },
     "altcover.global": {
       "version": "8.3.838",
       "commands": [
         "altcover"
       ]
     },
-    "minver-cli": {
-      "version": "4.2.0",
+    "cake.tool": {
+      "version": "2.3.0",
       "commands": [
-        "minver"
+        "dotnet-cake"
       ]
     }
   }

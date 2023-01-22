@@ -19,10 +19,34 @@ If you like feel free to ⭐ this repository, It helps out :)
 
 Thanks a bunch for supporting me!
 
+Configuration sample:
+```bash
+# Installing commitlint
+npm install @commitlint/config-conventional @commitlint/cli -g
+# Configure commitlint to use conventional config
+echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
+
+# Installing husky
+npm install husky -g
+# running this command in the root of the repository for creating .husky folder
+npx husky install
+
+npx husky add .husky/pre-commit "dotnet format style"
+npx husky add .husky/pre-commit "dotnet format analyzers"
+
+# https://csharpier.com/docs/Editors
+# https://csharpier.com/docs/CLI
+npx husky add .husky/pre-commit "dotnet csharpier ."
+npx husky add .husky/commit-msg  'npx --no -- commitlint --edit ${1}'
+```
+
 # Table of Contents
 
 - [Features](#features)
 - [Plan](#plan)
+- [Setup](#setup)
+  - [Conventional Commit](#conventional-commit)
+  - [Formatting And Analizers](#formatting-and-analizers)
 - [Technologies - Libraries](#technologies---libraries)
 - [The Domain and Bounded Context - Service Boundary](#the-domain-and-bounded-context---service-boundary)
 - [Application Architecture](#application-architecture)
@@ -93,6 +117,19 @@ High-level plan is represented in the table
 - ✔️ **[`IdGen`](https://github.com/RobThree/IdGen)** - Twitter Snowflake-alike ID generator for .Net
 - ✔️ **[`MassTransit`](https://github.com/MassTransit/MassTransit)** - Distributed Application Framework for .NET
 
+## Setup
+
+### Conventional Commit
+In this app I use [Conventional Commit](https://www.conventionalcommits.org/en/) and for enforcing its rule I use [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) and [typicode/husky](https://github.com/typicode/husky) with a pre-commit hook. For read more about its setup see [commitlint docs](https://github.com/conventional-changelog/commitlint#getting-started) and [this article](https://betterprogramming.pub/how-to-lint-commit-messages-with-husky-and-commitlint-b51d20a5e514).
+
+### Formatting And Analizers
+For formatting I use [belav/csharpier](https://github.com/belav/csharpier), you can integrate it with your [prefered IDE](https://csharpier.com/docs/Editors).
+
+For roslyn analizers I use serveral analyzers and config the in `.editorconfig` file:
+- [StyleCop/StyleCop](https://github.com/StyleCop/StyleCop)
+- [JosefPihrt/Roslynator](https://github.com/JosefPihrt/Roslynator)
+- [meziantou/Meziantou.Analyzer](https://github.com/meziantou/Meziantou.Analyzer)
+- [Microsoft.VisualStudio.Threading.Analyzers](https://www.nuget.org/packages/Microsoft.VisualStudio.Threading.Analyzers)
 
 ## The Domain And Bounded Context - Service Boundary
 

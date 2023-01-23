@@ -56,3 +56,14 @@ labels:
       title: '^(perf)(\([a-z ]+\))?: .'
       commits: '^(perf)(\([a-z ]+\))?: .'
       branch: '^(perf)(\([a-z ]+\))?\/.'
+
+  - label: "build"
+    matcher:
+      title: '^(build)(\([a-z ]+\))?: .'
+      commits: '^(build)(\([a-z ]+\))?: .'
+      branch: '^(build)(\([a-z ]+\))?\/.'
+
+  - label: "dependencies"
+    matcher:
+      title: '^build\(deps\): .'
+      commits: '^build\(deps\): .'

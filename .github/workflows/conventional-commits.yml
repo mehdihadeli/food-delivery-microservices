@@ -39,5 +39,5 @@ jobs:
         uses: docker://agilepathway/pull-request-label-checker:latest
         if: success()
         with:
-          any_of : feature,bug,enhancement,deprecated,removed,security,docs,dependencies,ci,chore
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          any_of : feature,bug,enhancement,deprecated,security,documentation,build,ci/cd,chore,performance,formatting,dependencies
+          repo_token: ${{ secrets.GITHUB_TOKEN }}

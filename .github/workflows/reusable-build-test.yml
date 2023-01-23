@@ -1,0 +1,199 @@
+name: Reusable build workflow
+
+on:
+  workflow_call:
+
+jobs:
+  build-test:
+    # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
+    # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+      # The `default working directory` on the runner for `steps`, and the default location of your repository when using the checkout action
+      # it is `defualt root path` if we don't specify a working directory
+      - name: Ls default workspace for steps
+        run: ls -R ${{ github.workspace }}
+
+        # checkout store repository in default workspace for steps `{{ github.workspace }}`
+      - name: Check out code
+        uses: actions/checkout@v3
+
+#        # https://github.com/aquasecurity/trivy-action#using-trivy-to-scan-your-git-repo
+#      - name: Run Trivy vulnerability scanner in repo mode
+#        uses: aquasecurity/trivy-action@master
+#        with:
+#          scan-type: 'fs'
+#          ignore-unfixed: true
+#          format: 'sarif'
+#          output: 'trivy-results.sarif'
+#          severity: 'CRITICAL'
+#
+#      - name: Upload Trivy scan results to GitHub Security tab
+#        uses: github/codeql-action/upload-sarif@v2
+#        with:
+#          sarif_file: 'trivy-results.sarif'
+
+      # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
+      # https://devblogs.microsoft.com/dotnet/dotnet-loves-github-actions/
+      # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net#caching-dependencies
+      - name: Cache NuGet Packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-dotnet-nuget
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+
+        # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
+      - name: Restore .NET Tools
+        run: dotnet tool restore
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 'lts/*'
+
+      #    - name: Code Formatting Check
+      #      run : dotnet csharpier --check .
+
+      # https://github.com/semantic-release/semantic-release/discussions/2674
+      # https://medium.com/@michael.wolfenden/simplified-versioning-and-publishing-for-net-libraries-a28e5e740fa6
+      # https://github.com/semantic-release/semantic-release/issues/753
+      # https://github.com/semantic-release/semantic-release/issues/1647
+      # https://semantic-release.gitbook.io/semantic-release/usage/plugins
+      # https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun
+      - name: Semantic Release Version
+        id: semantic-version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
+        # using dry-run here for preventing publish release note and just calculate version
+        run: npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec  semantic-release  --dry-run
+
+      - name: Semantic Release  Versions Outputs
+        run: |
+          echo ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+          echo ${{ steps.semantic-version.outputs.semantic_nextRelease_channel }}
+          echo ${{ steps.semantic-version.outputs.semantic_nextRelease_gitTag }}
+          echo ${{ steps.semantic-version.outputs.semantic_lastRelease_version }}
+          echo ${{ steps.semantic-version.outputs.semantic_lastRelease_channel }}
+          echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
+
+      - name: Update Application Version
+        run: ./update-version.sh ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: '🔧 chore(release): ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]'
+          file_pattern: '**/Directory.Packages.props'
+          disable_globbing: true
+
+        # Note: `Ubuntu` file and folder names are case sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
+        # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476
+      - name: Restore NuGet packages
+        continue-on-error: false
+        if: success()
+        run: dotnet restore
+
+      - name: Build
+        if: success()
+        continue-on-error: false
+        run: dotnet build -c Release --no-restore
+
+      # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
+      # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+      # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
+      # https://josef.codes/dotnet-core-filter-out-specific-test-projects-when-running-dotnet-test/
+      # https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
+      # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+      # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md
+      - name: Run Unit Tests with Coverage
+        continue-on-error: false
+        id: unit-tests
+        if: success()
+        run: dotnet test -c Release --no-build --no-restore --filter "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
+          /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*  /p:CollectCoverage=true
+          /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
+
+        #    - name: Run Integration And EndToEnd Tests with Coverage
+        #      continue-on-error: false
+        #      id: integration-tests
+        #      if: success()
+        #      run: dotnet test -c Release --no-build --no-restore --filter "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|
+        #            (Category=EndToEnd&FullyQualifiedName~EndToEndTests)" /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]* /p:CollectCoverage=true
+        #            /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
+
+        # https://github.com/danielpalme/ReportGenerator
+        # https://github.com/danielpalme/ReportGenerator-GitHub-Action
+        # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+        # https://dotnetthoughts.net/generating-code-coverage-reports-in-dotnet-core/
+        # https://docs.github.com/en/actions/learn-github-actions/expressions
+        # https://stackoverflow.com/questions/57850553/github-actions-check-steps-status
+        # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#steps-context
+      - name: Generate Report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.13
+        id: generate-report
+        # if: (steps.unit-tests.outcome == 'success' && steps.integration-tests.outcome == 'success')
+        with:
+          reports: '${{ github.workspace }}/**/*.cobertura.xml'
+          targetdir: '${{ github.workspace }}/output/test-results'
+          reporttypes: 'Cobertura;lcov;MarkdownSummaryGithub;Html'
+
+        # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
+        # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
+        # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
+        # note: we should zip inner (test-results) folder and for doing this we use  `cd output` first then zip
+        # `test-results/*` folder, otherwise with zip `output/test-results` it zip output folder and inner `test-results`folder together
+      - name: Zip test-results Artifacts
+        if: success()
+        id: test-results-zip
+        run: |
+          cd output
+          zip -r test-results.zip test-results/*
+
+        # https://github.com/actions/runner/issues/946#issuecomment-900193569
+        # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
+      - name: Ls Output Files
+        if: success()
+        run: ls -R
+        working-directory: ${{ github.workspace }}/output
+
+        # https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
+        # https://github.blog/changelog/2020-10-08-github-actions-ability-to-change-retention-days-for-artifacts-and-logs/
+        # https://github.com/actions/upload-artifact#upload-an-entire-directory
+      - name: Upload Test And Coverage Results Artifacts
+        uses: actions/upload-artifact@v3
+        continue-on-error: false
+        if: steps.test-results-zip.outcome == 'success'
+        with:
+          name: build-test-artifacts
+          retention-days: 5
+          path: |
+            output/test-results.zip
+
+        # https://josh-ops.com/posts/github-code-coverage/
+      - name: Code Coverage Summary Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: success()
+        with:
+          filename: output/test-results/Cobertura.xml
+          badge: true
+          hide_complexity: true
+          indicators: true
+          format: 'markdown'
+          output: 'both'
+
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ success() && github.event_name == 'pull_request' }}
+        with:
+          recreate: true
+          # get generated summary from `CodeCoverageSummary` step
+          path: code-coverage-results.md
+
+      - name: Write to Job Summary
+        run: cat SummaryGithub.md >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,22 @@
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: '/'
+    schedule:
+      interval: daily
+    reviewers:
+      - mehdihadeli
+    assignees:
+      - mehdihadeli
+    # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#commit-message
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependabot"
+      - "dependencies"
+    # Allow up to 10 open pull requests for pip dependencies
+    open-pull-requests-limit: 10
+    # By default, Dependabot checks for manifest files on the default branch and raises pull requests for version updates against this branch. Use target-branch to specify a different branch
+    target-branch: "develop"

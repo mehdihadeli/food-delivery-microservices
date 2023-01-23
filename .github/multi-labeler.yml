@@ -25,3 +25,9 @@ labels:
       title: "^docs: .*"
       commits: "^docs: .*"
       branch: "^docs/.*"
+
+  - label: "ci"
+    matcher:
+      title: "^ci: .*"
+      commits: "^ci: .*"
+      branch: "^ci/.*"

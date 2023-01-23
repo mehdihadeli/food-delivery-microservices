@@ -70,14 +70,14 @@ jobs:
   # Skipping workflow runs for some commit types
   prepare:
     runs-on: ubuntu-latest
-    if: (! contains(github.event.head_commit.message, '[skip ci]')) && (! contains(fromJson('["chore", "docs", "style"]'), github.event.head_commit.message) && github.actor != 'dependabot[bot]')
     steps:
-      - run:|
-        echo "The workflow runs not skipped"
-        echo "github.event.head_commit.message is ${{ github.event.head_commit.message }}"
-        echo "github.event.head_commit.message is ${{ github.event.head_commit.message }}"
-        echo "contains chore,docs,style  ${{contains(fromJson('["chore", "docs", "style"]'), github.event.head_commit.message)}}"
-        echo "contains chore,docs,style  ${{ (! contains(github.event.head_commit.message, '[skip ci]')) && (! contains(fromJson('["chore", "docs", "style"]'), github.event.head_commit.message) && github.actor != 'dependabot[bot]') }}"
+      - name: echo
+        run: |
+          echo "The workflow runs not skipped"
+          echo "github.event.head_commit.message is ${{ github.event.head_commit.message }}"
+          echo "github.event.head_commit.message is ${{ github.event.head_commit.message }}"
+          echo "contains chore,docs,style  ${{contains(fromJson('["chore", "docs", "style"]'), github.event.head_commit.message)}}"
+          echo "contains chore,docs,style  ${{ (! contains(github.event.head_commit.message, '[skip ci]')) && (! contains(fromJson('["chore", "docs", "style"]'), github.event.head_commit.message) && github.actor != 'dependabot[bot]') }}"
 
   build-test:
     needs: prepare

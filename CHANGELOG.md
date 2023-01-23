@@ -1,5 +1,25 @@
 # Semantic Versioning Changelog
 
+## [1.1.7](https://github.com/mehdihadeli/ecommerce-microservices/compare/v1.1.6...v1.1.7) (2023-01-23)
+
+
+### 👷 CI/CD
+
+* 🎡 changes in the ci/cd ([b3c8f5b](https://github.com/mehdihadeli/ecommerce-microservices/commit/b3c8f5bf64d837ff814ef30d892d9880bac9b673))
+* 🎡 changes in the ci/cd ([1ba95af](https://github.com/mehdihadeli/ecommerce-microservices/commit/1ba95afe756aa0afb71607f79ce8385834b03bbd))
+* 🎡 changes in the ci/cd ([900f52d](https://github.com/mehdihadeli/ecommerce-microservices/commit/900f52d904cdb604f285d60b2e09db56c36d9e94))
+* 🎡 changes in the ci/cd ([dc5abfc](https://github.com/mehdihadeli/ecommerce-microservices/commit/dc5abfc94a42fcf422b1a4860ef7c49de3d17ac2))
+* 🎡 changes in the ci/cd ([23e09d1](https://github.com/mehdihadeli/ecommerce-microservices/commit/23e09d1ab1b7b98eb61249e0609d2b3808a4b756))
+* 🎡 changes in the ci/cd ([8801468](https://github.com/mehdihadeli/ecommerce-microservices/commit/8801468fcc886567ac024b73a59de9e2e80bfaeb))
+* 🎡 changes in the ci/cd ([594dda6](https://github.com/mehdihadeli/ecommerce-microservices/commit/594dda626ea0e7f07ac1a4f59b4c4bf05e998598))
+* changes in workflows ([14eb65b](https://github.com/mehdihadeli/ecommerce-microservices/commit/14eb65ba4167697708c458c433d928309808d7af))
+* changes in workflows ([fd212a2](https://github.com/mehdihadeli/ecommerce-microservices/commit/fd212a21a75574f7906d0007d2617f447a258474))
+* changes in workflows ([e5a6963](https://github.com/mehdihadeli/ecommerce-microservices/commit/e5a6963c4ae0c76e67eeb17db30a4c8f084329f5))
+* changes in workflows ([78472b6](https://github.com/mehdihadeli/ecommerce-microservices/commit/78472b6dfe9acf6bc4572dddb1078fbf05f44d6c))
+* changes in workflows ([848f8f8](https://github.com/mehdihadeli/ecommerce-microservices/commit/848f8f862c1c962034e0e14d8cf237e3e2e0c0a0))
+* changes in workflows ([82dbb51](https://github.com/mehdihadeli/ecommerce-microservices/commit/82dbb51632026a1104410c7fdf9b1c257e186037))
+* changes in workflows ([828adef](https://github.com/mehdihadeli/ecommerce-microservices/commit/828adeff8dc8963c2cabedf55993c880b12cfd72))
+
 ## [1.1.6](https://github.com/mehdihadeli/ecommerce-microservices/compare/v1.1.5...v1.1.6) (2023-01-21)
 
 

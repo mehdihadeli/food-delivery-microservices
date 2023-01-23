@@ -131,7 +131,6 @@ jobs:
       environment_name: ${{ needs.pre-check.outputs.environment_name }}
       environment_tag: ${{ needs.pre-check.outputs.environment_tag }}
 
-
   # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
   # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
   # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
@@ -143,7 +142,7 @@ jobs:
   publish:
     needs: [pre-check, build-test]
 
-    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta"]'), github.ref_name) && github.actor != 'dependabot[bot]')
+    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta","devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]')
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions

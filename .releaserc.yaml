@@ -164,7 +164,7 @@ plugins:
     - assets:
         - path: release/**
         - path: artifacts/build-test-artifacts/test-results.zip
-          label: test-results
+          label: test-results.zip
         - path: publish-services/**
 
         # The comment to add to each issue and pull request resolved by the release. Set to false to disable commenting on issues and pull requests

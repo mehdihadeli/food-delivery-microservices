@@ -6,14 +6,13 @@
 # The branches on which releases should happen. By default semantic-release will release:
 branches:
    - main
-   - name: develop
-     prerelease: true
    - name: devops/ci
-     prerelease: true
+   - name: develop
+     prerelease: dev
    - name: beta
-     prerelease: true
+     prerelease: beta
    - name: preview
-     prerelease: true
+     prerelease: preview
 ci: true
 debug: true
 dryRun: false

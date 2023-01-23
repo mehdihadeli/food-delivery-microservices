@@ -15,7 +15,7 @@ on:
 jobs:
 
   deploy:
-    name: Deploy to ${{ needs.prepare-environment.outputs.environment_name }}
+    name: Deploy to ${{ inputs.environment_name }}
     runs-on: ubuntu-latest
     needs: prepare-environment
 

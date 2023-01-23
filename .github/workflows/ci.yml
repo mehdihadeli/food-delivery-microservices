@@ -51,6 +51,9 @@ on:
          - info
          - warning
          - debug
+  if: |
+    github.ref == 'refs/heads/main' ||
+    github.ref == 'refs/heads/develop'
 
 # https://docs.github.com/en/actions/learn-github-actions/variables#defining-environment-variables-for-a-single-workflow
 # we could also define env in scope a job or step

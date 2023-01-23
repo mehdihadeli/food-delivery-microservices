@@ -27,19 +27,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  on-failure:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
-    steps:
-      - run: echo 'The triggering workflow failed'
 
   # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
-  # Skipping workflow runs for chore commits
+  # Skipping workflow runs for some commit types
   prepare:
     runs-on: ubuntu-latest
-    if: (! contains(github.event.head_commit.message, '[skip ci]')) || (! contains(github.event.head_commit.message, 'chore'))
+    if: (! contains(github.event.head_commit.message, '[skip ci]')) || (! contains(fromJson('["chore", "docs", "style"]'), github.event.head_commit.message) || github.actor != 'dependabot[bot]')
     steps:
-      - run: echo "There is no chore commit message"
+      - run: echo "The workflow runs not skipped"
 
   # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
   # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
@@ -53,7 +48,7 @@ jobs:
 
     # we can deploy on these branches
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idif
-    if: ${{ github.event.workflow_run.conclusion == 'success' && contains(fromJson('["develop", "devops/ci", "main", "beta", "preview"]'), github.ref_name) && github.event_name != 'pull_request' }}
+    if: ${{ contains(fromJson('["develop", "devops/ci", "main", "beta", "preview"]'), github.ref_name) && github.event_name != 'pull_request' }}
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions

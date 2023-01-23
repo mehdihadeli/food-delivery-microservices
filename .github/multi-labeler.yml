@@ -1,33 +1,58 @@
 # https://github.com/fuxingloh/multi-labeler
+# https://stackoverflow.com/questions/58899999/regexp-to-match-conventional-commit-syntax
 version: v1
 
 labels:
-  - label: "feat"
+  - label: "feature"
     matcher:
-      title: "^feat: .*"
-      commits: "^feat: .*"
-      branch: "^feat/.*"
+      title: '^(feat)(\([a-z ]+\))?: .'
+      commits: '^(feat)(\([a-z ]+\))?: .'
+      branch: '^(feat)(\([a-z ]+\))?\/.'
 
-  - label: "fix"
+  - label: "bug"
     matcher:
-      title: "^fix: .*"
-      commits: "^fix: .*"
-      branch: "^fix/.*"
+      title: '^(fix)(\([a-z ]+\))?: .'
+      commits: '^(fix)(\([a-z ]+\))?: .'
+      branch: '^(fix)(\([a-z ]+\))?\/.'
 
   - label: "chore"
     matcher:
-      title: "^chore: .*"
-      commits: "^chore: .*"
-      branch: "^chore/.*"
+      title: '^(chore)(\([a-z ]+\))?: .'
+      commits: '^(chore)(\([a-z ]+\))?: .'
+      branch: '^(chore)(\([a-z ]+\))?\/.'
 
-  - label: "docs"
+  - label: "documentation"
     matcher:
-      title: "^docs: .*"
-      commits: "^docs: .*"
-      branch: "^docs/.*"
+      title: '^(docs)(\([a-z ]+\))?: .'
+      commits: '^(docs)(\([a-z ]+\))?: .'
+      branch: '^(docs)(\([a-z ]+\))?\/.'
 
-  - label: "ci"
+  - label: "devops"
     matcher:
-      title: "^ci: .*"
-      commits: "^ci: .*"
-      branch: "^ci/.*"
+      title: '^(ci)(\([a-z ]+\))?: .'
+      commits: '^(ci)(\([a-z ]+\))?: .'
+      branch: '^(ci)(\([a-z ]+\))?\/.'
+
+  - label: "ci/cd"
+    matcher:
+      title: '^(ci)(\([a-z ]+\))?: .'
+      commits: '^(ci)(\([a-z ]+\))?: .'
+      branch: '^(ci)(\([a-z ]+\))?\/.'
+
+  - label: "enhancement"
+    matcher:
+      title: '^(refactor)(\([a-z ]+\))?: .'
+      commits: '^(refactor)(\([a-z ]+\))?: .'
+      branch: '^(refactor)(\([a-z ]+\))?\/.'
+
+  - label: "formatting"
+    matcher:
+      title: '^(style)(\([a-z ]+\))?: .'
+      commits: '^(style)(\([a-z ]+\))?: .'
+      branch: '^(style)(\([a-z ]+\))?\/.'
+
+  - label: "performance"
+    matcher:
+      title: '^(perf)(\([a-z ]+\))?: .'
+      commits: '^(perf)(\([a-z ]+\))?: .'
+      branch: '^(perf)(\([a-z ]+\))?\/.'

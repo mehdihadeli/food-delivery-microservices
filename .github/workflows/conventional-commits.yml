@@ -18,23 +18,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-   conventional-commits:
-     runs-on: ubuntu-latest
-     steps:
+  conventional-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check-pull-request-conventional-commits
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: fuxingloh/multi-labeler@v1
+        name: conventional-commits-pull-request-labeler
+        if: success()
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}} # optional, default to '${{ github.token }}'
-          config-path: .github/multi-labeler.yml # optional, default to '.github/labeler.yml'
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          config-path: .github/multi-labeler.yml
 
         # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs
         # https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow
       - name: check-conventional-commits-labels
         uses: docker://agilepathway/pull-request-label-checker:latest
+        if: success()
         with:
           any_of : feature,bug,enhancement,deprecated,removed,security,docs,dependencies,ci,chore
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: check-conventional-commits-labels
-        uses: amannn/action-semantic-pull-request@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

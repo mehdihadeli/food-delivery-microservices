@@ -69,8 +69,8 @@ jobs:
   build-test:
 
     # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
-    # Skipping workflow runs for chore commits
-    if: (! contains(github.event.head_commit.message, '[skip ci]')) || (! contains(github.event.head_commit.message, 'chore'))
+    # Skipping workflow runs for some commits types
+    if: (! contains(github.event.head_commit.message, '[skip ci]')) || (! contains(fromJson('["chore", "docs", "style"]'), github.event.head_commit.message))
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     permissions:

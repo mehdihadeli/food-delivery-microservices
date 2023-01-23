@@ -20,6 +20,7 @@ on:
       - src/**
       - tests/**
       - .github/**
+      - .releaserc.yaml
   pull_request:
     branches:
       - develop

@@ -103,6 +103,7 @@ jobs:
         echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
 
     - name: Restore NuGet packages
+      if: (steps.semantic.outputs.semantic_nextRelease_version != '')
       continue-on-error: false
       run: dotnet restore
 

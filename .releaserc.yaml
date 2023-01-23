@@ -5,15 +5,15 @@
 #https://github.com/semantic-release/semantic-release/blob/master/docs/usage/configuration.md#branches
 # The branches on which releases should happen. By default semantic-release will release:
 branches:
- - main
- - name: develop
-   prerelease: true
- - name: devops/ci   # this should delete after stable version, because we don't want to generate release and calculate versions in other branches
-   prerelease: true
- - name: beta
-   prerelease: true
- - name: preview
-   prerelease: true
+   - main
+   - name: develop
+     prerelease: true
+   - name: devops/ci
+     prerelease: true
+   - name: beta
+     prerelease: true
+   - name: preview
+     prerelease: true
 ci: true
 debug: true
 dryRun: false

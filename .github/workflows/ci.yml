@@ -66,16 +66,11 @@ concurrency:
 # https://docs.github.com/en/actions/using-workflows/about-workflows
 jobs:
 
-  # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
-  # Skipping workflow runs for chore commits
-  prepare:
-     runs-on: ubuntu-latest
-     if: (! contains(github.event.head_commit.message, '[skip ci]')) || (! contains(github.event.head_commit.message, 'chore'))
-     steps:
-       - run: echo "There is no chore commit message"
-
   build-test:
-    needs: prepare
+
+    # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
+    # Skipping workflow runs for chore commits
+    if: (! contains(github.event.head_commit.message, '[skip ci]')) || (! contains(github.event.head_commit.message, 'chore'))
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     permissions:
@@ -83,7 +78,6 @@ jobs:
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-    name: calling-deployment
     uses: ./.github/workflows/reusable-build-test.yml
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
     # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/

@@ -8,6 +8,7 @@ on:
     workflows: [CI]
     types:
       - completed
+    branches: [develop, main, beta, preview, devops/ci]
 
   workflow_dispatch:
     inputs:
@@ -40,29 +41,6 @@ jobs:
     steps:
       - run: echo "There is no chore commit message"
 
-  # only run build-test job for workflow_dispatch, this is to ensure the build step done before.
-  build-test:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-
-    needs: prepare
-
-    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-    permissions:
-      contents: write #  to be able to commit application version
-
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
-    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-    name: calling-deployment
-    uses: ./.github/workflows/reusable-build-test.yml
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
-    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
-    secrets: inherit
-      #    with:
-      #      environment_name: ${{ needs.build-test.outputs.environment_name }}
-    #      environment_tag: ${{ needs.build-test.outputs.environment_tag }}
-
   # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
   # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
   # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
@@ -70,10 +48,10 @@ jobs:
   # https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
   # https://www.codewrecks.com/post/github/choose-environment-from-branch/
   # https://colinsalmcorner.com/musings-on-reusable-workflows/
-
   publish:
-    needs: [prepare, build-test]
+    needs: [prepare]
 
+    # we can deploy on these branches
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idif
     if: ${{ github.event.workflow_run.conclusion == 'success' && contains(fromJson('["develop", "devops/ci", "main", "beta", "preview"]'), github.ref_name) && github.event_name != 'pull_request' }}
 
@@ -89,7 +67,6 @@ jobs:
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-    name: calling-deployment
     uses: ./.github/workflows/reusable-deploy.yml
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
     # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
@@ -99,4 +76,3 @@ jobs:
 #    with:
 #      environment_name: ${{ needs.build-test.outputs.environment_name }}
 #      environment_tag: ${{ needs.build-test.outputs.environment_tag }}
-

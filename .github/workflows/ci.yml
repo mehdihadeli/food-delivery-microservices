@@ -69,13 +69,10 @@ jobs:
   # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
   # Skipping workflow runs for some commit types
   prepare:
-    if (!(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style')))
     runs-on: ubuntu-latest
+    if !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style'))
     steps:
-      - name: echo
-        # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
-        run: |
-          echo "The workflow can continute"
+      run: echo "The workflow can continute"
 
   build-test:
     needs: prepare

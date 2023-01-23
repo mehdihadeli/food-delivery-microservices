@@ -71,7 +71,7 @@ jobs:
 
     # Skipping workflow runs for some commits types
     # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
-    if !(contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style'))
+    if: !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style'))
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     permissions:

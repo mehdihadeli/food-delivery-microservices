@@ -19,7 +19,7 @@ on:
     paths:
       - src/**
       - tests/**
-      -  .github/**
+      - .github/**
   pull_request:
     branches:
       - develop

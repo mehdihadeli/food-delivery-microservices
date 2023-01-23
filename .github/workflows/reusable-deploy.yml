@@ -34,13 +34,13 @@ jobs:
               echo "environment_name=production" >> "$GITHUB_OUTPUT"
           elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
               echo "environment_tag=-dev" >> "$GITHUB_OUTPUT"
-              echo "environment_name=staging" >> "$GITHUB_OUTPUT"
+              echo "environment_name=develop" >> "$GITHUB_OUTPUT"
           elif [[ $GITHUB_REF == 'refs/heads/preview' ]]; then
               echo "environment_tag=-preview" >> "$GITHUB_OUTPUT"
-              echo "environment_name=preview" >> "$GITHUB_OUTPUT"
+              echo "environment_name=staging" >> "$GITHUB_OUTPUT"
           elif [[ $GITHUB_REF == 'refs/heads/beta' ]]; then
               echo "environment_tag=-beta" >> "$GITHUB_OUTPUT"
-              echo "environment_name=preview" >> "$GITHUB_OUTPUT"
+              echo "environment_name=staging" >> "$GITHUB_OUTPUT"
           else
               echo "environment_tag=-dev" >> "$GITHUB_OUTPUT"
               echo "environment_name=develop" >> "$GITHUB_OUTPUT"

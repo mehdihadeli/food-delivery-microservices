@@ -76,8 +76,9 @@ jobs:
           echo "The workflow runs not skipped"
           echo "github.event.head_commit.message is ${{ github.event.head_commit.message }}"
           echo "github.event.head_commit.message is ${{ github.event.head_commit.message }}"
-          echo "contains chore,docs,style  ${{contains(fromJson('["chore", "docs", "style"]'), github.event.head_commit.message)}}"
-          echo "contains chore,docs,style  ${{ (! contains(github.event.head_commit.message, '[skip ci]')) && (! contains(fromJson('["chore", "docs", "style"]'), github.event.head_commit.message) && github.actor != 'dependabot[bot]') }}"
+          echo "contains chore  ${{ contains(github.event.head_commit.message, 'chore') }}"
+          echo "contains docs  ${{ contains(github.event.head_commit.message, 'docs') }}"
+          echo "condition  ${{ (! contains(github.event.head_commit.message, '[skip ci]')) && (!(contains(github.event.head_commit.message, 'chore') && contains(github.event.head_commit.message, 'docs'))) }}"
 
   build-test:
     needs: prepare

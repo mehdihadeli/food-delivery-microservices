@@ -196,4 +196,5 @@ jobs:
           path: code-coverage-results.md
 
       - name: Write to Job Summary
-        run: cat SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+        if: success()
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY

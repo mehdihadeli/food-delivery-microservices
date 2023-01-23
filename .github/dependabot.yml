@@ -11,7 +11,7 @@ updates:
       - mehdihadeli
     # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#commit-message
     commit-message:
-      prefix: "chore"
+      prefix: "build"
       include: "scope"
     labels:
       - "dependabot"

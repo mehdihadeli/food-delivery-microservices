@@ -2,6 +2,15 @@ name: Reusable build workflow
 
 on:
   workflow_call:
+    inputs:
+      environment_name:
+        type: string
+        description: environment to deploy to
+        required: true
+      environment_tag:
+        type: string
+        description: environment tag fo publishing
+        required: true
 
 jobs:
   build-test:
@@ -56,9 +65,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 'lts/*'
-
-      #    - name: Code Formatting Check
-      #      run : dotnet csharpier --check .
 
       # https://github.com/semantic-release/semantic-release/discussions/2674
       # https://medium.com/@michael.wolfenden/simplified-versioning-and-publishing-for-net-libraries-a28e5e740fa6

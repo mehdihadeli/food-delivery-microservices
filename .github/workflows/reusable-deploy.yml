@@ -2,54 +2,17 @@ name: Reusable deployment workflow
 
 on:
   workflow_call:
-#    inputs:
-#      environment_name:
-#        type: string
-#        description: environment to deploy to
-#        required: true
-#      environment_tag:
-#        type: string
-#        description: environment tag fo publishing
-#        required: true
+    inputs:
+      environment_name:
+        type: string
+        description: environment to deploy to
+        required: true
+      environment_tag:
+        type: string
+        description: environment tag fo publishing
+        required: true
 
 jobs:
-  prepare-environment:
-    runs-on: ubuntu-latest
-
-    # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
-    # Job outputs containing expressions are evaluated on the runner at the end of each job
-    outputs:
-      environment_name: ${{ steps.branch_check.outputs.environment_name }}
-      environment_tag: ${{ steps.branch_check.outputs.environment_tag }}
-
-    steps:
-      # https://www.codewrecks.com/post/github/choose-environment-from-branch/
-      # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch
-      # https://hungvu.tech/advanced-github-actions-conditional-workflow
-      - name: Set environment for branch
-        id: branch_check
-        run: |
-          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-              echo "environment_tag=" >> "$GITHUB_OUTPUT"
-              echo "environment_name=production" >> "$GITHUB_OUTPUT"
-          elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-              echo "environment_tag=-dev" >> "$GITHUB_OUTPUT"
-              echo "environment_name=develop" >> "$GITHUB_OUTPUT"
-          elif [[ $GITHUB_REF == 'refs/heads/preview' ]]; then
-              echo "environment_tag=-preview" >> "$GITHUB_OUTPUT"
-              echo "environment_name=staging" >> "$GITHUB_OUTPUT"
-          elif [[ $GITHUB_REF == 'refs/heads/beta' ]]; then
-              echo "environment_tag=-beta" >> "$GITHUB_OUTPUT"
-              echo "environment_name=staging" >> "$GITHUB_OUTPUT"
-          else
-              echo "environment_tag=-dev" >> "$GITHUB_OUTPUT"
-              echo "environment_name=develop" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Echo Environment
-        run: |
-          echo "I'm using environment: ${{ steps.branch_check.outputs.environment_name }}"
-          echo "I'm using environment-tag: ${{ steps.branch_check.outputs.environment_tag }}"
 
   deploy:
     name: Deploy to ${{ needs.prepare-environment.outputs.environment_name }}
@@ -68,7 +31,7 @@ jobs:
 
       # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
     environment:
-      name: ${{ needs.prepare-environment.outputs.environment_name }}
+      name: ${{ inputs.environment_name }}
       # url: ${{ steps.deploy-to-heroku.outputs.webapp-url }}
 
     steps:
@@ -187,9 +150,9 @@ jobs:
       # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
     -  name: docker build
        run: |
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ needs.prepare-environment.outputs.environment_tag }}  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ needs.prepare-environment.outputs.environment_tag }} -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ needs.prepare-environment.outputs.environment_tag }}  -f "${{ github.workspace }}/src/Services/Identity/Dockerfile"
+         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
+         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }} -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
+         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}  -f "${{ github.workspace }}/src/Services/Identity/Dockerfile"
 
     - name: 'Login to GitHub Container Registry'
       uses: docker/login-action@v1
@@ -202,6 +165,6 @@ jobs:
     - name: docker publish
       if: success()
       run: |
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ needs.prepare-environment.outputs.environment_tag }}
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ needs.prepare-environment.outputs.environment_tag }}
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ needs.prepare-environment.outputs.environment_tag }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}

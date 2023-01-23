@@ -72,16 +72,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: echo
+        if !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style'))
+        # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
         run: |
-          echo "The workflow runs not skipped"
-          echo "github.event.head_commit.message is ${{ github.event.head_commit.message }}"
-          echo "contains chore  ${{ contains(github.event.head_commit.message, 'chore') }}"
-          echo "contains docs  ${{ contains(github.event.head_commit.message, 'docs') }}"
-          echo "condition  ${{ !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs')) }}"
+          echo "The workflow can continute"
 
   build-test:
     needs: prepare
-#    # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
+#
 #    # Skipping workflow runs for some commits types
 #    if: (! contains(github.event.head_commit.message, '[skip ci]')) && (! contains(fromJson('["chore", "docs", "style"]'), github.event.head_commit.message))
 

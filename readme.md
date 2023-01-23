@@ -9,6 +9,9 @@
 
 🎯 This Application ported to `modular monolith` approach in [ecommerce-modular-monolith](https://github.com/mehdihadeli/ecommerce-modular-monolith) repository, we can choose best fit architecture for our projects based on production needs.
 
+> **Warning**
+> This is project in progress. I'm add new features over the time. You can check the [Release Notes](https://github.com/mehdihadeli/ecommerce-microservices/releases) and follow the progress on Twitter [@mehdi_hedli](https://twitter.com/shadcn) and Linkedin [mehdihadeli](https://www.linkedin.com/in/mehdihadeli/).
+
 # Development Ready
 Start to develop with a pre config environment contains all needed infrastructures in the Gitpod:
 
@@ -31,13 +34,13 @@ npm install husky -g
 # running this command in the root of the repository for creating .husky folder
 npx husky install
 
-npx husky add .husky/pre-commit "dotnet format style"
-npx husky add .husky/pre-commit "dotnet format analyzers"
+npx husky add .husky/pre-commit "dotnet format"
+npx husky add .husky/commit-msg  'npx --no -- commitlint --edit ${1}'
 
 # https://csharpier.com/docs/Editors
 # https://csharpier.com/docs/CLI
-npx husky add .husky/pre-commit "dotnet csharpier ."
-npx husky add .husky/commit-msg  'npx --no -- commitlint --edit ${1}'
+# If you prefer csharpier for your formatting
+# npx husky add .husky/pre-commit "dotnet csharpier ."
 ```
 
 # Table of Contents
@@ -81,8 +84,6 @@ npx husky add .husky/commit-msg  'npx --no -- commitlint --edit ${1}'
 
 ## Plan
 > This project is in progress, New features will be added over time.
-
-High-level plan is represented in the table
 
 | Feature | Architecture Pattern | Status |
 | ------- | ------ | ------ |

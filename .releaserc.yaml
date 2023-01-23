@@ -6,6 +6,8 @@
 # The branches on which releases should happen. By default semantic-release will release:
 branches:
  - main
+   # this should delete after stable version, because we don't want to generate release and calculate versions in other branches
+ - devops/ci
  - name: beta
    prerelease: true
  - name: preview

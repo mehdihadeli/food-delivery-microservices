@@ -12,6 +12,8 @@ on:
       - reopened
       - labeled
       - unlabeled
+      - edited
+      - ready_for_review
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
@@ -30,8 +32,8 @@ jobs:
         name: conventional-commits-pull-request-labeler
         if: success()
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          config-path: .github/multi-labeler.yml
+          github-token: ${{secrets.GITHUB_TOKEN}} # optional, default to '${{ github.token }}'
+          config-path: .github/multi-labeler.yml # optional, default to '.github/labeler.yml'
 
         # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs
         # https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow

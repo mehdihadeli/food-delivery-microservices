@@ -1,0 +1,40 @@
+# https://github.com/amannn/action-semantic-pull-request
+# https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/configuring-commit-squashing-for-pull-requests
+# Linting workflow: https://github.com/rhysd/actionlint
+
+name: Conventional Commits
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - unlabeled
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+   conventional-commits:
+     runs-on: ubuntu-latest
+     steps:
+      - uses: fuxingloh/multi-labeler@v1
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}} # optional, default to '${{ github.token }}'
+          config-path: .github/multi-labeler.yml # optional, default to '.github/labeler.yml'
+
+        # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs
+        # https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow
+      - name: check-conventional-commits-labels
+        uses: docker://agilepathway/pull-request-label-checker:latest
+        with:
+          any_of : feature,bug,enhancement,deprecated,removed,security,docs,dependencies,ci,chore
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: check-conventional-commits-labels
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

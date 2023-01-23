@@ -38,7 +38,7 @@
     <PackageVersion Include="Asp.Versioning.Http" Version="7.0.0-preview.2"/>
     <PackageVersion Include="Asp.Versioning.Mvc" Version="7.0.0-preview.2"/>
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.0-preview.2"/>
-    <PackageVersion Include="Asp.Versioning.Abstractions" Version="7.0.0-preview.2"/>
+    <PackageVersion Include="Asp.Versioning.Abstractions" Version="7.0.0"/>
     <PackageVersion Include="Microsoft.NET.Build.Containers" Version="0.2.7"/>
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="System.Threading.RateLimiting" Version="$(AspNetCoreVersion)"/>

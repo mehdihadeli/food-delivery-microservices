@@ -158,9 +158,9 @@ jobs:
       # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
     -  name: docker build
        run: |
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }} -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}  -f "${{ github.workspace }}/src/Services/Identity/Dockerfile"
+         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
+         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic_nextRelease_version }} -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
+         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}  -f "${{ github.workspace }}/src/Services/Identity/Dockerfile"
 
     - name: 'Login to GitHub Container Registry'
       uses: docker/login-action@v1
@@ -173,6 +173,6 @@ jobs:
     - name: docker publish
       if: success()
       run: |
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}${{ inputs.environment_tag }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}

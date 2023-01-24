@@ -91,7 +91,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
-      run: npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec  semantic-release
+      # using dry-run here for preventing publish release note and just calculate version, for develop and devops/ci we don't want to publish release
+      run: |
+        if [[ ${{contains(fromJson('["develop", "devops/ci"]'), github.ref_name) }} ]]; then
+            npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec  semantic-release  --dry-run
+        else
+            npx -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec  semantic-release
+        fi
 
     - name: Semantic Release Outputs
       run: |

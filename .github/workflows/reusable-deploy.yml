@@ -104,9 +104,10 @@ jobs:
             npx -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release
         fi
 
+      # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
     - name: Semantic Release Outputs
       run: |
-        if [[ ${{ steps.semantic.outputs.semantic_nextRelease_version == '' }} ]]; then
+        if [[ ${{ steps.semantic.outputs.semantic_nextRelease_version }} == '' ]]; then
             echo "semantic_nextRelease_version is empty, action cancelled..."
             exit 1
         else

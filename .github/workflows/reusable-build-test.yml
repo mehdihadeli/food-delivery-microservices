@@ -83,9 +83,10 @@ jobs:
         # using dry-run here for preventing publish release note and just calculate version
         run: npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p  @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release  --dry-run
 
+        # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
       - name: Semantic Release  Versions Outputs
         run: |
-          if [[ ${{ steps.semantic-version.outputs.semantic_nextRelease_version == '' }} ]]; then
+          if [[ ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} == '' ]]; then
            echo "semantic_nextRelease_version is empty, action cancelled..."
            exit 1
           else

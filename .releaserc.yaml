@@ -21,11 +21,11 @@ branches:
    - name: preview
      prerelease: preview
      channel:  preview
-   - name: 'release/*',
-     prerelease: 'rc',
+   - name: 'release/*'
+     prerelease: 'rc'
      channel: 'next'
-   - name: 'hotfix/*',
-     prerelease: 'fix',
+   - name: 'hotfix/*'
+     prerelease: 'fix'
      channel: 'hotfix'
 
 ci: true

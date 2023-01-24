@@ -6,9 +6,9 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <PackageVersion>1.1.8-ops.1</PackageVersion>
-    <InformationalVersion>1.1.8-ops.1</InformationalVersion>
     <Version>1.1.8-ops.1</Version>
+    <ApplicationVersion>1.1.8-ops.1</ApplicationVersion>
+    <InformationalVersion>1.1.8-ops.1</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup>  

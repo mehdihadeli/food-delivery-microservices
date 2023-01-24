@@ -9,7 +9,7 @@
   <PropertyGroup>
     <IsPublishable>true</IsPublishable>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Duende.BFF.Yarp" />
     <PackageReference Include="Serilog.AspNetCore" />

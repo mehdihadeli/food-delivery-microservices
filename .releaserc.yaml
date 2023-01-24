@@ -2,18 +2,31 @@
 # https://github.com/semantic-release/release-notes-generator
 # https://github.com/semantic-release/semantic-release/blob/master/docs/usage/configuration.md#options
 
-#https://github.com/semantic-release/semantic-release/blob/master/docs/usage/configuration.md#branches
+# https://github.com/semantic-release/semantic-release/blob/master/docs/usage/configuration.md#branches
+# https://semantic-release.gitbook.io/semantic-release/usage/workflow-configuration
+# https://github.com/semantic-release/semantic-release/issues/1231#issuecomment-1063671157
 # The branches on which releases should happen. By default semantic-release will release:
 branches:
    - main
    - name: devops/ci
      prerelease: ops
+     channel:  ops
    - name: develop
      prerelease: dev
+     channel:  dev
    - name: beta
      prerelease: beta
+     channel:  beta
    - name: preview
      prerelease: preview
+     channel:  preview
+   - name: 'release/*',
+     prerelease: 'rc',
+     channel: 'next'
+  - name: 'hotfix/*',
+    prerelease: 'fix',
+    channel: 'hotfix'
+
 ci: true
 debug: true
 dryRun: false
@@ -87,6 +100,8 @@ plugins:
           release: false
         - type: test      # Adding missing tests or correcting existing tests
           release: false
+        - scope: 'no-release'
+          release: false
       # preset: conventionalcommits
 
       # https://github.com/semantic-release/release-notes-generator
@@ -152,16 +167,19 @@ plugins:
           section: '🧪 Tests'
           hidden: false
 
+       # https://github.com/semantic-release/changelog
+       # Set of semantic-release plugins for creating or updating a changelog file.
   - -  '@semantic-release/changelog'
     - changelogFile: CHANGELOG.md
       changelogTitle: '# Semantic Versioning Changelog'
 
       # https://github.com/semantic-release/git
+      # Git plugin is need so the changelog file will be committed to the Git repository and available on subsequent builds in order to be updated.
   - - '@semantic-release/git'
     - assets:
         - CHANGELOG.md
       message: |-
-        🔧 chore(release): ${nextRelease.version} [skip ci]
+        chore(release): 🔧  ${nextRelease.version} [skip ci]
 
       # https://github.com/semantic-release/github
   - - '@semantic-release/github'
@@ -175,3 +193,14 @@ plugins:
       successComment: false
       # The content of the issue created when a release fails. Set to false to disable opening an issue when a release fails
       failComment: false
+
+  - - '@saithodev/semantic-release-backmerge'
+    - branches:
+        - develop
+      clearWorkspace: true
+      mergeMode: 'ours'
+      plugins:
+        - - '@semantic-release/exec'
+          - successCmd: >-
+              echo 'Version in main is ${nextRelease.version}' > test.txt &&
+              git add test.txt

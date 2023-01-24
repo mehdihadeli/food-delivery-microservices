@@ -17,6 +17,8 @@ jobs:
   deploy:
     name: Deploy to ${{ inputs.environment_name }}
     runs-on: ubuntu-latest
+    #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
+    continue-on-error: false
 
     # https://docs.github.com/en/actions/learn-github-actions/variables#defining-environment-variables-for-a-single-workflow
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#limitations
@@ -88,6 +90,7 @@ jobs:
     # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
     - name: Semantic Release Publish
       id: semantic
+      if: success()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
@@ -95,37 +98,40 @@ jobs:
       run: |
         if [[ ${{contains(fromJson('["develop", "devops/ci"]'), github.ref_name) }} ]]; then
             echo "running semantic-release in dry-run mode"
-            npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec  semantic-release  --dry-run
+            npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p  @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release  --dry-run
         else
             echo "running semantic-release in release mode"
-            npx -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec  semantic-release
+            npx -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release
         fi
 
     - name: Semantic Release Outputs
       run: |
-        echo ${{ steps.semantic.outputs.semantic_nextRelease_version }}
-        echo ${{ steps.semantic.outputs.semantic_nextRelease_channel }}
-        echo ${{ steps.semantic.outputs.semantic_nextRelease_gitTag }}
-        echo ${{ steps.semantic.outputs.semantic_lastRelease_version }}
-        echo ${{ steps.semantic.outputs.semantic_lastRelease_channel }}
-        echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
+        if [[ ${{ steps.semantic.outputs.semantic_nextRelease_version == '' }} ]]; then
+            echo "semantic_nextRelease_version is empty, action cancelled..."
+            exit 1
+        else
+            echo ${{ steps.semantic.outputs.semantic_nextRelease_version }}
+            echo ${{ steps.semantic.outputs.semantic_nextRelease_channel }}
+            echo ${{ steps.semantic.outputs.semantic_nextRelease_gitTag }}
+            echo ${{ steps.semantic.outputs.semantic_lastRelease_version }}
+            echo ${{ steps.semantic.outputs.semantic_lastRelease_channel }}
+            echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
+        fi
 
     - name: Restore NuGet packages
-      if: (steps.semantic.outputs.semantic_nextRelease_version != '')
-      continue-on-error: false
+      if: (success() && steps.semantic.outputs.semantic_nextRelease_version != '')
       run: dotnet restore
 
     # https://garywoodfine.com/how-to-use-github-actions-to-build-deploy-github-nuget-packages/
     # https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/docker/building-net-docker-images?view=aspnetcore-7.0#the-dockerfile
     # or calling dotnet publish on solution - we marked `publishable` and `packable` projects in their .csproj
     - name: dotnet publish
-      continue-on-error: false
       id: publish-services
       if: success()
       run: |
-        dotnet publish -c Release --no-restore  ${{ env.CATALOG_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Catalogs /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }}
-        dotnet publish -c Release --no-restore  ${{ env.CUSTOMERS_SVC_PATH }}  -o ${{ github.workspace }}/output/publish-services/Customers /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }}
-        dotnet publish -c Release --no-restore  ${{ env.IDENTITY_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Identity /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:AssemblyVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }}
+        dotnet publish -c Release --no-restore  ${{ env.CATALOG_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Catalogs /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:ApplicationVersion= ${{ steps.semantic.outputs.semantic_nextRelease_version }}
+        dotnet publish -c Release --no-restore  ${{ env.CUSTOMERS_SVC_PATH }}  -o ${{ github.workspace }}/output/publish-services/Customers /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:ApplicationVersion= ${{ steps.semantic.outputs.semantic_nextRelease_version }}
+        dotnet publish -c Release --no-restore  ${{ env.IDENTITY_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Identity /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:ApplicationVersion= ${{ steps.semantic.outputs.semantic_nextRelease_version }}
 
       # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
       # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
@@ -133,6 +139,7 @@ jobs:
       # note: we should zip inner (publish-services) folder and for doing this we use  `cd output` first then zip
       # `publish-services/*` folder, otherwise with zip `output/publish-services` it zip output folder and inner `publish-services`folder together
     - name: Zip publish-services Artifacts
+      if: success()
       run: |
         cd output
         zip -r publish-services.zip publish-services/*
@@ -157,6 +164,7 @@ jobs:
       # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
       # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
     -  name: docker build
+       if: success()
        run: |
          docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ steps.semantic.outputs.semantic_nextRelease_version }}  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
          docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ steps.semantic.outputs.semantic_nextRelease_version }} -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"

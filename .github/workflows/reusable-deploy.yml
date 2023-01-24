@@ -130,9 +130,9 @@ jobs:
       id: publish-services
       if: success()
       run: |
-        dotnet publish -c Release --no-restore  ${{ env.CATALOG_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Catalogs /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:ApplicationVersion= ${{ steps.semantic.outputs.semantic_nextRelease_version }}
-        dotnet publish -c Release --no-restore  ${{ env.CUSTOMERS_SVC_PATH }}  -o ${{ github.workspace }}/output/publish-services/Customers /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:ApplicationVersion= ${{ steps.semantic.outputs.semantic_nextRelease_version }}
-        dotnet publish -c Release --no-restore  ${{ env.IDENTITY_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Identity /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:ApplicationVersion= ${{ steps.semantic.outputs.semantic_nextRelease_version }}
+        dotnet publish -c Release --no-restore  ${{ env.CATALOG_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Catalogs /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:ApplicationVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }}
+        dotnet publish -c Release --no-restore  ${{ env.CUSTOMERS_SVC_PATH }}  -o ${{ github.workspace }}/output/publish-services/Customers /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:ApplicationVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }}
+        dotnet publish -c Release --no-restore  ${{ env.IDENTITY_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Identity /p:Version=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:InformationalVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }} /p:ApplicationVersion=${{ steps.semantic.outputs.semantic_nextRelease_version }}
 
       # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
       # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/

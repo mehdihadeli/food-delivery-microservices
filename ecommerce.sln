@@ -168,7 +168,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\conventional-commits.yml = .github\workflows\conventional-commits.yml
 		.github\workflows\reusable-deploy.yml = .github\workflows\reusable-deploy.yml
 		.github\workflows\reusable-build-test.yml = .github\workflows\reusable-build-test.yml
-		.github\workflows\reusable-publish-docker.yml = .github\workflows\reusable-publish-docker.yml
 		.github\workflows\ci-cd.yml = .github\workflows\ci-cd.yml
 	EndProjectSection
 EndProject

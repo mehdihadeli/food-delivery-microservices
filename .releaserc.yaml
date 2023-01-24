@@ -7,7 +7,7 @@
 branches:
    - main
    - name: devops/ci
-     prerelease: dev
+     prerelease: ops
    - name: develop
      prerelease: dev
    - name: beta

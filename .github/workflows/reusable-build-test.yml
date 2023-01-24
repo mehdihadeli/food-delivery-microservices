@@ -85,16 +85,16 @@ jobs:
 
       - name: Semantic Release  Versions Outputs
         run: |
-          if [[ ${{ steps.semantic.outputs.semantic_nextRelease_version == '' }} ]]; then
+          if [[ ${{ steps.semantic-version.outputs.semantic_nextRelease_version == '' }} ]]; then
            echo "semantic_nextRelease_version is empty, action cancelled..."
            exit 1
           else
-           echo ${{ steps.semantic.outputs.semantic_nextRelease_version }}
-           echo ${{ steps.semantic.outputs.semantic_nextRelease_channel }}
-           echo ${{ steps.semantic.outputs.semantic_nextRelease_gitTag }}
-           echo ${{ steps.semantic.outputs.semantic_lastRelease_version }}
-           echo ${{ steps.semantic.outputs.semantic_lastRelease_channel }}
-           echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
+           echo ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+           echo ${{ steps.semantic-version.outputs.semantic_nextRelease_channel }}
+           echo ${{ steps.semantic-version.outputs.semantic_nextRelease_gitTag }}
+           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_version }}
+           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_channel }}
+           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
           fi
 
       - name: Update Application Version

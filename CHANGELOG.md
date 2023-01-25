@@ -1,5 +1,27 @@
 # Semantic Versioning Changelog
 
+## [1.1.8-ops.1](https://github.com/mehdihadeli/ecommerce-microservices/compare/v1.1.7...v1.1.8-ops.1) (2023-01-25)
+
+
+### 👷 CI/CD
+
+* changes in workflows ([228aa86](https://github.com/mehdihadeli/ecommerce-microservices/commit/228aa86a7cff69837bef181147e66e02ebcd9bd5))
+* changes in workflows ([72d07c1](https://github.com/mehdihadeli/ecommerce-microservices/commit/72d07c1967df35fcf0af6ea99540027bdd22333d))
+* changes in workflows ([f218116](https://github.com/mehdihadeli/ecommerce-microservices/commit/f2181163cff7601417dda9d8a6120e34731f09e2))
+* changes in workflows ([107264f](https://github.com/mehdihadeli/ecommerce-microservices/commit/107264f6bb70128a52de44cf42c765c1d18a3dd3))
+* changes in workflows ([6421bf0](https://github.com/mehdihadeli/ecommerce-microservices/commit/6421bf0bca29c0a73432362f5ff5ed38f2a0038a))
+* changes in workflows ([d4004d2](https://github.com/mehdihadeli/ecommerce-microservices/commit/d4004d2fdb73dbeb3358f7a84b87684475bb9ad7))
+* changes in workflows ([6439f9f](https://github.com/mehdihadeli/ecommerce-microservices/commit/6439f9f9abed3f3bf640e249a50c7b6e7e79a0f9))
+* update ci ([7b13d27](https://github.com/mehdihadeli/ecommerce-microservices/commit/7b13d279c1720dde9b4a69bd7d712eabc1d998ea))
+* update ci ([b6e972c](https://github.com/mehdihadeli/ecommerce-microservices/commit/b6e972cccbc755c75d3c919637088b4fbe98abbc))
+* update ci ([76a757d](https://github.com/mehdihadeli/ecommerce-microservices/commit/76a757d4e302cd1a48b4247471bc2fa28e5eb1ee))
+* update ci ([e709bf7](https://github.com/mehdihadeli/ecommerce-microservices/commit/e709bf72f03e4493e3d15998fb12a77ee8defabb))
+* update ci ([9bde52e](https://github.com/mehdihadeli/ecommerce-microservices/commit/9bde52e18a7a17c3715fce0bbfd27666510be67e))
+
+
+
+generateNotesCmd
+
 ## [1.1.7](https://github.com/mehdihadeli/ecommerce-microservices/compare/v1.1.6...v1.1.7) (2023-01-23)
 
 

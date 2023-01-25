@@ -36,6 +36,13 @@ jobs:
       # url: ${{ steps.deploy-to-heroku.outputs.webapp-url }}
 
     steps:
+
+    # https://docs.github.com/en/actions/learn-github-actions/variables#using-contexts-to-access-variable-values
+    - name: Job Info
+      run: |
+        echo "job name is: $GITHUB_JOB"
+        echo "branch name is: $GITHUB_REF_NAME"
+
     - name: Checkout Repository
       uses: actions/checkout@v3
 
@@ -96,13 +103,8 @@ jobs:
       # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
       # using dry-run here for preventing publish release note and just calculate version, for develop and devops/ci we don't want to publish release
       run: |
-        if [[ ${{contains(fromJson('["develop", "devops/ci"]'), github.ref_name) }} ]]; then
-            echo "running semantic-release in dry-run mode"
-            npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p  @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release  --dry-run
-        else
             echo "running semantic-release in release mode"
             npx -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release
-        fi
 
       # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
     - name: Semantic Release Outputs

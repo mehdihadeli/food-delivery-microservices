@@ -42,27 +42,6 @@ tagFormat: 'v${version}'
 # with set this to `angular` instead of `conventionalcommits` writes feat, fix or perf in the change logs and build, ci, docs ,style, refactor, and test are non-changelog related.
 preset: 'conventionalcommits'
 
-# https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
-# https://semantic-release.gitbook.io/semantic-release/usage/plugins
-# https://github.com/semantic-release/semantic-release/discussions/2683
-verifyRelease:
-
-    # https://github.com/semantic-release/exec
-    # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
-    # https://stackoverflow.com/questions/72343466/while-using-github-actions-im-facing-permission-denied-error
-    # https://medium.com/@gpanga/automating-releases-of-net-sdks-using-semantic-release-e3df46013876
-    # https://github.com/semantic-release/semantic-release/issues/753
-    # https://github.com/semantic-release/semantic-release/issues/1647
-    # https://semantic-release.gitbook.io/semantic-release/usage/plugins
-    # https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun
-    # verifyReleaseCmd event works also on dry-run mode (just for reading version instead of publishing)
-  - path: '@semantic-release/exec'
-    cmd:  >-
-      ./set-output-version.sh ${nextRelease.version}
-      ${nextRelease.channel} ${nextRelease.gitHead} ${nextRelease.gitTag}
-      ${lastRelease.version} ${lastRelease.channel} ${lastRelease.gitHead}
-      ${lastRelease.gitTag}
-
 # https://github.com/semantic-release/semantic-release/discussions/2522
 plugins:
 
@@ -168,6 +147,38 @@ plugins:
           section: '🧪 Tests'
           hidden: false
 
+        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
+        # https://stackoverflow.com/questions/72343466/while-using-github-actions-im-facing-permission-denied-error
+        # https://medium.com/@gpanga/automating-releases-of-net-sdks-using-semantic-release-e3df46013876
+        # https://github.com/semantic-release/semantic-release/issues/753
+        # https://github.com/semantic-release/semantic-release/issues/1647
+        # https://semantic-release.gitbook.io/semantic-release/usage/plugins
+        # https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun
+        # https://github.com/semantic-release/semantic-release/blob/master/docs/usage/plugins.md#plugins-declaration-and-execution-order
+        # https://github.com/semantic-release/exec/issues/110#issuecomment-1361262137
+        # https://stackoverflow.com/questions/3790454/how-do-i-break-a-string-in-yaml-over-multiple-lines
+        # https://github.com/semantic-release/exec#configuration
+        # verifyReleaseCmd event works also on dry-run mode (just for reading version instead of publishing)
+        # git pull origin main
+  - - '@semantic-release/exec'
+    -  verifyReleaseCmd: |
+         echo "job name is: $GITHUB_JOB"
+         ./set-output-version.sh ${nextRelease.version} ${nextRelease.channel} ${nextRelease.gitHead} ${nextRelease.gitTag} ${lastRelease.version} ${lastRelease.channel} ${lastRelease.gitHead} ${lastRelease.gitTag}
+         if [ $GITHUB_JOB = 'build-test' ]
+             then ./update-version.sh ${nextRelease.version}
+         fi
+       generateNotesCmd: |
+         echo "generateNotesCmd"
+       publishCmd: |
+         echo "publishCmd"
+       successCmd: |
+         echo "successCmd"
+         git pull
+       prepareCmd: |
+         echo "prepareCmd"
+       failCmd: |
+         echo "failCmd"
+
        # https://github.com/semantic-release/changelog
        # Set of semantic-release plugins for creating or updating a changelog file.
   - -  '@semantic-release/changelog'
@@ -195,13 +206,12 @@ plugins:
       # The content of the issue created when a release fails. Set to false to disable opening an issue when a release fails
       failComment: false
 
+      # https://github.com/saitho/semantic-release-backmerge#branches
+      # https://github.com/saitho/semantic-release-backmerge#mergemode
   - - '@saithodev/semantic-release-backmerge'
     - branches:
-        - develop
+        - from: main
+          to: develop
+      backmergeStrategy: merge
+      mergeMode: ours
       clearWorkspace: true
-      mergeMode: 'ours'
-      plugins:
-        - - '@semantic-release/exec'
-          - successCmd: >-
-              echo 'Version in main is ${nextRelease.version}' > test.txt &&
-              git add test.txt

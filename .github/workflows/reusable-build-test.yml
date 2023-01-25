@@ -29,6 +29,12 @@ jobs:
       - name: Ls default workspace for steps
         run: ls -R ${{ github.workspace }}
 
+        # https://docs.github.com/en/actions/learn-github-actions/variables#using-contexts-to-access-variable-values
+      - name: Job Info
+        run: |
+           echo "job name is: $GITHUB_JOB"
+           echo "branch name is: $GITHUB_REF_NAME"
+
         # checkout store repository in default workspace for steps `{{ github.workspace }}`
       - name: Check out code
         uses: actions/checkout@v3
@@ -81,10 +87,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
         # using dry-run here for preventing publish release note and just calculate version
-        run: npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p  @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release  --dry-run
+        run: |
+          echo "running semantic-release in dry-run mode"
+          npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p  @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release  --dry-run
 
         # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
       - name: Semantic Release  Versions Outputs
+        if: success()
         run: |
           if [[ ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} == '' ]]; then
            echo "semantic_nextRelease_version is empty, action cancelled..."
@@ -98,11 +107,12 @@ jobs:
            echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
           fi
 
-      - name: Update Application Version
-        if: success()
-        run: ./update-version.sh ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+#      - name: Update Application Version
+#        if: success()
+#        run: ./update-version.sh ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Commit Updated Application Version File
+        uses: stefanzweifel/git-auto-commit-action@v4
         if: success()
         with:
           commit_message: 'chore(release): 🔧  ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]'

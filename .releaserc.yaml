@@ -159,7 +159,6 @@ plugins:
         # https://stackoverflow.com/questions/3790454/how-do-i-break-a-string-in-yaml-over-multiple-lines
         # https://github.com/semantic-release/exec#configuration
         # verifyReleaseCmd event works also on dry-run mode (just for reading version instead of publishing)
-        # git pull origin main
   - - '@semantic-release/exec'
     -  verifyReleaseCmd: |
          echo "job name is: $GITHUB_JOB"
@@ -171,9 +170,15 @@ plugins:
          echo "generateNotesCmd"
        publishCmd: |
          echo "publishCmd"
+       # https://codewithhugo.com/fix-git-failed-to-push-updates-were-rejected/
+       # https://github.com/saitho/semantic-release-backmerge/issues/43
        successCmd: |
          echo "successCmd"
-         git pull
+         if [ $GITHUB_REF_NAME = 'main' ]
+           then git checkout dev
+                git merge origin/main -Xours
+                git push https://github.com/mehdihadeli/release-note HEAD:dev
+         fi
        prepareCmd: |
          echo "prepareCmd"
        failCmd: |
@@ -206,12 +211,20 @@ plugins:
       # The content of the issue created when a release fails. Set to false to disable opening an issue when a release fails
       failComment: false
 
-      # https://github.com/saitho/semantic-release-backmerge#branches
-      # https://github.com/saitho/semantic-release-backmerge#mergemode
-  - - '@saithodev/semantic-release-backmerge'
-    - branches:
-        - from: main
-          to: develop
-      backmergeStrategy: merge
-      mergeMode: ours
-      clearWorkspace: true
+#      # https://github.com/saitho/semantic-release-backmerge#branches
+#      # https://github.com/saitho/semantic-release-backmerge#mergemode
+#      # https://github.com/saitho/semantic-release-backmerge/issues/43
+#      # backmerge easy and automated sync of tags between main and dev.
+#  - - '@saithodev/semantic-release-backmerge'
+#    - branches:
+#       - from: main
+#         to: dev
+#       backmergeStrategy: merge
+#       mergeMode: ours
+#       clearWorkspace: false
+#       # https://github.com/saitho/semantic-release-backmerge/blob/5e9b60ccb23a2018d9c0699ea10a01e588c53f73/src/perform-backmerge.ts#L30
+#       plugins:
+#         - - '@semantic-release/exec'
+#           - successCmd: |
+#              echo "successCmd"
+

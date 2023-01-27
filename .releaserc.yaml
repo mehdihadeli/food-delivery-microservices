@@ -173,11 +173,18 @@ plugins:
        # https://codewithhugo.com/fix-git-failed-to-push-updates-were-rejected/
        # https://github.com/saitho/semantic-release-backmerge/issues/43
        successCmd: |
-         echo "successCmd"
          if [ $GITHUB_REF_NAME = 'main' ]
-           then git checkout dev
+           # backmerge main to develop
+           then git checkout develop
                 git merge origin/main -Xours
-                git push https://github.com/mehdihadeli/release-note HEAD:dev
+                git push origin develop
+
+            # backmerge develop to all feature branches: list all remote feature branches that have not been merged to any branches and has remote branch(-r)
+            for branch in $(git branch -r --no-merged | grep "origin/feat/" | awk '{print $1}'| sed 's/^origin\///'); do
+                git checkout $branch
+                git merge origin/develop -Xours
+                git push origin $branch
+            done
          fi
        prepareCmd: |
          echo "prepareCmd"

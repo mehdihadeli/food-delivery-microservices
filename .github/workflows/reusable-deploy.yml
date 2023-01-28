@@ -15,7 +15,7 @@ on:
 jobs:
 
   deploy:
-    name: Deploy to ${{ inputs.environment_name }}
+    name: Deploy to ${{ inputs.environment_name }} Environment
     runs-on: ubuntu-latest
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
     continue-on-error: false
@@ -43,8 +43,15 @@ jobs:
         echo "job name is: $GITHUB_JOB"
         echo "branch name is: $GITHUB_REF_NAME"
 
+      # https://github.com/cycjimmy/semantic-release-action/issues/6
+      # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
+      # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
+      # https://github.com/orgs/community/discussions/26560
     - name: Checkout Repository
       uses: actions/checkout@v3
+    - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -108,6 +115,7 @@ jobs:
 
       # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
     - name: Semantic Release Outputs
+      if: success()
       run: |
         if [[ ${{ steps.semantic.outputs.semantic_nextRelease_version }} == '' ]]; then
             echo "semantic_nextRelease_version is empty, action cancelled..."
@@ -121,8 +129,16 @@ jobs:
             echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
         fi
 
-    - name: Restore NuGet packages
+      # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
+      # This back-merge may failed because of complexity some merge we should continue next step with using if: always()
+      # https://github.com/orgs/community/discussions/26560
+    - name: Back Merge Release
       if: (success() && steps.semantic.outputs.semantic_nextRelease_version != '')
+      run: |
+            ./back-merge.sh
+
+    - name: Restore NuGet packages
+      if: (always() && steps.semantic.outputs.semantic_nextRelease_version != '')
       run: dotnet restore
 
     # https://garywoodfine.com/how-to-use-github-actions-to-build-deploy-github-nuget-packages/

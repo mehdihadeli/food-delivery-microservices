@@ -80,7 +80,6 @@ jobs:
       environment_name: ${{ steps.branch_check.outputs.environment_name }}
       environment_tag: ${{ steps.branch_check.outputs.environment_tag }}
 
-
     steps:
     - name: echo
       run: echo "pre-check is successful."

@@ -107,17 +107,17 @@ jobs:
            echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
           fi
 
-#      - name: Update Application Version
-#        if: success()
-#        run: ./update-version.sh ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
-
       - name: Commit Updated Application Version File
         uses: stefanzweifel/git-auto-commit-action@v4
         if: success()
         with:
-          commit_message: 'chore(release): 🔧  ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]'
+          commit_message: 'chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]'
           file_pattern: '**/Directory.Packages.props'
           disable_globbing: true
+          # https://github.com/stefanzweifel/git-auto-commit-action#usage
+          commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com> # defaults to author of the commit that triggered the run
+          commit_user_name: github-actions[bot] # defaults to "github-actions[bot]"
+          commit_user_email: github-actions[bot]@users.noreply.github.com # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
 
         # Note: `Ubuntu` file and folder names are case sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
         # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476

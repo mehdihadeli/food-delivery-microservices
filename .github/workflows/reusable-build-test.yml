@@ -1,4 +1,4 @@
-name: Reusable build workflow
+name: Reusable Build Workflow
 
 on:
   workflow_call:
@@ -28,8 +28,9 @@ jobs:
         # https://docs.github.com/en/actions/learn-github-actions/variables#using-contexts-to-access-variable-values
       - name: Job Info
         run: |
-           echo "job name is: $GITHUB_JOB"
-           echo "branch name is: $GITHUB_REF_NAME"
+          echo "job name is: ${{ github.job }}"
+          echo "branch name is: ${{ github.ref_name }}"
+          echo "environment_name is: ${{ inputs.environment_name }}"
 
       - name: Check Inputs
         run: |

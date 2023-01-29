@@ -27,7 +27,7 @@ jobs:
       - name: Job Info
         run: |
           echo "job name is: $GITHUB_JOB"
-          echo "branch name is: $GITHUB_REF_NAME"
+          echo "branch name is: ${{ env.GITHUB_REF_NAME }}"
 
         # https://github.com/cycjimmy/semantic-release-action/issues/6
         # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
@@ -44,7 +44,7 @@ jobs:
           # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
           # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
           fetch-depth: 0
-          ref: $GITHUB_REF_NAME
+          ref: ${{ env.GITHUB_REF_NAME }}
       - run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'

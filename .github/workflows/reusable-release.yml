@@ -32,6 +32,7 @@ jobs:
         # https://github.com/cycjimmy/semantic-release-action/issues/6
         # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
         # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
+        # https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L92
         # https://github.com/orgs/community/discussions/26560
       - name: Checkout Repository
         uses: actions/checkout@v3

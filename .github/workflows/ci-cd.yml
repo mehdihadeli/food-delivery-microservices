@@ -195,5 +195,5 @@ jobs:
     with:
       environment_name: ${{ needs.pre-check.outputs.environment_name }}
       environment_tag: ${{ needs.pre-check.outputs.environment_tag }}
-      version: ${{ needs.release.outputs.version }}
+      release_version: ${{ needs.release.outputs.release_version }}
 

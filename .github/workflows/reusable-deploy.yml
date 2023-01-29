@@ -11,7 +11,7 @@ on:
         type: string
         description: environment tag fo publishing
         required: true
-      version:
+      release_version:
         type: string
         description: version
         required: true
@@ -48,7 +48,7 @@ jobs:
         echo "branch name is: $GITHUB_REF_NAME"
         echo "environment_name is: ${{ inputs.environment_name }}
         echo "environment_tag is: ${{ inputs.environment_tag }}
-        echo "version is: ${{ inputs.version }}
+        echo "version is: ${{ inputs.release_version }}
 
       # https://github.com/cycjimmy/semantic-release-action/issues/6
       # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
@@ -144,6 +144,16 @@ jobs:
         retention-days: 1
         path: |
           output/publish-services.zip
+
+      # https://blog.derlin.ch/github-actions-reusable-workflow-docker-images
+    - name: Lint Dockerfile using Checkov
+      id: checkov
+      uses: bridgecrewio/checkov-action@master
+      with:
+        directory: .
+        framework: dockerfile # only ask for dockerfile scans
+        quiet: true # show only failed checks
+        container_user: 1000 # UID to run the container under
 
       # https://docs.docker.com/engine/reference/commandline/build/
       # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b

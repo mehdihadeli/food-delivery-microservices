@@ -6,9 +6,9 @@ on:
     # https://stackoverflow.com/questions/73702333/github-actions-reuse-outputs-from-other-reusable-workflows
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-outputs-from-a-reusable-workflow
     outputs:
-      version:
+      release_version:
         description: "Version"
-        value: ${{ jobs.deploy.outputs.version }}
+        value: ${{ jobs.deploy.outputs.release_version }}
 jobs:
 
   deploy:
@@ -19,7 +19,7 @@ jobs:
 
     # Map the job outputs to step outputs
     outputs:
-      version: ${{ steps.semantic.outputs.semantic_nextRelease_version }}
+      release_version: ${{ steps.semantic.outputs.semantic_nextRelease_version }}
 
     steps:
 

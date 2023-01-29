@@ -7,10 +7,6 @@ on:
         type: string
         description: environment to deploy to
         required: true
-      environment_tag:
-        type: string
-        description: environment tag fo publishing
-        required: true
 
 jobs:
   build-test:

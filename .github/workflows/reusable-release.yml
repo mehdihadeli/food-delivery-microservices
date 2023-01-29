@@ -2,6 +2,13 @@ name: Reusable Release Workflow
 
 on:
   workflow_call:
+    # Map the workflow outputs to job outputs
+    # https://stackoverflow.com/questions/73702333/github-actions-reuse-outputs-from-other-reusable-workflows
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-outputs-from-a-reusable-workflow
+    outputs:
+      version:
+        description: "Version"
+        value: ${{ jobs.deploy.outputs.version }}
 jobs:
 
   deploy:
@@ -9,6 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
     continue-on-error: false
+
+    # Map the job outputs to step outputs
+    outputs:
+      version: ${{ steps.semantic.outputs.semantic_nextRelease_version }}
 
     steps:
 

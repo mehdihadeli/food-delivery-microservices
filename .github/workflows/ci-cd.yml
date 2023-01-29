@@ -149,7 +149,7 @@ jobs:
       environment_name: ${{ needs.pre-check.outputs.environment_name }}
       environment_tag: ${{ needs.pre-check.outputs.environment_tag }}
 
-
+  # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
   release:
     needs: [pre-check, build-test]
     if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should_release )))
@@ -195,4 +195,5 @@ jobs:
     with:
       environment_name: ${{ needs.pre-check.outputs.environment_name }}
       environment_tag: ${{ needs.pre-check.outputs.environment_tag }}
+      version: ${{ needs.release.outputs.version }}
 

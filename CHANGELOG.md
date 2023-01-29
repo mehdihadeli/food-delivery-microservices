@@ -1,5 +1,18 @@
 # Semantic Versioning Changelog
 
+## [1.2.0-ops.5](https://github.com/mehdihadeli/ecommerce-microservices/compare/v1.2.0-ops.4...v1.2.0-ops.5) (2023-01-29)
+
+
+### 👷 CI/CD
+
+* update ci ([d75790e](https://github.com/mehdihadeli/ecommerce-microservices/commit/d75790ee5e518c74b34dc01048bc2e2699a8cd1e))
+* update ci ([6bc9ad6](https://github.com/mehdihadeli/ecommerce-microservices/commit/6bc9ad6106b64161c6b88993a57ce5575495fd89))
+* update ci ([4258870](https://github.com/mehdihadeli/ecommerce-microservices/commit/4258870dbafc2dc13c03173d216cc5fb02531f74))
+
+
+
+generateNotesCmd
+
 ## [1.2.0-ops.4](https://github.com/mehdihadeli/ecommerce-microservices/compare/v1.2.0-ops.3...v1.2.0-ops.4) (2023-01-29)
 
 

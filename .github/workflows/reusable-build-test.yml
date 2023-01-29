@@ -38,6 +38,10 @@ jobs:
         # checkout store repository in default workspace for steps `{{ github.workspace }}`
       - name: Check out code
         uses: actions/checkout@v3
+        # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+        # Only a single commit is fetched by default, Set fetch-depth: 0 to fetch all history for all branches and tags.
+        with:
+          fetch-depth: 0
 
 #        # https://github.com/aquasecurity/trivy-action#using-trivy-to-scan-your-git-repo
 #      - name: Run Trivy vulnerability scanner in repo mode
@@ -95,17 +99,17 @@ jobs:
       - name: Semantic Release  Versions Outputs
         if: success()
         run: |
-          if [[ ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} == '' ]]; then
-           echo "semantic_nextRelease_version is empty, action cancelled..."
-           exit 1
-          else
-           echo ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
-           echo ${{ steps.semantic-version.outputs.semantic_nextRelease_channel }}
-           echo ${{ steps.semantic-version.outputs.semantic_nextRelease_gitTag }}
-           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_version }}
-           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_channel }}
-           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
-          fi
+            if [ -z ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} ]
+              then echo "semantic_nextRelease_version is empty, action cancelled..."
+                   exit 1
+            else
+              echo ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+              echo ${{ steps.semantic-version.outputs.semantic_nextRelease_channel }}
+              echo ${{ steps.semantic-version.outputs.semantic_nextRelease_gitTag }}
+              echo ${{ steps.semantic-version.outputs.semantic_lastRelease_version }}
+              echo ${{ steps.semantic-version.outputs.semantic_lastRelease_channel }}
+              echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
+            fi
 
       - name: Commit Updated Application Version File
         uses: stefanzweifel/git-auto-commit-action@v4

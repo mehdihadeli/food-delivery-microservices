@@ -1,6 +1,6 @@
 # Linting workflow: https://github.com/rhysd/actionlint
 
-name: CI
+name: CI-CD
 
 on:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#push
@@ -46,12 +46,27 @@ on:
      logLevel:
        description: 'Log level'
        required: true
-       default: 'warning'
+       default: 'info'
        type: choice
        options:
          - info
          - warning
          - debug
+     should_publish:
+       required: true
+       default: false
+       description: "Should publish docker and publish artifacts?"
+       type: boolean
+    should_release:
+      required: true
+      default: true
+      description: "Should release a release note?"
+      type: boolean
+#     # we don't use this here, I detect environment based on the branch
+#     environment:
+#       description: "Environment to run"
+#       type: environment
+#       required: true
 
 # https://docs.github.com/en/actions/learn-github-actions/variables#defining-environment-variables-for-a-single-workflow
 # we could also define env in scope a job or step
@@ -108,11 +123,13 @@ jobs:
             echo "environment_name=develop" >> "$GITHUB_OUTPUT"
         fi
 
-    - name: Echo Environment
+    - name: Echo Information
       if: success()
       run: |
         echo "I'm using environment: ${{ steps.branch_check.outputs.environment_name }}"
         echo "I'm using environment-tag: ${{ steps.branch_check.outputs.environment_tag }}"
+        echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
+        echo "is push event? ${{ github.event_name == 'push' }}"
 
   build-test:
     needs: pre-check
@@ -132,6 +149,19 @@ jobs:
       environment_name: ${{ needs.pre-check.outputs.environment_name }}
       environment_tag: ${{ needs.pre-check.outputs.environment_tag }}
 
+
+  release:
+    needs: [pre-check, build-test]
+    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should_release )))
+
+    permissions:
+      contents: write #  to be able to publish a GitHub release
+      issues: write #  to be able to comment on released issues
+      pull-requests: write #  to be able to comment on released pull requests
+
+    uses: ./.github/workflows/reusable-release.yml
+    secrets: inherit
+
   # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
   # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
   # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
@@ -139,11 +169,12 @@ jobs:
   # https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
   # https://www.codewrecks.com/post/github/choose-environment-from-branch/
   # https://colinsalmcorner.com/musings-on-reusable-workflows/
-  # when we use `workflow_run` and `completed` event that triggered by CI workflow, each changes on cd files needs to available on default branch so here I not use this approach
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+  # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
   publish:
-    needs: [pre-check, build-test]
+    needs: [pre-check, build-test, release]
 
-    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta","devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]')
+    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should_publish )))
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
@@ -151,8 +182,6 @@ jobs:
     # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
     permissions:
       contents: write #  to be able to publish a GitHub release
-      issues: write #  to be able to comment on released issues
-      pull-requests: write #  to be able to comment on released pull requests
       packages: write # for publishing packages
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow

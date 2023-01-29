@@ -32,15 +32,19 @@ jobs:
         # https://github.com/cycjimmy/semantic-release-action/issues/6
         # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
         # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
-        # https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L92
+        # https://github.com/semantic-release/semantic-release/issues/1208
         # https://github.com/orgs/community/discussions/26560
+        # https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L92
+        ## https://github.com/actions/checkout/issues/439#issuecomment-965968956
+        # get latest remote change because sematic-release in `verifyConditions` event checks local branch has latest remote branch changes, for preventing: The local branch `something` is behind the remote one, therefore a new version won't be published.
+        # By default checkout@v3, will check branch on ref/SHA that triggered in starting workflow, so if inner a job in the workflow we change HEAD of repository by changing code, subsequent jobs don't get these commits and they get ref/SHA that triggered in starting workflow
       - name: Checkout Repository
         uses: actions/checkout@v3
-        # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
-        # Only a single commit is fetched by default, Set fetch-depth: 0 to fetch all history for all branches and tags.
-        # get latest remote change because sematic-release in `verifyConditions` event checks local branch has latest remote branch changes, for preventing: The local branch `something` is behind the remote one, therefore a new version won't be published.
         with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
           fetch-depth: 0
+          ref: $GITHUB_REF_NAME
       - run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
@@ -86,15 +90,10 @@ jobs:
         # using dry-run here for preventing publish release note and just calculate version, for develop and devops/ci we don't want to publish release
         run: |
           echo "running semantic-release in release mode"
-          # https://github.com/semantic-release/semantic-release/issues/1208
-          # https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L92
-          # get latest remote change because sematic-release in `verifyConditions` event checks local branch has latest remote branch changes, for preventing: The local branch `something` is behind the remote one, therefore a new version won't be published.
-          # git pull
           npx -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release
 
         # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
       - name: Semantic Release Outputs
-        if: (success() && steps.semantic.outputs.semantic_nextRelease_version != '')
         run: |
           if [ -z ${{ steps.semantic.outputs.semantic_nextRelease_version }} ]
              then echo "semantic_nextRelease_version is empty, action cancelled..."

@@ -31,28 +31,32 @@ jobs:
            echo "job name is: $GITHUB_JOB"
            echo "branch name is: $GITHUB_REF_NAME"
 
-        # checkout store repository in default workspace for steps `{{ github.workspace }}`
+      - name: Check Inputs
+        run: |
+          if [ -z ${{ inputs.environment_name }} ]
+             then echo "environment_name is empty, action cancelled..."
+                  exit 1
+          fi
+
+        # https://github.com/cycjimmy/semantic-release-action/issues/6
+        # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
+        # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
+        # https://github.com/semantic-release/semantic-release/issues/1208
+        # https://github.com/orgs/community/discussions/26560
+        # https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L92
+        ## https://github.com/actions/checkout/issues/439#issuecomment-965968956
+        # get latest remote change because sematic-release in `verifyConditions` event checks local branch has latest remote branch changes, for preventing: The local branch `something` is behind the remote one, therefore a new version won't be published.
+        # By default checkout@v3, will check branch on ref/SHA that triggered in starting workflow, so if inner a job in the workflow we change HEAD of repository by changing code, subsequent jobs don't get these commits and they get ref/SHA that triggered in starting workflow
       - name: Check out code
         uses: actions/checkout@v3
-        # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
-        # Only a single commit is fetched by default, Set fetch-depth: 0 to fetch all history for all branches and tags.
         with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
           fetch-depth: 0
-
-#        # https://github.com/aquasecurity/trivy-action#using-trivy-to-scan-your-git-repo
-#      - name: Run Trivy vulnerability scanner in repo mode
-#        uses: aquasecurity/trivy-action@master
-#        with:
-#          scan-type: 'fs'
-#          ignore-unfixed: true
-#          format: 'sarif'
-#          output: 'trivy-results.sarif'
-#          severity: 'CRITICAL'
-#
-#      - name: Upload Trivy scan results to GitHub Security tab
-#        uses: github/codeql-action/upload-sarif@v2
-#        with:
-#          sarif_file: 'trivy-results.sarif'
+          ref: ${{ github.ref_name }}
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
 
       # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
       # https://devblogs.microsoft.com/dotnet/dotnet-loves-github-actions/
@@ -93,7 +97,6 @@ jobs:
 
         # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
       - name: Semantic Release  Versions Outputs
-        if: success()
         run: |
             if [ -z ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} ]
               then echo "semantic_nextRelease_version is empty, action cancelled..."

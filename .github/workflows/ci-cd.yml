@@ -43,7 +43,7 @@ on:
   # Note: To trigger the workflow_dispatch event, our workflow must be in the default branch
   workflow_dispatch:
    inputs:
-     logLevel:
+    logLevel:
        description: 'Log level'
        required: true
        default: 'info'
@@ -52,7 +52,7 @@ on:
          - info
          - warning
          - debug
-     should_publish:
+    should_publish:
        required: true
        default: false
        description: "Should publish docker and publish artifacts?"

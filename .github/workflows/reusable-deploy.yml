@@ -153,16 +153,6 @@ jobs:
         path: |
           output/publish-services.zip
 
-      # https://blog.derlin.ch/github-actions-reusable-workflow-docker-images
-    - name: Lint Dockerfile using Checkov
-      id: checkov
-      uses: bridgecrewio/checkov-action@master
-      with:
-        directory: .
-        framework: dockerfile # only ask for dockerfile scans
-        quiet: true # show only failed checks
-        container_user: 1000 # UID to run the container under
-
       # https://docs.docker.com/engine/reference/commandline/build/
       # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
       # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio

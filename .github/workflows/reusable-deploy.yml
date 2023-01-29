@@ -7,10 +7,6 @@ on:
         type: string
         description: environment to deploy to
         required: true
-      environment_tag:
-        type: string
-        description: environment tag fo publishing
-        required: true
       release_version:
         type: string
         description: version
@@ -46,9 +42,8 @@ jobs:
       run: |
         echo "job name is: $GITHUB_JOB"
         echo "branch name is: $GITHUB_REF_NAME"
-        echo "environment_name is: ${{ inputs.environment_name }}
-        echo "environment_tag is: ${{ inputs.environment_tag }}
-        echo "version is: ${{ inputs.release_version }}
+        echo "environment_name is: ${{ inputs.environment_name }}"
+        echo "version is: ${{ inputs.release_version }}"
 
       # https://github.com/cycjimmy/semantic-release-action/issues/6
       # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token

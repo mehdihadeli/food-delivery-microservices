@@ -93,7 +93,6 @@ jobs:
     # Job outputs containing expressions are evaluated on the runner at the end of each job
     outputs:
       environment_name: ${{ steps.branch_check.outputs.environment_name }}
-      environment_tag: ${{ steps.branch_check.outputs.environment_tag }}
 
     steps:
     - name: echo
@@ -107,19 +106,14 @@ jobs:
       id: branch_check
       run: |
         if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo "environment_tag=" >> "$GITHUB_OUTPUT"
             echo "environment_name=production" >> "$GITHUB_OUTPUT"
         elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-            echo "environment_tag=-dev" >> "$GITHUB_OUTPUT"
             echo "environment_name=develop" >> "$GITHUB_OUTPUT"
         elif [[ $GITHUB_REF == 'refs/heads/preview' ]]; then
-            echo "environment_tag=-preview" >> "$GITHUB_OUTPUT"
             echo "environment_name=staging" >> "$GITHUB_OUTPUT"
         elif [[ $GITHUB_REF == 'refs/heads/beta' ]]; then
-            echo "environment_tag=-beta" >> "$GITHUB_OUTPUT"
             echo "environment_name=staging" >> "$GITHUB_OUTPUT"
         else
-            echo "environment_tag=-dev" >> "$GITHUB_OUTPUT"
             echo "environment_name=develop" >> "$GITHUB_OUTPUT"
         fi
 
@@ -127,7 +121,6 @@ jobs:
       if: success()
       run: |
         echo "I'm using environment: ${{ steps.branch_check.outputs.environment_name }}"
-        echo "I'm using environment-tag: ${{ steps.branch_check.outputs.environment_tag }}"
         echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
         echo "is push event? ${{ github.event_name == 'push' }}"
 
@@ -147,7 +140,6 @@ jobs:
     secrets: inherit
     with:
       environment_name: ${{ needs.pre-check.outputs.environment_name }}
-      environment_tag: ${{ needs.pre-check.outputs.environment_tag }}
 
   # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
   release:
@@ -194,6 +186,5 @@ jobs:
     secrets: inherit
     with:
       environment_name: ${{ needs.pre-check.outputs.environment_name }}
-      environment_tag: ${{ needs.pre-check.outputs.environment_tag }}
       release_version: ${{ needs.release.outputs.release_version }}
 

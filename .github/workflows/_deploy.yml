@@ -1,13 +1,16 @@
 name: Reusable Deployment Workflow
 
 on:
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_call
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputsinput_idtype
+  # https://docs.github.com/en/actions/using-workflows/reusing-workflows
   workflow_call:
     inputs:
-      environment_name:
+      environment-name:
         type: string
         description: environment to deploy to
         required: true
-      release_version:
+      release-version:
         type: string
         description: version
         required: true
@@ -15,7 +18,7 @@ on:
 jobs:
 
   deploy:
-    name: Deploy to ${{ inputs.environment_name }} Environment
+    name: Deploy to ${{ inputs.environment-name }} Environment
     runs-on: ubuntu-latest
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
     continue-on-error: false
@@ -32,7 +35,7 @@ jobs:
 
       # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
     environment:
-      name: ${{ inputs.environment_name }}
+      name: ${{ inputs.environment-name }}
       # url: ${{ steps.deploy-to-heroku.outputs.webapp-url }}
 
     steps:
@@ -42,17 +45,17 @@ jobs:
       run: |
         echo "job name is: ${{ github.job }}"
         echo "branch name is: ${{ github.ref_name }}"
-        echo "environment_name is: ${{ inputs.environment_name }}"
-        echo "version is: ${{ inputs.release_version }}"
+        echo "environment-name is: ${{ inputs.environment-name }}"
+        echo "version is: ${{ inputs.release-version }}"
 
     - name: Check Inputs
       run: |
-        if [ -z ${{ inputs.release_version }} ]
+        if [ -z ${{ inputs.release-version }} ]
            then echo "version is empty, action cancelled..."
                 exit 1
         fi
-        if [ -z ${{ inputs.environment_name }} ]
-           then echo "environment_name is empty, action cancelled..."
+        if [ -z ${{ inputs.environment-name }} ]
+           then echo "environment-name is empty, action cancelled..."
                 exit 1
         fi
 
@@ -122,9 +125,9 @@ jobs:
       id: publish-services
       if: success()
       run: |
-        dotnet publish -c Release --no-restore  ${{ env.CATALOG_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Catalogs /p:Version=${{ inputs.release_version }} /p:InformationalVersion=${{ inputs.release_version }} /p:ApplicationVersion=${{ inputs.release_version }}
-        dotnet publish -c Release --no-restore  ${{ env.CUSTOMERS_SVC_PATH }}  -o ${{ github.workspace }}/output/publish-services/Customers /p:Version=${{ inputs.release_version }} /p:InformationalVersion=${{ inputs.release_version }} /p:ApplicationVersion=${{ inputs.release_version }}
-        dotnet publish -c Release --no-restore  ${{ env.IDENTITY_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Identity /p:Version=${{ inputs.release_version }} /p:InformationalVersion=${{ inputs.release_version }} /p:ApplicationVersion=${{ inputs.release_version }}
+        dotnet publish -c Release --no-restore  ${{ env.CATALOG_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Catalogs /p:Version=${{ inputs.release-version }} /p:InformationalVersion=${{ inputs.release-version }} /p:ApplicationVersion=${{ inputs.release-version }}
+        dotnet publish -c Release --no-restore  ${{ env.CUSTOMERS_SVC_PATH }}  -o ${{ github.workspace }}/output/publish-services/Customers /p:Version=${{ inputs.release-version }} /p:InformationalVersion=${{ inputs.release-version }} /p:ApplicationVersion=${{ inputs.release-version }}
+        dotnet publish -c Release --no-restore  ${{ env.IDENTITY_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Identity /p:Version=${{ inputs.release-version }} /p:InformationalVersion=${{ inputs.release-version }} /p:ApplicationVersion=${{ inputs.release-version }}
 
       # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
       # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
@@ -159,9 +162,9 @@ jobs:
     -  name: docker build
        if: success()
        run: |
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ inputs.release_version }}  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ inputs.release_version }} -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ inputs.release_version }}  -f "${{ github.workspace }}/src/Services/Identity/Dockerfile"
+         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ inputs.release-version }}  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
+         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ inputs.release-version }} -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
+         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ inputs.release-version }}  -f "${{ github.workspace }}/src/Services/Identity/Dockerfile"
 
     - name: 'Login to GitHub Container Registry'
       uses: docker/login-action@v1
@@ -174,6 +177,6 @@ jobs:
     - name: docker publish
       if: success()
       run: |
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ inputs.release_version }}
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ inputs.release_version }}
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ inputs.release_version }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ inputs.release-version }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ inputs.release-version }}
+        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ inputs.release-version }}

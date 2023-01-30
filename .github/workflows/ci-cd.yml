@@ -37,6 +37,7 @@ on:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#providing-inputs
+  # https://github.blog/changelog/2021-11-10-github-actions-input-types-for-manual-workflows/
   # https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
   # Allows us to run this workflow manually from the Actions tab
   # To manually trigger a workflow, use the workflow_dispatch event. You can manually trigger a workflow run using the GitHub API, GitHub CLI, or GitHub browser interface
@@ -52,12 +53,12 @@ on:
          - info
          - warning
          - debug
-    should_publish:
+    should-publish:
        required: true
        default: false
        description: "Should publish docker and publish artifacts?"
        type: boolean
-    should_release:
+    should-release:
       required: true
       default: true
       description: "Should release a release note?"
@@ -92,7 +93,7 @@ jobs:
     # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
     # Job outputs containing expressions are evaluated on the runner at the end of each job
     outputs:
-      environment_name: ${{ steps.branch_check.outputs.environment_name }}
+      environment-name: ${{ steps.branch_check.outputs.environment-name }}
 
     steps:
     - name: echo
@@ -106,25 +107,25 @@ jobs:
       id: branch_check
       run: |
         if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo "environment_name=production" >> "$GITHUB_OUTPUT"
+            echo "environment-name=production" >> "$GITHUB_OUTPUT"
         elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-            echo "environment_name=develop" >> "$GITHUB_OUTPUT"
+            echo "environment-name=develop" >> "$GITHUB_OUTPUT"
         elif [[ $GITHUB_REF == 'refs/heads/preview' ]]; then
-            echo "environment_name=staging" >> "$GITHUB_OUTPUT"
+            echo "environment-name=staging" >> "$GITHUB_OUTPUT"
         elif [[ $GITHUB_REF == 'refs/heads/beta' ]]; then
-            echo "environment_name=staging" >> "$GITHUB_OUTPUT"
+            echo "environment-name=staging" >> "$GITHUB_OUTPUT"
         else
-            echo "environment_name=develop" >> "$GITHUB_OUTPUT"
+            echo "environment-name=develop" >> "$GITHUB_OUTPUT"
         fi
 
     - name: Echo Information
       if: success()
       run: |
-        echo "I'm using environment: ${{ steps.branch_check.outputs.environment_name }}"
+        echo "I'm using environment: ${{ steps.branch_check.outputs.environment-name }}"
         echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
         echo "is push event? ${{ github.event_name == 'push' }}"
 
-  build-test:
+  call-build-test:
     needs: pre-check
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     permissions:
@@ -132,26 +133,26 @@ jobs:
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-    uses: ./.github/workflows/reusable-build-test.yml
+    uses: ./.github/workflows/_build-test.yml
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
     # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
     secrets: inherit
     with:
-      environment_name: ${{ needs.pre-check.outputs.environment_name }}
+      environment-name: ${{ needs.pre-check.outputs.environment-name }}
 
   # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
-  release:
-    needs: [pre-check, build-test]
-    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should_release )))
+  call-release:
+    needs: [pre-check, call-build-test]
+    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-release )))
 
     permissions:
       contents: write #  to be able to publish a GitHub release
       issues: write #  to be able to comment on released issues
       pull-requests: write #  to be able to comment on released pull requests
 
-    uses: ./.github/workflows/reusable-release.yml
+    uses: ./.github/workflows/_release.yml
     secrets: inherit
 
   # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
@@ -163,10 +164,10 @@ jobs:
   # https://colinsalmcorner.com/musings-on-reusable-workflows/
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
   # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
-  publish:
-    needs: [pre-check, build-test, release]
+  call-publish:
+    needs: [pre-check, call-build-test, call-release]
 
-    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should_publish )))
+    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish )))
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
@@ -178,13 +179,13 @@ jobs:
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-    uses: ./.github/workflows/reusable-deploy.yml
+    uses: ./.github/workflows/_deploy.yml
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
     # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
     secrets: inherit
     with:
-      environment_name: ${{ needs.pre-check.outputs.environment_name }}
-      release_version: ${{ needs.release.outputs.release_version }}
+      environment-name: ${{ needs.pre-check.outputs.environment-name }}
+      release-version: ${{ needs.call-release.outputs.release-version }}
 

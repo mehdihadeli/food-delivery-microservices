@@ -167,10 +167,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3CC5AECD-915C-4CCB-90AA-EF29EBD9A3E5}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\conventional-commits.yml = .github\workflows\conventional-commits.yml
-		.github\workflows\reusable-deploy.yml = .github\workflows\reusable-deploy.yml
-		.github\workflows\reusable-build-test.yml = .github\workflows\reusable-build-test.yml
 		.github\workflows\ci-cd.yml = .github\workflows\ci-cd.yml
-		.github\workflows\reusable-release.yml = .github\workflows\reusable-release.yml
+		.github\workflows\_build-test.yml = .github\workflows\_build-test.yml
+		.github\workflows\_deploy.yml = .github\workflows\_deploy.yml
+		.github\workflows\_release.yml = .github\workflows\_release.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{93409B05-C828-4815-9684-FD3E7E248A3F}"
@@ -226,6 +226,33 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{10D42B11-A3EA-4969-9782-EE60EA7A8448}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Shared", "tests\Shared\Tests.Shared\Tests.Shared.csproj", "{CBF89154-C73E-4A22-9F89-2AA4A7EC5333}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{7015BB05-7FFC-4C75-9A9F-0211C8C807B4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build-test", "build-test", "{34160487-D779-4306-8370-6E147E53FEAF}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\build-test\action.yml = .github\actions\build-test\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app-version", "app-version", "{735F7FE5-586D-495A-9728-0217826DE7A5}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\app-version\action.yml = .github\actions\app-version\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy-dokcer", "deploy-dokcer", "{47647A81-F5F5-4660-BAE4-56869C4DF9D4}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\deploy-docker\action.yml = .github\actions\deploy-docker\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test-coverage", "test-coverage", "{00700BBB-85B7-4262-8C5B-4A1BEBB0C2BC}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\test-coverage\action.yml = .github\actions\test-coverage\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build-test-push", "build-test-push", "{01619DB6-C712-4CAC-AB6B-9A817A9C8434}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\build-test-push\action.yml = .github\actions\build-test-push\action.yml
+	EndProjectSection
 EndProject
 
 Global
@@ -308,6 +335,12 @@ Global
 		{8E56D5F0-07CC-46D5-86E4-599060198971} = {CFC90B50-E918-4ABD-B27B-CA87F12BAF89}
 		{10D42B11-A3EA-4969-9782-EE60EA7A8448} = {9EEA45F9-0190-4CCD-908F-ED883FE66DE0}
 		{CBF89154-C73E-4A22-9F89-2AA4A7EC5333} = {10D42B11-A3EA-4969-9782-EE60EA7A8448}
+		{7015BB05-7FFC-4C75-9A9F-0211C8C807B4} = {D87BDBDB-89BA-4703-B11D-E79A0935A909}
+		{34160487-D779-4306-8370-6E147E53FEAF} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
+		{735F7FE5-586D-495A-9728-0217826DE7A5} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
+		{47647A81-F5F5-4660-BAE4-56869C4DF9D4} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
+		{00700BBB-85B7-4262-8C5B-4A1BEBB0C2BC} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
+		{01619DB6-C712-4CAC-AB6B-9A817A9C8434} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

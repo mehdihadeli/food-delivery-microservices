@@ -1,14 +1,17 @@
 name: Reusable Release Workflow
 
 on:
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_call
+  # https://stackoverflow.com/questions/73702333/github-actions-reuse-outputs-from-other-reusable-workflows
+  # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-outputs-from-a-reusable-workflow
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputsinput_idtype
+  # https://docs.github.com/en/actions/using-workflows/reusing-workflows
   workflow_call:
     # Map the workflow outputs to job outputs
-    # https://stackoverflow.com/questions/73702333/github-actions-reuse-outputs-from-other-reusable-workflows
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-outputs-from-a-reusable-workflow
     outputs:
-      release_version:
+      release-version:
         description: "Version"
-        value: ${{ jobs.deploy.outputs.release_version }}
+        value: ${{ jobs.deploy.outputs.release-version }}
 jobs:
 
   deploy:
@@ -19,7 +22,7 @@ jobs:
 
     # Map the job outputs to step outputs
     outputs:
-      release_version: ${{ steps.semantic.outputs.semantic_nextRelease_version }}
+      release-version: ${{ steps.semantic.outputs.semantic_nextrelease_version }}
 
     steps:
 
@@ -95,14 +98,14 @@ jobs:
         # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
       - name: Semantic Release Outputs
         run: |
-          if [ -z ${{ steps.semantic.outputs.semantic_nextRelease_version }} ]
-             then echo "semantic_nextRelease_version is empty, action cancelled..."
+          if [ -z ${{ steps.semantic.outputs.semantic_nextrelease_version }} ]
+             then echo "semantic_nextrelease_version is empty, action cancelled..."
                   exit 1
           else
-              echo ${{ steps.semantic.outputs.semantic_nextRelease_version }}
+              echo ${{ steps.semantic.outputs.semantic_nextrelease_version }}
               echo ${{ steps.semantic.outputs.semantic_nextRelease_channel }}
               echo ${{ steps.semantic.outputs.semantic_nextRelease_gitTag }}
-              echo ${{ steps.semantic.outputs.semantic_lastRelease_version }}
+              echo ${{ steps.semantic.outputs.semantic_lastrelease_version }}
               echo ${{ steps.semantic.outputs.semantic_lastRelease_channel }}
               echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
           fi

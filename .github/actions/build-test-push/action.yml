@@ -1,0 +1,2 @@
+name: "Build-Test-Push"
+description: "Builds and tests and pushing docker image to the registry"

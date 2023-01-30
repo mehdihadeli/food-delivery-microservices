@@ -1,0 +1,78 @@
+# https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
+# https://doug.sh/posts/using-composite-actions-with-github-actions/
+# https://wallis.dev/blog/composite-github-actions
+
+name: "Build-Test"
+description: "Builds and tests without pushing"
+
+# Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+inputs:
+  application-version:
+    description: "The application version"
+    required: true
+
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
+runs:
+  using: "composite"
+  steps:
+
+    # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
+    # https://devblogs.microsoft.com/dotnet/dotnet-loves-github-actions/
+    # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net#caching-dependencies
+    - name: Cache NuGet Packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-dotnet-nuget
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+
+      # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
+    - name: Restore .NET Tools
+      shell: bash
+      run: dotnet tool restore
+
+      # Note: `Ubuntu` file and folder names are case sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
+      # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476
+    - name: Restore NuGet packages
+      shell: bash
+      if: success()
+      run: dotnet restore
+
+    - name: Build
+      shell: bash
+      if: success()
+      run: dotnet build -c Release --no-restore
+
+    # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
+    # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+    # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
+    # https://josef.codes/dotnet-core-filter-out-specific-test-projects-when-running-dotnet-test/
+    # https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
+    # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+    # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md
+    - name: Run Unit Tests with Coverage
+      id: unit-tests
+      shell: bash
+      if: success()
+      run: dotnet test -c Release --no-build --no-restore --filter "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
+        /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*  /p:CollectCoverage=true
+        /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
+
+      #    - name: Run Integration And EndToEnd Tests with Coverage
+      #      continue-on-error: false
+      #      id: integration-tests
+      #      if: success()
+      #      run: dotnet test -c Release --no-build --no-restore --filter "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|
+      #            (Category=EndToEnd&FullyQualifiedName~EndToEndTests)" /p:Exclude=[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]* /p:CollectCoverage=true
+      #            /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
+
+    - name: Call Composite Action test-coverage
+      uses: ./.github/actions/test-coverage
+      id: test-coverage-step
+      with:
+        reports-path: '${{ github.workspace }}/**/*.cobertura.xml'
+        reports-output-path: '${{ github.workspace }}/output/test-results'

@@ -1,2 +1,19 @@
 name: "Build-Test-Push"
 description: "Builds and tests and pushing docker image to the registry"
+
+# Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+inputs:
+  application-version:
+    description: "The application version"
+    required: true
+
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
+runs:
+  using: "composite"
+  steps:
+    - name: Call Composite Action build-test
+      uses: ./.github/actions/test-coverage
+      id: build-test-step
+      with:
+        application-version: ${{ inputs.application-version }}

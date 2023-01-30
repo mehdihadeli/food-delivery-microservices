@@ -15,6 +15,7 @@ inputs:
     required: true
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputsoutput_idvalue
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputs-for-composite-actions
 outputs:
   application-version:
     value: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}

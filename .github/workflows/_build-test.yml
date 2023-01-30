@@ -64,10 +64,14 @@ jobs:
 
       - name: Call Composite Action app-version
         uses: ./.github/actions/app-version
+        if: success()
         id: app-version-step
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Call Composite Action build-test
         uses: ./.github/actions/build-test
+        if: success()
         id: build-test-step
+        with:
+          application-version: ${{ steps.app-version-step.outputs.application-version }}

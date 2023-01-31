@@ -15,6 +15,10 @@ inputs:
   reports-output-path:
     description: "reports-output-path"
     required: true
+  # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
+  token:
+    description: 'A Github PAT'
+    required: true
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
 runs:
@@ -93,3 +97,11 @@ runs:
       shell: bash
       if: success()
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+    # merging all coverage in a single coverage file and generating html files for downloading as artifacts
+    - name: Publish coverage report to coveralls.io
+      if: success()
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ inputs.token }}
+        path-to-lcov: "output/test-results/lcov.info"

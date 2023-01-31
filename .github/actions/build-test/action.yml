@@ -9,9 +9,6 @@ description: "Builds and tests without pushing"
 # Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
 inputs:
-  application-version:
-    description: "The application version"
-    required: true
   project-path:
     description: "Path to project to test e.g. Services/Catalog/Catalog.API"
     required: true
@@ -34,6 +31,10 @@ inputs:
     required: true
   reports-output-path:
     description: "Test report output path"
+    required: true
+  # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
+  token:
+    description: 'A Github PAT'
     required: true
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
@@ -102,3 +103,4 @@ runs:
         # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
         reports-path: ${{ inputs.reports-path }}
         reports-output-path: ${{ inputs.reports-output-path }}
+        token: ${{ inputs.token }}

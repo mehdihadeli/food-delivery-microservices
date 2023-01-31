@@ -23,15 +23,6 @@ jobs:
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
     continue-on-error: false
 
-    # https://docs.github.com/en/actions/learn-github-actions/variables#defining-environment-variables-for-a-single-workflow
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#limitations
-    # https://docs.github.com/en/actions/learn-github-actions/variables
-    # Any environment variables set in an env context defined at the workflow level in the caller workflow are not propagated to the called workflow
-    env:
-      REGISTRY: ghcr.io
-      CATALOG_SVC_PATH: ${{ github.workspace }}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
-      CUSTOMERS_SVC_PATH: ${{ github.workspace }}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
-      IDENTITY_SVC_PATH: ${{ github.workspace }}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
 
       # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
     environment:
@@ -75,15 +66,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-
-    - name: Cache NuGet Packages
-      uses: actions/cache@v3
-      with:
-        key: ${{ runner.os }}-dotnet-nuget
-        path: ~/.nuget/packages
-
     - name: create output dir
       run: mkdir  "output"
 
@@ -106,77 +88,8 @@ jobs:
       if: success()
       run: ls -R ${{ github.workspace }}/output
 
-    # merging all coverage in a single coverage file and generating html files for downloading as artifacts
-    - name: Publish coverage report to coveralls.io
-      if: success()
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: "output/test-results/lcov.info"
+    - name: Deploy To Azure App Service
+      run: echo "TODO"
 
-    - name: Restore NuGet packages
-      if: success()
-      run: dotnet restore
-
-    # https://garywoodfine.com/how-to-use-github-actions-to-build-deploy-github-nuget-packages/
-    # https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/docker/building-net-docker-images?view=aspnetcore-7.0#the-dockerfile
-    # or calling dotnet publish on solution - we marked `publishable` and `packable` projects in their .csproj
-    - name: dotnet publish
-      id: publish-services
-      if: success()
-      run: |
-        dotnet publish -c Release --no-restore  ${{ env.CATALOG_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Catalogs /p:Version=${{ inputs.release-version }} /p:InformationalVersion=${{ inputs.release-version }} /p:ApplicationVersion=${{ inputs.release-version }}
-        dotnet publish -c Release --no-restore  ${{ env.CUSTOMERS_SVC_PATH }}  -o ${{ github.workspace }}/output/publish-services/Customers /p:Version=${{ inputs.release-version }} /p:InformationalVersion=${{ inputs.release-version }} /p:ApplicationVersion=${{ inputs.release-version }}
-        dotnet publish -c Release --no-restore  ${{ env.IDENTITY_SVC_PATH }} -o ${{ github.workspace }}/output/publish-services/Identity /p:Version=${{ inputs.release-version }} /p:InformationalVersion=${{ inputs.release-version }} /p:ApplicationVersion=${{ inputs.release-version }}
-
-      # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
-      # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
-      # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
-      # note: we should zip inner (publish-services) folder and for doing this we use  `cd output` first then zip
-      # `publish-services/*` folder, otherwise with zip `output/publish-services` it zip output folder and inner `publish-services`folder together
-    - name: Zip publish-services Artifacts
-      if: success()
-      run: |
-        cd output
-        zip -r publish-services.zip publish-services/*
-
-      # https://github.com/actions/runner/issues/946#issuecomment-900193569
-      # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
-    - name: Ls Output Files
-      if: success()
-      run: ls -R
-      working-directory: ${{ github.workspace }}/output
-
-    - name: Upload Publish Services Artifacts For Deployment Jobs
-      uses: actions/upload-artifact@v3
-      if: (steps.publish-services.outcome == 'success')
-      with:
-        name: publish-services
-        retention-days: 1
-        path: |
-          output/publish-services.zip
-
-      # https://docs.docker.com/engine/reference/commandline/build/
-      # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
-      # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-    -  name: docker build
-       if: success()
-       run: |
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ inputs.release-version }}  -f "${{ github.workspace }}/src/Services/Catalogs/Dockerfile"
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ inputs.release-version }} -f "${{ github.workspace }}/src/Services/Customers/Dockerfile"
-         docker build . --tag  ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ inputs.release-version }}  -f "${{ github.workspace }}/src/Services/Identity/Dockerfile"
-
-    - name: 'Login to GitHub Container Registry'
-      uses: docker/login-action@v1
-      if: success()
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: docker publish
-      if: success()
-      run: |
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/catalogs-service:${{ inputs.release-version }}
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/customers-service:${{ inputs.release-version }}
-        docker push   ${{ env.REGISTRY }}/${{ github.repository }}/identity-service:${{ inputs.release-version }}
+    - name: Deploy Helms to AKS
+      run: echo "TODO"

@@ -1,0 +1,99 @@
+# https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
+# https://doug.sh/posts/using-composite-actions-with-github-actions/
+# https://wallis.dev/blog/composite-github-actions
+
+name: "Generate Tests Report"
+description: "Generating tests reports for our application "
+
+# Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+inputs:
+  catalogs-docker-file-path:
+    description: "Catalogs service docker file path"
+    required: true
+  customers-docker-file-path:
+    description: "Customers service docker file path"
+    required: true
+  identity-docker-file-path:
+    description: "Identity service docker file path"
+    required: true
+  registry:
+    description: "Docker registry to push"
+    required: true
+    default: "ghcr.io"
+  registry-endpoint:
+    description: "Image registry repo e.g. username/ecommerce-microservices"
+    required: true
+  registry-username:
+    description: "Registry username"
+    required: true
+  registry-password:
+    description: "Registry password"
+    required: true
+  application-version:
+    description: "Application version"
+    required: true
+  catalogs-image:
+    description: "Catalogs image name"
+    required: true
+  identity-image:
+    description: "Identity image name"
+    required: true
+  customers-image:
+    description: "Customers image name"
+    required: true
+
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
+runs:
+  using: "composite"
+  steps:
+
+    - name: Info
+      shell: bash
+      run: |
+           echo actor is: "${{ github.actor }}"
+           echo registry is: "${{ inputs.registry }}"
+
+    - name: Check Inputs
+      shell: bash
+      run: |
+        if [ -z ${{ inputs.application-version }} ]
+           then echo "application-version is empty, action cancelled..."
+                exit 1
+        fi
+
+    - name: Set branch name as env variable
+      shell: bash
+      run: |
+        currentbranch=$(echo ${GITHUB_REF##*/})
+        echo "running on $currentbranch"
+        echo "BRANCH=$currentbranch" >> $GITHUB_ENV
+
+    # https://docs.docker.com/engine/reference/commandline/build/
+    # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    - name: docker build
+      shell: bash
+      if: success()
+      run: |
+        docker build . --tag  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.catalogs-image }}:${{ inputs.release-version }}  -f "${{ inputs.catalogs-docker-file-path }}"
+        docker build . --tag  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.customers-image }}:${{ inputs.release-version }} -f "${{ inputs.customers-docker-file-path }}"
+        docker build . --tag  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.identity-image }}:${{inputs.release-version }}  -f "${{ inputs.identity-docker-file-path }}"
+
+    - name: 'Login to GitHub Container Registry'
+      uses: docker/login-action@v1
+      if: success()
+      with:
+        registry: ${{ inputs.registry }}
+        username: ${{ inputs.registry-username }}
+        password: ${{ inputs.registry-password }}
+
+    - name: docker publish
+      shell: bash
+      if: success()
+      run: |
+        docker push   ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.catalogs-image }}:${{ inputs.application-version }}
+        docker push   ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.identity-image }}:${{ inputs.application-version }}
+        docker push   ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.customers-image }}:${{ inputs.application-version }}
+

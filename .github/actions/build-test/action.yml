@@ -30,10 +30,10 @@ inputs:
     description: "Exclude projects for generating coverage"
     required: true
   reports-path:
-    description: "Test report path e.g /**/*.cobertura.xml"
+    description: "Test report path"
     required: true
   reports-output-path:
-    description: "Test report output path e.g /output/test-results"
+    description: "Test report output path"
     required: true
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions

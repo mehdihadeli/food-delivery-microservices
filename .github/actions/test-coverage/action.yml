@@ -21,9 +21,9 @@ runs:
   using: "composite"
   steps:
 
-      - name: Report Info
-        shell: bash
-        run: |
+     - name: Report Info
+       shell: bash
+       run: |
             echo "report-path is: ${{ inputs.reports-path }}"
             echo "report-path is: ${{ inputs.reports-output-path }}"
       # https://github.com/danielpalme/ReportGenerator

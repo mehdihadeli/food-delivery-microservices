@@ -175,11 +175,11 @@ jobs:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
     secrets: inherit
     with:
-      tests-path: ${{ env.TESTS_PATH }}
-      coverage-exclude: ${{ env.EXCLUDE_COVERAGE }}
-      unit-test-filter: ${{ env.UNIT_TESTS_FILTER }}
-      integration-test-filter: ${{ env.INTEGRATION_TESTS_FILTER }}
-      project-path: ${{ env.PROJECT_PATH }}
+      tests-path: ${{ github.workspace }}
+      coverage-exclude: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
+      unit-test-filter: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services.Catalogs)"
+      integration-test-filter: "((Category=Integration&FullyQualifiedName~IntegrationTests)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)) & FullyQualifiedName~ECommerce.Services.Catalogs"
+      project-path: ${{ github.workspace }}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
 
 #  # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
 #  call-release:

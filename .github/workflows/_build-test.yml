@@ -9,18 +9,23 @@ on:
       tests-path:
         description: "Tests path"
         required: true
+        type: string
       coverage-exclude:
         description: "Coverage exclude filter"
         required: true
+        type: string
       unit-test-filter:
         description: "Unit tests filter"
         required: true
+        type: string
       integration-test-filter:
         description: "Integration tests filter"
         required: true
+        type: string
       project-path:
         description: "Project path"
         required: true
+        type: string
 
 jobs:
   build-test-push:

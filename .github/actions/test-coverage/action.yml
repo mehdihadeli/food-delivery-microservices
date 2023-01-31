@@ -29,7 +29,7 @@ runs:
     # https://stackoverflow.com/questions/57850553/github-actions-check-steps-status
     # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#steps-context
     - name: Generate Report
-      uses: danielpalme/ReportGenerator-GitHub-Action
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.1.15
       id: generate-report
       with:
         reports: "${{ inputs.reports-path }}"

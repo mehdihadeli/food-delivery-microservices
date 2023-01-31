@@ -64,12 +64,12 @@ runs:
     - name: Restore NuGet packages
       shell: bash
       if: success()
-      run: dotnet restore ${{  inputs.project-path }}
+      run: dotnet restore
 
     - name: Build
       shell: bash
       if: success()
-      run: dotnet build  ${{ inputs.project-path }} -c Release --no-restore
+      run: dotnet build  "${{ inputs.project-path }}" -c Release --no-restore
 
     # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
     # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
@@ -83,7 +83,7 @@ runs:
       id: unit-tests
       shell: bash
       if: success()
-      run: dotnet test ${{ inputs.project-path }} -c Release --no-build --no-restore -v=normal --filter "${{ inputs.unit-test-filter }}" /p:Exclude="${{ inputs.exclude-coverage }}"
+      run: dotnet test "${{ inputs.project-path }}" -c Release --no-build --no-restore -v=normal --filter "${{ inputs.unit-test-filter }}" /p:Exclude="${{ inputs.exclude-coverage }}"
            /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
 
 #    - name: Run Integration And EndToEnd Tests with Coverage

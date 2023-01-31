@@ -80,6 +80,7 @@ jobs:
         run: ls -R ${{ github.workspace }}/output
 
       - name: Call Composite Action release-note
+        uses: ./.github/actions/release-note
         id: release-note-step
         with:
           token:  ${{ secrets.GITHUB_TOKEN }}

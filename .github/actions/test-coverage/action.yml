@@ -21,26 +21,20 @@ runs:
   using: "composite"
   steps:
 
-     - name: Report Info
-       shell: bash
-       run: |
-            echo "report-path is: ${{ inputs.reports-path }}"
-            echo "report-path is: ${{ inputs.reports-output-path }}"
-      # https://github.com/danielpalme/ReportGenerator
-      # https://github.com/danielpalme/ReportGenerator-GitHub-Action
-      # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
-      # https://dotnetthoughts.net/generating-code-coverage-reports-in-dotnet-core/
-      # https://docs.github.com/en/actions/learn-github-actions/expressions
-      # https://stackoverflow.com/questions/57850553/github-actions-check-steps-status
-      # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#steps-context
+    # https://github.com/danielpalme/ReportGenerator
+    # https://github.com/danielpalme/ReportGenerator-GitHub-Action
+    # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+    # https://dotnetthoughts.net/generating-code-coverage-reports-in-dotnet-core/
+    # https://docs.github.com/en/actions/learn-github-actions/expressions
+    # https://stackoverflow.com/questions/57850553/github-actions-check-steps-status
+    # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#steps-context
     - name: Generate Report
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.1.13
+      uses: danielpalme/ReportGenerator-GitHub-Action
       id: generate-report
-      # if: (steps.unit-tests.outcome == 'success' && steps.integration-tests.outcome == 'success')
       with:
-        reports: ${{ inputs.reports-path }}
-        targetdir: ${{ inputs.reports-output-path }}
-        reporttypes: 'Cobertura;lcov;MarkdownSummaryGithub;Html'
+        reports: "${{ inputs.reports-path }}"
+        targetdir: "${{ inputs.reports-output-path }}"
+        reporttypes: "Cobertura;lcov;MarkdownSummaryGithub;Html"
 
       # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
       # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/

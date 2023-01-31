@@ -6,7 +6,6 @@
 name: "Generate Tests Report"
 description: "Generating tests reports for our application "
 
-
 # Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
 inputs:

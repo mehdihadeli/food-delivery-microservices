@@ -118,79 +118,74 @@ jobs:
             echo "environment-name=develop" >> "$GITHUB_OUTPUT"
         fi
 
-    - name: test
-      run: |
-        echo "is pull request: ${{ github.event_name == 'pull_request' }}"
-        echo ( ${{ success() }} && ${{ github.event_name == 'pull_request' }})
-
     - name: Echo Information
       if: success()
       run: |
         echo "I'm using environment: ${{ steps.branch_check.outputs.environment-name }}"
         echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
         echo "is push event? ${{ github.event_name == 'push' }}"
-#
-#  call-build-test:
-#    needs: pre-check
-#    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-#    permissions:
-#      contents: write #  to be able to commit application version
-#
-#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
-#    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-#    uses: ./.github/workflows/_build-test.yml
-#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
-#    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
-#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
-#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
-#    secrets: inherit
-#    with:
-#      environment-name: ${{ needs.pre-check.outputs.environment-name }}
-#
-#  # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
-#  call-release:
-#    needs: [pre-check, call-build-test]
-#    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-release )))
-#
-#    permissions:
-#      contents: write #  to be able to publish a GitHub release
-#      issues: write #  to be able to comment on released issues
-#      pull-requests: write #  to be able to comment on released pull requests
-#
-#    uses: ./.github/workflows/_release.yml
-#    secrets: inherit
-#
-#  # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
-#  # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
-#  # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
-#  # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
-#  # https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
-#  # https://www.codewrecks.com/post/github/choose-environment-from-branch/
-#  # https://colinsalmcorner.com/musings-on-reusable-workflows/
-#  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
-#  # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
-#  call-publish:
-#    needs: [pre-check, call-build-test, call-release]
-#
-#    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish )))
-#
-#    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
-#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
-#    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-#    permissions:
-#      contents: write #  to be able to publish a GitHub release
-#      packages: write # for publishing packages
-#
-#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
-#    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-#    uses: ./.github/workflows/_deploy.yml
-#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
-#    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
-#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
-#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
-#    secrets: inherit
-#    with:
-#      environment-name: ${{ needs.pre-check.outputs.environment-name }}
-#      release-version: ${{ needs.call-release.outputs.release-version }}
-#
+
+  call-build-test:
+    needs: pre-check
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    permissions:
+      contents: write #  to be able to commit application version
+
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
+    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
+    uses: ./.github/workflows/_build-test.yml
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
+    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
+    secrets: inherit
+    with:
+      environment-name: ${{ needs.pre-check.outputs.environment-name }}
+
+  # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
+  call-release:
+    needs: [pre-check, call-build-test]
+    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-release )))
+
+    permissions:
+      contents: write #  to be able to publish a GitHub release
+      issues: write #  to be able to comment on released issues
+      pull-requests: write #  to be able to comment on released pull requests
+
+    uses: ./.github/workflows/_release.yml
+    secrets: inherit
+
+  # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
+  # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+  # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
+  # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
+  # https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
+  # https://www.codewrecks.com/post/github/choose-environment-from-branch/
+  # https://colinsalmcorner.com/musings-on-reusable-workflows/
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+  # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
+  call-publish:
+    needs: [pre-check, call-build-test, call-release]
+
+    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.actor != 'dependabot[bot]' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish )))
+
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    permissions:
+      contents: write #  to be able to publish a GitHub release
+      packages: write # for publishing packages
+
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
+    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
+    uses: ./.github/workflows/_deploy.yml
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
+    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
+    secrets: inherit
+    with:
+      environment-name: ${{ needs.pre-check.outputs.environment-name }}
+      release-version: ${{ needs.call-release.outputs.release-version }}
+

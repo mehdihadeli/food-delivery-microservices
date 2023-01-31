@@ -32,8 +32,8 @@ runs:
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.15
       id: generate-report
       with:
-        reports: "${{ inputs.reports-path }}"
-        targetdir: "${{ inputs.reports-output-path }}"
+        reports: ${{ inputs.reports-path }}
+        targetdir: ${{ inputs.reports-output-path }}
         reporttypes: "Cobertura;lcov;MarkdownSummaryGithub;Html"
 #
 #      # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory

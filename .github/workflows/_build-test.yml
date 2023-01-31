@@ -62,51 +62,43 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Call Composite Action app-version
-        uses: ./.github/actions/app-version
-        if: ${{ github.event_name != 'pull_request' && success() }}
-        id: app-version-step
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Generate Report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.15
-        id: generate-report
-        with:
-          reports: ${{ github.workspace }}/**/*.cobertura.xml
-          targetdir: ${{ github.workspace }}/output/test-results
-          reporttypes: "Cobertura;lcov;MarkdownSummaryGithub;Html"
-
-#      - name: Call Composite Action build-test
-#        uses: ./.github/actions/build-test
-#        if: ${{ github.event_name == 'pull_request' && success() }}
-#        id: build-test-step
-#        with:
-#          application-version: ""
-#          project-path: "ecommerce.sln"
-#          tests-path: "ecommerce.sln"
-#          unit-test-filter: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
-#          integration-test-filter: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
-#          exclude-coverage: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
-#          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
-#          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
-#          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-#          reports-path: "${{ github.workspace }}/**/*.cobertura.xml"
-#          reports-output-path: "${{ github.workspace }}/output/test-results"
-#
-#      - name: Call Composite Action build-test-push
-#        uses: ./.github/actions/build-test-push
+#      - name: Call Composite Action app-version
+#        uses: ./.github/actions/app-version
 #        if: ${{ github.event_name != 'pull_request' && success() }}
-#        id: build-test-push-step
+#        id: app-version-step
 #        with:
-#          application-version: ${{ steps.app-version-step.outputs.application-version }}
-#          project-path: "ecommerce.sln"
-#          tests-path: "ecommerce.sln"
-#          unit-test-filter: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
-#          integration-test-filter: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
-#          exclude-coverage: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
-#          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
-#          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
-#          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-#          reports-path: "${{ github.workspace }}/**/*.cobertura.xml"
-#          reports-output-path: "${{ github.workspace }}/output/test-results"
+#          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Call Composite Action build-test
+        uses: ./.github/actions/build-test
+        if: ${{ github.event_name == 'pull_request' && success() }}
+        id: build-test-step
+        with:
+          application-version: ""
+          project-path: "ecommerce.sln"
+          tests-path: "ecommerce.sln"
+          unit-test-filter: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
+          integration-test-filter: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
+          exclude-coverage: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
+          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
+          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+          reports-path: "${{ github.workspace }}/**/*.cobertura.xml"
+          reports-output-path: "${{ github.workspace }}/output/test-results"
+
+      - name: Call Composite Action build-test-push
+        uses: ./.github/actions/build-test-push
+        if: ${{ github.event_name != 'pull_request' && success() }}
+        id: build-test-push-step
+        with:
+          application-version: ${{ steps.app-version-step.outputs.application-version }}
+          project-path: "ecommerce.sln"
+          tests-path: "ecommerce.sln"
+          unit-test-filter: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
+          integration-test-filter: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
+          exclude-coverage: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
+          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
+          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+          reports-path: "${{ github.workspace }}/**/*.cobertura.xml"
+          reports-output-path: "${{ github.workspace }}/output/test-results"

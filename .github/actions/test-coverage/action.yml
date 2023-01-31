@@ -21,6 +21,12 @@ inputs:
 runs:
   using: "composite"
   steps:
+
+      - name: Report Info
+        shell: bash
+        run: |
+            echo "report-path is: ${{ inputs.reports-path }}"
+            echo "report-path is: ${{ inputs.reports-output-path }}"
       # https://github.com/danielpalme/ReportGenerator
       # https://github.com/danielpalme/ReportGenerator-GitHub-Action
       # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/

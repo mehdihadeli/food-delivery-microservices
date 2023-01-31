@@ -17,6 +17,7 @@ updates:
       - "dependabot"
       - "dependencies"
     # Allow up to 10 open pull requests for pip dependencies
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     # By default, Dependabot checks for manifest files on the default branch and raises pull requests for version updates against this branch. Use target-branch to specify a different branch
     target-branch: "develop"
+

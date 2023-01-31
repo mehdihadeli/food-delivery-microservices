@@ -83,8 +83,8 @@ jobs:
           # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
           # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
           # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-          reports-path: "${{ github.workspace }}/**/*.cobertura.xml"
-          reports-output-path: "${{ github.workspace }}/output/test-results"
+          reports-path: ${{ github.workspace }}/**/*.cobertura.xml
+          reports-output-path: ${{ github.workspace }}/output/test-results
 
       - name: Call Composite Action build-test-push
         uses: ./.github/actions/build-test-push
@@ -100,5 +100,5 @@ jobs:
           # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
           # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
           # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-          reports-path: "${{ github.workspace }}/**/*.cobertura.xml"
-          reports-output-path: "${{ github.workspace }}/output/test-results"
+          reports-path: ${{ github.workspace }}/**/*.cobertura.xml
+          reports-output-path: ${{ github.workspace }}/output/test-results

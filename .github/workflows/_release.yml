@@ -79,38 +79,12 @@ jobs:
         if: success()
         run: ls -R ${{ github.workspace }}/output
 
-      # https://thecodinganalyst.github.io/knowledgebase/Basic-guide-to-Semantic-Release/
-      # https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b
-      # https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
-      # https://github.com/semantic-release/semantic-release/issues/753#issuecomment-706971174
-      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
-      - name: Semantic Release Publish
-        id: semantic
-        if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
-        # using dry-run here for preventing publish release note and just calculate version, for develop and devops/ci we don't want to publish release
-        run: |
-          echo "running semantic-release in release mode"
-          npx -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release
+      - name: Call Composite Action release-note
+        id: release-note-step
+        with:
+          token:  ${{ secrets.GITHUB_TOKEN }}
 
-        # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
-      - name: Semantic Release Outputs
-        run: |
-          if [ -z ${{ steps.semantic.outputs.semantic_nextrelease_version }} ]
-             then echo "semantic_nextrelease_version is empty, action cancelled..."
-                  exit 1
-          else
-              echo ${{ steps.semantic.outputs.semantic_nextrelease_version }}
-              echo ${{ steps.semantic.outputs.semantic_nextRelease_channel }}
-              echo ${{ steps.semantic.outputs.semantic_nextRelease_gitTag }}
-              echo ${{ steps.semantic.outputs.semantic_lastrelease_version }}
-              echo ${{ steps.semantic.outputs.semantic_lastRelease_channel }}
-              echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
-          fi
-
-        # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
+          # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
         # This back-merge may failed because of complexity some merge we should continue next step with using if: always()
         # https://github.com/orgs/community/discussions/26560
       - name: Back Merge Release

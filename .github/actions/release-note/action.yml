@@ -1,0 +1,53 @@
+# https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
+# https://doug.sh/posts/using-composite-actions-with-github-actions/
+# https://wallis.dev/blog/composite-github-actions
+
+name: "Generate Release Note"
+description: "Generating release note for our application "
+
+# Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+inputs:
+  # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
+  token:
+    description: 'A Github PAT'
+    required: true
+
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
+runs:
+  using: "composite"
+  steps:
+
+    # https://thecodinganalyst.github.io/knowledgebase/Basic-guide-to-Semantic-Release/
+    # https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b
+    # https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
+    # https://github.com/semantic-release/semantic-release/issues/753#issuecomment-706971174
+    # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
+    - name: Semantic Release Publish
+      id: semantic
+      shell: bash
+      if: success()
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
+      # using dry-run here for preventing publish release note and just calculate version, for develop and devops/ci we don't want to publish release
+      run: |
+        echo "running semantic-release in release mode"
+        npx -p conventional-changelog-conventionalcommits -p @semantic-release/git -p @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release
+
+      # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
+    - name: Semantic Release Outputs
+      shell: bash
+      run: |
+        if [ -z ${{ steps.semantic.outputs.semantic_nextrelease_version }} ]
+           then echo "semantic_nextrelease_version is empty, action cancelled..."
+                exit 1
+        else
+            echo ${{ steps.semantic.outputs.semantic_nextrelease_version }}
+            echo ${{ steps.semantic.outputs.semantic_nextRelease_channel }}
+            echo ${{ steps.semantic.outputs.semantic_nextRelease_gitTag }}
+            echo ${{ steps.semantic.outputs.semantic_lastrelease_version }}
+            echo ${{ steps.semantic.outputs.semantic_lastRelease_channel }}
+            echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
+        fi

@@ -87,8 +87,9 @@ runs:
       if: success()
       run: |
         cd ${{ inputs.tests-path }}
-        find . -name "*.csproj" -type f | while read file; do
-          dotnet test -c Release --no-build --no-restore -v=normal --filter "${{ inputs.unit-test-filter }}" /p:Exclude="${{ inputs.exclude-coverage }}" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
+        for file in $(find . -name "*.csproj" -type f); do
+          echo "Testing $file"
+          dotnet test "$file" -c Release --no-build --no-restore --filter "${{ inputs.unit-test-filter }}" //p:Exclude="${{ inputs.exclude-coverage }}" //p:CollectCoverage=true //p:CoverletOutputFormat=cobertura%2clcov //p:SkipAutoProps=true
         done
 
 ##    - name: Run Integration And EndToEnd Tests with Coverage

@@ -48,7 +48,7 @@ jobs:
       - name: Job Info
         run: |
           echo "build-test reusable workflow"
-          echo workspace is: ${{ github.workspace }}
+          echo "workspace is: ${{ github.workspace }}"
           echo "job name is: ${{ github.job }}"
           echo "branch name is: ${{ github.ref_name }}"
           echo "project-path is: ${{ inputs.project-path }}"

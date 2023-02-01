@@ -172,7 +172,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\_deploy.yml = .github\workflows\_deploy.yml
 		.github\workflows\_release.yml = .github\workflows\_release.yml
 		.github\workflows\catalogs.yml = .github\workflows\catalogs.yml
-		.github\workflows\build-test-push.yml = .github\workflows\build-test-push.yml
+		.github\workflows\_build-test-push.yml = .github\workflows\_build-test-push.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{93409B05-C828-4815-9684-FD3E7E248A3F}"

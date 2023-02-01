@@ -49,6 +49,11 @@ jobs:
         run: |
           echo "job name is: ${{ github.job }}"
           echo "branch name is: ${{ github.ref_name }}"
+          echo "workspace is: ${{ github.workspace }}"
+          echo "job name is: ${{ github.job }}"
+          echo "branch name is: ${{ github.ref_name }}"
+          echo "project-path is: ${{ inputs.project-path }}"
+          echo "tests-path is: ${{ inputs.tests-path }}"
 
       - name: Check Inputs
         run: |

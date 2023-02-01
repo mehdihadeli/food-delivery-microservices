@@ -2,6 +2,7 @@ name: Reusable Release Workflow
 
 on:
   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_call
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
   # https://stackoverflow.com/questions/73702333/github-actions-reuse-outputs-from-other-reusable-workflows
   # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-outputs-from-a-reusable-workflow
   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputsinput_idtype

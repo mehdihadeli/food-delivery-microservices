@@ -2,6 +2,7 @@ name: Reusable Build-Test-Push Workflow
 
 on:
   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputsinput_idtype
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_call
   # https://docs.github.com/en/actions/using-workflows/reusing-workflows
   workflow_call:

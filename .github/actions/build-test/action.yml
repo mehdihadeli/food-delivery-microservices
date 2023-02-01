@@ -85,28 +85,33 @@ runs:
       id: unit-tests
       shell: bash
       if: success()
+      # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
       run: |
         cd ${{ inputs.tests-path }}
         for file in $(find . -name "*.csproj" -type f); do
           echo "Testing $file"
-          dotnet test "$file" -p:Exclude="${{ inputs.exclude-coverage }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}"
+          dotnet test "$file" -c Release --no-build --no-restore -p:Exclude="${{ inputs.exclude-coverage }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}"
         done
 
-##    - name: Run Integration And EndToEnd Tests with Coverage
-##      continue-on-error: false
-##      id: integration-tests
-##      if: success()
-##      shell: bash
-##      run: dotnet test -c Release --no-build --no-restore --filter "${{ inputs.integration-test-filter }}" /p:Exclude="${{ inputs.exclude-coverage }}"
-##           /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
-#
-#    - name: Call Composite Action test-coverage
-#      uses: ./.github/actions/test-coverage
-#      id: test-coverage-step
-#      with:
-#        # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
-#        # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
-#        # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-#        reports-path: ${{ inputs.reports-path }}
-#        reports-output-path: ${{ inputs.reports-output-path }}
-#        token: ${{ inputs.token }}
+    - name: Run Integration And EndToEnd Tests with Coverage
+      continue-on-error: false
+      id: integration-tests
+      if: success()
+      shell: bash
+      run: |
+        cd ${{ inputs.tests-path }}
+        for file in $(find . -name "*.csproj" -type f); do
+          echo "Testing $file"
+          dotnet test "$file" -c Release --no-build --no-restore -p:Exclude="${{ inputs.exclude-coverage }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}"
+        done
+
+    - name: Call Composite Action test-coverage
+      uses: ./.github/actions/test-coverage
+      id: test-coverage-step
+      with:
+        # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
+        # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+        # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+        reports-path: ${{ inputs.reports-path }}
+        reports-output-path: ${{ inputs.reports-output-path }}
+        token: ${{ inputs.token }}

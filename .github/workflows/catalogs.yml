@@ -130,7 +130,9 @@ jobs:
 
     steps:
       - name: echo
-        run: echo "pre-check is successful."
+        run: | 
+            echo "pre-check is successful."
+            echo workspace is :${{ github.workspace }}
 
       # https://www.codewrecks.com/post/github/choose-environment-from-branch/
       # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch

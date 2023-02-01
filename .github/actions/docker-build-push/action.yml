@@ -9,18 +9,14 @@ description: "Generating tests reports for our application "
 # Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
 inputs:
-  catalogs-docker-file-path:
-    description: "Catalogs service docker file path"
+  application-version:
+    description: "Application version"
     required: true
-  customers-docker-file-path:
-    description: "Customers service docker file path"
-    required: true
-  identity-docker-file-path:
-    description: "Identity service docker file path"
+  docker-file-path:
+    description: "Docker file path"
     required: true
   registry:
     description: "Docker registry to push"
-    required: true
     default: "ghcr.io"
   registry-endpoint:
     description: "Image registry repo e.g. username/ecommerce-microservices"
@@ -31,17 +27,8 @@ inputs:
   registry-password:
     description: "Registry password"
     required: true
-  application-version:
-    description: "Application version"
-    required: true
-  catalogs-image:
-    description: "Catalogs image name"
-    required: true
-  identity-image:
-    description: "Identity image name"
-    required: true
-  customers-image:
-    description: "Customers image name"
+  service-name:
+    description: "Service name"
     required: true
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
@@ -54,6 +41,9 @@ runs:
       run: |
            echo actor is: "${{ github.actor }}"
            echo registry is: "${{ inputs.registry }}"
+           echo docker-file-path is: "${{ inputs.docker-file-path }}"
+           echo service-name is: "${{ inputs.service-name }}"
+           echo application-version is: "${{ inputs.application-version }}"
 
     - name: Check Inputs
       shell: bash
@@ -77,9 +67,7 @@ runs:
       shell: bash
       if: success()
       run: |
-        docker build . --tag  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.catalogs-image }}:${{ inputs.release-version }}  -f "${{ inputs.catalogs-docker-file-path }}"
-        docker build . --tag  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.customers-image }}:${{ inputs.release-version }} -f "${{ inputs.customers-docker-file-path }}"
-        docker build . --tag  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.identity-image }}:${{inputs.release-version }}  -f "${{ inputs.identity-docker-file-path }}"
+        docker build . --tag  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}  -f "${{ inputs.docker-file-path }}"
 
     - name: 'Login to GitHub Container Registry'
       uses: docker/login-action@v1
@@ -93,7 +81,5 @@ runs:
       shell: bash
       if: success()
       run: |
-        docker push   ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.catalogs-image }}:${{ inputs.application-version }}
-        docker push   ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.identity-image }}:${{ inputs.application-version }}
-        docker push   ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.customers-image }}:${{ inputs.application-version }}
+        docker push   ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}
 

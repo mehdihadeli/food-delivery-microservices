@@ -1,4 +1,4 @@
-name: Reusable Build-Test-Push Workflow
+name: Reusable Build Workflow
 
 on:
   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputsinput_idtype
@@ -7,26 +7,32 @@ on:
   # https://docs.github.com/en/actions/using-workflows/reusing-workflows
   workflow_call:
     inputs:
-      environment-name:
-        type: string
-        description: environment to deploy to
-        required: true
-      catalogs-service-path:
-        description: "Catalogs service path"
-        required: true
       tests-path:
         description: "Tests path"
         required: true
+        type: string
+      coverage-exclude:
+        description: "Coverage exclude filter"
+        default: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
+        type: string
+      unit-test-filter:
+        description: "Unit tests filter"
+        default: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
+        type: string
+      integration-test-filter:
+        description: "Integration tests filter"
+        default: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
+        type: string
       project-path:
         description: "Project path"
+        required: true
+        type: string
+      service-name:
+        description: "Service name"
         required: true
       docker-file-path:
         description: "Docker file path"
         required: true
-      registry:
-        description: "Docker registry to push"
-        required: true
-        default: "ghcr.io"
 
 jobs:
   build-test-push:
@@ -57,13 +63,6 @@ jobs:
           echo "project-path is: ${{ inputs.project-path }}"
           echo "tests-path is: ${{ inputs.tests-path }}"
 
-      - name: Check Inputs
-        run: |
-          if [ -z ${{ inputs.environment-name }} ]
-             then echo "environment-name is empty, action cancelled..."
-                  exit 1
-          fi
-
         # https://github.com/cycjimmy/semantic-release-action/issues/6
         # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
         # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
@@ -84,24 +83,16 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Call Composite Action app-version
-        uses: ./.github/actions/app-version
-        if: ${{ github.event_name != 'pull_request' && success() }}
-        id: app-version-step
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Call Composite Action build-test
         uses: ./.github/actions/build-test
-        if: ${{ success() }}
+        if: success()
         id: build-test-step
         with:
-          application-version: ${{ steps.app-version-step.outputs.application-version }}
-          project-path: "ecommerce.sln"
-          tests-path: "ecommerce.sln"
-          unit-test-filter: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
-          integration-test-filter: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
-          exclude-coverage: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
+          project-path: ${{ inputs.project-path }}
+          tests-path: ${{ inputs.tests-path }}
+          unit-test-filter: ${{ inputs.unit-test-filter }}
+          integration-test-filter: ${{ inputs.integration-test-filter }}
+          exclude-coverage: ${{ inputs.coverage-exclude }}
           # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
           # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
           # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
@@ -109,29 +100,30 @@ jobs:
           reports-output-path: ${{ github.workspace }}/output/test-results
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Call Composite Action app-version
+        uses: ./.github/actions/app-version
+        if: success()
+        id: app-version-step
+
       - name: Call Composite Action publish
         uses: ./.github/actions/publish
-        if: ${{ github.event_name != 'pull_request' && success() }}
+        if:  success()
+        id: publish-step
         with:
-          application-version: ${{ steps.app-version-step.outputs.application-version }}
-          token: ${{ inputs.release-version }}
-          catalogs-service-path: ${{ inputs.catalogs-service-path}}
-          customers-service-path: ${{ inputs.customers-service-path }}
-          identity-service-path: ${{ inputs.identity-service-path }}
+          - application-version: ${{ steps.app-version-step.outputs.application-version }}
+            service-name: ${{ inputs.service-name }}
+            project-path: ${{ inputs.project-path }}
+            token: ${{ secrets.GITHUB_TOKEN }}
+            no-restore: true
 
       - name: Call Composite Action docker-build-push
         uses: ./.github/actions/docker-build-push
-        if: ${{ github.event_name != 'pull_request' && success() }}
+        if: success()
         id: docker-build-push-step
         with:
           application-version: ${{ steps.app-version-step.outputs.application-version }}
-          registry: ${{ inputs.registry }}
-          registry-username: ${{ github.actor }}
-          registry-password: ${{ secret.GITHUB_TOKEN }}
           registry-endpoint: ${{ github.repository }}
-          catalogs-image: "catalogs-service"
-          customers-image: "customers-service"
-          identity-image: "identity-service"
-          catalogs-docker-file-path: ${{ inputs.catalogs-docker-file-path }}
-          customers-docker-file-path: ${{ inputs.customers-docker-file-path }}
-          identity-docker-file-path: ${{ inputs.identity-docker-file-path }}
+          docker-file-path: ${{ inputs.docker-file-path }}
+          registry-username: ${{ github.actor }}
+          registry-password: ${{ secrets.GITHUB_TOKEN }}
+          service-name: ${{ inputs.service-name }}

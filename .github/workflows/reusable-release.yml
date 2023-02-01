@@ -59,7 +59,7 @@ jobs:
           node-version: 'lts/*'
 
       - name: create output dir
-        run: mkdir  "output"
+        run: mkdir -p "output"
 
         # https://github.com/actions/download-artifact#download-all-artifacts
         # download artifacts without name will download all artifacts

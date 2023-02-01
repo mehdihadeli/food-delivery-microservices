@@ -15,17 +15,17 @@ inputs:
   tests-path:
     description: "Path to test project e.g. Services/Catalog/Catalog.UnitTests"
     required: true
+  # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
+  coverage-exclude:
+    description: "Coverage exclude filter"
+    default: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
   # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
   unit-test-filter:
-    description: "Filter to finding unit tests"
-    required: true
+    description: "Unit tests filter"
+    default: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
   integration-test-filter:
-    description: "Filter to finding integration tests"
-    required: true
-  # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
-  exclude-coverage:
-    description: "Exclude projects for generating coverage"
-    required: true
+    description: "Integration tests filter"
+    default: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
   reports-path:
     description: "Test report path"
     required: true

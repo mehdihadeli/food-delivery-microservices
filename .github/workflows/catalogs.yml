@@ -97,16 +97,6 @@ on:
 env:
   IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
   BRANCH_NAME: ${{ github.ref_name }}
-  REGISTRY: ghcr.io
-  SERVICE: catalogs-service
-  IMAGE: catalogs-service
-  PROJECT_PATH: ${{ github.workspace }}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
-  DOCKER_PATH: ${{ github.workspace }}/src/Services/Catalogs/Dockerfile
-  TESTS_PATH: ${{ github.workspace }}
-  UNIT_TESTS_FILTER: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services.Catalogs)"
-  INTEGRATION_TESTS_FILTER: "((Category=Integration&FullyQualifiedName~IntegrationTests)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)) & FullyQualifiedName~ECommerce.Services.Catalogs"
-  EXCLUDE_COVERAGE: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
-
 
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
 concurrency:
@@ -162,11 +152,11 @@ jobs:
     permissions:
       contents: write #  to be able to commit application version
 
-    if: (github.event_name != 'pull_request')
+    if: (github.event_name == 'pull_request')
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-    uses: ./.github/workflows/_build-test.yml
+    uses: ./.github/workflows/reusable-build-test.yml
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
     # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
@@ -176,6 +166,29 @@ jobs:
       tests-path: "tests/Services/Catalogs"
       project-path: "src/Services/Catalogs/ECommerce.Services.Catalogs.Api"
 
+  call-build-test-push:
+    needs: pre-check
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    permissions:
+      contents: write #  to be able to commit application version
+
+    if: (github.event_name != 'pull_request')
+
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
+    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
+    uses: ./.github/workflows/reusable-build-test-push.yml
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
+    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
+    secrets: inherit
+    with:
+      tests-path: "tests/Services/Catalogs"
+      project-path: "src/Services/Catalogs/ECommerce.Services.Catalogs.Api"
+      service-name: "catalogs-service"
+      docker-file-path: "src/Services/Catalogs/Dockerfile"
+
+#  # typically release notes are published as part of the Continuous Deployment (CD) process, after the software has been built, tested, and deployed to production
 #  # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
 #  call-release:
 #    needs: [pre-check, call-build-test]

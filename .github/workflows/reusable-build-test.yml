@@ -79,7 +79,7 @@ jobs:
 
       - name: Call Composite Action build-test
         uses: ./.github/actions/build-test
-        if: ${{ success() }}
+        if: success()
         id: build-test-step
         with:
           project-path: ${{ inputs.project-path }}
@@ -95,6 +95,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Call Composite Action publish
-          uses: ./.github/actions/publish
-          if: ${{ success() }}
-          id: publish-step
+        uses: ./.github/actions/publish
+        if: success()
+        id: publish-step

@@ -130,9 +130,12 @@ jobs:
 
     steps:
       - name: echo
-        run: | 
+        run: |
             echo "pre-check is successful."
-            echo workspace is :${{ github.workspace }}
+            echo workspace is: ${{ github.workspace }}
+            echo "I'm using environment: ${{ steps.branch_check.outputs.environment-name }}"
+            echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
+            echo "is push event? ${{ github.event_name == 'push' }}"
 
       # https://www.codewrecks.com/post/github/choose-environment-from-branch/
       # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch
@@ -153,13 +156,6 @@ jobs:
               echo "environment-name=develop" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Echo Information
-        if: success()
-        run: |
-          echo "I'm using environment: ${{ steps.branch_check.outputs.environment-name }}"
-          echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
-          echo "is push event? ${{ github.event_name == 'push' }}"
-
   call-build-test:
     needs: pre-check
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
@@ -177,11 +173,11 @@ jobs:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
     secrets: inherit
     with:
-      tests-path: ${{ github.workspace }}
+      tests-path: "${{ github.workspace }}"
       coverage-exclude: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
       unit-test-filter: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services.Catalogs)"
       integration-test-filter: "((Category=Integration&FullyQualifiedName~IntegrationTests)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)) & FullyQualifiedName~ECommerce.Services.Catalogs"
-      project-path: ${{ github.workspace }}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
+      project-path: "${{ github.workspace }}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
 
 #  # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
 #  call-release:

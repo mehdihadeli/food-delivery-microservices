@@ -49,6 +49,7 @@ jobs:
         run: |
           echo "job name is: ${{ github.job }}"
           echo "branch name is: ${{ github.ref_name }}"
+          echo "actor is: ${{ github.actor }}"
           echo "workspace is: ${{ github.workspace }}"
           echo "job name is: ${{ github.job }}"
           echo "branch name is: ${{ github.ref_name }}"

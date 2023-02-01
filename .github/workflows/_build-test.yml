@@ -47,7 +47,9 @@ jobs:
         # https://docs.github.com/en/actions/learn-github-actions/variables#using-contexts-to-access-variable-values
       - name: Job Info
         run: |
-          echo "build-test reusable workflow"
+          echo "job name is: ${{ github.job }}"
+          echo "branch name is: ${{ github.ref_name }}"
+          echo "actor is: ${{ github.actor }}"
           echo "workspace is: ${{ github.workspace }}"
           echo "job name is: ${{ github.job }}"
           echo "branch name is: ${{ github.ref_name }}"

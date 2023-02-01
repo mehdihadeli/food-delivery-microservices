@@ -22,9 +22,9 @@ on:
       - tests/Services/Catalogs/**
       - .github/actions/**
       - .github/workflows/catalogs.yml
-      - .github/workflows/_build-test.yml
-      - .github/workflows/_release.yml
-      - .github/workflows/_deploy.yml
+      - .github/workflows/reusable-build-test.yml
+      - .github/workflows/reusable-release.yml
+      - .github/workflows/reusable-deploy.yml
       - src/Directory.Build.props
       - src/Directory.Packages.props
       - src/Packages.props
@@ -45,9 +45,9 @@ on:
       - tests/Services/Catalogs/**
       - .github/actions/**
       - .github/workflows/catalogs.yml
-      - .github/workflows/_build-test.yml
-      - .github/workflows/_release.yml
-      - .github/workflows/_deploy.yml
+      - .github/workflows/reusable-build-test.yml
+      - .github/workflows/reusable-release.yml
+      - .github/workflows/reusable-deploy.yml
       - src/Directory.Build.props
       - src/Directory.Packages.props
       - src/Packages.props

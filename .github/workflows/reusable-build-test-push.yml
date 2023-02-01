@@ -29,9 +29,11 @@ on:
         type: string
       service-name:
         description: "Service name"
+        type: string
         required: true
       docker-file-path:
         description: "Docker file path"
+        type: string
         required: true
 
 jobs:

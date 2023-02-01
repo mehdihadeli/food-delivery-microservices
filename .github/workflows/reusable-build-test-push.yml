@@ -112,7 +112,7 @@ jobs:
         if:  success()
         id: publish-step
         with:
-          - application-version: ${{ steps.app-version-step.outputs.application-version }}
+            application-version: ${{ steps.app-version-step.outputs.application-version }}
             service-name: ${{ inputs.service-name }}
             project-path: ${{ inputs.project-path }}
             token: ${{ secrets.GITHUB_TOKEN }}

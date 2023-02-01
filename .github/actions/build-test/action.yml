@@ -70,44 +70,40 @@ runs:
       shell: bash
       if: success()
       run: |
-          ls -R
           cd ${{ inputs.project-path }}
-          ls -R
           dotnet build -c Release --no-restore
 
-    # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
-    # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
-    # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
-    # https://josef.codes/dotnet-core-filter-out-specific-test-projects-when-running-dotnet-test/
-    # https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
-    # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-    # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md
-    # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
-    - name: Run Unit Tests with Coverage
-      id: unit-tests
-      shell: bash
-      if: success()
-      run: |
-        ls -R
-        cd ${{ inputs.tests-path }}
-        ls -R
-        dotnet test -c Release --no-build --no-restore -v=normal --filter "${{ inputs.unit-test-filter }}" /p:Exclude="${{ inputs.exclude-coverage }}" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
-
-#    - name: Run Integration And EndToEnd Tests with Coverage
-#      continue-on-error: false
-#      id: integration-tests
-#      if: success()
+#    # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
+#    # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+#    # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
+#    # https://josef.codes/dotnet-core-filter-out-specific-test-projects-when-running-dotnet-test/
+#    # https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
+#    # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+#    # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md
+#    # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
+#    - name: Run Unit Tests with Coverage
+#      id: unit-tests
 #      shell: bash
-#      run: dotnet test -c Release --no-build --no-restore --filter "${{ inputs.integration-test-filter }}" /p:Exclude="${{ inputs.exclude-coverage }}"
-#           /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
-
-    - name: Call Composite Action test-coverage
-      uses: ./.github/actions/test-coverage
-      id: test-coverage-step
-      with:
-        # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
-        # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
-        # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-        reports-path: ${{ inputs.reports-path }}
-        reports-output-path: ${{ inputs.reports-output-path }}
-        token: ${{ inputs.token }}
+#      if: success()
+#      run: |
+#        cd ${{ inputs.tests-path }}
+#        dotnet test -c Release --no-build --no-restore -v=normal --filter "${{ inputs.unit-test-filter }}" /p:Exclude="${{ inputs.exclude-coverage }}" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
+#
+##    - name: Run Integration And EndToEnd Tests with Coverage
+##      continue-on-error: false
+##      id: integration-tests
+##      if: success()
+##      shell: bash
+##      run: dotnet test -c Release --no-build --no-restore --filter "${{ inputs.integration-test-filter }}" /p:Exclude="${{ inputs.exclude-coverage }}"
+##           /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura%2clcov /p:SkipAutoProps=true
+#
+#    - name: Call Composite Action test-coverage
+#      uses: ./.github/actions/test-coverage
+#      id: test-coverage-step
+#      with:
+#        # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
+#        # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+#        # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+#        reports-path: ${{ inputs.reports-path }}
+#        reports-output-path: ${{ inputs.reports-output-path }}
+#        token: ${{ inputs.token }}

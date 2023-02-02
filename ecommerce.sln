@@ -168,11 +168,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\conventional-commits.yml = .github\workflows\conventional-commits.yml
 		.github\workflows\ci-cd.yml = .github\workflows\ci-cd.yml
-		.github\workflows\catalogs.yml = .github\workflows\catalogs.yml
 		.github\workflows\reusable-release.yml = .github\workflows\reusable-release.yml
 		.github\workflows\reusable-build-test.yml = .github\workflows\reusable-build-test.yml
 		.github\workflows\reusable-deploy.yml = .github\workflows\reusable-deploy.yml
 		.github\workflows\reusable-build-test-push.yml = .github\workflows\reusable-build-test-push.yml
+		.github\workflows\catalogs-ci.yml = .github\workflows\catalogs-ci.yml
+		.github\workflows\catalogs-cd.yml = .github\workflows\catalogs-cd.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{93409B05-C828-4815-9684-FD3E7E248A3F}"
@@ -259,6 +260,16 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "publish-app", "publish-app", "{0F3D310D-B05B-4EFD-9C7A-2543EE7D3452}"
 	ProjectSection(SolutionItems) = preProject
 		.github\actions\publish-app\action.yml = .github\actions\publish-app\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy-azure", "deploy-azure", "{5C4860A5-27EA-40F6-B116-A17F27E936A7}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\deploy-azure\action.yml = .github\actions\deploy-azure\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy-azure-image", "deploy-azure-image", "{7F528D11-1B4D-4C86-8081-5BA40CE3852C}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\deploy-azure-image\action.yml = .github\actions\deploy-azure-image\action.yml
 	EndProjectSection
 EndProject
 
@@ -349,6 +360,8 @@ Global
 		{00700BBB-85B7-4262-8C5B-4A1BEBB0C2BC} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{8A051C6A-A279-4217-A795-1D7F4E254B26} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{0F3D310D-B05B-4EFD-9C7A-2543EE7D3452} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
+		{5C4860A5-27EA-40F6-B116-A17F27E936A7} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
+		{7F528D11-1B4D-4C86-8081-5BA40CE3852C} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

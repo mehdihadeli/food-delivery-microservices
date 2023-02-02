@@ -4,7 +4,7 @@
 # https://wallis.dev/blog/composite-github-actions
 
 name: "Generate Release Note"
-description: "Generating release note for our application "
+description: "Generating release note for our application"
 
 # Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
@@ -13,6 +13,13 @@ inputs:
   token:
     description: 'A Github PAT'
     required: true
+
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputsoutput_idvalue
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputs-for-composite-actions
+outputs:
+  application-version:
+    value: ${{ steps.semantic.outputs.semantic_nextrelease_version }}
+    description: "Application Version"
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
 runs:
@@ -51,3 +58,12 @@ runs:
             echo ${{ steps.semantic.outputs.semantic_lastRelease_channel }}
             echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
         fi
+
+    # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
+    # This back-merge may failed because of complexity some merge we should continue next step with using if: always()
+    # https://github.com/orgs/community/discussions/26560
+    - name: Back Merge Release
+      shell: bash
+      if: success()
+      run: |
+        ./back-merge.sh

@@ -12,10 +12,10 @@ on:
     outputs:
       release-version:
         description: "Version"
-        value: ${{ jobs.deploy.outputs.release-version }}
+        value: ${{ jobs.release.outputs.release-version }}
 jobs:
 
-  deploy:
+  release:
     name: Release
     runs-on: ubuntu-latest
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
@@ -23,7 +23,7 @@ jobs:
 
     # Map the job outputs to step outputs
     outputs:
-      release-version: ${{ steps.semantic.outputs.semantic_nextrelease_version }}
+      release-version: ${{ steps.release-note-step.outputs.semantic_nextrelease_version }}
 
     steps:
 
@@ -58,38 +58,8 @@ jobs:
         with:
           node-version: 'lts/*'
 
-      - name: create output dir
-        run: mkdir -p "output"
-
-        # https://github.com/actions/download-artifact#download-all-artifacts
-        # download artifacts without name will download all artifacts
-      - name: Download All Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          path: artifacts
-
-      - name: dir
-        run: ls -R "${{ github.workspace }}/artifacts/build-test-artifacts"
-
-        # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
-      - name: unzip artifacts
-        run: |
-          unzip "artifacts/build-test-artifacts/test-results.zip" -d "output"
-
-      - name: Ls Output Files
-        if: success()
-        run: ls -R ${{ github.workspace }}/output
-
       - name: Call Composite Action release-note
         uses: ./.github/actions/release-note
         id: release-note-step
         with:
           token:  ${{ secrets.GITHUB_TOKEN }}
-
-          # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
-        # This back-merge may failed because of complexity some merge we should continue next step with using if: always()
-        # https://github.com/orgs/community/discussions/26560
-      - name: Back Merge Release
-        if: success()
-        run: |
-          ./back-merge.sh

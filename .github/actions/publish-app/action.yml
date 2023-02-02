@@ -84,7 +84,7 @@ runs:
       uses: actions/upload-artifact@v3
       if: (steps.publish-services.outcome == 'success')
       with:
-        name: ${{inputs.service-name}}-artifacts
+        name: ${{ inputs.service-name}}_publish_artifacts
         retention-days: 1
         path: |
           ${{ github.workspace }}/output/${{inputs.service-name}}.zip

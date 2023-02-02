@@ -9,13 +9,24 @@ on:
     inputs:
       environment-name:
         type: string
-        description: environment to deploy to
+        description: Environment to deploy to
         required: true
       release-version:
         type: string
-        description: version
+        description: Version
         required: true
-
+      registry-endpoint:
+        type: string
+        description: Registry endpoint
+        required: true
+      registry:
+        type: string
+        description: Registry endpoint
+        required: true
+      service-name:
+        type: string
+        description: Service name
+        required: true
 jobs:
 
   deploy:
@@ -23,6 +34,9 @@ jobs:
     runs-on: ubuntu-latest
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
     continue-on-error: false
+
+    env:
+      IMAGE_NAME: ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.release-version }}
 
       # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
     environment:
@@ -38,6 +52,10 @@ jobs:
         echo "branch name is: ${{ github.ref_name }}"
         echo "environment-name is: ${{ inputs.environment-name }}"
         echo "version is: ${{ inputs.release-version }}"
+        echo "service-name is: ${{ inputs.service-name }}"
+        echo "registry is: ${{ inputs.registry }}"
+        echo "registry-endpoint is: ${{ inputs.registry-endpoint }}"
+        echo "release image is: ${{ env.IMAGE_NAME }}"
 
     - name: Check Inputs
       run: |
@@ -66,31 +84,22 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-    - name: create output dir
-      working-directory: ${{ github.workspace }}
-      run: mkdir -p "output"
-
-      # https://github.com/actions/download-artifact#download-all-artifacts
-      # download artifacts without name will download all artifacts
-    - name: Download All Artifacts
-      uses: actions/download-artifact@v3
-      with:
-        path: artifacts
-
-    - name: dir
-      run: ls -R "${{ github.workspace }}/artifacts/build-test-artifacts"
-
-      # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
-    - name: unzip artifacts
-      run: |
-        unzip "artifacts/build-test-artifacts/test-results.zip" -d "output"
-
-    - name: Ls Output Files
-      if: success()
-      run: ls -R ${{ github.workspace }}/output
-
-    - name: Deploy To Azure App Service
-      run: echo "TODO"
-
-    - name: Deploy Helms to AKS
-      run: echo "TODO"
+#    - name: Call Composite Action deploy-azure-image
+#        uses: ./.github/actions/deploy-azure-image
+#        id: deploy-azure-image-step
+#        with:
+#          resource-group:
+#          service-name: ${{ inputs.service-name }}
+#          image: ${{ env.IMAGE_NAME }}"
+#          azure-creds:
+#          env-secret:
+#
+#    - name: Call Composite Action deploy-azure
+#        uses: ./.github/actions/deploy-azure
+#        id: deploy-azure-step
+#        with:
+#          service_name: ${{ inputs.service-name }}
+#          azure_creds:
+#
+#    - name: Deploy Helms to AKS
+#      run: echo "TODO"

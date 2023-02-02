@@ -71,7 +71,7 @@ runs:
       uses: actions/upload-artifact@v3
       if: steps.test-results-zip.outcome == 'success'
       with:
-        name: ${{ inputs.service-name }}-tests-artifacts
+        name: ${{ inputs.service-name}}_test_artifacts
         retention-days: 5
         path: |
           output/test-results.zip

@@ -13,6 +13,9 @@ inputs:
   token:
     description: 'A Github PAT'
     required: true
+  service-name:
+    description: 'Service name'
+    required: true
   branches:
     description: 'Branches to generate version'
     default: '["main", "develop", "beta", "preview", "devops/ci"]'
@@ -74,6 +77,17 @@ runs:
           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_channel }}
           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
         fi
+
+    # Save version in the artifacts to use in CD process
+    - name: Save image name
+      shell: bash
+      run: echo "${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" > version_name.txt
+
+    - name: Upload Version Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.service-name}}_version_artifacts
+        path: version_name.txt
 
     - name: Commit Updated Application Version File
       uses: stefanzweifel/git-auto-commit-action@v4

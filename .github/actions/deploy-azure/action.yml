@@ -1,0 +1,58 @@
+name: Deploy Image to Azure
+description: Deploy Image to Azure
+
+inputs:
+  service-name:
+    description: Service name
+  azure-creds:
+    description: Azure credentials to log into subscription
+
+runs:
+  using: composite
+  steps:
+     - name: create output dir
+       shell: bash
+       working-directory: ${{ github.workspace }}
+       run: mkdir -p "output"
+
+       # https://github.com/actions/download-artifact#download-all-artifacts
+       # download artifacts without name will download all artifacts
+     - name: Download All Artifacts
+       uses: actions/download-artifact@v3
+       with:
+         name: ${{ inputs.service-name}}_publish_artifacts
+         path: publish-artifacts
+
+     - name: dir
+       shell: bash
+       run: ls -R "${{ github.workspace }}/publish-artifacts"
+
+       # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
+     - name: unzip artifacts
+       shell: bash
+       run: |
+         unzip "publish-artifacts/${{inputs.service-name}}.zip" -d "output"
+
+     - name: Ls Output Files
+       shell: bash
+       if: success()
+       run: ls -R ${{ github.workspace }}/output/${{inputs.service-name}}
+
+     - uses: azure/login@v1
+       with:
+         creds: ${{ inputs.azure-creds }}
+
+     - name: Deploy web app
+       id: deploy-web-app
+       uses: azure/webapps-deploy@v2
+       with:
+         app-name: ${{ inputs.service_name }}
+         package: ${{ github.workspace }}/output/${{inputs.service-name}}
+
+     - name: Echo url from deployment
+       shell: bash
+       run: echo "Got [${{ steps.deploy-web-app.outputs.webapp-url }}] from previous step"
+
+     - name: Azure logout
+       shell: bash
+       run: az logout

@@ -81,5 +81,15 @@ runs:
       shell: bash
       if: success()
       run: |
-        docker push   ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}
+        docker push  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}
 
+      # Save image name in the artifacts to use in CD process for deploying image
+    - name: Save image name
+      shell: bash
+      run: echo "${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}" > image_name.txt
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.service-name}}_image_artifacts
+        path: image_name.txt

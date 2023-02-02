@@ -13,6 +13,9 @@ inputs:
   token:
     description: 'A Github PAT'
     required: true
+  branches:
+    description: 'Branches to generate version'
+    default: "[main, develop, beta, preview, devops/ci]"
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputsoutput_idvalue
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputs-for-composite-actions
@@ -30,6 +33,14 @@ runs:
       with:
         node-version: 'lts/*'
 
+    - name: Check Inputs
+      shell: bash
+      if: ${{ !contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"), inputs.branches) }}
+      run: |
+            echo "branch ${{ github.ref_name }} is not valid for generating version, action cancelled..."
+            exit 1
+        fi
+
     # https://github.com/semantic-release/semantic-release/discussions/2674
     # https://medium.com/@michael.wolfenden/simplified-versioning-and-publishing-for-net-libraries-a28e5e740fa6
     # https://github.com/semantic-release/semantic-release/issues/753
@@ -38,6 +49,7 @@ runs:
     # https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun
     - name: Semantic Release Version
       id: semantic-version
+      if: ${{ success() }}
       shell: bash
       env:
         GITHUB_TOKEN:  ${{ inputs.token }}
@@ -50,6 +62,7 @@ runs:
       # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
     - name: Semantic Release  Versions Outputs
       shell: bash
+      if: ${{ success() }}
       run: |
         if [ -z ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} ]
           then echo "semantic_nextRelease_version is empty, action cancelled..."
@@ -65,7 +78,7 @@ runs:
 
     - name: Commit Updated Application Version File
       uses: stefanzweifel/git-auto-commit-action@v4
-      if: success()
+      if: ${{ success() }}
       with:
         commit_message: 'chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]'
         file_pattern: '**/Directory.Packages.props'

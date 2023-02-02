@@ -12,6 +12,10 @@ branches:
    - name: develop
      prerelease: dev
      channel:  dev
+     # Just for test, should remove next
+   - name: devops/ci
+     prerelease: ops
+     channel: ops
    - name: beta
      prerelease: beta
      channel:  beta

@@ -35,6 +35,10 @@ on:
         description: "Docker file path"
         type: string
         required: true
+      branches:
+        description: "Branches to generate application version"
+        type: string
+        default: "[main, develop, beta, preview, devops/ci]"
 
 jobs:
   build-test-push:
@@ -106,6 +110,9 @@ jobs:
         uses: ./.github/actions/app-version
         if: success()
         id: app-version-step
+        with:
+          branches: ${{ inputs.branches }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Call Composite Action publish
         uses: ./.github/actions/publish

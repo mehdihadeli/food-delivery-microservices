@@ -35,7 +35,7 @@ runs:
 
     - name: Check Inputs
       shell: bash
-      if: ${{ !contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"), inputs.branches) }}
+      if: ${{ !contains(fromJson(inputs.branches), github.ref_name) }}
       run: |
             echo "branch ${{ github.ref_name }} is not valid for generating version, action cancelled..."
             exit 1

@@ -131,12 +131,13 @@ jobs:
     # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
+    secrets: inherit
     with:
       tests-path: "tests/Services/Catalogs"
       project-path: "src/Services/Catalogs/ECommerce.Services.Catalogs.Api"
       # https://docs.github.com/en/actions/security-guides/encrypted-secrets
       # https://docs.github.com/en/actions/learn-github-actions/variables
-      service-name: ${{ secrets.CATALOGS_SERVICE_NAME }} # catalogs-service
+      service-name: "${{ secrets.CATALOGS_SERVICE_NAME }}"
 
   call-build-test-push:
     needs: pre-check
@@ -158,8 +159,9 @@ jobs:
     # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
+    secrets: inherit
     with:
       tests-path: "tests/Services/Catalogs"
       project-path: "src/Services/Catalogs/ECommerce.Services.Catalogs.Api"
-      service-name: ${{ secrets.CATALOGS_SERVICE_NAME}} # catalogs-service
+      service-name: "${{ secrets.CATALOGS_SERVICE_NAME }}"
       docker-file-path: "src/Services/Catalogs/Dockerfile"

@@ -129,6 +129,13 @@ jobs:
             echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
             echo "is push event? ${{ github.event_name == 'push' }}"
 
+      - name: Check Inputs
+        shell: bash
+        if: ${{ !contains(fromJson('["main", "develop", "beta", "preview", "devops/ci"]'), github.ref_name) }}
+        run: |
+          echo "branch ${{ github.ref_name }} is not valid for generating version, action cancelled..."
+          exit 1
+
       # https://www.codewrecks.com/post/github/choose-environment-from-branch/
       # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch
       # https://hungvu.tech/advanced-github-actions-conditional-workflow

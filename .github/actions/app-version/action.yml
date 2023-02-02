@@ -15,7 +15,7 @@ inputs:
     required: true
   branches:
     description: 'Branches to generate version'
-    default: "[main, develop, beta, preview, devops/ci]"
+    default: '["main", "develop", "beta", "preview", "devops/ci"]'
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputsoutput_idvalue
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputs-for-composite-actions

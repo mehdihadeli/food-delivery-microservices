@@ -10,10 +10,13 @@ description: "Generating tests reports for our application "
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
 inputs:
   reports-path:
-    description: "reports-path"
+    description: "Reports path"
     required: true
   reports-output-path:
-    description: "reports-output-path"
+    description: "Reports output-path"
+    required: true
+  service-name:
+    description: "Service name"
     required: true
   # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
   token:
@@ -68,7 +71,7 @@ runs:
       uses: actions/upload-artifact@v3
       if: steps.test-results-zip.outcome == 'success'
       with:
-        name: build-test-artifacts
+        name: ${{ inputs.service-name }}-tests-artifacts
         retention-days: 5
         path: |
           output/test-results.zip

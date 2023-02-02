@@ -32,6 +32,9 @@ inputs:
   reports-output-path:
     description: "Test report output path"
     required: true
+  service-name:
+    description: "Service name"
+    required: true
   # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
   token:
     description: 'A Github PAT'
@@ -127,4 +130,5 @@ runs:
         # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
         reports-path: ${{ inputs.reports-path }}
         reports-output-path: ${{ inputs.reports-output-path }}
+        service-name: ${{ inputs.service-name }}
         token: ${{ inputs.token }}

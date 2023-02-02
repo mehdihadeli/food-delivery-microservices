@@ -27,6 +27,10 @@ on:
         description: "Project path"
         required: true
         type: string
+      service-name:
+        description: "Service name"
+        required: true
+        type: string
 
 jobs:
   build-test-push:
@@ -92,9 +96,5 @@ jobs:
           # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
           reports-path: ${{ github.workspace }}/**/*.cobertura.xml
           reports-output-path: ${{ github.workspace }}/output/test-results
+          service-name: ${{ inputs.service-name }}
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Call Composite Action publish
-        uses: ./.github/actions/publish
-        if: success()
-        id: publish-step

@@ -164,6 +164,7 @@ jobs:
     with:
       tests-path: "tests/Services/Catalogs"
       project-path: "src/Services/Catalogs/ECommerce.Services.Catalogs.Api"
+      service-name: "catalogs-service"
 
   call-build-test-push:
     needs: pre-check

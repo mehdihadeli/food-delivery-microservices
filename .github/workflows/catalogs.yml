@@ -150,9 +150,6 @@ jobs:
 
   call-build-test:
     needs: pre-check
-    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-    permissions:
-      contents: write #  to be able to commit application version
 
     if: (github.event_name == 'pull_request')
 
@@ -170,9 +167,11 @@ jobs:
 
   call-build-test-push:
     needs: pre-check
+
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     permissions:
       contents: write #  to be able to commit application version
+      packages: write # for publishing packages
 
     if: (github.event_name != 'pull_request')
 

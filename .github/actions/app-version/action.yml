@@ -39,7 +39,6 @@ runs:
       run: |
             echo "branch ${{ github.ref_name }} is not valid for generating version, action cancelled..."
             exit 1
-        fi
 
     # https://github.com/semantic-release/semantic-release/discussions/2674
     # https://medium.com/@michael.wolfenden/simplified-versioning-and-publishing-for-net-libraries-a28e5e740fa6

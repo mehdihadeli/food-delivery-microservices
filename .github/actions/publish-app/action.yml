@@ -46,10 +46,6 @@ runs:
                 exit 1
         fi
 
-    - name: create output dir
-      shell: bash
-      run: mkdir -p "output"
-
     # https://garywoodfine.com/how-to-use-github-actions-to-build-deploy-github-nuget-packages/
     # https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/docker/building-net-docker-images?view=aspnetcore-7.0#the-dockerfile
     # or calling dotnet publish on solution - we marked `publishable` and `packable` projects in their .csproj
@@ -59,7 +55,7 @@ runs:
       if: success()
       working-directory: ${{ inputs.project-path }}
       run: |
-        if [ {{ inputs.no-restore }} = 'true' ]; then
+        if [ ${{ inputs.no-restore }} = 'true' ]; then
            dotnet publish -c Release --no-restore --no-build -o /output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
         else
            dotnet publish -c Release -o /output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
@@ -73,7 +69,7 @@ runs:
     - name: Zip publish-services Artifacts
       if: success()
       shell: bash
-      working-directory: "output"
+      working-directory: "${{ github.workspace }}/output"
       run: |
         zip -r ${{inputs.service-name}}.zip ${{inputs.service-name}}/*
 

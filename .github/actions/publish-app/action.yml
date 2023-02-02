@@ -55,10 +55,10 @@ runs:
       if: success()
       working-directory: ${{ inputs.project-path }}
       run: |
-        if [ ${{ inputs.no-restore }} = 'true' ]; then
-           dotnet publish -c Release --no-restore --no-build -o /output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
+        if [ ${{ inputs.no-restore }} = true ]; then
+           dotnet publish -c Release --no-restore --no-build -o ${{ github.workspace }}/output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
         else
-           dotnet publish -c Release -o /output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
+           dotnet publish -c Release -o ${{ github.workspace }}/output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
         fi
 
       # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
@@ -69,7 +69,7 @@ runs:
     - name: Zip publish-services Artifacts
       if: success()
       shell: bash
-      working-directory: "${{ github.workspace }}/output"
+      working-directory: ${{ github.workspace }}/output
       run: |
         zip -r ${{inputs.service-name}}.zip ${{inputs.service-name}}/*
 
@@ -78,7 +78,7 @@ runs:
     - name: Ls Output Files
       shell: bash
       if: success()
-      run: ls -R /output
+      run: ls -R ${{ github.workspace }}/output
 
     - name: Upload Publish Services Artifacts For Deployment Jobs
       uses: actions/upload-artifact@v3
@@ -87,4 +87,4 @@ runs:
         name: publish-services
         retention-days: 1
         path: |
-          output/${{inputs.service-name}}.zip
+          ${{ github.workspace }}/output/${{inputs.service-name}}.zip

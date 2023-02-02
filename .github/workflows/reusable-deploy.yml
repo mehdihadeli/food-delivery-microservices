@@ -68,6 +68,7 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
     - name: create output dir
+      working-directory: ${{ github.workspace }}
       run: mkdir -p "output"
 
       # https://github.com/actions/download-artifact#download-all-artifacts

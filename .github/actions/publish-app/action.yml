@@ -73,7 +73,7 @@ runs:
     - name: Zip publish-services Artifacts
       if: success()
       shell: bash
-      working-directory: ${{ output }}
+      working-directory: "output"
       run: |
         zip -r ${{inputs.service-name}}.zip ${{inputs.service-name}}/*
 

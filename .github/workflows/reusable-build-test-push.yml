@@ -115,7 +115,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Call Composite Action publish
-        uses: ./.github/actions/publish
+        uses: ./.github/actions/publish-app
         if:  success()
         id: publish-step
         with:

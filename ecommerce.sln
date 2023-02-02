@@ -256,9 +256,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-note", "release-not
 		.github\actions\release-note\action.yml = .github\actions\release-note\action.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "publish", "publish", "{E0050A6D-D6C3-4707-BC98-FBBC2D430930}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "publish-app", "publish-app", "{0F3D310D-B05B-4EFD-9C7A-2543EE7D3452}"
 	ProjectSection(SolutionItems) = preProject
-		.github\actions\publish\action.yml = .github\actions\publish\action.yml
+		.github\actions\publish-app\action.yml = .github\actions\publish-app\action.yml
 	EndProjectSection
 EndProject
 
@@ -348,7 +348,7 @@ Global
 		{47647A81-F5F5-4660-BAE4-56869C4DF9D4} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{00700BBB-85B7-4262-8C5B-4A1BEBB0C2BC} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{8A051C6A-A279-4217-A795-1D7F4E254B26} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
-		{E0050A6D-D6C3-4707-BC98-FBBC2D430930} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
+		{0F3D310D-B05B-4EFD-9C7A-2543EE7D3452} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

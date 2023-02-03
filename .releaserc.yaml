@@ -202,8 +202,10 @@ plugins:
   - - '@semantic-release/github'
     - assets:
         - path: release/**
-        - path: artifacts/build-test-artifacts/test-results.zip
-          label: test-results.zip
+        - path: artifacts/catalogs-service_test_artifacts/test-results.zip
+        - path: artifacts/identity-service_test_artifacts/test-results.zip
+        - path: artifacts/customers-service_test_artifacts/test-results.zip
+        - path: artifacts/orders-service_test_artifacts/test-results.zip
 
         # The comment to add to each issue and pull request resolved by the release. Set to false to disable commenting on issues and pull requests
       successComment: false

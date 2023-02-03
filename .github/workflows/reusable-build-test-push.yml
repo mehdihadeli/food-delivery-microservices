@@ -35,6 +35,14 @@ on:
         description: "Docker file path"
         type: string
         required: true
+      registry:
+        description: "Docker registry"
+        type: string
+        default: "ghcr.io"
+      registry-endpoint:
+        description: "Docker registry endpoint"
+        type: string
+        default: ${{ github.repository }}
       branches:
         description: "Branches to generate application version"
         type: string
@@ -133,11 +141,9 @@ jobs:
         id: docker-build-push-step
         with:
           application-version: ${{ steps.app-version-step.outputs.application-version }}
-          registry-endpoint: ${{ github.repository }}
+          registry-endpoint: ${{ inputs.registry-endpoint }}
           docker-file-path: ${{ inputs.docker-file-path }}
-          # https://docs.github.com/en/actions/security-guides/encrypted-secrets
-          # https://docs.github.com/en/actions/learn-github-actions/variables
-          registry: ${{ secrets.DOCKER_REGISTRY}}
+          registry: ${{ inputs.registry}}
           registry-username: ${{ github.actor }}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           service-name: ${{ inputs.service-name }}

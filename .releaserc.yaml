@@ -203,10 +203,13 @@ plugins:
     - assets:
         - path: release/**
         - path: artifacts/catalogs-service_test_artifacts/test-results.zip
+          label: catalogs-service_test_artifacts.zip
         - path: artifacts/identity-service_test_artifacts/test-results.zip
+          label: identity-service_test_artifacts.zip
         - path: artifacts/customers-service_test_artifacts/test-results.zip
+          label: customers-service_test_artifacts.zip
         - path: artifacts/orders-service_test_artifacts/test-results.zip
-
+          label: orders-service_test_artifacts.zip
         # The comment to add to each issue and pull request resolved by the release. Set to false to disable commenting on issues and pull requests
       successComment: false
       # The content of the issue created when a release fails. Set to false to disable opening an issue when a release fails

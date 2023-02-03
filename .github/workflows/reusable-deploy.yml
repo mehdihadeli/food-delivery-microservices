@@ -18,7 +18,7 @@ on:
       registry-endpoint:
         type: string
         description: Registry endpoint
-        required: true
+        default: ${{ github.repository }}
       registry:
         type: string
         description: Registry endpoint

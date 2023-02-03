@@ -15,9 +15,8 @@ runs:
        working-directory: ${{ github.workspace }}
        run: mkdir -p "output"
 
-       # https://github.com/actions/download-artifact#download-all-artifacts
-       # download artifacts without name will download all artifacts
-     - name: Download All Artifacts
+       # https://github.com/actions/download-artifact
+     - name: Download Publish Artifacts
        uses: actions/download-artifact@v3
        with:
          name: ${{ inputs.service-name}}_publish_artifacts

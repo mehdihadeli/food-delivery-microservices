@@ -1,6 +1,6 @@
 # Linting workflow: https://github.com/rhysd/actionlint
 
-name: Catalogs-CI
+name: Catalogs-CD
 
 on:
   workflow_run:

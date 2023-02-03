@@ -1,5 +1,16 @@
 # Semantic Versioning Changelog
 
+## [1.2.0-ops.10](https://github.com/mehdihadeli/ecommerce-microservices/compare/v1.2.0-ops.9...v1.2.0-ops.10) (2023-02-03)
+
+
+### 👷 CI/CD
+
+* update ci ([a226291](https://github.com/mehdihadeli/ecommerce-microservices/commit/a22629139832ccb17751653f75582776f74721f4))
+
+
+
+generateNotesCmd
+
 ## [1.2.0-ops.9](https://github.com/mehdihadeli/ecommerce-microservices/compare/v1.2.0-ops.8...v1.2.0-ops.9) (2023-02-03)
 
 

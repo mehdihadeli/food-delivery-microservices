@@ -179,7 +179,8 @@ jobs:
   # typically release notes are published as part of the Continuous Deployment (CD) process, after the software has been built, tested, and deployed to production.
   # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
   call-release:
-    needs: [workflow-info, call-build-test-push ]
+    # needs: [workflow-info, call-build-test-push ]
+    needs: [pre-check ]
     if: (contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')|| (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note )))
 
     permissions:
@@ -200,7 +201,8 @@ jobs:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
   # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
   call-deploy:
-    needs: [workflow-info, call-release]
+    #needs: [workflow-info, call-release]
+    needs: [pre-check, call-release]
 
     if: (contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-deploy )))
 

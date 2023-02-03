@@ -7,61 +7,61 @@ labels:
     matcher:
       title: '^(feat)(\([a-z ]+\))?: .'
       commits: '^(feat)(\([a-z ]+\))?: .'
-      branch: '^(feat)(\([a-z ]+\))?\/.'
+      branch: '(feat)(\([a-z ]+\))?\/.'
 
   - label: "bug"
     matcher:
       title: '^(fix)(\([a-z ]+\))?: .'
       commits: '^(fix)(\([a-z ]+\))?: .'
-      branch: '^(fix)(\([a-z ]+\))?\/.'
+      branch: '(fix)(\([a-z ]+\))?\/.'
 
   - label: "chore"
     matcher:
       title: '^(chore)(\([a-z ]+\))?: .'
       commits: '^(chore)(\([a-z ]+\))?: .'
-      branch: '^(chore)(\([a-z ]+\))?\/.'
+      branch: '(chore)(\([a-z ]+\))?\/.'
 
   - label: "documentation"
     matcher:
       title: '^(docs)(\([a-z ]+\))?: .'
       commits: '^(docs)(\([a-z ]+\))?: .'
-      branch: '^(docs)(\([a-z ]+\))?\/.'
+      branch: '(docs)(\([a-z ]+\))?\/.'
 
   - label: "devops"
     matcher:
       title: '^(ci)(\([a-z ]+\))?: .'
       commits: '^(ci)(\([a-z ]+\))?: .'
-      branch: '^(ci)(\([a-z ]+\))?\/.'
+      branch: '(ci)(\([a-z ]+\))?\/.'
 
   - label: "ci/cd"
     matcher:
       title: '^(ci)(\([a-z ]+\))?: .'
       commits: '^(ci)(\([a-z ]+\))?: .'
-      branch: '^(ci)(\([a-z ]+\))?\/.'
+      branch: '(ci)(\([a-z ]+\))?\/.'
 
   - label: "enhancement"
     matcher:
       title: '^(refactor)(\([a-z ]+\))?: .'
       commits: '^(refactor)(\([a-z ]+\))?: .'
-      branch: '^(refactor)(\([a-z ]+\))?\/.'
+      branch: '(refactor)(\([a-z ]+\))?\/.'
 
   - label: "formatting"
     matcher:
       title: '^(style)(\([a-z ]+\))?: .'
       commits: '^(style)(\([a-z ]+\))?: .'
-      branch: '^(style)(\([a-z ]+\))?\/.'
+      branch: '(style)(\([a-z ]+\))?\/.'
 
   - label: "performance"
     matcher:
       title: '^(perf)(\([a-z ]+\))?: .'
       commits: '^(perf)(\([a-z ]+\))?: .'
-      branch: '^(perf)(\([a-z ]+\))?\/.'
+      branch: '(perf)(\([a-z ]+\))?\/.'
 
   - label: "build"
     matcher:
       title: '^(build)(\([a-z ]+\))?: .'
       commits: '^(build)(\([a-z ]+\))?: .'
-      branch: '^(build)(\([a-z ]+\))?\/.'
+      branch: '(build)(\([a-z ]+\))?\/.'
 
   - label: "dependencies"
     matcher:
@@ -72,10 +72,10 @@ labels:
     matcher:
       title: '^(feat)(\([a-z ]+\))?: .'
       commits: '^(feat)(\([a-z ]+\))?: .'
-      branch: '^(feat)(\([a-z ]+\))?\/.'
+      branch: '(feat)(\([a-z ]+\))?\/.'
 
   - label: "patch"
     matcher:
       title: '^(fix)(\([a-z ]+\))?: .'
       commits: '^(fix)(\([a-z ]+\))?: .'
-      branch: '^(fix)(\([a-z ]+\))?\/.'
+      branch: '(fix)(\([a-z ]+\))?\/.'

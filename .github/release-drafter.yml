@@ -66,33 +66,33 @@ categories:
 autolabeler:
   - label: 'chore'
     branch:
-      - '^(chore)(\([a-z ]+\))?\/.'
+      - '(chore)(\([a-z ]+\))?\/.'
     title:
       - '^(chore)(\([a-z ]+\))?: .'
   - label: 'bug'
     branch:
-      - '^(fix)(\([a-z ]+\))?\/.'
+      - '(fix)(\([a-z ]+\))?\/.'
     title:
       - '^(fix)(\([a-z ]+\))?: .'
   - label: 'feature'
     branch:
-      - '^(feat)(\([a-z ]+\))?\/.'
+      - '(feat)(\([a-z ]+\))?\/.'
     title:
       - '^(feat)(\([a-z ]+\))?: .'
   - label: 'ci/cd'
     branch:
-      - '^(ci)(\([a-z ]+\))?\/.'
+      - '(ci)(\([a-z ]+\))?\/.'
     title:
       - '^(ci)(\([a-z ]+\))?: .'
   - label: 'minor'
     branch:
-      - '^(feat)(\([a-z ]+\))?\/.'
+      - '(feat)(\([a-z ]+\))?\/.'
     title:
       - '^(feat)(\([a-z ]+\))?: .'
   - label: 'patch'
     branch:
-      - '^(fix)(\([a-z ]+\))?\/.'
-      - '^(ci)(\([a-z ]+\))?\/.'
+      - '(fix)(\([a-z ]+\))?\/.'
+      - '(ci)(\([a-z ]+\))?\/.'
     title:
       - '^(fix)(\([a-z ]+\))?: .'
       - '^(ci)(\([a-z ]+\))?: .'

@@ -1,5 +1,4 @@
 # Linting workflow: https://github.com/rhysd/actionlint
-
 name: Catalogs-CD
 
 on:

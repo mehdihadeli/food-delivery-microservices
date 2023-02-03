@@ -3,6 +3,8 @@
 name: Catalogs-CD
 
 on:
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+  # This event will only trigger a workflow run if the workflow file is on the default branch.
   workflow_run:
     workflows: [ "catalog-api" ]
     branches: [ develop, main, preview, beta, devops/ci ]
@@ -214,4 +216,8 @@ jobs:
     with:
       environment-name: ${{ needs.pre-check.outputs.environment-name }}
       release-version: ${{ needs.call-release.outputs.release-version }}
+      registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
+      registry-endpoint: ${{ github.repository }}
+      service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
+
 

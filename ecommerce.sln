@@ -178,6 +178,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\customers-ci.yml = .github\workflows\customers-ci.yml
 		.github\workflows\identity-cd.yml = .github\workflows\identity-cd.yml
 		.github\workflows\identity-ci.yml = .github\workflows\identity-ci.yml
+		.github\workflows\reusable-publish-docker.yml = .github\workflows\reusable-publish-docker.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{22F07A80-31B8-4196-8DCD-CB6E3F888BEA}"

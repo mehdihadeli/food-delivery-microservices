@@ -162,6 +162,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D87B
 		.github\dependabot.yml = .github\dependabot.yml
 		.github\pull_request_template.md = .github\pull_request_template.md
 		.github\multi-labeler.yml = .github\multi-labeler.yml
+		.github\release-drafter.yml = .github\release-drafter.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3CC5AECD-915C-4CCB-90AA-EF29EBD9A3E5}"
@@ -243,9 +244,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test-coverage", "test-cover
 		.github\actions\test-coverage\action.yml = .github\actions\test-coverage\action.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-note", "release-note", "{8A051C6A-A279-4217-A795-1D7F4E254B26}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "semantic-release-note", "semantic-release-note", "{8A051C6A-A279-4217-A795-1D7F4E254B26}"
 	ProjectSection(SolutionItems) = preProject
-		.github\actions\release-note\action.yml = .github\actions\release-note\action.yml
+		.github\actions\semantic-release-note\action.yml = .github\actions\semantic-release-note\action.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "publish-app", "publish-app", "{0F3D310D-B05B-4EFD-9C7A-2543EE7D3452}"
@@ -261,6 +262,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy-azure-image", "deploy-azure-image", "{7F528D11-1B4D-4C86-8081-5BA40CE3852C}"
 	ProjectSection(SolutionItems) = preProject
 		.github\actions\deploy-azure-image\action.yml = .github\actions\deploy-azure-image\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "drafter-release-note", "drafter-release-note", "{55445A98-C6E2-453B-955A-A823E7C2361A}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\drafter-release-note\action.yml = .github\actions\drafter-release-note\action.yml
 	EndProjectSection
 EndProject
 
@@ -352,6 +358,7 @@ Global
 		{0F3D310D-B05B-4EFD-9C7A-2543EE7D3452} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{5C4860A5-27EA-40F6-B116-A17F27E936A7} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{7F528D11-1B4D-4C86-8081-5BA40CE3852C} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
+		{55445A98-C6E2-453B-955A-A823E7C2361A} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

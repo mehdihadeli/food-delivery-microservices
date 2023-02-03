@@ -3,8 +3,8 @@
 # https://doug.sh/posts/using-composite-actions-with-github-actions/
 # https://wallis.dev/blog/composite-github-actions
 
-name: "Generate Release Note"
-description: "Generating release note for our application"
+name: "Generate Semantic Release Note"
+description: "Generating semantic release note for our application"
 
 # Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
@@ -25,6 +25,13 @@ outputs:
 runs:
   using: "composite"
   steps:
+
+    # https://github.com/actions/download-artifact#download-all-artifacts
+    # download all artifacts for adding to release-notes with using 'semantic-release/github'
+    - name: Download All Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: artifacts
 
     # https://thecodinganalyst.github.io/knowledgebase/Basic-guide-to-Semantic-Release/
     # https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b

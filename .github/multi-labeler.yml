@@ -67,3 +67,15 @@ labels:
     matcher:
       title: '^build\(deps\): .'
       commits: '^build\(deps\): .'
+
+  - label: "minor"
+    matcher:
+      title: '^(feat)(\([a-z ]+\))?: .'
+      commits: '^(feat)(\([a-z ]+\))?: .'
+      branch: '^(feat)(\([a-z ]+\))?\/.'
+
+  - label: "patch"
+    matcher:
+      title: '^(fix)(\([a-z ]+\))?: .'
+      commits: '^(fix)(\([a-z ]+\))?: .'
+      branch: '^(fix)(\([a-z ]+\))?\/.'

@@ -39,21 +39,21 @@ runs:
        if: success()
        run: ls -R ${{ github.workspace }}/output/${{inputs.service-name}}
 
-     - uses: azure/login@v1
-       with:
-         creds: ${{ inputs.azure-creds }}
-
-     - name: Deploy web app
-       id: deploy-web-app
-       uses: azure/webapps-deploy@v2
-       with:
-         app-name: ${{ inputs.service_name }}
-         package: ${{ github.workspace }}/output/${{inputs.service-name}}
-
-     - name: Echo url from deployment
-       shell: bash
-       run: echo "Got [${{ steps.deploy-web-app.outputs.webapp-url }}] from previous step"
-
-     - name: Azure logout
-       shell: bash
-       run: az logout
+#     - uses: azure/login@v1
+#       with:
+#         creds: ${{ inputs.azure-creds }}
+#
+#     - name: Deploy web app
+#       id: deploy-web-app
+#       uses: azure/webapps-deploy@v2
+#       with:
+#         app-name: ${{ inputs.service_name }}
+#         package: ${{ github.workspace }}/output/${{inputs.service-name}}
+#
+#     - name: Echo url from deployment
+#       shell: bash
+#       run: echo "Got [${{ steps.deploy-web-app.outputs.webapp-url }}] from previous step"
+#
+#     - name: Azure logout
+#       shell: bash
+#       run: az logout

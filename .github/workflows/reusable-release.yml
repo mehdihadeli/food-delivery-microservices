@@ -58,8 +58,8 @@ jobs:
         with:
           node-version: 'lts/*'
 
-      - name: Call Composite Action release-note
-        uses: ./.github/actions/release-note
+      - name: Call Composite Action semantic-release-note
+        uses: ./.github/actions/semantic-release-note
         id: release-note-step
         with:
           token:  ${{ secrets.GITHUB_TOKEN }}

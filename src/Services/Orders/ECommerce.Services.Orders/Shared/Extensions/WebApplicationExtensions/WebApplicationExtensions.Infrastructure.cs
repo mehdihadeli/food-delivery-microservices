@@ -1,4 +1,5 @@
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;

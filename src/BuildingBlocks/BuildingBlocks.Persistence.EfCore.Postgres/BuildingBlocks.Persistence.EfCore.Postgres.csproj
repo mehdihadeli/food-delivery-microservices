@@ -5,6 +5,10 @@
     <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Dapper" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />

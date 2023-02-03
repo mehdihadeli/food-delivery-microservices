@@ -26,7 +26,8 @@ public class MessagePersistenceService : IMessagePersistenceService
         IMessageSerializer messageSerializer,
         IMediator mediator,
         IBus bus,
-        ISerializer serializer)
+        ISerializer serializer
+    )
     {
         _logger = logger;
         _messagePersistenceRepository = messagePersistenceRepository;
@@ -38,38 +39,43 @@ public class MessagePersistenceService : IMessagePersistenceService
 
     public Task<IReadOnlyList<StoreMessage>> GetByFilterAsync(
         Expression<Func<StoreMessage, bool>>? predicate = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         return _messagePersistenceRepository.GetByFilterAsync(predicate ?? (_ => true), cancellationToken);
     }
 
     public async Task AddPublishMessageAsync<TMessageEnvelope>(
         TMessageEnvelope messageEnvelope,
-        CancellationToken cancellationToken = default)
-        where TMessageEnvelope : MessageEnvelope
+        CancellationToken cancellationToken = default
+    )
+    where TMessageEnvelope : MessageEnvelope
     {
         await AddMessageCore(messageEnvelope, MessageDeliveryType.Outbox, cancellationToken);
     }
 
     public async Task AddReceivedMessageAsync<TMessageEnvelope>(
         TMessageEnvelope messageEnvelope,
-        CancellationToken cancellationToken = default)
-        where TMessageEnvelope : MessageEnvelope
+        CancellationToken cancellationToken = default
+    )
+    where TMessageEnvelope : MessageEnvelope
     {
         await AddMessageCore(messageEnvelope, MessageDeliveryType.Inbox, cancellationToken);
     }
 
     public async Task AddInternalMessageAsync<TCommand>(
         TCommand internalCommand,
-        CancellationToken cancellationToken = default)
-        where TCommand : class, IInternalCommand
+        CancellationToken cancellationToken = default
+    )
+    where TCommand : class, IInternalCommand
     {
         await AddMessageCore(new MessageEnvelope(internalCommand), MessageDeliveryType.Internal, cancellationToken);
     }
 
     public async Task AddNotificationAsync(
         IDomainNotificationEvent notification,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         await _messagePersistenceRepository.AddAsync(
             new StoreMessage(
@@ -83,7 +89,8 @@ public class MessagePersistenceService : IMessagePersistenceService
     private async Task AddMessageCore(
         MessageEnvelope messageEnvelope,
         MessageDeliveryType deliveryType,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         Guard.Against.Null(messageEnvelope.Message, nameof(messageEnvelope.Message));
 
@@ -104,7 +111,9 @@ public class MessagePersistenceService : IMessagePersistenceService
         await _messagePersistenceRepository.AddAsync(
             new StoreMessage(
                 id,
-                TypeMapper.GetFullTypeName(messageEnvelope.Message.GetType()), // because each service has its own persistence and same process (outbox,inbox), full name message type but in microservices we should just use type name for message
+                TypeMapper.GetFullTypeName(
+                    messageEnvelope.Message
+                        .GetType()), // because each service has its own persistence and same process (outbox,inbox), full name message type but in microservices we should just use type name for message
                 _messageSerializer.Serialize(messageEnvelope),
                 deliveryType),
             cancellationToken);
@@ -117,18 +126,14 @@ public class MessagePersistenceService : IMessagePersistenceService
 
     public async Task ProcessAsync(
         Guid messageId,
-        MessageDeliveryType deliveryType,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        var message =
-            (await _messagePersistenceRepository.GetByFilterAsync(
-                x => x.Id == messageId && x.DeliveryType == deliveryType, cancellationToken))
-            .FirstOrDefault();
+        var message = await _messagePersistenceRepository.GetByIdAsync(messageId, cancellationToken);
 
-        if (message is null)
-            return;
+        if (message is null) return;
 
-        switch (deliveryType)
+        switch (message.DeliveryType)
         {
             case MessageDeliveryType.Inbox:
                 await ProcessInbox(message, cancellationToken);
@@ -147,11 +152,11 @@ public class MessagePersistenceService : IMessagePersistenceService
     public async Task ProcessAllAsync(CancellationToken cancellationToken = default)
     {
         var messages = await _messagePersistenceRepository
-            .GetByFilterAsync(x => x.MessageStatus != MessageStatus.Processed, cancellationToken);
+                           .GetByFilterAsync(x => x.MessageStatus != MessageStatus.Processed, cancellationToken);
 
         foreach (var message in messages)
         {
-            await ProcessAsync(message.Id, message.DeliveryType, cancellationToken);
+            await ProcessAsync(message.Id, cancellationToken);
         }
     }
 
@@ -159,8 +164,7 @@ public class MessagePersistenceService : IMessagePersistenceService
     {
         MessageEnvelope? messageEnvelope = _messageSerializer.Deserialize<MessageEnvelope>(message.Data, true);
 
-        if (messageEnvelope is null || messageEnvelope.Message is null)
-            return;
+        if (messageEnvelope is null || messageEnvelope.Message is null) return;
 
         var data = _messageSerializer.Deserialize(
             messageEnvelope.Message.ToString()!,
@@ -185,8 +189,7 @@ public class MessagePersistenceService : IMessagePersistenceService
     {
         MessageEnvelope? messageEnvelope = _messageSerializer.Deserialize<MessageEnvelope>(message.Data, true);
 
-        if (messageEnvelope is null || messageEnvelope.Message is null)
-            return;
+        if (messageEnvelope is null || messageEnvelope.Message is null) return;
 
         var data = _messageSerializer.Deserialize(
             messageEnvelope.Message.ToString()!,

@@ -1,5 +1,5 @@
 using Ardalis.GuardClauses;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
+using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 using ECommerce.Services.Customers.Shared.Clients.Catalogs;
 using ECommerce.Services.Customers.Shared.Clients.Identity;
 using Microsoft.Extensions.Options;

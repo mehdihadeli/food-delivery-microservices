@@ -1,0 +1,8 @@
+# https://csharpier.com/docs/Configuration
+printWidth: 120
+useTabs: false
+tabWidth: 4
+preprocessorSymbolSets:
+    - ""
+    - "DEBUG"
+    - "DEBUG,CODE_STYLE"

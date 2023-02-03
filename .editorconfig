@@ -6,9 +6,16 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
+##################################################################################
+## https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/
+## https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/
+## Microsoft Rules
+##
+
 # C# files
 [*.{cs, cshtml}]
 indent_size = 4
+
 # New line preferences
 csharp_new_line_before_open_brace = all
 csharp_new_line_before_else = true
@@ -104,7 +111,6 @@ csharp_space_after_dot = false
 csharp_space_after_keywords_in_control_flow_statements = true
 csharp_space_after_semicolon_in_for_statement = true
 csharp_space_around_binary_operators = before_and_after
-csharp_space_around_declaration_statements = do_not_ignore
 csharp_space_before_colon_in_inheritance_clause = true
 csharp_space_before_comma = false
 csharp_space_before_dot = false
@@ -120,28 +126,120 @@ csharp_space_between_method_declaration_parameter_list_parentheses = false
 csharp_space_between_parentheses = false
 csharp_space_between_square_brackets = false
 
-##################################################################################
-## https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/categories
-## Microsoft Rules
-##
-
 # CA1305: Specify IFormatProvider
-dotnet_diagnostic.CA1305.severity = None
+dotnet_diagnostic.ca1305.severity = None
 
 # CA1063: Implement IDisposable correctly
-dotnet_diagnostic.CA1063.severity = None
+dotnet_diagnostic.ca1063.severity = None
 
 # CA2201: Do not raise reserved exception types
-dotnet_diagnostic.CA2201.severity = Suggestion
+dotnet_diagnostic.ca2201.severity = Suggestion
 
 # CA1848: Use the LoggerMessage delegates
-dotnet_diagnostic.CA1848.severity = Suggestion
+dotnet_diagnostic.ca1848.severity = Suggestion
 
 # CA1810: Initialize reference type static fields inline
-dotnet_diagnostic.CA1810.severity = Suggestion
+dotnet_diagnostic.ca1810.severity = Suggestion
 
 # CA1725: Parameter names should match base declaration
-dotnet_diagnostic.CA1725.severity = Suggestion
+dotnet_diagnostic.ca1725.severity = Suggestion
+
+# https://csharpier.com/docs/IntegratingWithLinters#code-analysis-rules
+dotnet_diagnostic.ide0055.severity = none
+
+##################################################################################
+# https://jetbrains.com.xy2401.com/help/resharper/EditorConfig_Index.html
+# https://jetbrains.com.xy2401.com/help/resharper/Reference__Code_Inspections_CSHARP.html
+## Resharper
+
+# ReSharper properties
+resharper_align_linq_query = true
+resharper_align_multiline_array_and_object_initializer = true
+resharper_align_multiline_binary_patterns = true
+resharper_align_multiline_expression = true
+resharper_align_multiline_extends_list = true
+resharper_align_multiline_parameter = true
+resharper_align_multiline_property_pattern = true
+resharper_align_multiline_switch_expression = true
+resharper_align_multiple_declaration = true
+resharper_align_multline_type_parameter_constrains = true
+resharper_align_multline_type_parameter_list = true
+resharper_align_tuple_components = true
+resharper_braces_for_for = required_for_multiline
+resharper_braces_for_foreach = required_for_multiline
+resharper_braces_for_ifelse = required_for_multiline
+resharper_csharp_alignment_tab_fill_style = optimal_fill
+resharper_csharp_indent_type_constraints = false
+resharper_csharp_int_align_fix_in_adjacent = false
+resharper_csharp_outdent_commas = true
+resharper_csharp_stick_comment = false
+resharper_csharp_wrap_after_declaration_lpar = true
+resharper_csharp_wrap_after_invocation_lpar = true
+resharper_csharp_wrap_arguments_style = chop_if_long
+resharper_csharp_wrap_before_declaration_rpar = true
+resharper_csharp_wrap_before_first_type_parameter_constraint = true
+resharper_csharp_wrap_before_ternary_opsigns = false
+resharper_csharp_wrap_extends_list_style = chop_if_long
+resharper_csharp_wrap_multiple_declaration_style = wrap_if_long
+resharper_csharp_wrap_multiple_type_parameter_constraints_style = chop_always
+resharper_csharp_wrap_parameters_style = chop_if_long
+resharper_enforce_line_ending_style = true
+resharper_indent_anonymous_method_block = true
+resharper_indent_braces_inside_statement_conditions = false
+resharper_indent_nested_fixed_stmt = true
+resharper_indent_nested_foreach_stmt = true
+resharper_indent_nested_for_stmt = true
+resharper_indent_nested_lock_stmt = true
+resharper_indent_nested_usings_stmt = true
+resharper_indent_nested_while_stmt = true
+resharper_keep_existing_declaration_block_arrangement = true
+resharper_keep_existing_declaration_parens_arrangement = false
+resharper_keep_existing_embedded_arrangement = false
+resharper_keep_existing_embedded_block_arrangement = true
+resharper_keep_existing_enum_arrangement = true
+resharper_keep_existing_initializer_arrangement = false
+resharper_keep_existing_invocation_parens_arrangement = false
+resharper_keep_existing_property_patterns_arrangement = false
+resharper_keep_existing_switch_expression_arrangement = false
+resharper_max_array_initializer_elements_on_line = 700
+resharper_max_formal_parameters_on_line = 500
+resharper_max_invocation_arguments_on_line = 700
+resharper_new_line_before_while = true
+resharper_place_attribute_on_same_line = false
+resharper_place_linq_into_on_new_line = false
+resharper_place_simple_case_statement_on_same_line = if_owner_is_single_line
+resharper_place_simple_property_pattern_on_single_line = false
+resharper_show_autodetect_configure_formatting_tip = false
+resharper_space_within_single_line_array_initializer_braces = false
+resharper_trailing_comma_in_multiline_lists = true
+resharper_trailing_comma_in_singleline_lists = true
+resharper_use_heuristics_for_body_style = false
+resharper_use_indent_from_vs = false
+resharper_use_roslyn_logic_for_evident_types = true
+resharper_wrap_array_initializer_style = chop_always
+resharper_wrap_chained_binary_expressions = chop_if_long
+resharper_wrap_chained_binary_patterns = chop_if_long
+resharper_wrap_chained_method_calls = chop_if_long
+resharper_wrap_for_stmt_header_style = wrap_if_long
+resharper_wrap_switch_expression = chop_if_long
+resharper_wrap_verbatim_interpolated_strings = chop_if_long
+
+# ReSharper inspection severities
+resharper_arrange_accessor_owner_body_highlighting = none
+resharper_arrange_redundant_parentheses_highlighting = hint
+resharper_arrange_type_member_modifiers_highlighting = hint
+resharper_arrange_type_modifiers_highlighting = hint
+resharper_check_namespace_highlighting = none
+resharper_enforce_if_statement_braces_highlighting = hint
+resharper_inconsistent_naming_highlighting = suggestion
+resharper_static_member_in_generic_type_highlighting = none
+resharper_suggest_var_or_type_built_in_types_highlighting = hint
+resharper_suggest_var_or_type_elsewhere_highlighting = hint
+resharper_suggest_var_or_type_simple_types_highlighting = hint
+resharper_web_config_module_not_resolved_highlighting = warning
+resharper_web_config_type_not_resolved_highlighting = warning
+resharper_web_config_wrong_module_highlighting = warning
+
 
 ##################################################################################
 ## https://github.com/DotNetAnalyzers/StyleCopAnalyzers/tree/master/documentation
@@ -150,90 +248,90 @@ dotnet_diagnostic.CA1725.severity = Suggestion
 ##
 
 # Using directive should appear within a namespace declaration
-dotnet_diagnostic.SA1200.severity = None
+dotnet_diagnostic.sa1200.severity = None
 
 # Generic type parameter documentation should have text.
-dotnet_diagnostic.SA1622.severity = None
+dotnet_diagnostic.sa1622.severity = None
 
 # XML comment analysis is disabled due to project configuration
-dotnet_diagnostic.SA0001.severity = None
+dotnet_diagnostic.sa0001.severity = None
 
 # The file header is missing or not located at the top of the file
-dotnet_diagnostic.SA1633.severity = None
+dotnet_diagnostic.sa1633.severity = None
 
 # Use string.Empty for empty strings
-dotnet_diagnostic.SA1122.severity = None
+dotnet_diagnostic.sa1122.severity = None
 
 # Variable '_' should begin with lower-case letter
-dotnet_diagnostic.SA1312.severity = None
+dotnet_diagnostic.sa1312.severity = None
 
 # Parameter '_' should begin with lower-case letter
-dotnet_diagnostic.SA1313.severity = None
+dotnet_diagnostic.sa1313.severity = None
 
 # Elements should be documented
-dotnet_diagnostic.SA1600.severity = None
+dotnet_diagnostic.sa1600.severity = None
 
 # Prefix local calls with this
-dotnet_diagnostic.SA1101.severity = None
+dotnet_diagnostic.sa1101.severity = None
 
 # 'public' members should come before 'private' members
-dotnet_diagnostic.SA1202.severity = None
+dotnet_diagnostic.sa1202.severity = None
 
 # Comments should contain text
-dotnet_diagnostic.SA1120.severity = None
+dotnet_diagnostic.sa1120.severity = None
 
 # Constant fields should appear before non-constant fields
-dotnet_diagnostic.SA1203.severity = None
+dotnet_diagnostic.sa1203.severity = None
 
 # Field '_blah' should not begin with an underscore
-dotnet_diagnostic.SA1309.severity = None
+dotnet_diagnostic.sa1309.severity = None
 
 # Use trailing comma in multi-line initializers
-dotnet_diagnostic.SA1413.severity = None
+dotnet_diagnostic.sa1413.severity = None
 
 # A method should not follow a class
-dotnet_diagnostic.SA1201.severity = None
+dotnet_diagnostic.sa1201.severity = None
 
 # Elements should be separated by blank line
-dotnet_diagnostic.SA1516.severity = None
+dotnet_diagnostic.sa1516.severity = None
 
 # The parameter spans multiple lines
-dotnet_diagnostic.SA1118.severity = None
+dotnet_diagnostic.sa1118.severity = None
 
 # Static members should appear before non-static members
-dotnet_diagnostic.SA1204.severity = None
+dotnet_diagnostic.sa1204.severity = None
 
 # Put constructor initializers on their own line
-dotnet_diagnostic.SA1128.severity = None
+dotnet_diagnostic.sa1128.severity = None
 
 # Opening braces should not be preceded by blank line
-dotnet_diagnostic.SA1509.severity = None
+dotnet_diagnostic.sa1509.severity = None
 
 # The parameter should begin on the line after the previous parameter
-dotnet_diagnostic.SA1115.severity = None
+dotnet_diagnostic.sa1115.severity = None
 
 # File name should match first type name
-dotnet_diagnostic.SA1649.severity = None
+dotnet_diagnostic.sa1649.severity = None
 
 # File may only contain a single type
-dotnet_diagnostic.SA1402.severity = None
+dotnet_diagnostic.sa1402.severity = None
 
 # Enumeration items should be documented
-dotnet_diagnostic.SA1602.severity = None
+dotnet_diagnostic.sa1602.severity = None
 
 # Element should not be on a single line
-dotnet_diagnostic.SA1502.severity = None
+dotnet_diagnostic.sa1502.severity = None
 
 # Closing parenthesis should not be preceded by a space
-dotnet_diagnostic.SA1009.severity = None
+dotnet_diagnostic.sa1009.severity = None
 
 # Closing parenthesis should be on line of last parameter
-dotnet_diagnostic.SA1111.severity = None
+dotnet_diagnostic.sa1111.severity = None
 
 # Braces should not be ommitted
-dotnet_diagnostic.SA1503.severity = None
+dotnet_diagnostic.sa1503.severity = None
 
-dotnet_diagnostic.SA1401.severity = None
+dotnet_diagnostic.sa1401.severity = None
 
 # The parameters to a C# method or indexer call or declaration are not all on the same line or each on a separate line.
 # dotnet_diagnostic.SA1117.severity = Suggestion
@@ -242,113 +340,113 @@ dotnet_diagnostic.SA1401.severity = None
 # dotnet_diagnostic.SA1116.severity = Suggestion
 
 # A C# partial element is missing a documentation header.
-dotnet_diagnostic.SA1601.severity = None
+dotnet_diagnostic.sa1601.severity = None
 
 # A <param> tag within a C# element’s documentation header is empty.
-dotnet_diagnostic.SA1614.severity = None
+dotnet_diagnostic.sa1614.severity = None
 
 # A C# element is missing documentation for its return value.
-dotnet_diagnostic.SA1615.severity = None
+dotnet_diagnostic.sa1615.severity = None
 
 # The <returns> tag within a C# element’s documentation header is empty.
-dotnet_diagnostic.SA1616.severity = None
+dotnet_diagnostic.sa1616.severity = None
 
 # An opening brace within a C# element is not spaced correctly.
-dotnet_diagnostic.SA1012.severity = Suggestion
+dotnet_diagnostic.sa1012.severity = Suggestion
 
 # A closing brace within a C# element is not spaced correctly.
-dotnet_diagnostic.SA1013.severity = Suggestion
+dotnet_diagnostic.sa1013.severity = Suggestion
 
 # A call to an instance member of the local class or a base class is not prefixed with 'this.', within a C# code file.
-dotnet_diagnostic.SA1101.severity = None
+dotnet_diagnostic.sa1101.severity = None
 
 ##################################################################################
 ## https://github.com/meziantou/Meziantou.Analyzer/tree/main/docs
 ## Meziantou.Analyzer
 
 # MA0004: Use Task.ConfigureAwait(false)
-dotnet_diagnostic.MA0004.severity = Suggestion
+dotnet_diagnostic.ma0004.severity = Suggestion
 
 # MA0049: Type name should not match containing namespace
-dotnet_diagnostic.MA0049.severity = None
+dotnet_diagnostic.ma0049.severity = None
 
 # MA0048: File name must match type name
-dotnet_diagnostic.MA0048.severity = Suggestion
+dotnet_diagnostic.ma0048.severity = Suggestion
 
 # MA0051: Method is too long
-dotnet_diagnostic.MA0051.severity = Suggestion
+dotnet_diagnostic.ma0051.severity = Suggestion
 
 # https://www.meziantou.net/string-comparisons-are-harder-than-it-seems.htm
 # MA0006 - Use String.Equals instead of equality operator
-dotnet_diagnostic.MA0006.severity = Suggestion
+dotnet_diagnostic.ma0006.severity = Suggestion
 
 # MA0002 - IEqualityComparer<string> or IComparer<string> is missing
-dotnet_diagnostic.MA0002.severity = Suggestion
+dotnet_diagnostic.ma0002.severity = Suggestion
 
 # MA0001 - StringComparison is missing
-dotnet_diagnostic.MA0001.severity = Suggestion
+dotnet_diagnostic.ma0001.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#13-pass-cancellation-token
 # MA0040: Specify a cancellation token
-dotnet_diagnostic.MA0032.severity = Suggestion
+dotnet_diagnostic.ma0032.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#13-pass-cancellation-token
 # MA0040: Flow the cancellation token when available
-dotnet_diagnostic.MA0040.severity = Suggestion
+dotnet_diagnostic.ma0040.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#14-using-cancellation-token-with-iasyncenumerable
 # MA0079: Use a cancellation token using .WithCancellation()
-dotnet_diagnostic.MA0079.severity = Suggestion
+dotnet_diagnostic.ma0079.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#14-using-cancellation-token-with-iasyncenumerable
 # MA0080: Use a cancellation token using .WithCancellation()
-dotnet_diagnostic.MA0080.severity = Suggestion
+dotnet_diagnostic.ma0080.severity = Suggestion
 
 # MA0047 - Declare types in namespaces
 # https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0047.md
-dotnet_diagnostic.MA0047.severity = Suggestion
+dotnet_diagnostic.ma0047.severity = Suggestion
 
 # MA0015 - Specify the parameter name in ArgumentException
-dotnet_diagnostic.MA0015.severity = Suggestion
+dotnet_diagnostic.ma0015.severity = Suggestion
 
 ##################################################################################
 ## http://pihrt.net/Roslynator/Analyzers
 ## http://pihrt.net/Roslynator/Refactorings
+## https://github.com/JosefPihrt/Roslynator/blob/main/docs/Configuration.md
 ## Roslynator
-##
 
 # RCS1036 -	Remove redundant empty line.
-dotnet_diagnostic.RCS1036.severity = None
+dotnet_diagnostic.rcs1036.severity = None
 
 # RCS1037 - Remove trailing white-space.
-dotnet_diagnostic.RCS1037.severity = None
+dotnet_diagnostic.rcs1037.severity = None
 
 # RCS1194: Implement exception constructors
-dotnet_diagnostic.RCS1194.severity = None
+dotnet_diagnostic.rcs1194.severity = None
 
 # https://cezarypiatek.github.io/post/async-analyzers-p1/#1-redundant-asyncawait
 # RCS1174: Remove redundant async/await.
-dotnet_diagnostic.RCS1174.severity = error
+dotnet_diagnostic.rcs1174.severity = error
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#10-returning-null-from-a-task-returning-method
 # RCS1210: Return Task.FromResult instead of returning null.
-dotnet_diagnostic.RCS1210.severity = error
+dotnet_diagnostic.rcs1210.severity = error
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#9-missing-configureawaitbool
 # RCS1090: Call 'ConfigureAwait(false)'.
-dotnet_diagnostic.RCS1090.severity = Suggestion
+dotnet_diagnostic.rcs1090.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#11-asynchronous-method-names-should-end-with-async
 #RCS1046: Asynchronous method name should end with 'Async'.
-dotnet_diagnostic.RCS1046.severity = Suggestion
+dotnet_diagnostic.rcs1046.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#12-non-asynchronous-method-names-shouldnt-end-with-async
 # RCS1047: Non-asynchronous method name should not end with 'Async'.
-dotnet_diagnostic.RCS1047.severity = error
+dotnet_diagnostic.rcs1047.severity = error
 
 # https://github.com/JosefPihrt/Roslynator/blob/master/docs/analyzers/RCS1174.md
 # RCS1174: Remove redundant async/await
-dotnet_diagnostic.RCS1174.severity = Suggestion
+dotnet_diagnostic.rcs1174.severity = Suggestion
 
 
 
@@ -359,19 +457,19 @@ dotnet_diagnostic.RCS1174.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p1/#1-redundant-asyncawait
 # AsyncFixer01: Unnecessary async/await usage
-dotnet_diagnostic.AsyncFixer01.severity = Suggestion
+dotnet_diagnostic.asyncfixer01.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p1/#2-calling-synchronous-method-inside-the-async-method
 # AsyncFixer02: Long-running or blocking operations inside an async method
-dotnet_diagnostic.AsyncFixer02.severity = error
+dotnet_diagnostic.asyncfixer02.severity = error
 
 # https://cezarypiatek.github.io/post/async-analyzers-p1/#3-async-void-method
 # AsyncFixer03: Fire & forget async void methods
-dotnet_diagnostic.AsyncFixer03.severity = error
+dotnet_diagnostic.asyncfixer03.severity = error
 
 # https://cezarypiatek.github.io/post/async-analyzers-p1/#6-not-awaited-task-inside-the-using-block
 # AsyncFixer04: Fire & forget async call inside a using block
-dotnet_diagnostic.AsyncFixer04.severity = error
+dotnet_diagnostic.asyncfixer04.severity = error
 
 
 ##################################################################################
@@ -381,44 +479,44 @@ dotnet_diagnostic.AsyncFixer04.severity = error
 
 # https://cezarypiatek.github.io/post/async-analyzers-p1/#2-calling-synchronous-method-inside-the-async-method
 # VSTHRD103: Call async methods when in an async method
-dotnet_diagnostic.VSTHRD103.severity = Suggestion
+dotnet_diagnostic.vsthrd103.severity = Suggestion
 
 
 # https://cezarypiatek.github.io/post/async-analyzers-p1/#3-async-void-method
 # VSTHRD100: Avoid async void methods
-dotnet_diagnostic.VSTHRD100.severity = error
+dotnet_diagnostic.vsthrd100.severity = error
 
 # https://cezarypiatek.github.io/post/async-analyzers-p1/#4-unsupported-async-delegates
 # VSTHRD101: Avoid unsupported async delegates
-dotnet_diagnostic.VSTHRD101.severity = error
+dotnet_diagnostic.vsthrd101.severity = error
 
 # https://cezarypiatek.github.io/post/async-analyzers-p1/#5-not-awaited-task-within-using-expression
 # VSTHRD107: Await Task within using expression
-dotnet_diagnostic.VSTHRD107.severity = error
+dotnet_diagnostic.vsthrd107.severity = error
 
 # https://cezarypiatek.github.io/post/async-analyzers-p1/#7-unobserved-result-of-asynchronous-method
 # VSTHRD110: Observe result of async calls
-dotnet_diagnostic.VSTHRD110.severity = Suggestion
+dotnet_diagnostic.vsthrd110.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#8-synchronous-waits
 # VSTHRD002: Avoid problematic synchronous waits
-dotnet_diagnostic.VSTHRD002.severity = Suggestion
+dotnet_diagnostic.vsthrd002.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#9-missing-configureawaitbool
 # VSTHRD111: Use ConfigureAwait(bool)
-dotnet_diagnostic.VSTHRD111.severity = Suggestion
+dotnet_diagnostic.vsthrd111.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#10-returning-null-from-a-task-returning-method
 # VSTHRD114: Avoid returning a null Task
-dotnet_diagnostic.VSTHRD114.severity = error
+dotnet_diagnostic.vsthrd114.severity = error
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#11-asynchronous-method-names-should-end-with-async
 # VSTHRD200: Use "Async" suffix for async methods
-dotnet_diagnostic.VSTHRD200.severity = Suggestion
+dotnet_diagnostic.vsthrd200.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#12-non-asynchronous-method-names-shouldnt-end-with-async
 # VSTHRD200: Use "Async" suffix for async methods
-dotnet_diagnostic.VSTHRD200.severity = Suggestion
+dotnet_diagnostic.vsthrd200.severity = Suggestion
 
 
 ##################################################################################
@@ -428,19 +526,19 @@ dotnet_diagnostic.VSTHRD200.severity = Suggestion
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#8-synchronous-waits
 # AsyncifyInvocation: Use Task Async
-dotnet_diagnostic.AsyncifyInvocation.severity = error
+dotnet_diagnostic.asyncifyinvocation.severity = error
 
 # https://cezarypiatek.github.io/post/async-analyzers-p2/#8-synchronous-waits
 # AsyncifyVariable: Use Task Async
-dotnet_diagnostic.AsyncifyVariable.severity = error
+dotnet_diagnostic.asyncifyvariable.severity = error
 
 
 ##################################################################################
 ## https://github.com/cezarypiatek/ExceptionAnalyzer
 
-dotnet_diagnostic.EX001.severity = Suggestion
+dotnet_diagnostic.ex001.severity = Suggestion
 
-#################################################################################
-# IDE0073: File header
-# dotnet_diagnostic.IDE0073.severity = none
-# file_header_template = Licensed under the MIT license.
+[*.{appxmanifest,asax,ascx,aspx,axaml,build,c,c++,cc,cginc,compute,cp,cpp,cs,cshtml,cu,cuh,cxx,dtd,fs,fsi,fsscript,fsx,fx,fxh,h,hh,hlsl,hlsli,hlslinc,hpp,hxx,inc,inl,ino,ipp,master,ml,mli,mpp,mq4,mq5,mqh,nuspec,paml,razor,resw,resx,shader,skin,tpp,usf,ush,vb,xaml,xamlx,xoml,xsd}]
+indent_style = space
+indent_size = 4
+tab_width = 4

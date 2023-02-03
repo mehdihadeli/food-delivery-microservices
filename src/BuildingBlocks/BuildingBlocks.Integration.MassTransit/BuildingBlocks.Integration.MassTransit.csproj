@@ -6,6 +6,10 @@
     <ProjectReference Include="..\BuildingBlocks.Validation\BuildingBlocks.Validation.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="MassTransit" />
     <PackageReference Include="MassTransit.RabbitMQ" />

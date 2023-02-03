@@ -6,6 +6,10 @@
     <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Http" />
     <PackageReference Include="Asp.Versioning.Mvc" />

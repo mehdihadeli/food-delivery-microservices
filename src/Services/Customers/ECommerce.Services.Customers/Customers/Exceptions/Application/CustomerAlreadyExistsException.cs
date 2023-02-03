@@ -3,7 +3,7 @@ using BuildingBlocks.Core.Exception.Types;
 
 namespace ECommerce.Services.Customers.Customers.Exceptions.Application;
 
-internal class CustomerAlreadyExistsException : AppException
+public class CustomerAlreadyExistsException : AppException
 {
     public long? CustomerId { get; }
     public Guid? IdentityId { get; }

@@ -1,13 +1,36 @@
 ﻿{
   "$schema": "https://json.schemaecommerce.org/launchsettings.json",
   "profiles": {
-    "Catalogs.Api": {
+    "Catalogs.Api.Https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "hotReloadProfile": "aspnetcore",
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:4001;http://localhost:4000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Catalogs.Api.Http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "hotReloadProfile": "aspnetcore",
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:4000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Catalogs.Api.Watch": {
+      "commandName": "Executable",
+      "executablePath": "dotnet",
+      "workingDirectory": "$(ProjectDir)",
+      "hotReloadEnabled": true,
+      "hotReloadProfile": "aspnetcore",
+      "commandLineArgs": "watch run",
+      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -1,6 +1,7 @@
 using System.Net;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Types.Extensions;
 using ECommerce.Services.Identity.Shared.Models;
 
 namespace ECommerce.Services.Identity.Users.Features.UpdatingUserState.v1;

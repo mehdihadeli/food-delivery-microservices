@@ -37,7 +37,8 @@ public record CreateProduct(
     long SupplierId,
     long BrandId,
     string? Description = null,
-    IEnumerable<CreateProductImageRequest>? Images = null) : ITxCreateCommand<CreateProductResponse>
+    IEnumerable<CreateProductImageRequest>? Images = null
+) : ITxCreateCommand<CreateProductResponse>
 {
     public long Id { get; init; } = SnowFlakIdGenerator.NewId();
 }
@@ -50,44 +51,43 @@ public class CreateProductValidator : AbstractValidator<CreateProduct>
 
         RuleFor(x => x.Id)
             .NotEmpty()
-            .GreaterThan(0).WithMessage("InternalCommandId must be greater than 0");
+            .GreaterThan(0)
+            .WithMessage("InternalCommandId must be greater than 0");
 
-        RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Name is required.");
+        RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required.");
 
-        RuleFor(x => x.Price)
-            .NotEmpty()
-            .GreaterThan(0).WithMessage("Price must be greater than 0");
+        RuleFor(x => x.Price).NotEmpty().GreaterThan(0).WithMessage("Price must be greater than 0");
 
-        RuleFor(x => x.Status)
-            .IsInEnum().WithMessage("Status is required.");
+        RuleFor(x => x.Status).IsInEnum().WithMessage("Status is required.");
 
-        RuleFor(x => x.Color)
-            .IsInEnum().WithMessage("Color is required.");
+        RuleFor(x => x.Color).IsInEnum().WithMessage("Color is required.");
 
-        RuleFor(x => x.Stock)
-            .NotEmpty()
-            .GreaterThan(0).WithMessage("Stock must be greater than 0");
+        RuleFor(x => x.Stock).NotEmpty().GreaterThan(0).WithMessage("Stock must be greater than 0");
 
         RuleFor(x => x.MaxStockThreshold)
             .NotEmpty()
-            .GreaterThan(0).WithMessage("MaxStockThreshold must be greater than 0");
+            .GreaterThan(0)
+            .WithMessage("MaxStockThreshold must be greater than 0");
 
         RuleFor(x => x.RestockThreshold)
             .NotEmpty()
-            .GreaterThan(0).WithMessage("RestockThreshold must be greater than 0");
+            .GreaterThan(0)
+            .WithMessage("RestockThreshold must be greater than 0");
 
         RuleFor(x => x.CategoryId)
             .NotEmpty()
-            .GreaterThan(0).WithMessage("CategoryId must be greater than 0");
+            .GreaterThan(0)
+            .WithMessage("CategoryId must be greater than 0");
 
         RuleFor(x => x.SupplierId)
             .NotEmpty()
-            .GreaterThan(0).WithMessage("SupplierId must be greater than 0");
+            .GreaterThan(0)
+            .WithMessage("SupplierId must be greater than 0");
 
         RuleFor(x => x.BrandId)
             .NotEmpty()
-            .GreaterThan(0).WithMessage("BrandId must be greater than 0");
+            .GreaterThan(0)
+            .WithMessage("BrandId must be greater than 0");
     }
 }
 
@@ -100,7 +100,8 @@ public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProduct
     public CreateProductHandler(
         ICatalogDbContext catalogDbContext,
         IMapper mapper,
-        ILogger<CreateProductHandler> logger)
+        ILogger<CreateProductHandler> logger
+    )
     {
         _logger = Guard.Against.Null(logger, nameof(logger));
         _mapper = Guard.Against.Null(mapper, nameof(mapper));
@@ -109,16 +110,21 @@ public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProduct
 
     public async Task<CreateProductResponse> Handle(
         CreateProduct command,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         Guard.Against.Null(command, nameof(command));
 
-        var images = command.Images?.Select(x =>
-                new ProductImage(
-                    EntityId.CreateEntityId(SnowFlakIdGenerator.NewId()),
-                    x.ImageUrl,
-                    x.IsMain,
-                    ProductId.Of(command.Id)))
+        var images = command.Images
+            ?.Select(
+                x =>
+                    new ProductImage(
+                        EntityId.CreateEntityId(SnowFlakIdGenerator.NewId()),
+                        x.ImageUrl,
+                        x.IsMain,
+                        ProductId.Of(command.Id)
+                    )
+            )
             .ToList();
 
         var category = await _catalogDbContext.FindCategoryAsync(CategoryId.Of(command.CategoryId));
@@ -127,7 +133,9 @@ public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProduct
         var brand = await _catalogDbContext.FindBrandAsync(BrandId.Of(command.BrandId));
         Guard.Against.NotFound(brand, new BrandNotFoundException(command.BrandId));
 
-        var supplier = await _catalogDbContext.FindSupplierByIdAsync(SupplierId.Of(command.SupplierId));
+        var supplier = await _catalogDbContext.FindSupplierByIdAsync(
+            SupplierId.Of(command.SupplierId)
+        );
         Guard.Against.NotFound(supplier, new SupplierNotFoundException(command.SupplierId));
 
         // await _domainEventDispatcher.DispatchAsync(cancellationToken, new Events.Domain.CreatingProduct());
@@ -144,7 +152,8 @@ public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProduct
             category!.Id,
             supplier!.Id,
             brand!.Id,
-            images);
+            images
+        );
 
         await _catalogDbContext.Products.AddAsync(product, cancellationToken: cancellationToken);
 

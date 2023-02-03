@@ -21,6 +21,7 @@ public static class CreateProductEndpoint
             // WithOpenApi should placed before versioning and other things - this fixed in Aps.Versioning.Http 7.0.0-preview.1
             .WithOpenApi(operation =>
             {
+                // we could use our `WithResponseDescription` extension method also
                 operation.Summary = "Creating a New Product";
                 operation.Description = "Creating a New Product";
                 operation.Responses[StatusCodes.Status401Unauthorized.ToString(CultureInfo.InvariantCulture)]
@@ -32,7 +33,7 @@ public static class CreateProductEndpoint
 
                 return operation;
             })
-            //.RequireAuthorization()
+            .RequireAuthorization()
             .Produces<CreateProductResponse>(StatusCodes.Status201Created)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)

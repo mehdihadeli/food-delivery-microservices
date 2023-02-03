@@ -4,14 +4,15 @@
     <ContainerImageName>catalogs-services</ContainerImageName>
     <ContainerImageTag>1.1.0</ContainerImageTag>
     <ContainerBaseImage>mcr.microsoft.com/dotnet/nightly/runtime-deps:7.0</ContainerBaseImage>
-    <PublishTrimmed>true</PublishTrimmed>
-    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsPublishable>true</IsPublishable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\ECommerce.Services.Catalogs\ECommerce.Services.Catalogs.csproj" />
-    <ProjectReference Include="..\Minimal\Minimal.csproj" />
   </ItemGroup>
 
   <ItemGroup>

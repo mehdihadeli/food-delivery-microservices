@@ -1,0 +1,42 @@
+name: Deploy to Azure
+description: Deploy to Azure
+
+inputs:
+  resource-group:
+    description: RG to deploy to
+    required: true
+  service-name:
+    description: Service name
+    required: true
+  image:
+    description: Image to deploy
+    required: true
+  azure-creds:
+    description: Azure credentials to log into subscription
+    required: true
+  env-secret:
+    description: A demo secret variable
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ inputs.azure-creds }}
+
+    - name: Deploy the image
+      id: deploystep
+      shell: bash
+      run: |
+        az group create -n ${{ inputs.resource-group }} -l southcentralus
+        az container create -g ${{ inputs.resource-group }} --name ${{ inputs.service-name }} --image ${{ inputs.image }}  --dns-name-label ${{ inputs.service-name }} --environment-variables secrets__environment=${{ inputs.env-secret }}
+
+        fqdn=$(az container show -n ${{ inputs.service-name }} -g ${{ inputs.resource-group }} --query "ipAddress.fqdn" -o tsv)
+
+        # output for Actions
+        echo "::set-output name=fqdn::http://$fqdn"
+
+        # output for Pipelines
+        echo "##vso[task.setvariable variable=fqdn;]$fqdn"

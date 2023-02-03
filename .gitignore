@@ -359,3 +359,7 @@ out/
 local/data/
 portainer-data/
 .env
+coveragereport/
+CoverageResults/
+coverage.cobertura.xml
+coverage.info

@@ -5,7 +5,18 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <EnablePackageVersionOverride>true</EnablePackageVersionOverride>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <Version>1.2.0-ops.9</Version>
+    <ApplicationVersion>1.2.0-ops.9</ApplicationVersion>
+    <InformationalVersion>1.2.0-ops.9</InformationalVersion>
+  </PropertyGroup>
 
+  <PropertyGroup>  
+  	<IsPublishable>false</IsPublishable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)"/>

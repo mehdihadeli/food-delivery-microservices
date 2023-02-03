@@ -1,0 +1,90 @@
+# https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
+# https://doug.sh/posts/using-composite-actions-with-github-actions/
+# https://wallis.dev/blog/composite-github-actions
+
+name: "Publish Service Artifact"
+description: "Publishing application artifacts"
+
+# Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+inputs:
+  application-version:
+    description: "Application version"
+    required: true
+  service-name:
+    description: "Service name"
+    required: true
+  project-path:
+    description: "Project path"
+    required: true
+  # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
+  token:
+    description: 'A Github PAT'
+    required: true
+  no-restore:
+    description: 'No restore for build and tests'
+    default: 'true'
+
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
+runs:
+  using: "composite"
+  steps:
+
+    - name: Info
+      shell: bash
+      run: |
+        echo project-path is: "${{ inputs.project-path }}"
+        echo service-name is: "${{ inputs.service-name }}"
+        echo application-version is: "${{ inputs.application-version }}"
+
+    - name: Check Inputs
+      shell: bash
+      run: |
+        if [ -z ${{ inputs.application-version }} ]
+           then echo "application-version is empty, action cancelled..."
+                exit 1
+        fi
+
+    # https://garywoodfine.com/how-to-use-github-actions-to-build-deploy-github-nuget-packages/
+    # https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/docker/building-net-docker-images?view=aspnetcore-7.0#the-dockerfile
+    # or calling dotnet publish on solution - we marked `publishable` and `packable` projects in their .csproj
+    - name: dotnet publish
+      id: publish-services
+      shell: bash
+      if: success()
+      working-directory: ${{ inputs.project-path }}
+      run: |
+        if [ ${{ inputs.no-restore }} = true ]; then
+           dotnet publish -c Release --no-restore --no-build -o ${{ github.workspace }}/output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
+        else
+           dotnet publish -c Release -o ${{ github.workspace }}/output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
+        fi
+
+      # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
+      # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
+      # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
+      # note: we should zip inner (publish-services) folder and for doing this we use  `cd output` first then zip
+      # `publish-services/*` folder, otherwise with zip `output/publish-services` it zip output folder and inner `publish-services`folder together
+    - name: Zip publish-services Artifacts
+      if: success()
+      shell: bash
+      working-directory: ${{ github.workspace }}/output
+      run: |
+        zip -r ${{inputs.service-name}}.zip ${{inputs.service-name}}/*
+
+      # https://github.com/actions/runner/issues/946#issuecomment-900193569
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
+    - name: Ls Output Files
+      shell: bash
+      if: success()
+      run: ls -R ${{ github.workspace }}/output
+
+    - name: Upload Publish Services Artifacts For Deployment Jobs
+      uses: actions/upload-artifact@v3
+      if: (steps.publish-services.outcome == 'success')
+      with:
+        name: ${{ inputs.service-name}}_publish_artifacts
+        retention-days: 1
+        path: |
+          ${{ github.workspace }}/output/${{inputs.service-name}}.zip

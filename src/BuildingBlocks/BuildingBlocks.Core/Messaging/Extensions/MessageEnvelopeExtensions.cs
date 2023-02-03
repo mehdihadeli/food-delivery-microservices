@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Types.Extensions;
 
 namespace BuildingBlocks.Core.Messaging.Extensions;
 

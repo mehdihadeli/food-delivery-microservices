@@ -1,4 +1,5 @@
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Types.Extensions;
 
 namespace BuildingBlocks.Core.Messaging.Extensions;
 

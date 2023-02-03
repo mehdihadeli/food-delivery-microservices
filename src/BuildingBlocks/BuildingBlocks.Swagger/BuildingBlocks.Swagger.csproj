@@ -17,4 +17,8 @@
     <PackageReference Include="Unchase.Swashbuckle.AspNetCore.Extensions" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
 </Project>

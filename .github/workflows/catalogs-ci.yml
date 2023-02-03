@@ -96,6 +96,7 @@ on:
 env:
   IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
   BRANCH_NAME: ${{ github.ref_name }}
+  CATALOG_SERVICE_NAME: ${{ secrets.CATALOGS_SERVICE_NAME }}
 
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
 concurrency:
@@ -139,7 +140,7 @@ jobs:
       project-path: "src/Services/Catalogs/ECommerce.Services.Catalogs.Api"
       # https://docs.github.com/en/actions/security-guides/encrypted-secrets
       # https://docs.github.com/en/actions/learn-github-actions/variables
-      service-name: "${{ secrets.CATALOGS_SERVICE_NAME }}"
+      service-name: ${{ env.CATALOGS_SERVICE_NAME }}
 
   call-build-test-push:
     needs: pre-check
@@ -165,5 +166,5 @@ jobs:
     with:
       tests-path: "tests/Services/Catalogs"
       project-path: "src/Services/Catalogs/ECommerce.Services.Catalogs.Api"
-      service-name: "${{ secrets.CATALOGS_SERVICE_NAME }}"
+      service-name: ${{ env.CATALOGS_SERVICE_NAME }}
       docker-file-path: "src/Services/Catalogs/Dockerfile"

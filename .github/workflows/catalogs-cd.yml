@@ -37,11 +37,11 @@ on:
 #        default: true
 #        description: "Image name to deploy"
 #        type: string
-      version-to-deploy:
-        required: true
-        default: true
-        description: "Version to deploy"
-        type: string
+#      version-to-deploy:
+#        required: true
+#        default: true
+#        description: "Version to deploy"
+#        type: string
 #     # we don't use this here, I detect environment based on the branch
 #     environment:
 #       description: "Environment to run"

@@ -4,8 +4,10 @@ description: Deploy Image to Azure
 inputs:
   service-name:
     description: Service name
+    required: true
   azure-creds:
     description: Azure credentials to log into subscription
+    required: true
 
 runs:
   using: composite
@@ -19,7 +21,7 @@ runs:
      - name: Download Publish Artifacts
        uses: actions/download-artifact@v3
        with:
-         name: ${{ inputs.service-name}}_publish_artifacts
+         name: ${{ inputs.service-name }}_publish_artifacts
          path: publish-artifacts
 
      - name: dir

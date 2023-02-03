@@ -4,14 +4,19 @@ description: Deploy to Azure
 inputs:
   resource-group:
     description: RG to deploy to
+    required: true
   service-name:
     description: Service name
+    required: true
   image:
     description: Image to deploy
+    required: true
   azure-creds:
     description: Azure credentials to log into subscription
+    required: true
   env-secret:
     description: A demo secret variable
+    required: true
 
 runs:
   using: composite

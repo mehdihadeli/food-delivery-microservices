@@ -98,8 +98,8 @@ jobs:
       uses: ./.github/actions/deploy-azure
       id: deploy-azure-step
       with:
-        service_name: ${{ inputs.service-name }}
-        azure_creds: "1"
+        service-name: ${{ inputs.service-name }}
+        azure-creds: "1"
 
 #    - name: Deploy Helms to AKS
 #      run: echo "AKS"

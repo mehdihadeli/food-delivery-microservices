@@ -1,11 +1,11 @@
 # Linting workflow: https://github.com/rhysd/actionlint
-name: Catalogs-CD
+name: CUSTOMERS-CD
 
 on:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
   # This event will only trigger a workflow run if the workflow file is on the default branch.
   workflow_run:
-    workflows: [ "Catalogs-CI" ]
+    workflows: [ "Customers-CI" ]
     branches: [ develop, main, preview, beta, devops/ci ]
     types: [ completed ]
 
@@ -120,10 +120,10 @@ jobs:
       # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
       # https://docs.github.com/en/actions/learn-github-actions/variables
       # https://stackoverflow.com/questions/73305126/passing-env-variable-inputs-to-a-reusable-workflow
-      tests-path: ${{ vars.CATALOGS_SERVICE_TESTS_PATH }} # tests/Services/Catalogs
-      project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs/ECommerce.Services.Catalogs.Api
-      service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
-      docker-file-path: ${{ vars.CATALOGS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Catalogs/Dockerfile
+      tests-path: ${{ vars.CUSTOMERS_SERVICE_TESTS_PATH }} # tests/Services/Customers
+      project-path: ${{ vars.CUSTOMERS_SERVICE_PROJECT_PATH }} # src/Services/Customers/ECommerce.Services.CUSTOMERS.Api
+      service-name: ${{ vars.CUSTOMERS_SERVICE_NAME }} # CUSTOMERS-service
+      docker-file-path: ${{ vars.CUSTOMERS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Customers/Dockerfile
       registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
       registry-endpoint: ${{ github.repository }}
 
@@ -148,7 +148,7 @@ jobs:
       # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
       - name: unzip artifacts
         run: |
-          unzip "artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_test_artifacts/test-results.zip" -d "output"
+          unzip "artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_test_artifacts/test-results.zip" -d "output"
 
       - name: Ls Output Files
         if: success()
@@ -157,13 +157,13 @@ jobs:
       - name: Get CI Application Version
         id: application-version-step
         run: |
-          VERSION=$(cat artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_version_artifacts/version_name.txt)
+          VERSION=$(cat artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_version_artifacts/version_name.txt)
           echo "application-version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Get CI Image Name
         id: image-name-step
         run: |
-          IMAGE_NAME=$(cat artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_image_artifacts/image_name.txt)
+          IMAGE_NAME=$(cat artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_image_artifacts/image_name.txt)
           echo "image-name=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Job Info
@@ -217,6 +217,6 @@ jobs:
       release-version: ${{ needs.call-release.outputs.release-version }}
       registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
       registry-endpoint: ${{ github.repository }}
-      service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
+      service-name: ${{ vars.CUSTOMERS_SERVICE_NAME }} # customer-service
 
 

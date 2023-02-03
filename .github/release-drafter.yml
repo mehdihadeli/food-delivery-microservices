@@ -62,6 +62,7 @@ categories:
 # https://github.com/fuxingloh/multi-labeler
 
 # Using regex for defining rules - https://regexr.com/
+# https://stackoverflow.com/questions/58899999/regexp-to-match-conventional-commit-syntax
 autolabeler:
   - label: 'chore'
     branch:
@@ -78,11 +79,11 @@ autolabeler:
       - '^(feat)(\([a-z ]+\))?\/.'
     title:
       - '^(feat)(\([a-z ]+\))?: .'
-  - label: 'ci'
+  - label: 'ci/cd'
     branch:
       - '^(ci)(\([a-z ]+\))?\/.'
     title:
-      - '^(ci)(\([a-z ]+\))?: .'/'
+      - '^(ci)(\([a-z ]+\))?: .'
   - label: 'minor'
     branch:
       - '^(feat)(\([a-z ]+\))?\/.'
@@ -91,8 +92,10 @@ autolabeler:
   - label: 'patch'
     branch:
       - '^(fix)(\([a-z ]+\))?\/.'
+      - '^(ci)(\([a-z ]+\))?\/.'
     title:
       - '^(fix)(\([a-z ]+\))?: .'
+      - '^(ci)(\([a-z ]+\))?: .'
 
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.

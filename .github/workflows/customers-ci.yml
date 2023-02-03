@@ -1,6 +1,6 @@
 # Linting workflow: https://github.com/rhysd/actionlint
 
-name: Catalogs-CI
+name: Customers-CI
 
 on:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#push
@@ -17,12 +17,12 @@ on:
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-affects-specific-files
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
     paths:
-      - src/Services/Catalogs/**
+      - src/Services/Customers/**
       - src/BuildingBlocks/**
-      - tests/Services/Catalogs/**
+      - tests/Services/Customers/**
       - .github/actions/**
-      - .github/workflows/catalogs-ci.yml
-      - .github/workflows/catalogs-cd.yml
+      - .github/workflows/customers-ci.yml
+      - .github/workflows/customers-cd.yml
       - .github/workflows/reusable-build-test.yml
       - .github/workflows/reusable-build-test-push.yml
       - .github/workflows/reusable-release.yml
@@ -42,12 +42,12 @@ on:
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-affects-specific-files
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
     paths:
-      - src/Services/Catalogs/**
+      - src/Services/Customers/**
       - src/BuildingBlocks/**
-      - tests/Services/Catalogs/**
+      - tests/Services/Customers/**
       - .github/actions/**
-      - .github/workflows/catalogs-ci.yml
-      - .github/workflows/catalogs-cd.yml
+      - .github/workflows/customers-ci.yml
+      - .github/workflows/customers-cd.yml
       - .github/workflows/reusable-build-test.yml
       - .github/workflows/reusable-build-test-push.yml
       - .github/workflows/reusable-release.yml
@@ -139,9 +139,9 @@ jobs:
       # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
       # https://docs.github.com/en/actions/learn-github-actions/variables
       # https://stackoverflow.com/questions/73305126/passing-env-variable-inputs-to-a-reusable-workflow
-      tests-path: ${{ vars.CATALOGS_SERVICE_TESTS_PATH }} # tests/Services/Catalogs
-      project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs/ECommerce.Services.Catalogs.Api
-      service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
+      tests-path: ${{ vars.CUSTOMERS_SERVICE_TESTS_PATH }} # tests/Services/Customers
+      project-path: ${{ vars.CUSTOMERS_SERVICE_PROJECT_PATH }} # src/Services/Customers/ECommerce.Services.Customers.Api
+      service-name: ${{ vars.CUSTOMERS_SERVICE_NAME }} # customers-service
 
   call-build-test-push:
     needs: pre-check
@@ -169,9 +169,9 @@ jobs:
       # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
       # https://docs.github.com/en/actions/learn-github-actions/variables
       # https://stackoverflow.com/questions/73305126/passing-env-variable-inputs-to-a-reusable-workflow
-      tests-path: ${{ vars.CATALOGS_SERVICE_TESTS_PATH }} # tests/Services/Catalogs
-      project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs/ECommerce.Services.Catalogs.Api
-      service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
-      docker-file-path: ${{ vars.CATALOGS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Catalogs/Dockerfile
+      tests-path: ${{ vars.CUSTOMERS_SERVICE_TESTS_PATH }} # tests/Services/Customers
+      project-path: ${{ vars.CUSTOMERS_SERVICE_PROJECT_PATH }} # src/Services/Customers/ECommerce.Services.Customers.Api
+      service-name: ${{ vars.CUSTOMERS_SERVICE_NAME }} # customers-service
+      docker-file-path: ${{ vars.CUSTOMERS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Customers/Dockerfile
       registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
       registry-endpoint: ${{ github.repository }}

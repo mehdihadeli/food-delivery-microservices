@@ -93,13 +93,13 @@ jobs:
 #          image: ${{ env.IMAGE_NAME }}"
 #          azure-creds:
 #          env-secret:
-#
-#    - name: Call Composite Action deploy-azure
-#        uses: ./.github/actions/deploy-azure
-#        id: deploy-azure-step
-#        with:
-#          service_name: ${{ inputs.service-name }}
-#          azure_creds:
-#
+
+    - name: Call Composite Action deploy-azure
+        uses: ./.github/actions/deploy-azure
+        id: deploy-azure-step
+        with:
+          service_name: ${{ inputs.service-name }}
+          azure_creds: "1"
+
 #    - name: Deploy Helms to AKS
 #      run: echo "AKS"

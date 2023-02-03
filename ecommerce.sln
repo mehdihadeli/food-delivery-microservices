@@ -167,21 +167,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3CC5AECD-915C-4CCB-90AA-EF29EBD9A3E5}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\conventional-commits.yml = .github\workflows\conventional-commits.yml
-		.github\workflows\ci-cd.yml = .github\workflows\ci-cd.yml
 		.github\workflows\reusable-release.yml = .github\workflows\reusable-release.yml
 		.github\workflows\reusable-build-test.yml = .github\workflows\reusable-build-test.yml
 		.github\workflows\reusable-deploy.yml = .github\workflows\reusable-deploy.yml
 		.github\workflows\reusable-build-test-push.yml = .github\workflows\reusable-build-test-push.yml
 		.github\workflows\catalogs-ci.yml = .github\workflows\catalogs-ci.yml
 		.github\workflows\catalogs-cd.yml = .github\workflows\catalogs-cd.yml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{93409B05-C828-4815-9684-FD3E7E248A3F}"
-	ProjectSection(SolutionItems) = preProject
-		.github\workflows\services\identity.yml = .github\workflows\services\identity.yml
-		.github\workflows\services\orders.yml = .github\workflows\services\orders.yml
-		.github\workflows\services\customers.yml = .github\workflows\services\customers.yml
-		.github\workflows\services\catalogs.yml = .github\workflows\services\catalogs.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{22F07A80-31B8-4196-8DCD-CB6E3F888BEA}"
@@ -330,7 +321,6 @@ Global
 		{34C0E02A-0068-4A4B-AD3A-68AED63B27B8} = {90568AC2-B826-4F30-AB54-C7B117D348EE}
 		{D87BDBDB-89BA-4703-B11D-E79A0935A909} = {5D021403-D731-4673-BE48-6407504C7709}
 		{3CC5AECD-915C-4CCB-90AA-EF29EBD9A3E5} = {D87BDBDB-89BA-4703-B11D-E79A0935A909}
-		{93409B05-C828-4815-9684-FD3E7E248A3F} = {3CC5AECD-915C-4CCB-90AA-EF29EBD9A3E5}
 		{9EEA45F9-0190-4CCD-908F-ED883FE66DE0} = {22F07A80-31B8-4196-8DCD-CB6E3F888BEA}
 		{85ED6805-E7DC-43DB-9306-72A9CC5B2776} = {22F07A80-31B8-4196-8DCD-CB6E3F888BEA}
 		{89C93B35-70DC-44A6-9A62-53D282135282} = {85ED6805-E7DC-43DB-9306-72A9CC5B2776}

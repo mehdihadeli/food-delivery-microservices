@@ -19,6 +19,16 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
 
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
+    ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
+    permissions:
+      contents: write # to be able to publish a GitHub release and tags
+      pull-requests: write
+
     # Map the job outputs to step outputs
     outputs:
       release-version: ${{ steps.release-note-step.outputs.application-version }}

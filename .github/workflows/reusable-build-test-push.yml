@@ -54,6 +54,17 @@ jobs:
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest
 
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
+    ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
+    permissions:
+      packages: write # for publishing packages
+      pull-requests: write # app-version pull request
+      contents: write # for pushing in dry-run mode
+
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
     continue-on-error: false
 

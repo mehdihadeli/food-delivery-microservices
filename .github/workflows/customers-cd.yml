@@ -184,7 +184,7 @@ jobs:
     if: (contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')|| (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note )))
 
     permissions:
-      content: write # to be able to publish a GitHub release and tags
+      contents: write # to be able to publish a GitHub release and tags
 
     uses: ./.github/workflows/reusable-release.yml
     secrets: inherit

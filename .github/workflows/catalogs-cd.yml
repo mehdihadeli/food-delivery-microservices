@@ -200,7 +200,7 @@ jobs:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
     # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
     permissions:
-       content: write # to be able to publish a GitHub release and tags
+      contents: write # to be able to publish a GitHub release and tags
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped

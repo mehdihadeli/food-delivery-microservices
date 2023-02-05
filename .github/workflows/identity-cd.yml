@@ -104,8 +104,8 @@ jobs:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
     # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
     permissions:
-      contents: write #  to be able to commit application version
       packages: write # for publishing packages
+      pull-requests: write # app-version pull request
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
@@ -183,9 +183,7 @@ jobs:
     if: (contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')|| (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note )))
 
     permissions:
-      contents: write #  to be able to publish a GitHub release
-      issues: write #  to be able to comment on released issues
-      pull-requests: write #  to be able to comment on released pull requests
+      content: write # to be able to publish a GitHub release and tags
 
     uses: ./.github/workflows/reusable-release.yml
     secrets: inherit

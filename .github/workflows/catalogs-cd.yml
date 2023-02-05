@@ -102,6 +102,15 @@ jobs:
   # call-build-test-push job only run for `workflow_dispatch` event, this is to ensure the latest code built and pushed in workflow_dispatch mode.
   call-build-test-push:
     needs: [pre-check]
+
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    permissions:
+      packages: write # for publishing packages
+      pull-requests: write # app-version pull request
+
     if: (github.event_name == 'workflow_dispatch')
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
@@ -185,6 +194,13 @@ jobs:
   # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
   call-release:
     needs: [ pre-check, workflow-info ]
+
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    permissions:
+       content: write # to be able to publish a GitHub release and tags
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped

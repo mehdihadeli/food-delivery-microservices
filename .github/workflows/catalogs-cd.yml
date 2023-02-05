@@ -166,7 +166,7 @@ jobs:
       # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
       - name: unzip artifacts
         run: |
-          unzip "artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_test_artifacts/test-results.zip" -d "output"
+          unzip "artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_test_artifacts/test-results.zip" -d "output"
       - name: Ls Output Files
         if: success()
         run: ls -R ${{ github.workspace }}/output
@@ -174,12 +174,12 @@ jobs:
       - name: Get CI Application Version
         id: application-version-step
         run: |
-          VERSION=$(cat artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_version_artifacts/version_name.txt)
+          VERSION=$(cat artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_version_artifacts/version_name.txt)
           echo "application-version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Get CI Image Name
         id: image-name-step
         run: |
-          IMAGE_NAME=$(cat artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_image_artifacts/image_name.txt)
+          IMAGE_NAME=$(cat artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_image_artifacts/image_name.txt)
           echo "image-name=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
       - name: Job Info
         run: |

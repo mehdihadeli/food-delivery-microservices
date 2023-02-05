@@ -102,7 +102,8 @@ runs:
         title: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
         # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
         add-paths: |
-          **/Directory.Packages.props
+          src/Directory.Packages.props
+          tests/Directory.Packages.props
 
 #      # https://github.com/semantic-release/semantic-release/discussions/2557
 #      # https://github.com/semantic-release/github/issues/175

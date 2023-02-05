@@ -89,6 +89,10 @@ runs:
         name: ${{ inputs.service-name}}_version_artifacts
         path: version_name.txt
 
+    - name: csproj version
+      shell: bash
+      run: ./update-version.sh ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+
     - name: Create Update Version Pull Request
       uses: peter-evans/create-pull-request@v4
       with:
@@ -102,8 +106,7 @@ runs:
         title: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
         # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
         add-paths: |
-          src/Directory.Packages.props
-          tests/Directory.Packages.props
+          *.Packages.props
 
 #      # https://github.com/semantic-release/semantic-release/discussions/2557
 #      # https://github.com/semantic-release/github/issues/175

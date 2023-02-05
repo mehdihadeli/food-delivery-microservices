@@ -164,9 +164,6 @@ plugins:
     -  verifyReleaseCmd: |
          echo "job name is: $GITHUB_JOB"
          ./set-output-version.sh ${nextRelease.version} ${nextRelease.channel} ${nextRelease.gitHead} ${nextRelease.gitTag} ${lastRelease.version} ${lastRelease.channel} ${lastRelease.gitHead} ${lastRelease.gitTag}
-         if [ $GITHUB_JOB = 'build-test' ]
-             then ./update-version.sh ${nextRelease.version}
-         fi
        generateNotesCmd: |
          echo "generateNotesCmd"
        publishCmd: |

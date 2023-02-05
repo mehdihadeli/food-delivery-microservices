@@ -98,7 +98,6 @@ jobs:
           else
               echo "environment-name=develop" >> "$GITHUB_OUTPUT"
           fi
-          steps:
 
   # call-build-test-push job only run for `workflow_dispatch` event, this is to ensure the latest code built and pushed in workflow_dispatch mode.
   call-build-test-push:

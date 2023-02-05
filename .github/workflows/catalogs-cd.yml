@@ -78,6 +78,10 @@ jobs:
       image-name: ${{ steps.image-name-step.outputs.image-name }}
       application-version: ${{ steps.application-version-step.outputs.application-version }}
 
+    permissions:
+      pull-requests: write # app-version pull request
+      contents: write # for pushing in dry-run mode
+
     steps:
 
       # https://www.codewrecks.com/post/github/choose-environment-from-branch/
@@ -99,45 +103,61 @@ jobs:
               echo "environment-name=develop" >> "$GITHUB_OUTPUT"
           fi
 
-  # call-build-test-push job only run for `workflow_dispatch` event, this is to ensure the latest code built and pushed in workflow_dispatch mode.
-  call-build-test-push:
-    needs: [pre-check]
+      - name: PR Merge Main to Develop
+        shell: bash
+        run: |
+              git checkout develop
+              git fetch origin main:main
+              git reset --hard main
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN}}
+          delete-branch: true
+          author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          commit-message: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
+          title: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
+          branch: main-to-dev
 
-    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
-    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-    permissions:
-      packages: write # for publishing packages
-      pull-requests: write # app-version pull request
-      contents: write # for publishing in dry-run mode
-
-    if: (github.event_name == 'workflow_dispatch')
-    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
-    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
-    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-    uses: ./.github/workflows/reusable-build-test-push.yml
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
-    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
-    secrets: inherit # pass all secrets
-    with:
-      # https://docs.github.com/en/actions/security-guides/encrypted-secrets
-      # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
-      # https://docs.github.com/en/actions/learn-github-actions/variables
-      # https://stackoverflow.com/questions/73305126/passing-env-variable-inputs-to-a-reusable-workflow
-      tests-path: ${{ vars.CATALOGS_SERVICE_TESTS_PATH }} # tests/Services/Catalogs
-      project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs/ECommerce.Services.Catalogs.Api
-      service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
-      docker-file-path: ${{ vars.CATALOGS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Catalogs/Dockerfile
-      registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
-      registry-endpoint: ${{ github.repository }}
+#  # call-build-test-push job only run for `workflow_dispatch` event, this is to ensure the latest code built and pushed in workflow_dispatch mode.
+#  call-build-test-push:
+#    needs: [pre-check]
 #
+#    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+#    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+#    permissions:
+#      packages: write # for publishing packages
+#      pull-requests: write # app-version pull request
+#      contents: write # for pushing in dry-run mode
+#
+#    if: (github.event_name == 'workflow_dispatch')
+#    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+#    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+#
+#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
+#    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
+#    uses: ./.github/workflows/reusable-build-test-push.yml
+#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
+#    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
+#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
+#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
+#    secrets: inherit # pass all secrets
+#    with:
+#      # https://docs.github.com/en/actions/security-guides/encrypted-secrets
+#      # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
+#      # https://docs.github.com/en/actions/learn-github-actions/variables
+#      # https://stackoverflow.com/questions/73305126/passing-env-variable-inputs-to-a-reusable-workflow
+#      tests-path: ${{ vars.CATALOGS_SERVICE_TESTS_PATH }} # tests/Services/Catalogs
+#      project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs/ECommerce.Services.Catalogs.Api
+#      service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
+#      docker-file-path: ${{ vars.CATALOGS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Catalogs/Dockerfile
+#      registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
+#      registry-endpoint: ${{ github.repository }}
+
 #  workflow-info:
 #    runs-on: ubuntu-latest
 #    needs: [pre-check, call-build-test-push]
@@ -202,6 +222,7 @@ jobs:
 #    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
 #    permissions:
 #      contents: write # to be able to publish a GitHub release and tags
+#      pull-requests: write
 #
 #    # https://github.com/actions/runner/issues/491#issuecomment-850884422
 #    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped

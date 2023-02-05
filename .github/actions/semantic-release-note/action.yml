@@ -66,6 +66,24 @@ runs:
             echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
         fi
 
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md#keep-a-branch-up-to-date-with-another
+    - name: PR Merge Main to Dev
+      shell: bash
+      run: |
+        git checkout develop
+        git fetch origin main:main
+        git reset --hard main
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4
+      with:
+          delete-branch: true
+          token: ${{ inputs.token }}
+          author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          commit-message: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
+          title: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
+          branch: main-to-develop
+
 #    # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
 #    # https://github.com/orgs/community/discussions/26560
 #    # https://github.com/semantic-release/semantic-release/discussions/2557

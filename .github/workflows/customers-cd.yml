@@ -107,6 +107,7 @@ jobs:
     permissions:
       packages: write # for publishing packages
       pull-requests: write # app-version pull request
+      contents: write # push in dry-run mode
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
@@ -185,6 +186,7 @@ jobs:
 
     permissions:
       contents: write # to be able to publish a GitHub release and tags
+      pull-requests: write
 
     uses: ./.github/workflows/reusable-release.yml
     secrets: inherit

@@ -79,9 +79,8 @@ jobs:
       application-version: ${{ steps.application-version-step.outputs.application-version }}
 
     permissions:
-      permissions:
-        pull-requests: write
-        contents: write
+      pull-requests: write
+      contents: write
 
     steps:
       - name: Checkout Repository

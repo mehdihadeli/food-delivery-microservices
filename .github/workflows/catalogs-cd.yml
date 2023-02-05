@@ -103,6 +103,14 @@ jobs:
               echo "environment-name=develop" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+
       - name: PR Merge Main to Develop
         shell: bash
         run: |

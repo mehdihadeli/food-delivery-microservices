@@ -65,7 +65,11 @@ jobs:
 
     # Skipping workflow runs for some commits types
     # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
-    if: ${{ (!(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style'))) && github.actor != 'dependabot[bot]' }}
+    if: |
+      !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style')) &&
+       github.actor != 'dependabot[bot]' &&
+       contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch')
 
     # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
     # Job outputs containing expressions are evaluated on the runner at the end of each job
@@ -98,16 +102,19 @@ jobs:
   # call-build-test-push job only run for `workflow_dispatch` event, this is to ensure the latest code built and pushed in workflow_dispatch mode.
   call-build-test-push:
     needs: [pre-check]
-    if: (contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && github.event_name == 'workflow_dispatch')
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
     # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
+    ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
     permissions:
       packages: write # for publishing packages
       pull-requests: write # app-version pull request
-      contents: write # push in dry-run mode
+      contents: write # for pushing in dry-run mode
+
+    if: (github.event_name == 'workflow_dispatch')
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
@@ -132,6 +139,15 @@ jobs:
   workflow-info:
     runs-on: ubuntu-latest
     needs: [pre-check, call-build-test-push]
+
+    # https://github.com/actions/runner/issues/491#issuecomment-850884422
+    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+    # https://github.com/actions/runner/issues/491#issuecomment-850884422
+    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+    if: |
+      always() &&
+      (needs.call-build-test-push.result == 'success' || needs.call-build-test-push.result == 'skipped') &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note))
 
     steps:
       - name: create output dir
@@ -181,12 +197,24 @@ jobs:
   # typically release notes are published as part of the Continuous Deployment (CD) process, after the software has been built, tested, and deployed to production.
   # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
   call-release:
-    needs: [pre-check, workflow-info, call-build-test-push ]
-    if: (contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')|| (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note )))
+    needs: [ pre-check, workflow-info ]
 
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
+    ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
     permissions:
       contents: write # to be able to publish a GitHub release and tags
-      pull-requests: write
+      pull-requests: write # for back-merge pull requests
+
+    # https://github.com/actions/runner/issues/491#issuecomment-850884422
+    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+    if: |
+      always() &&
+      (needs.workflow-info.result == 'success') &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note))
 
     uses: ./.github/workflows/reusable-release.yml
     secrets: inherit
@@ -201,9 +229,14 @@ jobs:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
   # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
   call-deploy:
-    needs: [pre-check, workflow-info, call-release]
+    needs: [pre-check, call-release]
 
-    if: (contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) && ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-deploy )))
+    # https://github.com/actions/runner/issues/491#issuecomment-850884422
+    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+    if: |
+      always() &&
+      (needs.call-release.result == 'success') &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-deploy))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/

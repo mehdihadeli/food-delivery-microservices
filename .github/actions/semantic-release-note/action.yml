@@ -72,11 +72,13 @@ runs:
       shell: bash
       run: |
         if [ $GITHUB_REF_NAME = 'main' ]
-        then  git checkout develop
+        then  echo "back-merge for main branch"
+              git checkout develop
               git fetch origin main:main
               git reset --hard main
         elif [ $GITHUB_REF_NAME = 'develop' ]
         then echo "back-merge for develop branch"
+             echo "...."
         fi
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4

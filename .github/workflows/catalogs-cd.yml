@@ -2,12 +2,12 @@
 name: Catalogs-CD
 
 on:
-#  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
-#  # This event will only trigger a workflow run if the workflow file is on the default branch.
-#  workflow_run:
-#    workflows: [ "Catalogs-CI" ]
-#    branches: [ develop, main, preview, beta, devops/ci ]
-#    types: [ completed ]
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+  # This event will only trigger a workflow run if the workflow file is on the default branch.
+  workflow_run:
+    workflows: [ "Catalogs-CI" ]
+    branches: [ develop, main, preview, beta, devops/ci ]
+    types: [ completed ]
 
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
@@ -65,6 +65,8 @@ jobs:
 
     # Skipping workflow runs for some commits types
     # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
+    # https://github.com/actions/runner/issues/491#issuecomment-850884422
+    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
     if: |
          !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style')) &&
           github.actor != 'dependabot[bot]' &&

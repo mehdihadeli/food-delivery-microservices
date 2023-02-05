@@ -184,19 +184,21 @@ plugins:
        failCmd: |
          echo "failCmd"
 
-       # https://github.com/semantic-release/changelog
-       # Set of semantic-release plugins for creating or updating a changelog file.
-  - -  '@semantic-release/changelog'
-    - changelogFile: CHANGELOG.md
-      changelogTitle: '# Semantic Versioning Changelog'
-
-      # https://github.com/semantic-release/git
-      # Git plugin is need so the changelog file will be committed to the Git repository and available on subsequent builds in order to be updated.
-  - - '@semantic-release/git'
-    - assets:
-        - CHANGELOG.md
-      message: |-
-        chore(release): 🔧  ${nextRelease.version} [skip ci]
+#       # needs a PAT with write without pull request
+#       # https://github.com/semantic-release/changelog
+#       # Set of semantic-release plugins for creating or updating a changelog file.
+#  - -  '@semantic-release/changelog'
+#    - changelogFile: CHANGELOG.md
+#      changelogTitle: '# Semantic Versioning Changelog'
+#
+#      # needs a PAT with write without pull request
+#      # https://github.com/semantic-release/git
+#      # Git plugin is need so the changelog file will be committed to the Git repository and available on subsequent builds in order to be updated.
+#  - - '@semantic-release/git'
+#    - assets:
+#        - CHANGELOG.md
+#      message: |-
+#        chore(release): 🔧  ${nextRelease.version} [skip ci]
 
       # https://github.com/semantic-release/github
   - - '@semantic-release/github'

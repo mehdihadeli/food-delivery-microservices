@@ -66,11 +66,13 @@ runs:
             echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
         fi
 
-    # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
-    # This back-merge may failed because of complexity some merge we should continue next step with using if: always()
-    # https://github.com/orgs/community/discussions/26560
-    - name: Back Merge Release
-      shell: bash
-      if: success()
-      run: |
-        ./back-merge.sh
+#    # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
+#    # https://github.com/orgs/community/discussions/26560
+#    # https://github.com/semantic-release/semantic-release/discussions/2557
+#    # https://github.com/semantic-release/github/issues/175
+#    # this needs a PAT with write permission without doing pull request
+#    - name: Back Merge Release
+#      shell: bash
+#      if: success()
+#      run: |
+#        ./back-merge.sh

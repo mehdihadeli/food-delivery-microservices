@@ -89,16 +89,34 @@ runs:
         name: ${{ inputs.service-name}}_version_artifacts
         path: version_name.txt
 
-    - name: Commit Updated Application Version File
-      uses: stefanzweifel/git-auto-commit-action@v4
-      if: ${{ success() }}
+    - name: Create Update Version Pull Request
+      uses: peter-evans/create-pull-request@v4
       with:
-        commit_message: 'chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]'
-        file_pattern: '**/Directory.Packages.props'
-        disable_globbing: true
-        # https://github.com/stefanzweifel/git-auto-commit-action#usage
-        commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com> # defaults to author of the commit that triggered the run
-        commit_user_name: github-actions[bot] # defaults to "github-actions[bot]"
-        commit_user_email: github-actions[bot]@users.noreply.github.com # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
+        author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+        commit-message: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
+        signoff: false
+        assignees: mehdihadeli
+        reviewers: mehdihadeli
+        labels: |
+          chore
+        title: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
+        # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
+        add-paths: |
+          **/Directory.Packages.props
+
+#      # https://github.com/semantic-release/semantic-release/discussions/2557
+#      # https://github.com/semantic-release/github/issues/175
+#      # this needs a PAT with write permission without doing pull request
+#    - name: Commit Updated Application Version File
+#      uses: stefanzweifel/git-auto-commit-action@v4
+#      if: ${{ success() }}
+#      with:
+#        commit_message: 'chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]'
+#        file_pattern: '**/Directory.Packages.props'
+#        disable_globbing: true
+#        # https://github.com/stefanzweifel/git-auto-commit-action#usage
+#        commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com> # defaults to author of the commit that triggered the run
+#        commit_user_name: github-actions[bot] # defaults to "github-actions[bot]"
+#        commit_user_email: github-actions[bot]@users.noreply.github.com # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
 
 

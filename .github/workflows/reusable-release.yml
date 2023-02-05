@@ -25,9 +25,10 @@ jobs:
     # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
     ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
     ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
+    # The GITHUB_TOKEN permissions passed from the caller workflow can be only downgraded in called workflow
     permissions:
       contents: write # to be able to publish a GitHub release and tags
-      pull-requests: write
+      pull-requests: write # for back-merge pull requests
 
     # Map the job outputs to step outputs
     outputs:

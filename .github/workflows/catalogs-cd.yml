@@ -205,7 +205,7 @@ jobs:
     ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
     permissions:
       contents: write # to be able to publish a GitHub release and tags
-      pull-requests: write
+      pull-requests: write # for back-merge pull requests
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped

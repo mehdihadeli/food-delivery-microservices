@@ -71,9 +71,13 @@ runs:
     - name: PR Merge Main to Dev
       shell: bash
       run: |
-        git checkout develop
-        git fetch origin main:main
-        git reset --hard main
+        if [ $GITHUB_REF_NAME = 'main' ]
+        then  git checkout develop
+              git fetch origin main:main
+              git reset --hard main
+        elif [ $GITHUB_REF_NAME = 'develop' ]
+        then echo "back-merge for develop branch"
+        fi
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4
       with:
@@ -82,7 +86,7 @@ runs:
           author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
           commit-message: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
           title: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
-          branch: main-to-develop
+          branch: back-merge-update
 
 #    # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
 #    # https://github.com/orgs/community/discussions/26560

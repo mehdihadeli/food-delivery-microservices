@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
     continue-on-error: false
+    permissions:
+      contents: write # to be able to publish a GitHub release and tags
 
     # Map the job outputs to step outputs
     outputs:
@@ -49,7 +51,6 @@ jobs:
           # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
           fetch-depth: 0
           ref: ${{ github.ref_name }}
-          persist-credentials: false
       - run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'

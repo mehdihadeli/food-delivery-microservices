@@ -99,6 +99,7 @@ runs:
         author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
         commit-message: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
         signoff: false
+        token: ${{ inputs.token }}
         assignees: mehdihadeli
         reviewers: mehdihadeli
         labels: |

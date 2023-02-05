@@ -137,114 +137,114 @@ jobs:
       docker-file-path: ${{ vars.CATALOGS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Catalogs/Dockerfile
       registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
       registry-endpoint: ${{ github.repository }}
-
-  workflow-info:
-    runs-on: ubuntu-latest
-    needs: [pre-check, call-build-test-push]
-
-    # https://github.com/actions/runner/issues/491#issuecomment-850884422
-    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
-    if: |
-      always() &&
-      (needs.call-build-test-push.result == 'success' || needs.call-build-test-push.result == 'skipped') &&
-      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note))
-
-    steps:
-      - name: create output dir
-        run: mkdir -p "output"
-
-      # https://github.com/actions/download-artifact#download-all-artifacts
-      # download artifacts without name will download all artifacts
-      - name: Download All Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          path: artifacts
-
-      - name: dir
-        run: ls -R "${{ github.workspace }}/artifacts"
-
-      # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
-      - name: unzip artifacts
-        run: |
-          unzip "artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_test_artifacts/test-results.zip" -d "output"
-      - name: Ls Output Files
-        if: success()
-        run: ls -R ${{ github.workspace }}/output
-
-      - name: Get CI Application Version
-        id: application-version-step
-        run: |
-          VERSION=$(cat artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_version_artifacts/version_name.txt)
-          echo "application-version=$VERSION" >> "$GITHUB_OUTPUT"
-      - name: Get CI Image Name
-        id: image-name-step
-        run: |
-          IMAGE_NAME=$(cat artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_image_artifacts/image_name.txt)
-          echo "image-name=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
-      - name: Job Info
-        run: |
-          echo "pre-check is successful."
-          echo workspace is: ${{ github.workspace }}
-          echo "I'm using environment: ${{ steps.environment-name-step.outputs.environment-name }}"
-          echo "CI application-version is: ${{ steps.application-version-step.outputs.application-version }}"
-          echo "CI image-name is: ${{ steps.image-name-step.outputs.image-name }}"
-          echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
-          echo "is workflow_run event? ${{ github.event_name == 'workflow_run' }}"
-
-  # typically release notes are published as part of the Continuous Deployment (CD) process, after the software has been built, tested, and deployed to production.
-  # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
-  call-release:
-    needs: [ pre-check, workflow-info ]
-
-    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
-    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-    permissions:
-      contents: write # to be able to publish a GitHub release and tags
-
-    # https://github.com/actions/runner/issues/491#issuecomment-850884422
-    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
-    if: |
-      always() &&
-      (needs.workflow-info.result == 'success') &&
-      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note))
-
-    uses: ./.github/workflows/reusable-release.yml
-    secrets: inherit
-
-  # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
-  # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
-  # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
-  # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
-  # https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
-  # https://www.codewrecks.com/post/github/choose-environment-from-branch/
-  # https://colinsalmcorner.com/musings-on-reusable-workflows/
-  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
-  # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
-  call-deploy:
-    needs: [pre-check, call-release]
-
-    # https://github.com/actions/runner/issues/491#issuecomment-850884422
-    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
-    if: |
-      always() &&
-      (needs.call-release.result == 'success') &&
-      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-deploy))
-
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
-    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-    uses: ./.github/workflows/reusable-deploy.yml
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
-    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
-    secrets: inherit
-    with:
-      environment-name: ${{ needs.pre-check.outputs.environment-name }}
-      release-version: ${{ needs.call-release.outputs.release-version }}
-      registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
-      registry-endpoint: ${{ github.repository }}
-      service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
-
-
+#
+#  workflow-info:
+#    runs-on: ubuntu-latest
+#    needs: [pre-check, call-build-test-push]
+#
+#    # https://github.com/actions/runner/issues/491#issuecomment-850884422
+#    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+#    if: |
+#      always() &&
+#      (needs.call-build-test-push.result == 'success' || needs.call-build-test-push.result == 'skipped') &&
+#      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note))
+#
+#    steps:
+#      - name: create output dir
+#        run: mkdir -p "output"
+#
+#      # https://github.com/actions/download-artifact#download-all-artifacts
+#      # download artifacts without name will download all artifacts
+#      - name: Download All Artifacts
+#        uses: actions/download-artifact@v3
+#        with:
+#          path: artifacts
+#
+#      - name: dir
+#        run: ls -R "${{ github.workspace }}/artifacts"
+#
+#      # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
+#      - name: unzip artifacts
+#        run: |
+#          unzip "artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_test_artifacts/test-results.zip" -d "output"
+#      - name: Ls Output Files
+#        if: success()
+#        run: ls -R ${{ github.workspace }}/output
+#
+#      - name: Get CI Application Version
+#        id: application-version-step
+#        run: |
+#          VERSION=$(cat artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_version_artifacts/version_name.txt)
+#          echo "application-version=$VERSION" >> "$GITHUB_OUTPUT"
+#      - name: Get CI Image Name
+#        id: image-name-step
+#        run: |
+#          IMAGE_NAME=$(cat artifacts/${{ vars.CATALOGS_SERVICE_NAME }}_image_artifacts/image_name.txt)
+#          echo "image-name=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
+#      - name: Job Info
+#        run: |
+#          echo "pre-check is successful."
+#          echo workspace is: ${{ github.workspace }}
+#          echo "I'm using environment: ${{ steps.environment-name-step.outputs.environment-name }}"
+#          echo "CI application-version is: ${{ steps.application-version-step.outputs.application-version }}"
+#          echo "CI image-name is: ${{ steps.image-name-step.outputs.image-name }}"
+#          echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
+#          echo "is workflow_run event? ${{ github.event_name == 'workflow_run' }}"
+#
+#  # typically release notes are published as part of the Continuous Deployment (CD) process, after the software has been built, tested, and deployed to production.
+#  # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
+#  call-release:
+#    needs: [ pre-check, workflow-info ]
+#
+#    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+#    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+#    permissions:
+#      contents: write # to be able to publish a GitHub release and tags
+#
+#    # https://github.com/actions/runner/issues/491#issuecomment-850884422
+#    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+#    if: |
+#      always() &&
+#      (needs.workflow-info.result == 'success') &&
+#      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note))
+#
+#    uses: ./.github/workflows/reusable-release.yml
+#    secrets: inherit
+#
+#  # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
+#  # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+#  # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
+#  # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
+#  # https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
+#  # https://www.codewrecks.com/post/github/choose-environment-from-branch/
+#  # https://colinsalmcorner.com/musings-on-reusable-workflows/
+#  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+#  # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
+#  call-deploy:
+#    needs: [pre-check, call-release]
+#
+#    # https://github.com/actions/runner/issues/491#issuecomment-850884422
+#    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+#    if: |
+#      always() &&
+#      (needs.call-release.result == 'success') &&
+#      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-deploy))
+#
+#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
+#    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
+#    uses: ./.github/workflows/reusable-deploy.yml
+#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
+#    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
+#    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
+#    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
+#    secrets: inherit
+#    with:
+#      environment-name: ${{ needs.pre-check.outputs.environment-name }}
+#      release-version: ${{ needs.call-release.outputs.release-version }}
+#      registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
+#      registry-endpoint: ${{ github.repository }}
+#      service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
+#
+#

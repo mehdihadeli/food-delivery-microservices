@@ -54,15 +54,6 @@ jobs:
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest
 
-    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
-    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-    permissions:
-      packages: write # for publishing packages
-      pull-requests: write # app-version pull request
-      contents: write # for pushing in dry-run mode
-
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
     continue-on-error: false
 
@@ -106,23 +97,23 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Call Composite Action build-test
-        uses: ./.github/actions/build-test
-        if: success()
-        id: build-test-step
-        with:
-          project-path: ${{ inputs.project-path }}
-          tests-path: ${{ inputs.tests-path }}
-          unit-test-filter: ${{ inputs.unit-test-filter }}
-          integration-test-filter: ${{ inputs.integration-test-filter }}
-          exclude-coverage: ${{ inputs.coverage-exclude }}
-          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
-          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
-          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-          reports-path: ${{ github.workspace }}/**/*.cobertura.xml
-          reports-output-path: ${{ github.workspace }}/output/test-results
-          service-name: ${{ inputs.service-name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Call Composite Action build-test
+#        uses: ./.github/actions/build-test
+#        if: success()
+#        id: build-test-step
+#        with:
+#          project-path: ${{ inputs.project-path }}
+#          tests-path: ${{ inputs.tests-path }}
+#          unit-test-filter: ${{ inputs.unit-test-filter }}
+#          integration-test-filter: ${{ inputs.integration-test-filter }}
+#          exclude-coverage: ${{ inputs.coverage-exclude }}
+#          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
+#          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+#          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+#          reports-path: ${{ github.workspace }}/**/*.cobertura.xml
+#          reports-output-path: ${{ github.workspace }}/output/test-results
+#          service-name: ${{ inputs.service-name }}
+#          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Call Composite Action app-version
         uses: ./.github/actions/app-version
@@ -133,26 +124,26 @@ jobs:
           service-name: ${{ inputs.service-name }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Call Composite Action publish
-        uses: ./.github/actions/publish-app
-        if:  success()
-        id: publish-step
-        with:
-            application-version: ${{ steps.app-version-step.outputs.application-version }}
-            service-name: ${{ inputs.service-name }}
-            project-path: ${{ inputs.project-path }}
-            token: ${{ secrets.GITHUB_TOKEN }}
-            no-restore: true
-
-      - name: Call Composite Action docker-build-push
-        uses: ./.github/actions/docker-build-push
-        if: success()
-        id: docker-build-push-step
-        with:
-          application-version: ${{ steps.app-version-step.outputs.application-version }}
-          registry-endpoint: ${{ inputs.registry-endpoint }}
-          docker-file-path: ${{ inputs.docker-file-path }}
-          registry: ${{ inputs.registry}}
-          registry-username: ${{ github.actor }}
-          registry-password: ${{ secrets.GITHUB_TOKEN }}
-          service-name: ${{ inputs.service-name }}
+#      - name: Call Composite Action publish
+#        uses: ./.github/actions/publish-app
+#        if:  success()
+#        id: publish-step
+#        with:
+#            application-version: ${{ steps.app-version-step.outputs.application-version }}
+#            service-name: ${{ inputs.service-name }}
+#            project-path: ${{ inputs.project-path }}
+#            token: ${{ secrets.GITHUB_TOKEN }}
+#            no-restore: true
+#
+#      - name: Call Composite Action docker-build-push
+#        uses: ./.github/actions/docker-build-push
+#        if: success()
+#        id: docker-build-push-step
+#        with:
+#          application-version: ${{ steps.app-version-step.outputs.application-version }}
+#          registry-endpoint: ${{ inputs.registry-endpoint }}
+#          docker-file-path: ${{ inputs.docker-file-path }}
+#          registry: ${{ inputs.registry}}
+#          registry-username: ${{ github.actor }}
+#          registry-password: ${{ secrets.GITHUB_TOKEN }}
+#          service-name: ${{ inputs.service-name }}

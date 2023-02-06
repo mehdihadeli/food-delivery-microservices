@@ -8,6 +8,9 @@ inputs:
   azure-creds:
     description: Azure credentials to log into subscription
     required: true
+  token:
+    description: 'A Github PAT'
+    required: true
 
 runs:
   using: composite
@@ -17,19 +20,39 @@ runs:
        working-directory: ${{ github.workspace }}
        run: mkdir -p "output"
 
-       # https://github.com/actions/download-artifact
-     - name: Download Publish Artifacts
+    # https://github.com/actions/download-artifact#download-all-artifacts
+    # download artifacts in same workflow (artifacts for before job 'call-build-test-push')
+     - name:  Download Publish Artifacts
+       if: (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
        uses: actions/download-artifact@v3
        with:
          name: ${{ inputs.service-name }}_publish_artifacts
          path: publish-artifacts
 
+    # https://github.com/dawidd6/action-download-artifact
+    # for artifacts form another workflows we should get that artifact with github Rest call and download-artifact@v3 doesn't work
+     - name: Download Publish Artifacts For workflow_run
+       if: (github.event_name == 'workflow_run')
+       uses: dawidd6/action-download-artifact@v2
+       with:
+         github_token: ${{ inputs.token }}
+         # check the workflow run to whether it has an artifact then will get the last available artifact from the previous workflow
+         check_artifacts: true
+         search_artifacts: true
+         workflow_conclusion: success
+         # uploaded artifact name,will download all artifacts if not specified
+         name: ${{ inputs.service-name }}_publish_artifacts
+         # A directory where to extract artifact(s), defaults to the current directory
+         path: publish-artifacts
+
      - name: dir
+       if: success()
        shell: bash
        run: ls -R "${{ github.workspace }}/publish-artifacts"
 
        # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
      - name: unzip artifacts
+       if: success()
        shell: bash
        run: |
          unzip "publish-artifacts/${{inputs.service-name}}.zip" -d "output"

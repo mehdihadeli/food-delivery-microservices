@@ -100,6 +100,7 @@ jobs:
       with:
         service-name: ${{ inputs.service-name }}
         azure-creds: "1"
+        token: ${{ secrets.GITHUB_TOKEN }}
 
 #    - name: Deploy Helms to AKS
 #      run: echo "AKS"

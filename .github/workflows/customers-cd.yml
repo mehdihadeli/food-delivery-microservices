@@ -1,5 +1,5 @@
 # Linting workflow: https://github.com/rhysd/actionlint
-name: CUSTOMERS-CD
+name: Customers-CD
 
 on:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
@@ -178,6 +178,8 @@ jobs:
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: customers-ci.yml
+          # check the workflow run to whether it has an artifact then will get the last available artifact from the previous workflow
+          check_artifacts: true
           workflow_conclusion: success
           ## uploaded artifact name,will download all artifacts if not specified
           # name: artifact_name

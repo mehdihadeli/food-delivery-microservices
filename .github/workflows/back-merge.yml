@@ -58,7 +58,7 @@ jobs:
           echo "is push event? ${{ github.event_name == 'push' }}"
           echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
 
-  back-merge-protected-branch:
+  back-merge:
     runs-on: ubuntu-latest
     needs: [ pre-check ]
 
@@ -89,17 +89,17 @@ jobs:
 
       # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
       # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md#keep-a-branch-up-to-date-with-another
-      - name: Merge PR For Protected Branches
+      - name: Merge Branches
         shell: bash
         run: |
           if [ $GITHUB_REF_NAME = 'main' ]
-          then  echo "back-merge for main branch"
+          then  echo "back-merge main branch to develop protected branch through pull-request"
                 git checkout develop
                 git fetch origin main:main
                 git reset --hard main
           elif [ $GITHUB_REF_NAME = 'develop' ]
-          then echo "back-merge for develop branch"
-               echo "...."
+          then echo "back-merge develop branch to all features"
+               ./back-merge.sh  ${{ github.ref_name }}
           elif [ $GITHUB_REF_NAME = 'beta' ]
           then echo "back-merge for beta branch"
                echo "...."
@@ -107,7 +107,6 @@ jobs:
           then echo "back-merge for preview branch"
                echo "...."
           fi
-
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
@@ -126,7 +125,7 @@ jobs:
     permissions:
       contents: write # for back-merging feature branch
 
-    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true && contains(fromJson('["develop", "preview", "beta"]'), github.ref_name))
 
     steps:
 

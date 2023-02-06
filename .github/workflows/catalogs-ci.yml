@@ -159,6 +159,8 @@ jobs:
       packages: write # for publishing packages
       pull-requests: write # app-version pull request
       contents: write # for publishing in dry-run mode
+      statuses: write # for test-reporter
+      checks: write # for test-reporter
 
     if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish)))
 

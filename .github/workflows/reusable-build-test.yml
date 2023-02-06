@@ -44,6 +44,8 @@ jobs:
     # The GITHUB_TOKEN permissions passed from the caller workflow can be only downgraded in called workflow
     permissions:
       contents: read
+      statuses: write # for test-reporter
+      checks: write # for test-reporter
 
     steps:
 

@@ -38,7 +38,7 @@ runs:
          github_token: ${{ inputs.token }}
          # check the workflow run to whether it has an artifact then will get the last available artifact from the previous workflow
          check_artifacts: true
-         search_artifacts: true
+#         search_artifacts: true
          workflow_conclusion: success
          # uploaded artifact name,will download all artifacts if not specified
          name: ${{ inputs.service-name }}_publish_artifacts

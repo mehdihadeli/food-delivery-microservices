@@ -1,6 +1,5 @@
 # 🛍️ ECommerece Microservices Sample
 
-[![CI](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/ci.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/mehdihadeli/ecommerce-microservices/badge.svg?branch=develop&style=flat-square)](https://coveralls.io/github/mehdihadeli/ecommerce-microservices?branch=develop)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
@@ -87,16 +86,15 @@ npx husky add .husky/commit-msg  'npx --no -- commitlint --edit ${1}'
 ## Plan
 > This project is in progress, New features will be added over time.
 
-| Feature | Architecture Pattern | Status |
-| ------- | ------ | ------ |
-| Building Blocks  | | Completed ✔️ |
-| API Gateway | | Completed ✔️ |
-| Identity Service | Data Centeric Architecture (CRUD) | Completed ✔️ |
-| Customer Service | Domain Driven Design | Completed ✔️ |
-| Catalog Service | Domain Driven Design |Completed ✔️ |
-| Order Service | Event Sourccing, Domain Driven Design | In Progress 👷‍|
-| Shipping Service | Domain Driven Design | Not Started 🚩 |
-| Payment Service | Event Sourccing, Domain Driven Design | Not Started 🚩 |
+| Feature          | Architecture Pattern                  | Status | CI                                                                                                                                                                                                                                              |
+|------------------|---------------------------------------| ------ |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| API Gateway      | Microsoft YARP Reverse Proxy          | Completed ✔️ | -                                                                                                                                                                                                                                               |
+| Identity Service | Data Centeric Architecture (CRUD)     | Completed ✔️ | [![Identity-CI](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity-ci.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity-ci.yml) |
+| Customer Service | Domain Driven Design                  | Completed ✔️ | [![Customers-CI](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/customers-ci.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/ci.yml) |
+| Catalog Service  | Domain Driven Design                  |Completed ✔️ | [![Catalogs-CI](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs-ci.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs-ci.yml) |
+| Order Service    | Event Sourccing, Domain Driven Design | In Progress 👷‍| - |                                                                                                                                                                                                                                              |
+| Shipping Service | Domain Driven Design                  | Not Started 🚩 | - |
+| Payment Service  | Event Sourccing, Domain Driven Design | Not Started 🚩 | - |
 
 ## Technologies - Libraries
 

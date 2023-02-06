@@ -121,7 +121,6 @@ jobs:
       packages: write # for publishing packages
       pull-requests: write # app-version pull request
       contents: write # for pushing in dry-run mode
-      statuses: write # for test-reporter
       checks: write # for test-reporter
 
     if: (github.event_name == 'workflow_dispatch')

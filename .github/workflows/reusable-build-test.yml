@@ -33,7 +33,7 @@ on:
         type: string
 
 jobs:
-  build-test-push:
+  build-test:
     # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest
@@ -44,7 +44,6 @@ jobs:
     # The GITHUB_TOKEN permissions passed from the caller workflow can be only downgraded in called workflow
     permissions:
       contents: read
-      statuses: write # for test-reporter
       checks: write # for test-reporter
 
     steps:

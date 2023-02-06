@@ -65,7 +65,6 @@ jobs:
       packages: write # for publishing packages
       pull-requests: write # app-version pull request
       contents: write # for pushing in dry-run mode
-      statuses: write # for test-reporter
       checks: write # for test-reporter
 
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast

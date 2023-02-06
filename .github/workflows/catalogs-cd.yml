@@ -183,7 +183,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: catalogs-ci.yml
           # check the workflow run to whether it has an artifact then will get the last available artifact from the previous workflow
-          check_artifacts: true
+          # check_artifacts: true
           workflow_conclusion: success
           ## uploaded artifact name,will download all artifacts if not specified
           # name: artifact_name
@@ -265,6 +265,9 @@ jobs:
   # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
   call-deploy:
     needs: [pre-check, call-release]
+
+    permissions:
+      contents: write
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped

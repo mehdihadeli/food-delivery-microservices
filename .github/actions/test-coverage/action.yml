@@ -41,7 +41,7 @@ runs:
       with:
         reports: ${{ inputs.reports-path }}
         targetdir: ${{ inputs.reports-output-path }}
-        reporttypes: "Cobertura;lcov;MarkdownSummaryGithub;Html"
+        reporttypes: "Cobertura;lcov;MarkdownSummaryGithub;Html;"
 
       # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
       # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
@@ -108,3 +108,17 @@ runs:
       with:
         github-token: ${{ inputs.token }}
         path-to-lcov: "output/test-results/lcov.info"
+
+    # https://github.com/dorny/test-reporter
+    - name: Test Results
+      uses: dorny/test-reporter@v1
+      id: test-report
+      if: success() || failure()
+      with:
+        name: Tests Results
+        reporter: dotnet-trx
+        path: '**/test-results.trx'
+        ## https://github.com/dorny/test-reporter#recommended-setup-for-public-repositories
+        ## https://github.com/dorny/test-reporter/blob/0d9714ddc7ff86918ec725a527a3a069419d301a/src/utils/github-utils.ts#L44
+        ## artifact name to download trx test result if it is in seperated workflow with github rest call, if it is not in another workflow skip this
+        # artifact: ''

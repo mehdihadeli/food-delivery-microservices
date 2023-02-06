@@ -162,17 +162,34 @@ jobs:
         run: mkdir -p "output"
 
       # https://github.com/actions/download-artifact#download-all-artifacts
-      # download artifacts without name will download all artifacts
-      - name: Download All Artifacts
+      # download artifacts in same workflow (artifacts for before job 'call-build-test-push')
+      - name: Download All Artifacts For workflow_dispatch
+        if: (github.event_name == 'workflow_dispatch')
         uses: actions/download-artifact@v3
         with:
           path: artifacts
 
+      # https://github.com/dawidd6/action-download-artifact
+      # for artifacts form another workflows we should get that artifact with github Rest call and download-artifact@v3 doesn't work
+      - name: Download All Artifacts For workflow_run
+        if: (github.event_name == 'workflow_run')
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: catalogs-ci.yml
+          workflow_conclusion: success
+          ## uploaded artifact name,will download all artifacts if not specified
+          # name: artifact_name
+          # A directory where to extract artifact(s), defaults to the current directory
+          path: artifacts
+
       - name: dir
+        if: success()
         run: ls -R "${{ github.workspace }}/artifacts"
 
       # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
       - name: unzip artifacts
+        if: success()
         run: |
           unzip "artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_test_artifacts/test-results.zip" -d "output"
 
@@ -181,18 +198,21 @@ jobs:
         run: ls -R ${{ github.workspace }}/output
 
       - name: Get CI Application Version
+        if: success()
         id: application-version-step
         run: |
           VERSION=$(cat artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_version_artifacts/version_name.txt)
           echo "application-version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Get CI Image Name
+        if: success()
         id: image-name-step
         run: |
           IMAGE_NAME=$(cat artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_image_artifacts/image_name.txt)
           echo "image-name=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Job Info
+        if: success()
         run: |
           echo "pre-check is successful."
           echo workspace is: ${{ github.workspace }}

@@ -176,7 +176,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
-          workflow: catalogs-ci.yml
+          workflow: customers-ci.yml
           workflow_conclusion: success
           ## uploaded artifact name,will download all artifacts if not specified
           # name: artifact_name

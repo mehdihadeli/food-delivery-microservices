@@ -41,6 +41,10 @@ jobs:
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
     continue-on-error: false
 
+    # The GITHUB_TOKEN permissions passed from the caller workflow can be only downgraded in called workflow
+    permissions:
+      contents: read
+
     steps:
 
       # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context

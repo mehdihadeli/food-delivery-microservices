@@ -65,10 +65,6 @@ jobs:
       packages: write # for publishing packages
       pull-requests: write # app-version pull request
       contents: write # for pushing in dry-run mode
-      actions: read
-      checks: read
-      repository-projects: read
-      statuses: read
 
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
     continue-on-error: false

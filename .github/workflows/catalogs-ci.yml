@@ -127,6 +127,11 @@ jobs:
   call-build-test:
     needs: pre-check
 
+    permissions:
+      statuses: write # for test-reporter
+      checks: write # for test-reporter
+      contents: read
+
     if: (github.event_name == 'pull_request' || contains(fromJson('["feat/", "fix/", "release/"]'), github.ref_name) || (github.event_name == 'workflow_dispatch' && !github.event.inputs.should-publish))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow

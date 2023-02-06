@@ -127,6 +127,11 @@ jobs:
   call-build-test:
     needs: pre-check
 
+    permissions:
+      statuses: write # for test-reporter
+      checks: write # for test-reporter
+      contents: read
+
     if: (github.event_name == 'pull_request' || contains(fromJson('["feat/", "fix/", "release/"]'), github.ref_name) || (github.event_name == 'workflow_dispatch' && !github.event.inputs.should-publish))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
@@ -145,8 +150,6 @@ jobs:
       tests-path: ${{ vars.IDENTITY_SERVICE_TESTS_PATH }} # tests/Services/Identity
       project-path: ${{ vars.IDENTITY_SERVICE_PROJECT_PATH }} # src/Services/Identity/ECommerce.Services.Identity.Api
       service-name: ${{ vars.IDENTITY_SERVICE_NAME }} # identity-service
-      statuses: write # for test-reporter
-      checks: write # for test-reporter
 
   call-build-test-push:
     needs: pre-check
@@ -161,6 +164,8 @@ jobs:
       packages: write # for publishing packages
       pull-requests: write # app-version pull request
       contents: write # for publishing in dry-run mode
+      statuses: write # for test-reporter
+      checks: write # for test-reporter
 
     if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish)))
 

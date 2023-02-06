@@ -111,7 +111,7 @@ runs:
 
     # https://github.com/dorny/test-reporter
     - name: Test Results
-      uses: dorny/test-reporter@v1
+      uses: phoenix-actions/test-reporting@v10
       id: test-report
       if: always()
       with:

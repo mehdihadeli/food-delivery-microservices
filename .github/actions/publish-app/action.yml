@@ -82,9 +82,8 @@ runs:
 
     - name: Upload Publish Services Artifacts For Deployment Jobs
       uses: actions/upload-artifact@v3
-      if: (steps.publish-services.outcome == 'success')
+      if: success()
       with:
         name: ${{ inputs.service-name}}_publish_artifacts
-        retention-days: 1
         path: |
           ${{ github.workspace }}/output/${{inputs.service-name}}.zip

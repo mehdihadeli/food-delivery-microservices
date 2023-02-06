@@ -26,8 +26,7 @@ runs:
        if: (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
        uses: actions/download-artifact@v3
        with:
-         name: ${{ inputs.service-name }}_publish_artifacts
-         path: publish-artifacts
+         path: artifacts
 
     # https://github.com/dawidd6/action-download-artifact
     # for artifacts form another workflows we should get that artifact with github Rest call and download-artifact@v3 doesn't work

@@ -184,6 +184,9 @@ jobs:
           # check the workflow run to whether it has an artifact then will get the last available artifact from the previous workflow
           # check_artifacts: true
           workflow_conclusion: success
+          run_id: ${{ github.run_id }}
+          run_number: ${{ github.run_number }}
+          check_artifacts:  true
           ## uploaded artifact name,will download all artifacts if not specified
           # name: artifact_name
           # A directory where to extract artifact(s), defaults to the current directory

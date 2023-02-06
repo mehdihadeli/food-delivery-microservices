@@ -166,6 +166,29 @@ jobs:
       - name: create output dir
         run: mkdir -p "output"
 
+      - name: Get Latest Workflow Name
+        uses: actions/github-script@0.9.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const octokit = new require("@octokit/rest")({
+              auth: process.env.GITHUB_TOKEN,
+            });
+            const { data: workflowRuns } = await octokit.actions.listRepoWorkflowRuns({
+              owner: "owner",
+              repo: "repo",
+              per_page: 1,
+              sort: "updated",
+              direction: "desc",
+            });
+            const latestWorkflowRun = workflowRuns[0];
+            const latestWorkflowRun2 = workflowRuns[1];
+            const latestWorkflowName = latestWorkflowRun.workflow_id;
+            const latestWorkflowName2 = latestWorkflowRun2.workflow_id;
+            console.log(`Latest workflow name: ${latestWorkflowName}`);
+            console.log(`Latest workflow name2: ${latestWorkflowName2}`);
+
       # https://github.com/actions/download-artifact#download-all-artifacts
       # download artifacts in same workflow (artifacts for before job 'call-build-test-push')
       - name: Download All Artifacts For workflow_dispatch

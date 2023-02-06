@@ -181,7 +181,6 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
-          workflow: catalogs-ci.yml
           # check the workflow run to whether it has an artifact then will get the last available artifact from the previous workflow
           # check_artifacts: true
           workflow_conclusion: success

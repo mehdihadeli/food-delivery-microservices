@@ -1,0 +1,124 @@
+# Back-merging should typically be done as part of your Continuous Integration (CI) process
+# By performing back-merging as part of the CI process, we can catch and fix any conflicts between the dev and main branches early in the development cycle, before the changes are deployed to production. This helps to ensure that the dev branch remains in a releasable state, and reduces the risk of integration issues when changes are eventually merged into the main branch.
+name: Back-Merge
+
+on:
+
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+  # This event will only trigger a workflow run if the workflow file is on the default branch.
+  workflow_run:
+    workflows: [ "Catalogs-CI", "Customers-CI", "Identity-CI", "Orders-CI" ]
+    branches: [ develop, main, preview, beta ]
+    types: [ completed ]
+
+  workflow_dispatch:
+    logLevel:
+      description: 'Log level'
+      required: true
+      default: 'info'
+      type: choice
+      options:
+        - info
+        - warning
+        - debug
+
+  pull_request:
+    types: [closed]  # when PR is merged, CD will be triggered
+    branches:
+      - develop
+      - beta
+      - preview
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+
+  pre-check:
+    runs-on: ubuntu-latest
+
+    # Skipping workflow runs for some commits types
+    # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
+    # https://github.com/actions/runner/issues/491#issuecomment-850884422
+    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+    if: |
+      !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message,  'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style')) &&
+      github.actor != 'dependabot[bot]' &&
+      contains(fromJson('["develop", "main", "preview", "beta"]'), github.ref_name) &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true))
+
+    steps:
+      - name: Job Info
+        run: |
+          echo "pre-check is successful."
+          echo workspace is: ${{ github.workspace }}
+          echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
+          echo "is push event? ${{ github.event_name == 'push' }}"
+          echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
+
+  back-merge-protected-branch:
+    runs-on: ubuntu-latest
+    needs: [ pre-check ]
+
+    permissions:
+      pull-requests: write
+
+    steps:
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md#keep-a-branch-up-to-date-with-another
+      - name: Merge PR For Protected Branches
+        shell: bash
+        run: |
+          if [ $GITHUB_REF_NAME = 'main' ]
+          then  echo "back-merge for main branch"
+                git checkout develop
+                git fetch origin main:main
+                git reset --hard main
+          elif [ $GITHUB_REF_NAME = 'develop' ]
+          then echo "back-merge for develop branch"
+               echo "...."
+          elif [ $GITHUB_REF_NAME = 'beta' ]
+          then echo "back-merge for beta branch"
+               echo "...."
+          elif [ $GITHUB_REF_NAME = 'preview' ]
+          then echo "back-merge for preview branch"
+               echo "...."
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          delete-branch: true
+          token: ${{ inputs.token }}
+          author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          commit-message: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
+          title: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
+          branch: back-merge-update
+          labels: |
+            back-merge
+
+  back-merge-pr-closed:
+    runs-on: ubuntu-latest
+    needs: [ pre-check, back-merge-protected-branch ]
+
+    permissions:
+      contents: write # for back-merging feature branch
+
+    if: |
+      always() &&
+      (needs.back-merge-protected-branch.result == 'success' || needs.back-merge-protected-branch.result == 'skipped') &&
+      ((github.event_name == 'pull_request' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch')
+
+    steps:
+
+      # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
+      # https://github.com/orgs/community/discussions/26560
+      # https://github.com/semantic-release/semantic-release/discussions/2557
+      # https://github.com/semantic-release/github/issues/175
+      # this needs a PAT with write permission without doing pull request
+      - name: Back Merge Feature Branches
+        shell: bash
+        run: |
+          ./back-merge.sh  ${{ github.ref_name }}

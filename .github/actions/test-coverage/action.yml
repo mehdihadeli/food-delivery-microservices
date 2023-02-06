@@ -117,7 +117,8 @@ runs:
       with:
         name: Tests Results
         reporter: dotnet-trx
-        path: "**/*.trx"
+        token: ${{ inputs.token }}
+        path: "**/test-results.trx"
         ## https://github.com/dorny/test-reporter#recommended-setup-for-public-repositories
         ## https://github.com/dorny/test-reporter/blob/0d9714ddc7ff86918ec725a527a3a069419d301a/src/utils/github-utils.ts#L44
         ## artifact name to download trx test result if it is in seperated workflow with github rest call, if it is not in another workflow skip this

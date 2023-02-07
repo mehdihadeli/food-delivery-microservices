@@ -79,9 +79,9 @@ runs:
       if: success()
       run: |
         if [ -z ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} ]
-          echo "app-version=${{ steps.semantic-version.outputs.semantic_lastRelease_version }}" >> $GITHUB_OUTPUT
+           then echo "app-version=${{ steps.semantic-version.outputs.semantic_lastRelease_version }}" >> $GITHUB_OUTPUT
         else
-          echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> $GITHUB_OUTPUT
+           echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> $GITHUB_OUTPUT
         fi
 
     - name: csproj version

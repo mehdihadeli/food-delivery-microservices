@@ -93,19 +93,19 @@ jobs:
         shell: bash
         run: |
           if [ $GITHUB_REF_NAME = 'main' ]
-          then  echo "back-merge main branch to develop protected branch through pull-request"
+            then  echo "back-merge main branch to develop protected branch through pull-request"
                 git checkout develop
                 git fetch origin main:main
                 git reset --hard main
           elif [ $GITHUB_REF_NAME = 'develop' ]
-          then echo "back-merge develop branch to all features"
-               ./back-merge.sh  ${{ github.ref_name }}
+             then echo "back-merge develop branch to all features"
+                  ./back-merge.sh  ${{ github.ref_name }}
           elif [ $GITHUB_REF_NAME = 'beta' ]
-          then echo "back-merge for beta branch"
-               echo "...."
+             then echo "back-merge for beta branch"
+                  echo "...."
           elif [ $GITHUB_REF_NAME = 'preview' ]
-          then echo "back-merge for preview branch"
-               echo "...."
+             then echo "back-merge for preview branch"
+                  echo "...."
           fi
 
       - name: Create Pull Request

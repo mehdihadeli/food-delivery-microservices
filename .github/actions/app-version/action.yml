@@ -77,12 +77,29 @@ runs:
       id: app-version-step
       shell: bash
       if: success()
+      # https://gist.github.com/rponte/fdc0724dd984088606b0
+      # https://linuxhint.com/bash_if_else_examples/
+      # https://github.com/semantic-release/semantic-release/issues/2703
       run: |
         if [ -z ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} ]
-           then echo "app-version=${{ steps.semantic-version.outputs.semantic_lastRelease_version }}" >> $GITHUB_OUTPUT
+            then  if [ ${{ github.ref_name }} = 'develop']
+                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*dev*")
+                  elif [ ${{ github.ref_name }} = 'beta']
+                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*beta*")
+                  elif [ ${{ github.ref_name }} = 'preview']
+                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*preview*")
+                  else
+                      LATEST_TAG=$(git describe --abbrev=0 --tags --exclude "*dev*" --exclude "*beta*" --exclude "*preview*")
+                  fi
+            echo "app-version=$LATEST_TAG" >> $GITHUB_OUTPUT
         else
            echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> $GITHUB_OUTPUT
         fi
+
+    - name: App Version Info
+      shell: bash
+      run: |
+          echo "app version is: ${{ steps.app-version-step.outputs.app-version }}"
 
     - name: csproj version
       shell: bash

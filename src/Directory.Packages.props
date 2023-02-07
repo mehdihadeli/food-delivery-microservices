@@ -193,9 +193,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageVersion Include="Duende.IdentityServer" Version="6.2.0-rc.1"/>
+    <PackageVersion Include="Duende.IdentityServer" Version="6.2.3"/>
     <PackageVersion Include="Duende.IdentityServer.Storage" Version="6.2.3"/>
-    <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="6.2.0-rc.1"/>
+    <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="6.2.3"/>
     <PackageVersion Include="Duende.IdentityServer.EntityFramework" Version="6.2.3"/>
   </ItemGroup>
 

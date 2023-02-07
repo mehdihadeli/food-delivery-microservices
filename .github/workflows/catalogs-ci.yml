@@ -108,7 +108,7 @@ jobs:
   pre-check:
     runs-on: ubuntu-latest
 
-    outputs:
+#    outputs:
 #      publish-status: ${{ steps.publish-status-step.outputs.publish-status }}
 
     # Skipping workflow runs for some commits types

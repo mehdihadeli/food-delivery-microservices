@@ -166,11 +166,11 @@ jobs:
       - name: create output dir
         run: mkdir -p "output"
 
-      - name: Print Triggering Workflow Information
-        run: |
-          echo "Triggering Workflow ID: ${{ github.event.workflow_run.id }}"
-          echo "Triggering Workflow Name: ${{ github.event.workflow_run.workflow_id }}"
-          echo "Triggering Workflow Run Number: ${{ github.event.workflow_run.run_number }}"
+#      - name: Print Triggering Workflow Information
+#        run: |
+#          echo "Triggering Workflow ID: ${{ github.event.workflow_run.id }}"
+#          echo "Triggering Workflow Name: ${{ github.event.workflow_run.workflow_id }}"
+#          echo "Triggering Workflow Run Number: ${{ github.event.workflow_run.run_number }}"
 
       # https://github.com/actions/download-artifact#download-all-artifacts
       # download artifacts in same workflow (artifacts for before job 'call-build-test-push')
@@ -188,13 +188,11 @@ jobs:
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           # check the workflow run to whether it has an artifact then will get the last available artifact from the previous workflow
-          # check_artifacts: true
+          check_artifacts: true
           workflow_conclusion: success
           workflow: ${{ github.event.workflow_run.workflow_id }}
-          #run_id: ${{ github.run_id }}
-          ## uploaded artifact name,will download all artifacts if not specified
+          ## uploaded artifact name, will download all artifacts if not specified
           # name: artifact_name
-          # A directory where to extract artifact(s), defaults to the current directory
           path: artifacts
 
       - name: dir
@@ -272,9 +270,6 @@ jobs:
   # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
   call-deploy:
     needs: [pre-check, call-release]
-
-    permissions:
-      contents: write
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped

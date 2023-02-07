@@ -35,16 +35,22 @@ runs:
        uses: dawidd6/action-download-artifact@v2
        with:
          github_token: ${{ inputs.token }}
+         # check the workflow run to whether it has an artifact then will get the last available artifact from the previous workflow
+         check_artifacts: true
          workflow_conclusion: success
-         # A directory where to extract artifact(s), defaults to the current directory
+         workflow: ${{ github.event.workflow_run.workflow_id }}
          path: artifacts
+#         name: ${{ inputs.service-name }}_publish_artifacts
+#         path: publish-artifacts
 
      - name: dir
        if: success()
        shell: bash
        run: ls -R "${{ github.workspace }}/artifacts"
+       # run: ls -R "${{ github.workspace }}/publish-artifacts"
 
        # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
+       # unzip "publish-artifacts/${{inputs.service-name}}.zip" -d "output"
      - name: unzip artifacts
        if: success()
        shell: bash

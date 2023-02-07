@@ -171,7 +171,7 @@ jobs:
   call-build-test-push:
     needs: pre-check
 
-    if: (needs.pre-check.outputs.publish-status)
+    if: (needs.pre-check.outputs.publish-status == true)
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions

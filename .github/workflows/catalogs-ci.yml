@@ -108,6 +108,9 @@ jobs:
   pre-check:
     runs-on: ubuntu-latest
 
+    outputs:
+      publish-status: ${{ steps.publish-status-step.outputs.publish-status }}
+
     # Skipping workflow runs for some commits types
     # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
@@ -116,6 +119,18 @@ jobs:
       !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style'))
 
     steps:
+      - name: Publish Status
+        if: success()
+        id: publish-status-step
+        run: |
+          if [[ ${{ (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish))) }} == true ]]; then
+              echo "should publish"
+              echo "publish-status=true" >> "$GITHUB_OUTPUT"
+          else
+              echo "should not publish"
+              echo "publish-status=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Job Info
         run: |
           echo "pre-check is successful."
@@ -125,9 +140,7 @@ jobs:
           echo "is push event? ${{ github.event_name == 'push' }}"
           echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
           echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
-          echo  ${{ (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name)) }}
-          echo  ${{ (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish)) }}
-          echo  ${{ (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish))) }}
+          echo "should publish? ${{ steps.publish-status-step.outputs.publish-status }}"
 
 #  call-build-test:
 #    needs: pre-check
@@ -158,7 +171,7 @@ jobs:
   call-build-test-push:
     needs: pre-check
 
-    if: (1==2)
+    if: (needs.pre-check.outputs.publish-status)
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions

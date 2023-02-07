@@ -75,6 +75,7 @@ runs:
 
     - name: Set Application Version
       id: app-version-step
+      shell: bash
       if: success()
       run: |
         if [ -z ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} ]

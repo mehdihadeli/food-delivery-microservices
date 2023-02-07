@@ -95,7 +95,7 @@
     <PackageVersion Include="Serilog.Sinks.Elasticsearch" Version="8.4.1"/>
     <PackageVersion Include="Serilog.Formatting.Elasticsearch" Version="8.4.1"/>
     <PackageVersion Include="Serilog.Sinks.Async" Version="1.5.0"/>
-    <PackageVersion Include="Serilog.Sinks.Console" Version="4.0.1"/>
+    <PackageVersion Include="Serilog.Sinks.Console" Version="4.1.0"/>
     <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0"/>
     <PackageVersion Include="Serilog.Sinks.Seq" Version="5.2.2"/>
     <PackageVersion Include="Serilog.Sinks.SpectreConsole" Version="0.3.3"/>

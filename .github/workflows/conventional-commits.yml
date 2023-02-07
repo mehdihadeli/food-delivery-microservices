@@ -22,7 +22,7 @@ concurrency:
 jobs:
 
   auto-labeling:
-    runs-on: ubuntu-latest
+     runs-on: ubuntu-latest
      permissions:
         # Setting up permissions in the workflow to limit the scope of what it can do. Optional!
         contents: read

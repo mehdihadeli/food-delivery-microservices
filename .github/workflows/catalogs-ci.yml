@@ -140,7 +140,7 @@ jobs:
           echo "is push event? ${{ github.event_name == 'push' }}"
           echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
           echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
-          echo ${{ (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview",  "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish))) == true }}
+          echo ${{ (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview",  "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish))) == 'true' }}
 #          echo "should publish? ${{ steps.publish-status-step.outputs.publish-status }}"
 
 #  call-build-test:

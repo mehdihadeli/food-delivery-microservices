@@ -71,13 +71,13 @@ runs:
       run: |
         if [ -z ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} ]
             then  if [ ${{ github.ref_name }} = 'develop']
-                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*dev*")
+                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*dev*" | sed 's/^v//')
                   elif [ ${{ github.ref_name }} = 'beta']
-                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*beta*")
+                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*beta*" | sed 's/^v//')
                   elif [ ${{ github.ref_name }} = 'preview']
-                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*preview*")
+                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*preview*" | sed 's/^v//')
                   else
-                      LATEST_TAG=$(git describe --abbrev=0 --tags --exclude "*dev*" --exclude "*beta*" --exclude "*preview*")
+                      LATEST_TAG=$(git describe --abbrev=0 --tags --exclude "*dev*" --exclude "*beta*" --exclude "*preview*" --exclude "*ops*" | sed 's/^v//')
                   fi
             echo "app-version=$LATEST_TAG" >> $GITHUB_OUTPUT
         else

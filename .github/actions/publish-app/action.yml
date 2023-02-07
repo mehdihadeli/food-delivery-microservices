@@ -54,11 +54,12 @@ runs:
       shell: bash
       if: success()
       working-directory: ${{ inputs.project-path }}
+      # we should build (without --no-build) here again with new passed version or at build stage we should pass correct version during build time as arguments
       run: |
         if [ ${{ inputs.no-restore }} = true ]; then
-           dotnet publish -c Release --no-restore --no-build -o ${{ github.workspace }}/output/${{inputs.service-name}} -p:Version="${{ inputs.application-version }}" -p:InformationalVersion="${{ inputs.application-version }}" -p:ApplicationVersion="${{ inputs.application-version }}"
+           dotnet publish -c Release --no-restore -o ${{ github.workspace }}/output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
         else
-           dotnet publish -c Release -o ${{ github.workspace }}/output/${{inputs.service-name}} -p:Version="${{ inputs.application-version }}" -p:InformationalVersion="${{ inputs.application-version }}" -p:ApplicationVersion="${{ inputs.application-version }}"
+           dotnet publish -c Release -o ${{ github.workspace }}/output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
         fi
 
       # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory

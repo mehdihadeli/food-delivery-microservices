@@ -69,19 +69,19 @@ runs:
       # https://linuxhint.com/bash_if_else_examples/
       # https://github.com/semantic-release/semantic-release/issues/2703
       run: |
-        if [ -z ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} ]
-            then  if [ ${{ github.ref_name }} = 'develop']
-                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*dev*" | sed 's/^v//')
-                  elif [ ${{ github.ref_name }} = 'beta']
-                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*beta*" | sed 's/^v//')
-                  elif [ ${{ github.ref_name }} = 'preview']
-                     then LATEST_TAG=$(git describe --abbrev=0 --tags --match "*preview*" | sed 's/^v//')
-                  else
-                      LATEST_TAG=$(git describe --abbrev=0 --tags --exclude "*dev*" --exclude "*beta*" --exclude "*preview*" --exclude "*ops*" | sed 's/^v//')
-                  fi
-            echo "app-version=$LATEST_TAG" >> $GITHUB_OUTPUT
+        if [ -z "${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" ]; then
+            if [ "${{ github.ref_name }}" = "develop" ]; then
+               LATEST_TAG=$(git describe --abbrev=0 --tags --match "*dev*" | sed 's/^v//')
+            elif [ "${{ github.ref_name }}" = "beta" ]; then
+               LATEST_TAG=$(git describe --abbrev=0 --tags --match "*beta*" | sed 's/^v//')
+            elif [ "${{ github.ref_name }}" = "preview" ]; then
+               LATEST_TAG=$(git describe --abbrev=0 --tags --match "*preview*" | sed 's/^v//')
+            else
+               LATEST_TAG=$(git describe --abbrev=0 --tags --exclude "*dev*" --exclude "*beta*" --exclude "*preview*" --exclude "*ops*" | sed 's/^v//')
+            fi
+            echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
         else
-           echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> $GITHUB_OUTPUT
+            echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_OUTPUT"
         fi
 
     - name: App Version Info

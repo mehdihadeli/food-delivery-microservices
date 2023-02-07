@@ -11,7 +11,7 @@ description: "Publishing application artifacts"
 inputs:
   application-version:
     description: "Application version"
-    required: true
+    required: false
   service-name:
     description: "Service name"
     required: true
@@ -48,18 +48,30 @@ runs:
 
     # https://garywoodfine.com/how-to-use-github-actions-to-build-deploy-github-nuget-packages/
     # https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/docker/building-net-docker-images?view=aspnetcore-7.0#the-dockerfile
-    # or calling dotnet publish on solution - we marked `publishable` and `packable` projects in their .csproj
-    - name: dotnet publish
+    # or calling dotnet publish on solution - we marked `publishable` and `packable` projects in their .csproj for doing easy publish in solution level
+    - name: Dotnet Publish with Version
       id: publish-services
       shell: bash
-      if: success()
+      if: ${{ success() && inputs.application-version != ''}}
       working-directory: ${{ inputs.project-path }}
-      # we should build (without --no-build) here again with new passed version or at build stage we should pass correct version during build time as arguments
+      # we should build (without --no-build) here again, with new passed version for getting new version for dlls or at build stage we should pass correct version during build time as arguments for getting new version for dlls
       run: |
         if [ ${{ inputs.no-restore }} = true ]; then
            dotnet publish -c Release --no-restore -o ${{ github.workspace }}/output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
         else
            dotnet publish -c Release -o ${{ github.workspace }}/output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
+        fi
+
+    - name: Dotnet Publish without Version
+      id: publish-services
+      shell: bash
+      if: ${{ success() && inputs.application-version == ''}}
+      working-directory: ${{ inputs.project-path }}
+      run: |
+        if [ ${{ inputs.no-restore }} = true ]; then
+           dotnet publish -c Release --no-restore --no-build -o ${{ github.workspace }}/output/${{inputs.service-name}}
+        else
+           dotnet publish -c Release -o ${{ github.workspace }}/output/${{inputs.service-name}}
         fi
 
       # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory

@@ -110,30 +110,31 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-#      - name: Call Composite Action build-test
-#        uses: ./.github/actions/build-test
-#        if: success()
-#        id: build-test-step
-#        with:
-#          project-path: ${{ inputs.project-path }}
-#          tests-path: ${{ inputs.tests-path }}
-#          unit-test-filter: ${{ inputs.unit-test-filter }}
-#          integration-test-filter: ${{ inputs.integration-test-filter }}
-#          exclude-coverage: ${{ inputs.coverage-exclude }}
-#          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
-#          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
-#          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-#          reports-path: ${{ github.workspace }}/**/*.cobertura.xml
-#          reports-output-path: ${{ github.workspace }}/output/test-results
-#          service-name: ${{ inputs.service-name }}
-#          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Call Composite Action app-version
         uses: ./.github/actions/app-version
         if: success()
         id: app-version-step
         with:
           branches: ${{ inputs.branches }}
+          service-name: ${{ inputs.service-name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Call Composite Action build-test
+        uses: ./.github/actions/build-test
+        if: success()
+        id: build-test-step
+        with:
+          application-version: ${{ steps.app-version-step.outputs.application-version }}
+          project-path: ${{ inputs.project-path }}
+          tests-path: ${{ inputs.tests-path }}
+          unit-test-filter: ${{ inputs.unit-test-filter }}
+          integration-test-filter: ${{ inputs.integration-test-filter }}
+          exclude-coverage: ${{ inputs.coverage-exclude }}
+          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
+          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+          reports-path: ${{ github.workspace }}/**/*.cobertura.xml
+          reports-output-path: ${{ github.workspace }}/output/test-results
           service-name: ${{ inputs.service-name }}
           token: ${{ secrets.GITHUB_TOKEN }}
 

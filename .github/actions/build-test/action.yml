@@ -9,6 +9,9 @@ description: "Builds and tests without pushing"
 # Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
 inputs:
+  application-version:
+    description: "Application version"
+    required: false
   project-path:
     description: "Path to project to test e.g. Services/Catalog/Catalog.API"
     required: true
@@ -72,12 +75,19 @@ runs:
       # restore root solution
       run: dotnet restore
 
-    - name: Build Service
+    - name: Build Service Without Version
       shell: bash
-      if: success()
+      if: ${{ success() && inputs.application-version == ''}}
       working-directory: ${{ inputs.project-path }}
       run: |
           dotnet build -c Release --no-restore
+
+    - name: Build Service With Version
+      shell: bash
+      if: ${{ success() && inputs.application-version != ''}}
+      working-directory: ${{ inputs.project-path }}
+      run: |
+          dotnet build -c Release --no-restore -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
 
     - name: Build Tests
       shell: bash

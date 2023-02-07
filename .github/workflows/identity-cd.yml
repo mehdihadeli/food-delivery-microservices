@@ -185,6 +185,7 @@ jobs:
           # check the workflow run to whether it has an artifact then will get the last available artifact from the previous workflow
           check_artifacts: true
           workflow_conclusion: success
+          # previous success workflow in workflow_run after complete
           workflow: ${{ github.event.workflow_run.workflow_id }}
           ## uploaded artifact name, will download all artifacts if not specified
           # name: artifact_name

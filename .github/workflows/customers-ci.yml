@@ -124,6 +124,7 @@ jobs:
           echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
           echo "is push event? ${{ github.event_name == 'push' }}"
           echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
+          echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
 
   call-build-test:
     needs: pre-check

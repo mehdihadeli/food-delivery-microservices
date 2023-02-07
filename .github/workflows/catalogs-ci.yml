@@ -109,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      publish-status: ${{ steps.publish-status-step.outputs.publish-status }}
+#      publish-status: ${{ steps.publish-status-step.outputs.publish-status }}
 
     # Skipping workflow runs for some commits types
     # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
@@ -119,17 +119,17 @@ jobs:
       !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style'))
 
     steps:
-      - name: Publish Status
-        if: success()
-        id: publish-status-step
-        run: |
-          if [[  ]]; then
-              echo "should publish"
-              echo "publish-status=true" >> "$GITHUB_OUTPUT"
-          else
-              echo "should not publish"
-              echo "publish-status=false" >> "$GITHUB_OUTPUT"
-          fi
+#      - name: Publish Status
+#        if: success()
+#        id: publish-status-step
+#        run: |
+#          if [[  ]]; then
+#              echo "should publish"
+#              echo "publish-status=true" >> "$GITHUB_OUTPUT"
+#          else
+#              echo "should not publish"
+#              echo "publish-status=false" >> "$GITHUB_OUTPUT"
+#          fi
 
       - name: Job Info
         run: |
@@ -140,7 +140,7 @@ jobs:
           echo "is push event? ${{ github.event_name == 'push' }}"
           echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
           echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
-          echo "should publish? ${{ steps.publish-status-step.outputs.publish-status }}"
+#          echo "should publish? ${{ steps.publish-status-step.outputs.publish-status }}"
 
 #  call-build-test:
 #    needs: pre-check

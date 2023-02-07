@@ -18,7 +18,7 @@ inputs:
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputs-for-composite-actions
 outputs:
   application-version:
-    value: ${{ steps.semantic.outputs.semantic_nextrelease_version }}
+    value: ${{ steps.app-version-step.outputs.app-version }}
     description: "Application Version"
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
@@ -54,14 +54,19 @@ runs:
     - name: Semantic Release Outputs
       shell: bash
       run: |
-        if [ -z ${{ steps.semantic.outputs.semantic_nextrelease_version }} ]
-           then echo "semantic_nextrelease_version is empty, action cancelled..."
-                exit 1
-        else
-            echo ${{ steps.semantic.outputs.semantic_nextrelease_version }}
+            echo ${{ steps.semantic.outputs.semantic_nextRelease_version }}
             echo ${{ steps.semantic.outputs.semantic_nextRelease_channel }}
             echo ${{ steps.semantic.outputs.semantic_nextRelease_gitTag }}
-            echo ${{ steps.semantic.outputs.semantic_lastrelease_version }}
+            echo ${{ steps.semantic.outputs.semantic_lastRelease_version }}
             echo ${{ steps.semantic.outputs.semantic_lastRelease_channel }}
             echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
+
+    - name: Set Application Version
+      id: app-version-step
+      if: success()
+      run: |
+        if [ -z ${{ steps.semantic.outputs.semantic_nextRelease_version }} ]
+          echo "app-version=${{ steps.semantic.outputs.semantic_lastRelease_version }}" >> $GITHUB_OUTPUT
+        else
+          echo "app-version=${{ steps.semantic.outputs.semantic_nextRelease_version }}" >> $GITHUB_OUTPUT
         fi

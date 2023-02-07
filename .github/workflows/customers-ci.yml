@@ -119,6 +119,7 @@ jobs:
       - name: Job Info
         run: |
           echo "pre-check is successful."
+          echo "branch is: ${{ github.ref_name }}"
           echo workspace is: ${{ github.workspace }}
           echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
           echo "is push event? ${{ github.event_name == 'push' }}"

@@ -77,14 +77,13 @@ jobs:
     # Job outputs containing expressions are evaluated on the runner at the end of each job
     outputs:
       environment-name: ${{ steps.environment-name-step.outputs.environment-name }}
-      image-name: ${{ steps.image-name-step.outputs.image-name }}
-      application-version: ${{ steps.application-version-step.outputs.application-version }}
 
     steps:
 
       - name: Job Info
         run: |
           echo "pre-check is successful."
+          echo "branch is: ${{ github.ref_name }}"
           echo workspace is: ${{ github.workspace }}
           echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
           echo "is push event? ${{ github.event_name == 'push' }}"
@@ -229,7 +228,7 @@ jobs:
         run: |
           echo "pre-check is successful."
           echo workspace is: ${{ github.workspace }}
-          echo "I'm using environment: ${{ steps.environment-name-step.outputs.environment-name }}"
+          echo "I'm using environment: ${{ needs.pre-check.outputs.environment-name }}"
           echo "CI application-version is: ${{ steps.application-version-step.outputs.application-version }}"
           echo "CI image-name is: ${{ steps.image-name-step.outputs.image-name }}"
           echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"

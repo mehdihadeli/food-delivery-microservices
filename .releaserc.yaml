@@ -165,8 +165,6 @@ plugins:
          echo "verifyReleaseCmd"
          echo "job name is: $GITHUB_JOB"
          ./set-output-next-version.sh ${nextRelease.version} ${nextRelease.channel} ${nextRelease.gitHead} ${nextRelease.gitTag}
-       analyzeCommitsCmd: |
-         echo "analyzeCommitsCmd"
        generateNotesCmd: |
          echo "generateNotesCmd"
          echo "job name is: $GITHUB_JOB"

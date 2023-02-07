@@ -123,7 +123,7 @@ jobs:
         if: success()
         id: publish-status-step
         run: |
-          if [[ ${{ (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish))) }} == true ]]; then
+          if [[  ]]; then
               echo "should publish"
               echo "publish-status=true" >> "$GITHUB_OUTPUT"
           else
@@ -171,7 +171,7 @@ jobs:
   call-build-test-push:
     needs: pre-check
 
-    if: (needs.pre-check.outputs.publish-status == true)
+    if: ${{ (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish))) == true }}
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions

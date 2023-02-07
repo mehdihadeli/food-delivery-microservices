@@ -50,7 +50,6 @@ runs:
     # https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/docker/building-net-docker-images?view=aspnetcore-7.0#the-dockerfile
     # or calling dotnet publish on solution - we marked `publishable` and `packable` projects in their .csproj for doing easy publish in solution level
     - name: Dotnet Publish with Version
-      id: publish-services
       shell: bash
       if: ${{ success() && inputs.application-version != ''}}
       working-directory: ${{ inputs.project-path }}
@@ -63,7 +62,6 @@ runs:
         fi
 
     - name: Dotnet Publish without Version
-      id: publish-services
       shell: bash
       if: ${{ success() && inputs.application-version == ''}}
       working-directory: ${{ inputs.project-path }}

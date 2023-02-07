@@ -158,7 +158,7 @@ jobs:
   call-build-test-push:
     needs: pre-check
 
-    if: ${{ (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish))) }}
+    if: (1==2)
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions

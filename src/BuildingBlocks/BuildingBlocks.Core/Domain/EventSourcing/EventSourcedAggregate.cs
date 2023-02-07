@@ -5,6 +5,8 @@ using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
 using BuildingBlocks.Core.Domain.Exceptions;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Reflection.Extensions;
+using BuildingBlocks.Core.Types.Extensions;
 
 namespace BuildingBlocks.Core.Domain.EventSourcing;
 

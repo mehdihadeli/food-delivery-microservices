@@ -1,0 +1,84 @@
+name: Reusable Release Workflow
+
+on:
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_call
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
+  # https://stackoverflow.com/questions/73702333/github-actions-reuse-outputs-from-other-reusable-workflows
+  # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-outputs-from-a-reusable-workflow
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputsinput_idtype
+  # https://docs.github.com/en/actions/using-workflows/reusing-workflows
+  workflow_call:
+    # Map the workflow outputs to job outputs
+    outputs:
+      release-version:
+        description: "Version"
+        value: ${{ jobs.release.outputs.release-version }}
+jobs:
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
+    ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
+    # The GITHUB_TOKEN permissions passed from the caller workflow can be only downgraded in called workflow
+    permissions:
+      contents: write # to be able to publish a GitHub release and tags
+      pull-requests: write # for back-merge pull requests
+
+    # Map the job outputs to step outputs
+    outputs:
+      release-version: ${{ steps.release-note-step.outputs.application-version }}
+
+    steps:
+
+      # https://docs.github.com/en/actions/learn-github-actions/variables#using-contexts-to-access-variable-values
+      - name: Job Info
+        run: |
+          echo "job name is: $GITHUB_JOB"
+          echo "branch name is: ${{ github.ref_name }}"
+
+        # https://github.com/cycjimmy/semantic-release-action/issues/6
+        # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
+        # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
+        # https://github.com/semantic-release/semantic-release/issues/1208
+        # https://github.com/orgs/community/discussions/26560
+        # https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L92
+        ## https://github.com/actions/checkout/issues/439#issuecomment-965968956
+        # get latest remote change because sematic-release in `verifyConditions` event checks local branch has latest remote branch changes, for preventing: The local branch `something` is behind the remote one, therefore a new version won't be published.
+        # By default checkout@v3, will check branch on ref/SHA that triggered in starting workflow, so if inner a job in the workflow we change HEAD of repository by changing code, subsequent jobs don't get these commits and they get ref/SHA that triggered in starting workflow
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 'lts/*'
+
+      - name: Call Composite Action semantic-release-note
+        uses: ./.github/actions/semantic-release-note
+        id: release-note-step
+        with:
+          token:  ${{ secrets.GITHUB_TOKEN }}
+
+  release-info:
+    name: Release Info
+    runs-on: ubuntu-latest
+    needs: [ release ]
+    steps:
+      - name: Release Info
+        run: |
+          echo "release version is: ${{ needs.release.outputs.release-version }}"
+

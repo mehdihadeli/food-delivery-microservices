@@ -1,32 +1,28 @@
 using System.Data;
+using System.Data.Common;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Persistence.EfCore;
-using BuildingBlocks.Persistence.EfCore.Postgres;
-using Microsoft.Extensions.Options;
 using Npgsql;
 
 namespace Core.Persistence.Postgres;
 
 public class NpgsqlConnectionFactory : IConnectionFactory
 {
-    private readonly PostgresOptions _options;
-    private IDbConnection? _connection;
+    private readonly string _connectionString;
+    private DbConnection? _connection;
 
-    public NpgsqlConnectionFactory(IOptions<PostgresOptions> options)
+    public NpgsqlConnectionFactory(string connectionString)
     {
-        _options = Guard.Against.Null(options.Value, nameof(PostgresOptions));
-        Guard.Against.NullOrEmpty(
-            _options.ConnectionString,
-            nameof(_options.ConnectionString),
-            "ConnectionString can't be empty or null.");
+        Guard.Against.NullOrEmpty(connectionString);
+        _connectionString = connectionString;
     }
 
-    public IDbConnection GetOrCreateConnection()
+    public async Task<DbConnection> GetOrCreateConnectionAsync()
     {
         if (_connection is null || _connection.State != ConnectionState.Open)
         {
-            _connection = new NpgsqlConnection(_options.ConnectionString);
-            _connection.Open();
+            _connection = new NpgsqlConnection(_connectionString);
+            await _connection.OpenAsync();
         }
 
         return _connection;

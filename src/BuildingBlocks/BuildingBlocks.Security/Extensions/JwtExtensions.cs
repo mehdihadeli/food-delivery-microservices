@@ -4,6 +4,7 @@ using System.Text;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Security.Jwt;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,7 +30,7 @@ public static class Extensions
 
         AddJwtServices(services, configuration, optionConfigurator);
 
-        var jwtOptions = configuration.GetOptions<JwtOptions>(nameof(JwtOptions));
+        var jwtOptions = configuration.BindOptions<JwtOptions>(nameof(JwtOptions));
         Guard.Against.Null(jwtOptions, nameof(jwtOptions));
 
         // https://docs.microsoft.com/en-us/aspnet/core/security/authentication
@@ -95,7 +96,7 @@ public static class Extensions
         IConfiguration configuration,
         Action<JwtOptions>? optionConfigurator = null)
     {
-        var jwtOptions = configuration.GetOptions<JwtOptions>(nameof(JwtOptions));
+        var jwtOptions = configuration.BindOptions<JwtOptions>(nameof(JwtOptions));
         Guard.Against.Null(jwtOptions, nameof(jwtOptions));
 
         optionConfigurator?.Invoke(jwtOptions);
@@ -165,7 +166,7 @@ public static class Extensions
 
     public static void AddExternalLogins(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtOptions = configuration.GetOptions<JwtOptions>(nameof(JwtOptions));
+        var jwtOptions = configuration.BindOptions<JwtOptions>(nameof(JwtOptions));
         Guard.Against.Null(jwtOptions, nameof(jwtOptions));
 
         if (jwtOptions.GoogleLoginConfigs is { })

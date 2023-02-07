@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using BuildingBlocks.Logging;
+using Microsoft.IdentityModel.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SpectreConsole;
@@ -26,6 +27,7 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services
     .AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("yarp"))
+
     // .AddTransforms<AccessTokenTransformProvider>()
     .AddTransforms(transforms =>
     {
@@ -44,7 +46,13 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseSerilogRequestLogging(opts => opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest);
+// request logging just log in information level and above as default
+app.UseSerilogRequestLogging(opts =>
+    {
+        opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest;
+        opts.GetLevel = LogEnricher.GetLogLevel;
+    }
+);
 
 app.MapGet("/", async (HttpContext context) =>
 {

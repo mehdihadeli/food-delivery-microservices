@@ -1,25 +1,56 @@
 # 🛍️ ECommerece Microservices Sample
 
-[![.NET](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml/badge.svg?branch=main&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/build-test.yml)
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-Open%20in%20Gitpod-blue?logo=gitpod&style=flat-square&color=ff69b4)](https://gitpod.io/#https://github.com/mehdihadeli/ecommerce-microservices-sample)
-[![GitHub Dev](https://img.shields.io/static/v1?label=GitHub&message=Open%20in%20GitHub%20Dev&color=blueviolet&logo=GitHub)](https://github.dev/mehdihadeli/ecommerce-microservices)
-[![Open in Remote - Containers](https://img.shields.io/static/v1?label=VsCode&message=Open%20Remote%20-%20Containers&color=orange&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/mehdihadeli/ecommerce-microservices)
+[![Coverage Status](https://coveralls.io/repos/github/mehdihadeli/ecommerce-microservices/badge.svg?branch=develop&style=flat-square)](https://coveralls.io/github/mehdihadeli/ecommerce-microservices?branch=develop)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
 > `ECommerece Microservices` is a fictional ecommerce sample, built with .Net Core and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
 
 💡 This application is not business oriented and my focus is mostly on technical part, I just want to implement a sample with using different technologies, software architecture design, principles and all the thing we need for creating a microservices app.
 
-🎯 This Application will port to `modular monolith` approach also, in [ecommerce-modular-monolith-sample](https://github.com/mehdihadeli/ecommerce-modular-monolith-sample) repository for comparing their differences.
+🎯 This Application ported to `modular monolith` approach in [ecommerce-modular-monolith](https://github.com/mehdihadeli/ecommerce-modular-monolith) repository, we can choose best fit architecture for our projects based on production needs.
+
+> **Warning**
+> This is project in progress. I'm add new features over the time. You can check the [Release Notes](https://github.com/mehdihadeli/ecommerce-microservices/releases) and follow the progress on Twitter [@mehdi_hedli](https://twitter.com/shadcn) and Linkedin [mehdihadeli](https://www.linkedin.com/in/mehdihadeli/).
+
+# Development Ready
+Start to develop with a pre config environment contains all needed infrastructures in the Gitpod:
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/https://github.com/mehdihadeli/ecommerce-microservices)
 
 # ⭐ Support
 If you like feel free to ⭐ this repository, It helps out :)
 
 Thanks a bunch for supporting me!
 
+Configuration sample:
+```bash
+# Installing commitlint
+npm install @commitlint/config-conventional @commitlint/cli -g
+# Configure commitlint to use conventional config
+echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
+
+# Installing husky
+npm install husky -g
+# running this command in the root of the repository for creating .husky folder
+npx husky install
+
+npx husky add .husky/pre-commit "dotnet format"
+npx husky add .husky/commit-msg  'npx --no -- commitlint --edit ${1}'
+
+# https://csharpier.com/docs/Editors
+# https://csharpier.com/docs/CLI
+# If you prefer csharpier for your formatting
+# npx husky add .husky/pre-commit "dotnet csharpier ."
+```
+
 # Table of Contents
 
 - [Features](#features)
 - [Plan](#plan)
+- [Setup](#setup)
+  - [Conventional Commit](#conventional-commit)
+  - [Formatting And Analizers](#formatting-and-analizers)
 - [Technologies - Libraries](#technologies---libraries)
 - [The Domain and Bounded Context - Service Boundary](#the-domain-and-bounded-context---service-boundary)
 - [Application Architecture](#application-architecture)
@@ -37,9 +68,9 @@ Thanks a bunch for supporting me!
 
 ## Features
 - ✅ Using `Vertical Slice Architecture` as a high level architecture
-- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit 
+- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit
 - ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
-- ✅ Using `Event Sourcing` in `Audit Based` services like Orders, Payment 
+- ✅ Using `Event Sourcing` in `Audit Based` services like Orders, Payment
 - ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
 - ✅ Using `CQRS Pattern` on top of `MediatR` library
 - ✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
@@ -55,18 +86,15 @@ Thanks a bunch for supporting me!
 ## Plan
 > This project is in progress, New features will be added over time.
 
-High-level plan is represented in the table
-
-| Feature | Architecture Pattern | Status |  
-| ------- | ------ | ------ |
-| Building Blocks  | | Completed ✔️ |
-| API Gateway | | Completed ✔️ |
-| Identity Service | Data Centeric Architecture (CRUD) | Completed ✔️ |
-| Customer Service | Domain Driven Design | Completed ✔️ |
-| Catalog Service | Domain Driven Design |Completed ✔️ |
-| Order Service | Event Sourccing, Domain Driven Design | In Progress 👷‍|
-| Shipping Service | Domain Driven Design | Not Started 🚩 |
-| Payment Service | Event Sourccing, Domain Driven Design | Not Started 🚩 |
+| Feature          | Architecture Pattern                  | Status | CI                                                                                                                                                                                                                                              |
+|------------------|---------------------------------------| ------ |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| API Gateway      | Microsoft YARP Reverse Proxy          | Completed ✔️ | -                                                                                                                                                                                                                                               |
+| Identity Service | Data Centeric Architecture (CRUD)     | Completed ✔️ | [![Identity-CI](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity-ci.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity-ci.yml) |
+| Customer Service | Domain Driven Design                  | Completed ✔️ | [![Customers-CI](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/customers-ci.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/ci.yml) |
+| Catalog Service  | Domain Driven Design                  |Completed ✔️ | [![Catalogs-CI](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs-ci.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs-ci.yml) |
+| Order Service    | Event Sourccing, Domain Driven Design | In Progress 👷‍| - |                                                                                                                                                                                                                                              |
+| Shipping Service | Domain Driven Design                  | Not Started 🚩 | - |
+| Payment Service  | Event Sourccing, Domain Driven Design | Not Started 🚩 | - |
 
 ## Technologies - Libraries
 
@@ -90,6 +118,19 @@ High-level plan is represented in the table
 - ✔️ **[`IdGen`](https://github.com/RobThree/IdGen)** - Twitter Snowflake-alike ID generator for .Net
 - ✔️ **[`MassTransit`](https://github.com/MassTransit/MassTransit)** - Distributed Application Framework for .NET
 
+## Setup
+
+### Conventional Commit
+In this app I use [Conventional Commit](https://www.conventionalcommits.org/en/) and for enforcing its rule I use [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) and [typicode/husky](https://github.com/typicode/husky) with a pre-commit hook. For read more about its setup see [commitlint docs](https://github.com/conventional-changelog/commitlint#getting-started) and [this article](https://betterprogramming.pub/how-to-lint-commit-messages-with-husky-and-commitlint-b51d20a5e514).
+
+### Formatting And Analizers
+For formatting I use [belav/csharpier](https://github.com/belav/csharpier), you can integrate it with your [prefered IDE](https://csharpier.com/docs/Editors).
+
+For roslyn analizers I use serveral analyzers and config the in `.editorconfig` file:
+- [StyleCop/StyleCop](https://github.com/StyleCop/StyleCop)
+- [JosefPihrt/Roslynator](https://github.com/JosefPihrt/Roslynator)
+- [meziantou/Meziantou.Analyzer](https://github.com/meziantou/Meziantou.Analyzer)
+- [Microsoft.VisualStudio.Threading.Analyzers](https://www.nuget.org/packages/Microsoft.VisualStudio.Threading.Analyzers)
 
 ## The Domain And Bounded Context - Service Boundary
 

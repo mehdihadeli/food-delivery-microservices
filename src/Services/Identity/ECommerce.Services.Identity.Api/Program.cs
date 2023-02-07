@@ -1,3 +1,8 @@
+using Bogus;
+using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web;
+using BuildingBlocks.Core.Web.Extenions;
+using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 using BuildingBlocks.Security.Extensions;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
@@ -9,29 +14,35 @@ using ECommerce.Services.Identity.Api.Middlewares;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Spectre.Console;
 
-AnsiConsole.Write(new FigletText("Identity Service").Centered().Color(Color.Pink1));
+AnsiConsole.Write(new FigletText("Identity Service").Centered().Color(Color.FromInt32(new Faker().Random.Int(1, 255))));
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
 // https://benfoster.io/blog/mvc-to-minimal-apis-aspnet-6/
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseDefaultServiceProvider((env, c) =>
+builder.Host.UseDefaultServiceProvider((context, options) =>
 {
     // Handling Captive Dependency Problem
     // https://ankitvijay.net/2020/03/17/net-core-and-di-beware-of-captive-dependency/
     // https://levelup.gitconnected.com/top-misconceptions-about-dependency-injection-in-asp-net-core-c6a7afd14eb4
     // https://blog.ploeh.dk/2014/06/02/captive-dependency/
-    if (env.HostingEnvironment.IsDevelopment() || env.HostingEnvironment.IsEnvironment("tests") ||
-        env.HostingEnvironment.IsStaging())
-    {
-        c.ValidateScopes = true;
-    }
+    // https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/
+    options.ValidateScopes = context.HostingEnvironment.IsDevelopment() || context.HostingEnvironment.IsTest() ||
+                             context.HostingEnvironment.IsStaging();
+
+    // Issue with masstransit #85
+    // options.ValidateOnBuild = true;
 });
 
 builder.Services.AddControllers(options =>
         options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer())))
     .AddNewtonsoftJson(options =>
-        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+    {
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+        // https://stackoverflow.com/questions/36452468/swagger-ui-web-api-documentation-present-enums-as-strings
+        // options.SerializerSettings.Converters.Add(new StringEnumConverter()); // sending enum string to and from client instead of number
+    })
+    .AddControllersAsServices();
 
 // https://www.talkingdotnet.com/disable-automatic-model-state-validation-in-asp-net-core-2-1/
 builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -41,18 +52,18 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.Services.AddSingleton<RevokeAccessTokenMiddleware>();
 
-builder.Services.AddCustomJwtAuthentication(builder.Configuration);
-builder.Services.AddCustomAuthorization(
-    rolePolicies: new List<RolePolicy>
-    {
-        new(IdentityConstants.Role.Admin, new List<string> {IdentityConstants.Role.Admin}),
-        new(IdentityConstants.Role.User, new List<string> {IdentityConstants.Role.User})
-    });
+builder.Services.AddValidatedOptions<AppOptions>();
+
+// register endpoints
+builder.AddMinimalEndpoints();
 
 /*----------------- Module Services Setup ------------------*/
 builder.AddModulesServices();
 
 var app = builder.Build();
+
+/*----------------- Module Middleware Setup ------------------*/
+await app.ConfigureModules();
 
 // https://thecodeblogger.com/2021/05/27/asp-net-core-web-application-routing-and-endpoint-internals/
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-7.0#routing-basics
@@ -61,13 +72,8 @@ var app = builder.Build();
 // in .net 6 and above we don't need UseRouting and UseEndpoints but if ordering is important we should write it
 // app.UseRouting();
 app.UseAppCors();
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseRevokeAccessTokenMiddleware();
-
-/*----------------- Module Middleware Setup ------------------*/
-await app.ConfigureModules();
 
 // https://learn.microsoft.com/en-us/aspnet/core/diagnostics/asp0014
 app.MapControllers();
@@ -85,7 +91,6 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("docker"))
 }
 
 await app.RunAsync();
-
 
 public partial class Program
 {

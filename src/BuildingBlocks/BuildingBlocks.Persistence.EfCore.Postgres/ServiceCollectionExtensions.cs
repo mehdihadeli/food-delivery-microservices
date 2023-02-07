@@ -7,10 +7,12 @@ using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Persistence.EfCore;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Persistence.EfCore.Interceptors;
+using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 using Core.Persistence.Postgres;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -22,36 +24,45 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPostgresDbContext<TDbContext>(
         this IServiceCollection services,
-        IConfiguration configuration,
         Assembly? migrationAssembly = null,
-        Action<PostgresOptions>? configurator = null,
         Action<DbContextOptionsBuilder>? builder = null)
         where TDbContext : DbContext, IDbFacadeResolver, IDomainEventContext
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-        var config = configuration.GetSection(nameof(PostgresOptions)).Get<PostgresOptions>();
+        services.AddValidatedOptions<PostgresOptions>(nameof(PostgresOptions));
 
-        services.Configure<PostgresOptions>(configuration.GetSection(nameof(PostgresOptions)));
-        if (configurator is { })
-            services.Configure(nameof(PostgresOptions), configurator);
-
-        Guard.Against.NullOrEmpty(config.ConnectionString, nameof(config.ConnectionString));
-
-        services.AddDbContext<TDbContext>(options =>
+        services.AddScoped<IConnectionFactory>(sp =>
         {
-            options.UseNpgsql(config.ConnectionString, sqlOptions =>
-            {
-                sqlOptions.MigrationsAssembly((migrationAssembly ?? typeof(TDbContext).Assembly).GetName().Name);
-                sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-            }).UseSnakeCaseNamingConvention();
+            var postgresOptions = sp.GetService<PostgresOptions>();
+            Guard.Against.NullOrEmpty(postgresOptions?.ConnectionString);
+            return new NpgsqlConnectionFactory(postgresOptions.ConnectionString);
+        });
+
+        services.AddDbContext<TDbContext>((sp, options) =>
+        {
+            var postgresOptions = sp.GetRequiredService<PostgresOptions>();
+
+            options.UseNpgsql(postgresOptions.ConnectionString, sqlOptions =>
+                {
+                    var name =
+                        migrationAssembly?.GetName().Name ?? postgresOptions.MigrationAssembly ??
+                        typeof(TDbContext).Assembly.GetName().Name;
+
+                    sqlOptions.MigrationsAssembly(name);
+                    sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                })
+
+                // https://github.com/efcore/EFCore.NamingConventions
+                .UseSnakeCaseNamingConvention();
+
+            // ref: https://andrewlock.net/series/using-strongly-typed-entity-ids-to-avoid-primitive-obsession/
+            options.ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector<long>>();
 
             options.AddInterceptors(new AuditInterceptor(), new SoftDeleteInterceptor(), new ConcurrencyInterceptor());
 
             builder?.Invoke(options);
         });
-
-        services.AddScoped<IConnectionFactory, NpgsqlConnectionFactory>();
 
         services.AddScoped<IDbFacadeResolver>(provider => provider.GetService<TDbContext>()!);
         services.AddScoped<IDomainEventContext>(provider => provider.GetService<TDbContext>()!);
@@ -96,75 +107,6 @@ public static class ServiceCollectionExtensions
         }
 
         return services.RegisterService<IEfUnitOfWork<TContext>, EfUnitOfWork<TContext>>(lifeTime);
-    }
-
-
-    public static void MigrateDataFromScript(this MigrationBuilder migrationBuilder)
-    {
-        var assembly = Assembly.GetCallingAssembly();
-        var files = assembly.GetManifestResourceNames();
-        var filePrefix = $"{assembly.GetName().Name}.Data.Scripts.";
-
-        foreach (var file in files
-                     .Where(f => f.StartsWith(filePrefix) && f.EndsWith(".sql"))
-                     .Select(f => new {PhysicalFile = f, LogicalFile = f.Replace(filePrefix, string.Empty)})
-                     .OrderBy(f => f.LogicalFile))
-        {
-            using var stream = assembly.GetManifestResourceStream(file.PhysicalFile);
-            using var reader = new StreamReader(stream!);
-            var command = reader.ReadToEnd();
-
-            if (string.IsNullOrWhiteSpace(command))
-                continue;
-
-            migrationBuilder.Sql(command);
-        }
-    }
-
-    public static async Task DoDbMigrationAsync(
-        this IApplicationBuilder app,
-        ILogger logger,
-        CancellationToken cancellationToken = default)
-    {
-        var scope = app.ApplicationServices.CreateAsyncScope();
-        var dbFacadeResolver = scope.ServiceProvider.GetService<IDbFacadeResolver>();
-
-        var policy = CreatePolicy(3, logger, "postgres");
-        await policy.ExecuteAsync(async () =>
-        {
-            if (!await dbFacadeResolver?.Database.CanConnectAsync(cancellationToken)!)
-            {
-                Console.WriteLine($"Connection String: {dbFacadeResolver?.Database.GetConnectionString()}");
-                throw new System.Exception("Couldn't connect database.");
-            }
-
-            var migrations =
-                await dbFacadeResolver?.Database.GetPendingMigrationsAsync(cancellationToken: cancellationToken)!;
-            if (migrations.Any())
-            {
-                await dbFacadeResolver?.Database.MigrateAsync(cancellationToken: cancellationToken)!;
-                logger?.LogInformation("Migration database schema. Done!!!");
-            }
-        });
-
-        static AsyncRetryPolicy CreatePolicy(int retries, ILogger logger, string prefix)
-        {
-            return Policy.Handle<System.Exception>().WaitAndRetryAsync(
-                retries,
-                retry => TimeSpan.FromSeconds(15),
-                (exception, timeSpan, retry, ctx) =>
-                {
-                    logger.LogWarning(
-                        exception,
-                        "[{Prefix}] Exception {ExceptionType} with message {Message} detected on attempt {Retry} of {Retries}",
-                        prefix,
-                        exception.GetType().Name,
-                        exception.Message,
-                        retry,
-                        retries);
-                }
-            );
-        }
     }
 
     private static IServiceCollection RegisterService<TService, TImplementation>(

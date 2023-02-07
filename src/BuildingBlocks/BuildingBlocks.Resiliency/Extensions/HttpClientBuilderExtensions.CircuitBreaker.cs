@@ -1,5 +1,6 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Resiliency.CircuitBreaker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,7 @@ public static partial class HttpClientBuilderExtensions
     {
         return httpClientBuilder.AddPolicyHandler((sp, _) =>
         {
-            var options = sp.GetRequiredService<IConfiguration>().GetOptions<PolicyOptions>(nameof(PolicyOptions));
+            var options = sp.GetRequiredService<IConfiguration>().BindOptions<PolicyOptions>(nameof(PolicyOptions));
 
             Guard.Against.Null(options, nameof(options));
 

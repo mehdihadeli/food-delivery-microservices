@@ -5,8 +5,8 @@ namespace BuildingBlocks.Core.Domain;
 public abstract class Entity<TId> : IEntity<TId>
 {
     public TId Id { get; protected init; } = default!;
-    public DateTime Created { get; protected set; } = default!;
-    public int? CreatedBy { get; protected set; } = default!;
+    public DateTime Created { get; private set; } = default!;
+    public int? CreatedBy { get; private set; } = default!;
 }
 
 public abstract class Entity<TIdentity, TId> : Entity<TIdentity>

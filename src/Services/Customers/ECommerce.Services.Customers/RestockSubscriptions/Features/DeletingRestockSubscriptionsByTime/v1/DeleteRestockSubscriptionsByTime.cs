@@ -2,6 +2,7 @@ using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using ECommerce.Services.Customers.RestockSubscriptions.Exceptions.Domain;
+using ECommerce.Services.Customers.RestockSubscriptions.Features.UpdatingRestockSubscription;
 using ECommerce.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 

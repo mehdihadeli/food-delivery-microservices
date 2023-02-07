@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Commands;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Identity.Users.Features.RegisteringUser.v1;
@@ -10,7 +11,7 @@ public static class RegisterUserEndpoint
         return endpoints.MapPost("/", RegisterUser)
             .AllowAnonymous()
             .Produces<RegisterUserResponse>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithName("RegisterUser")
             .WithDisplayName("Register New user.")
             .WithMetadata(new SwaggerOperationAttribute("Register New User.", "Register New User."))

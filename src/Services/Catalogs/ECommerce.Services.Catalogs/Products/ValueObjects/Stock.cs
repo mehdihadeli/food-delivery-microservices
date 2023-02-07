@@ -4,9 +4,13 @@ using ECommerce.Services.Catalogs.Products.Exceptions.Domain;
 
 namespace ECommerce.Services.Catalogs.Products.ValueObjects;
 
+// https://learn.microsoft.com/en-us/ef/core/modeling/constructors
 public record Stock
 {
-    public Stock? Null => null;
+    // EF
+    private Stock()
+    {
+    }
 
     /// <summary>
     /// Gets quantity in stock.
@@ -23,19 +27,14 @@ public record Stock
     /// </summary>
     public int MaxStockThreshold { get; private set; }
 
-    public static Stock Create(int available, int restockThreshold, int maxStockThreshold)
+    public static Stock Of(int available, int restockThreshold, int maxStockThreshold)
     {
+        // validations should be placed here instead of constructor
         var stock = new Stock
         {
-            Available = Guard.Against.Negative(
-                available,
-                new ProductDomainException("Available stock cannot be negative.")),
-            RestockThreshold = Guard.Against.NegativeOrZero(
-                restockThreshold,
-                new ProductDomainException("Restock threshold cannot be negative or zero.")),
-            MaxStockThreshold = Guard.Against.NegativeOrZero(
-                maxStockThreshold,
-                new ProductDomainException("Max stock threshold cannot be negative or zero.")),
+            Available = Guard.Against.Negative(available),
+            RestockThreshold = Guard.Against.NegativeOrZero(restockThreshold),
+            MaxStockThreshold = Guard.Against.NegativeOrZero(maxStockThreshold),
         };
 
         if (stock.Available > stock.MaxStockThreshold)

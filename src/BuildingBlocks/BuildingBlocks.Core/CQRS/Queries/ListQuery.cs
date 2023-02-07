@@ -9,6 +9,6 @@ public record ListQuery<TResponse> : IListQuery<TResponse>
     public IList<string>? Includes { get; init; }
     public IList<FilterModel>? Filters { get; init; }
     public IList<string>? Sorts { get; init; }
-    public int Page { get; init; }
-    public int PageSize { get; init; }
+    public int Page { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
 }

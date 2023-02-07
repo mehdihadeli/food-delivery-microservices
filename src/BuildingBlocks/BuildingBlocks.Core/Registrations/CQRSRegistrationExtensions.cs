@@ -7,8 +7,8 @@ using BuildingBlocks.Abstractions.Scheduler;
 using BuildingBlocks.Core.CQRS.Commands;
 using BuildingBlocks.Core.CQRS.Events;
 using BuildingBlocks.Core.CQRS.Queries;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Scheduler;
+using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 using MediatR;
 
 namespace BuildingBlocks.Core.Registrations;
@@ -44,7 +44,8 @@ public static class CQRSRegistrationExtensions
             services.AddScoped(typeof(IPipelineBehavior<,>), pipeline);
         }
 
-        services.Add<ICommandProcessor, CommandProcessor>(serviceLifetime)
+        services
+            .Add<ICommandProcessor, CommandProcessor>(serviceLifetime)
             .Add<IQueryProcessor, QueryProcessor>(serviceLifetime)
             .Add<IEventProcessor, EventProcessor>(serviceLifetime)
             .Add<ICommandScheduler, NullCommandScheduler>(serviceLifetime)

@@ -111,6 +111,7 @@ internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserR
         var userRegistered = new UserRegisteredV1(
             applicationUser.Id,
             applicationUser.Email,
+            applicationUser.PhoneNumber!,
             applicationUser.UserName,
             applicationUser.FirstName,
             applicationUser.LastName,
@@ -125,6 +126,7 @@ internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserR
         {
             Id = applicationUser.Id,
             Email = applicationUser.Email,
+            PhoneNumber = applicationUser.PhoneNumber,
             UserName = applicationUser.UserName,
             FirstName = applicationUser.FirstName,
             LastName = applicationUser.LastName,

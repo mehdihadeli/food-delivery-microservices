@@ -1,5 +1,6 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Resiliency.Retry;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,7 @@ public static partial class HttpClientBuilderExtensions
         // https://stackoverflow.com/questions/53604295/logging-polly-wait-and-retry-policy-asp-net-core-2-1
         return httpClientBuilder.AddPolicyHandler((sp, _) =>
         {
-            var options = sp.GetRequiredService<IConfiguration>().GetOptions<PolicyOptions>(nameof(PolicyOptions));
+            var options = sp.GetRequiredService<IConfiguration>().BindOptions<PolicyOptions>(nameof(PolicyOptions));
 
             Guard.Against.Null(options, nameof(options));
 

@@ -6,6 +6,10 @@
     <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Http" />
     <PackageReference Include="Asp.Versioning.Mvc" />
@@ -14,6 +18,7 @@
     <PackageReference Include="Ardalis.ApiEndpoints" />
     <PackageReference Include="System.Threading.RateLimiting" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
   </ItemGroup>
 
   <ItemGroup>

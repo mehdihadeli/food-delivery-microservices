@@ -2,6 +2,7 @@ using Ardalis.GuardClauses;
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using Hellang.Middleware.ProblemDetails;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 
@@ -16,8 +17,8 @@ public class CreateRestockSubscriptionEndpoint : ICommandMinimalEndpoint<CreateR
         return builder.MapPost("/", HandleAsync)
             .AllowAnonymous()
             .Produces<CreateRestockSubscriptionResponse>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             .WithName("CreateRestockSubscription")
             .WithDisplayName("Register New RestockSubscription for Customer.");
     }
@@ -39,7 +40,7 @@ public class CreateRestockSubscriptionEndpoint : ICommandMinimalEndpoint<CreateR
             var result = await commandProcessor.SendAsync(command, cancellationToken);
 
             return Results.Created(
-                $"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}/{result.RestockSubscription.Id}",
+                $"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}/{result.RestockSubscriptionId}",
                 result);
         }
     }

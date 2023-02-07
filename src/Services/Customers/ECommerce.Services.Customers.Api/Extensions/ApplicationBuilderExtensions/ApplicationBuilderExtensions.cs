@@ -1,4 +1,4 @@
-namespace Customers.Api.Extensions.ApplicationBuilderExtensions;
+namespace ECommerce.Services.Customers.Api.Extensions.ApplicationBuilderExtensions;
 
 public static class ApplicationBuilderExtensions
 {

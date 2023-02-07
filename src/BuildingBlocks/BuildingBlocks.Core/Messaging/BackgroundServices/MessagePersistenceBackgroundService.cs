@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Types;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
+using BuildingBlocks.Core.Web.Extenions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,6 +13,7 @@ public class MessagePersistenceBackgroundService : BackgroundService
 {
     private readonly ILogger<MessagePersistenceBackgroundService> _logger;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IHostApplicationLifetime _lifetime;
     private readonly MessagePersistenceOptions _options;
     private readonly IMachineInstanceInfo _machineInstanceInfo;
 
@@ -21,24 +23,29 @@ public class MessagePersistenceBackgroundService : BackgroundService
         ILogger<MessagePersistenceBackgroundService> logger,
         IOptions<MessagePersistenceOptions> options,
         IServiceProvider serviceProvider,
+        IHostApplicationLifetime lifetime,
         IMachineInstanceInfo machineInstanceInfo)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _lifetime = lifetime;
         _options = options.Value;
         _machineInstanceInfo = machineInstanceInfo;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        if (!await _lifetime.WaitForAppStartup(stoppingToken))
+        {
+            return;
+        }
+
         _logger.LogInformation(
             "MessagePersistence Background Service is starting on client '{@ClientId}' and group '{@ClientGroup}'",
             _machineInstanceInfo.ClientId,
             _machineInstanceInfo.ClientGroup);
 
-        _executingTask = ProcessAsync(stoppingToken);
-
-        return _executingTask;
+        await ProcessAsync(stoppingToken);
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

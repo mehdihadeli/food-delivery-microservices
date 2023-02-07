@@ -1,27 +1,29 @@
 using Ardalis.GuardClauses;
-using BuildingBlocks.Core.Exception;
-using ECommerce.Services.Catalogs.Products.Exceptions.Domain;
 
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 namespace ECommerce.Services.Catalogs.Products.ValueObjects;
 
+// https://learn.microsoft.com/en-us/ef/core/modeling/constructors
 public record Price
 {
-    public decimal Value { get; private set; }
-
-    public Price? Null => null;
-
-    public static Price Create(decimal value)
+    // EF
+    private Price(decimal value)
     {
-        return new Price
-        {
-            Value = Guard.Against.NegativeOrZero(
-                value,
-                new ProductDomainException("The catalog item price cannot have negative or zero value."))
-        };
+        Value = value;
     }
 
-    public static implicit operator Price(decimal value) => Create(value);
+    // Note: in entities with none default constructor, for setting constructor parameter, we need a private set property
+    // when we didn't define this property in fluent configuration mapping (if so we can remove private set) , because for getting mapping list of properties to set
+    // in the constructor it should not be read only without set (for bypassing calculate fields)- https://learn.microsoft.com/en-us/ef/core/modeling/constructors#read-only-properties
+    public decimal Value { get; private set; }
 
-    public static implicit operator decimal(Price value) =>
-        Guard.Against.Null(value.Value, new ProductDomainException("Price can't be null."));
+    public static Price Of(decimal value)
+    {
+        // validations should be placed here instead of constructor
+        Guard.Against.NegativeOrZero(value);
+
+        return new Price(value);
+    }
+
+    public static implicit operator decimal(Price value) => value.Value;
 }

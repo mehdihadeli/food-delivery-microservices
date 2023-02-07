@@ -135,12 +135,12 @@ public static class GuardExtensions
         return date;
     }
 
-    public static string InvalidEmail(this IGuardClause guardClause, string? email)
+    public static string InvalidEmail(this IGuardClause guardClause, string email)
     {
         return guardClause.InvalidEmail(email, new InvalidEmailException(email ?? string.Empty));
     }
 
-    public static string InvalidEmail(this IGuardClause guardClause, string? email, System.Exception exception)
+    public static string InvalidEmail(this IGuardClause guardClause, string email, System.Exception exception)
     {
         if (string.IsNullOrWhiteSpace(email))
         {
@@ -152,8 +152,8 @@ public static class GuardExtensions
             throw exception;
         }
 
-        email = email.ToLowerInvariant();
-        if (!_regex.IsMatch(email))
+        var lowerEmail = email.ToLowerInvariant();
+        if (!_regex.IsMatch(lowerEmail))
         {
             throw exception;
         }
@@ -161,7 +161,7 @@ public static class GuardExtensions
         return email;
     }
 
-    public static string InvalidCurrency(this IGuardClause guardClause, string? currency)
+    public static string InvalidCurrency(this IGuardClause guardClause, string currency)
     {
         return guardClause.InvalidCurrency(currency, new InvalidCurrencyException(currency));
     }
@@ -182,14 +182,14 @@ public static class GuardExtensions
         return currency;
     }
 
-    public static string InvalidPhoneNumber(this IGuardClause guardClause, string? phoneNumber)
+    public static string InvalidPhoneNumber(this IGuardClause guardClause, string phoneNumber)
     {
         return guardClause.InvalidPhoneNumber(phoneNumber, new InvalidPhoneNumberException(phoneNumber));
     }
 
     public static string InvalidPhoneNumber(
         this IGuardClause guardClause,
-        string? phoneNumber,
+        string phoneNumber,
         System.Exception exception)
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))

@@ -4,6 +4,7 @@ using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Catalogs.Products.Exceptions.Application;
 using ECommerce.Services.Catalogs.Shared.Contracts;
 using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Services.Catalogs.Products.Features.DebitingProductStock.v1;
@@ -43,7 +44,7 @@ internal class DebitProductStockHandler : ICommandHandler<DebitProductStock>
             await _catalogDbContext.Products.FirstOrDefaultAsync(x => x.Id == command.ProductId, cancellationToken);
 
         await _catalogDbContext.SaveChangesAsync(cancellationToken);
-        Guard.Against.NotFound(product, new ProductCustomNotFoundException(command.ProductId));
+        Guard.Against.NotFound(product, new ProductNotFoundException(command.ProductId));
         product!.DebitStock(command.Quantity);
 
         await _catalogDbContext.SaveChangesAsync(cancellationToken);

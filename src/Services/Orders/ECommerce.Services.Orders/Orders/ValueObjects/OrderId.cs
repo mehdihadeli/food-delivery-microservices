@@ -5,12 +5,13 @@ namespace ECommerce.Services.Orders.Orders.ValueObjects;
 
 public record OrderId : AggregateId
 {
-    public OrderId(long value) : base(value)
+    // EF
+    protected OrderId(long value) : base(value)
     {
-        Guard.Against.NegativeOrZero(value, nameof(value));
     }
 
-    public static implicit operator long(OrderId id) => Guard.Against.Null(id.Value, nameof(id.Value));
+    public static implicit operator long(OrderId id) => id.Value;
 
-    public static implicit operator OrderId(long id) => new(id);
+    // validations should be placed here instead of constructor
+    public static OrderId Of(long id) => new(Guard.Against.NegativeOrZero(id));
 }

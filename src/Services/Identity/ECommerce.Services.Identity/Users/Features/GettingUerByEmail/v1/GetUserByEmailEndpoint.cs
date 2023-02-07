@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using ECommerce.Services.Identity.Users.Features.RegisteringUser;
 using ECommerce.Services.Identity.Users.Features.RegisteringUser.v1;
+using Hellang.Middleware.ProblemDetails;
 
 namespace ECommerce.Services.Identity.Users.Features.GettingUerByEmail.v1;
 
@@ -13,8 +14,8 @@ public static class GetUserByEmailEndpoint
         return endpoints.MapGet("/by-email/{email}", GetUserByEmail)
             .AllowAnonymous()
             .Produces<RegisterUserResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithName("GetUserByEmail")
             .WithDisplayName("Get User by email.")
             .WithOpenApi(operation => new(operation)

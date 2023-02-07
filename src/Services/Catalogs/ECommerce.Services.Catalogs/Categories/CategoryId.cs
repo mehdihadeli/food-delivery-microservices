@@ -1,14 +1,17 @@
+using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Domain;
 
 namespace ECommerce.Services.Catalogs.Categories;
 
 public record CategoryId : AggregateId
 {
-    public CategoryId(long value) : base(value)
+    // EF
+    private CategoryId(long value) : base(value)
     {
     }
 
     public static implicit operator long(CategoryId id) => id.Value;
 
-    public static implicit operator CategoryId(long id) => new(id);
+    // validations should be placed here instead of constructor
+    public static CategoryId Of(long id) => new(Guard.Against.NegativeOrZero(id));
 }

@@ -1,6 +1,8 @@
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extenions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Logs;
@@ -15,7 +17,7 @@ public static class Extensions
     public static WebApplicationBuilder AddCustomOpenTelemetry(this WebApplicationBuilder builder)
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
-        var options = builder.Configuration.GetOptions<OpenTelemetryOptions>();
+        var options = builder.Configuration.BindOptions<OpenTelemetryOptions>();
 
         builder.Services.AddOpenTelemetryTracing(
             tracerProviderBuilder =>
@@ -134,6 +136,15 @@ public static class Extensions
                 {
                     x.AgentHost = options.JaegerOptions.AgentHost;
                     x.AgentPort = options.JaegerOptions.AgentPort;
+                    x.MaxPayloadSizeInBytes = 4096;
+                    x.ExportProcessorType = ExportProcessorType.Batch;
+                    x.BatchExportProcessorOptions = new BatchExportProcessorOptions<System.Diagnostics.Activity>
+                    {
+                        MaxQueueSize = 2048,
+                        ScheduledDelayMilliseconds = 5000,
+                        ExporterTimeoutMilliseconds = 30000,
+                        MaxExportBatchSize = 512,
+                    };
                 });
                 break;
             case nameof(TracingExporterType.None):

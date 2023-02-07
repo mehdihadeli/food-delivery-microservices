@@ -1,0 +1,39 @@
+# https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
+# https://doug.sh/posts/using-composite-actions-with-github-actions/
+# https://wallis.dev/blog/composite-github-actions
+
+name: "Generate Drafter Release Note"
+description: "Generating drafter release note for our application"
+
+# Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+inputs:
+  # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
+  token:
+    description: 'A Github PAT'
+    required: true
+  application-version:
+    description: "Application version"
+
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
+runs:
+  using: "composite"
+  steps:
+
+      # https://johanneskonings.dev/github/2021/02/28/github_automatic_releases_and-changelog/
+      # https://tiagomichaelsousa.dev/articles/stop-writing-your-changelogs-manually
+    - name: Update Release Draft
+      uses: release-drafter/release-drafter@v5
+      if: success()
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+
+    # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
+    # This back-merge may failed because of complexity some merge we should continue next step with using if: always()
+    # https://github.com/orgs/community/discussions/26560
+    - name: Back Merge Release
+      shell: bash
+      if: success()
+      run: |
+        ./back-merge.sh

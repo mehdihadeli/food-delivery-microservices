@@ -2,6 +2,7 @@ using Ardalis.GuardClauses;
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Customers.Customers.Features.GettingCustomerById.v1;
@@ -17,9 +18,9 @@ public class GetCustomerByIdEndpointEndpoint : IQueryMinimalEndpoint<Guid>
         return builder.MapGet("/{id:guid}", HandleAsync)
             // .RequireAuthorization()
             .Produces<GetCustomerByIdResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
             .WithMetadata(new SwaggerOperationAttribute("Getting a Customer By InternalCommandId", "Getting a Customer By InternalCommandId"))
             .WithName("GetCustomerById")
             .WithDisplayName("Get Customer By InternalCommandId.");

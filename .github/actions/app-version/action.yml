@@ -1,0 +1,129 @@
+# https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
+# https://doug.sh/posts/using-composite-actions-with-github-actions/
+# https://wallis.dev/blog/composite-github-actions
+
+name: "App Version"
+description: "Update App Version"
+
+# Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+inputs:
+  # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
+  token:
+    description: 'A Github PAT'
+    required: true
+  service-name:
+    description: 'Service name'
+    required: true
+  branches:
+    description: 'Branches to generate version'
+    default: '["main", "develop", "beta", "preview", "devops/ci"]'
+
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputsoutput_idvalue
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputs-for-composite-actions
+outputs:
+  application-version:
+    value: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+    description: "Application Version"
+
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 'lts/*'
+
+    - name: Check Inputs
+      shell: bash
+      if: ${{ !contains(fromJson(inputs.branches), github.ref_name) }}
+      run: |
+            echo "branch ${{ github.ref_name }} is not valid for generating version, action cancelled..."
+            exit 1
+
+    # https://github.com/semantic-release/semantic-release/discussions/2674
+    # https://medium.com/@michael.wolfenden/simplified-versioning-and-publishing-for-net-libraries-a28e5e740fa6
+    # https://github.com/semantic-release/semantic-release/issues/753
+    # https://github.com/semantic-release/semantic-release/issues/1647
+    # https://semantic-release.gitbook.io/semantic-release/usage/plugins
+    # https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun
+    - name: Semantic Release Version
+      id: semantic-version
+      if: ${{ success() }}
+      shell: bash
+      env:
+        GITHUB_TOKEN:  ${{ inputs.token }}
+      # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
+      # using dry-run here for preventing publish release note and just calculate version
+      run: |
+        echo "running semantic-release in dry-run mode"
+        npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p  @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release  --dry-run
+
+      # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
+    - name: Semantic Release  Versions Outputs
+      shell: bash
+      if: ${{ success() }}
+      run: |
+        if [ -z ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} ]
+          then echo "semantic_nextRelease_version is empty, action cancelled..."
+               exit 1
+        else
+          echo ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+          echo ${{ steps.semantic-version.outputs.semantic_nextRelease_channel }}
+          echo ${{ steps.semantic-version.outputs.semantic_nextRelease_gitTag }}
+          echo ${{ steps.semantic-version.outputs.semantic_lastRelease_version }}
+          echo ${{ steps.semantic-version.outputs.semantic_lastRelease_channel }}
+          echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
+        fi
+
+    # Save version in the artifacts to use in CD process
+    - name: Save image name
+      shell: bash
+      run: echo "${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" > version_name.txt
+
+    - name: Upload Version Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.service-name}}_version_artifacts
+        path: version_name.txt
+
+    - name: csproj version
+      shell: bash
+      run: ./update-version.sh ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md
+    - name: Create Update Version Pull Request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+        commit-message: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
+        title: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
+        token: ${{ inputs.token }}
+        delete-branch: true
+        assignees: mehdihadeli
+        reviewers: mehdihadeli
+        labels: |
+          chore
+        # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
+        add-paths: |
+          *.Packages.props
+
+#      # https://github.com/semantic-release/semantic-release/discussions/2557
+#      # https://github.com/semantic-release/github/issues/175
+#      # this needs a PAT with write permission without doing pull request
+#    - name: Commit Updated Application Version File
+#      uses: stefanzweifel/git-auto-commit-action@v4
+#      if: ${{ success() }}
+#      with:
+#        commit_message: 'chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]'
+#        file_pattern: '**/Directory.Packages.props'
+#        disable_globbing: true
+#        # https://github.com/stefanzweifel/git-auto-commit-action#usage
+#        commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com> # defaults to author of the commit that triggered the run
+#        commit_user_name: github-actions[bot] # defaults to "github-actions[bot]"
+#        commit_user_email: github-actions[bot]@users.noreply.github.com # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
+
+

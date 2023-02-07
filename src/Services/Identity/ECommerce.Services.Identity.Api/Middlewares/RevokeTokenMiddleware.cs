@@ -2,6 +2,7 @@ using Ardalis.GuardClauses;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extenions;
 using EasyCaching.Core;
 using Microsoft.Extensions.Options;
 

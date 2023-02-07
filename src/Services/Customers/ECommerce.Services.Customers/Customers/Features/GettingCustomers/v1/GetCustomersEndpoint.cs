@@ -2,6 +2,7 @@ using Ardalis.ApiEndpoints;
 using Ardalis.GuardClauses;
 using Asp.Versioning;
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using Hellang.Middleware.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Customers.Customers.Features.GettingCustomers.v1;
@@ -19,16 +20,20 @@ public class GetCustomersEndpoint : EndpointBaseAsync
         _queryProcessor = queryProcessor;
     }
 
-    [HttpGet(CustomersConfigs.CustomersPrefixUri, Name = "GetCustomers")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ApiVersion(1.0)]
+    // We could use `SwaggerResponse` form `Swashbuckle.AspNetCore` package instead of `ProducesResponseType` for supporting custom description for status codes
+    [SwaggerResponse(
+        StatusCodes.Status200OK,
+        "Customers response retrieved successfully (Success).",
+        typeof(GetCustomersResponse))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized", typeof(StatusCodeProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid input (Bad Request)", typeof(StatusCodeProblemDetails))]
     [SwaggerOperation(
         Summary = "Getting All Customers",
         Description = "Getting All Customers",
         OperationId = "GetCustomers",
         Tags = new[] {CustomersConfigs.Tag})]
+    [HttpGet(CustomersConfigs.CustomersPrefixUri, Name = "GetCustomers")]
+    [ApiVersion(1.0)]
     public override async Task<ActionResult<GetCustomersResponse>> HandleAsync(
         [FromQuery] GetCustomersRequest? request,
         CancellationToken cancellationToken = default)

@@ -42,7 +42,6 @@ public class DomainEventPublisher : IDomainEventPublisher
         if (!domainEvents.Any())
             return;
 
-
         // https://github.com/dotnet-architecture/eShopOnContainers/issues/700#issuecomment-461807560
         // https://github.com/dotnet-architecture/eShopOnContainers/blob/e05a87658128106fef4e628ccb830bc89325d9da/src/Services/Ordering/Ordering.Infrastructure/OrderingContext.cs#L65
         // http://www.kamilgrzybek.com/design/how-to-publish-and-handle-domain-events/
@@ -50,11 +49,11 @@ public class DomainEventPublisher : IDomainEventPublisher
         // https://www.ledjonbehluli.com/posts/domain_to_integration_event/
 
         // Dispatch our domain events before commit
-        IReadOnlyList<IDomainEvent> eventsToDispatch = domainEvents.ToList();
+        var eventsToDispatch = domainEvents.ToList();
 
         if (!eventsToDispatch.Any())
         {
-            eventsToDispatch = _domainEventsAccessor.UnCommittedDomainEvents.ToImmutableList();
+            eventsToDispatch = new List<IDomainEvent>(_domainEventsAccessor.UnCommittedDomainEvents);
         }
 
         await _eventProcessor.DispatchAsync(eventsToDispatch.ToArray(), cancellationToken);
@@ -71,7 +70,7 @@ public class DomainEventPublisher : IDomainEventPublisher
                 cancellationToken);
         }
 
-        IReadOnlyList<IEventMapper> eventMappers = _serviceProvider.GetServices<IEventMapper>().ToImmutableList();
+        var eventMappers = _serviceProvider.GetServices<IEventMapper>().ToImmutableList();
 
         // Save event mapper events into outbox for further processing after commit
         var integrationEvents =
@@ -103,7 +102,7 @@ public class DomainEventPublisher : IDomainEventPublisher
         IReadOnlyList<IEventMapper> eventMappers,
         IReadOnlyList<IDomainEvent> eventsToDispatch)
     {
-        IReadOnlyList<IIDomainNotificationEventMapper> notificationEventMappers =
+        var notificationEventMappers =
             serviceProvider.GetServices<IIDomainNotificationEventMapper>().ToImmutableList();
 
         List<IDomainNotificationEvent> notificationEvents = new List<IDomainNotificationEvent>();
@@ -139,7 +138,7 @@ public class DomainEventPublisher : IDomainEventPublisher
         IReadOnlyList<IEventMapper> eventMappers,
         IReadOnlyList<IDomainEvent> eventsToDispatch)
     {
-        IReadOnlyList<IIntegrationEventMapper> integrationEventMappers =
+        var integrationEventMappers =
             serviceProvider.GetServices<IIntegrationEventMapper>().ToImmutableList();
 
         List<IIntegrationEvent> integrationEvents = new List<IIntegrationEvent>();

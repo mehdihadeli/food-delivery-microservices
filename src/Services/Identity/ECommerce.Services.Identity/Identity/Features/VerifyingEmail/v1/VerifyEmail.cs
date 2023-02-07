@@ -36,7 +36,7 @@ internal class VerifyEmailHandler : ICommandHandler<VerifyEmail>
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user == null)
         {
-            throw new UserCustomNotFoundException(request.Email);
+            throw new IdentityUserNotFoundException(request.Email);
         }
 
         if (user.EmailConfirmed)

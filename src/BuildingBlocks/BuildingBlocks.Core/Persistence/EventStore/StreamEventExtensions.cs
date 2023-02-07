@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
+using BuildingBlocks.Core.Reflection;
 using BuildingBlocks.Core.Utils;
 
 namespace BuildingBlocks.Core.Persistence.EventStore;

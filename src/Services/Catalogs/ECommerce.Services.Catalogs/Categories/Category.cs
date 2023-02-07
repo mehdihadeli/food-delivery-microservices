@@ -5,15 +5,23 @@ using ECommerce.Services.Catalogs.Categories.Exceptions.Domain;
 namespace ECommerce.Services.Catalogs.Categories;
 
 // https://stackoverflow.com/a/32354885/581476
+// https://learn.microsoft.com/en-us/ef/core/modeling/constructors
+// https://github.com/dotnet/efcore/issues/29940
 public class Category : Aggregate<CategoryId>
 {
-    public string Name { get; private set; } = null!;
-    public string Description { get; private set; } = null!;
-    public string Code { get; private set; } = null!;
+    // EF
+    // this constructor is needed when we have a parameter constructor that has some navigation property classes in the parameters and ef will skip it and try to find other constructor, here default constructor (maybe will fix .net 8)
+    public Category()
+    {
+    }
+
+    public string Name { get; private set; } = default!;
+    public string Description { get; private set; } = default!;
+    public string Code { get; private set; } = default!;
 
     public static Category Create(CategoryId id, string name, string code, string description = "")
     {
-        var category = new Category { Id = Guard.Against.Null(id, nameof(id)) };
+        var category = new Category {Id = Guard.Against.Null(id, nameof(id))};
 
         category.ChangeName(name);
         category.ChangeDescription(description);

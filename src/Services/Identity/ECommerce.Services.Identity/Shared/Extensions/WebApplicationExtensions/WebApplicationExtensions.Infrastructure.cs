@@ -1,3 +1,5 @@
+using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
@@ -11,14 +13,30 @@ public static partial class WebApplicationExtensions
 {
     public static async Task UseInfrastructure(this WebApplication app)
     {
+        // this middleware should be first middleware
+        // request logging just log in information level and above as default
+        app.UseSerilogRequestLogging(opts =>
+            {
+                opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest;
+
+                // this level wil use for request logging
+                // https://andrewlock.net/using-serilog-aspnetcore-in-asp-net-core-3-excluding-health-check-endpoints-from-serilog-request-logging/#customising-the-log-level-used-for-serilog-request-logs
+                opts.GetLevel = LogEnricher.GetLogLevel;
+            }
+        );
+
         // orders for middlewares is important and problemDetails middleware should be placed on top
         app.UseProblemDetails();
-        app.UseSerilogRequestLogging(opts => opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest);
+
         app.UseRequestLogContextMiddleware();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
         await app.UsePostgresPersistenceMessage(app.Logger);
         app.UseCustomRateLimit();
 
-        if (app.Environment.IsEnvironment("test") == false)
+        if (app.Environment.IsTest() == false)
         {
             app.UseCustomHealthCheck();
             app.UseIdentityServer();

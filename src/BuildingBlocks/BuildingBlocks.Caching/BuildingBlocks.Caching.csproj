@@ -5,6 +5,10 @@
     <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="EasyCaching.Serialization.MessagePack" />
     <PackageReference Include="EasyCaching.Serialization.Json" />

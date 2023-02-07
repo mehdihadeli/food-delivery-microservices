@@ -1,8 +1,8 @@
-using BuildingBlocks.Core.Domain.ValueObjects;
 using BuildingBlocks.Core.Persistence.EfCore;
 using ECommerce.Services.Customers.Customers.Models;
 using ECommerce.Services.Customers.RestockSubscriptions.Models.Write;
 using ECommerce.Services.Customers.Shared.Data;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,34 +12,31 @@ public class RestockSubscriptionEntityConfiguration : IEntityTypeConfiguration<R
 {
     public void Configure(EntityTypeBuilder<RestockSubscription> builder)
     {
-        builder.ToTable("restock_subscriptions", CustomersDbContext.DefaultSchema);
+        builder.ToTable(nameof(RestockSubscription).Pluralize().Underscore(), CustomersDbContext.DefaultSchema);
 
-        builder.HasKey(c => c.Id);
+        // ids will use strongly typed-id value converter selector globally
+        builder.Property(x => x.Id).ValueGeneratedNever();
+        builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.Id).IsUnique();
-        builder.Property(x => x.Id)
-            .ValueGeneratedNever()
-            .HasConversion(id => id.Value, id => id);
 
         builder.Property(x => x.Processed).HasDefaultValue(false);
 
-        builder.Property(c => c.CustomerId)
-            .HasConversion(id => id.Value, id => id);
+        builder.Property(c => c.CustomerId);
 
         builder.HasOne<Customer>()
             .WithMany()
             .HasForeignKey(x => x.CustomerId);
 
-        builder.OwnsOne(x => x.ProductInformation, p =>
-        {
-            p.Property(x => x.Id)
-                .HasConversion(id => id.Value, id => id);
+        builder.OwnsOne(x => x.ProductInformation);
 
-            p.Property(x => x.Name)
-                .HasMaxLength(EfConstants.Lenght.Normal);
-        });
-
-        builder.Property(x => x.Email)
-            .HasConversion(email => email.Value, email => Email.Create(email));
+        builder.OwnsOne(
+            x => x.Email,
+            a =>
+            {
+                // configuration just for  changing column name in db (instead of email_value)
+                a.Property(p => p.Value)
+                    .HasColumnName(nameof(RestockSubscription.Email).Underscore());
+            });
 
         builder.Property(x => x.Created).HasDefaultValueSql(EfConstants.DateAlgorithm);
     }

@@ -1,9 +1,7 @@
-using System.Reflection;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
+using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 using BuildingBlocks.Messaging.Persistence.Postgres.MessagePersistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,16 +14,24 @@ public static class ServiceCollectionExtensions
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-        var option = configuration.GetOptions<MessagePersistenceOptions>(nameof(MessagePersistenceOptions));
+        services.AddValidatedOptions<MessagePersistenceOptions>(nameof(MessagePersistenceOptions));
 
-        Guard.Against.Null(option, nameof(MessagePersistenceOptions));
-        Guard.Against.NullOrEmpty(option.ConnectionString, nameof(option.ConnectionString));
-
-        services.AddDbContext<MessagePersistenceDbContext>(options =>
+        services.AddScoped<IMessagePersistenceConnectionFactory>(sp =>
         {
-            options.UseNpgsql(option.ConnectionString, sqlOptions =>
+            var postgresOptions = sp.GetService<MessagePersistenceOptions>();
+            Guard.Against.NullOrEmpty(postgresOptions?.ConnectionString);
+
+            return new NpgsqlMessagePersistenceConnectionFactory(postgresOptions.ConnectionString);
+        });
+
+        services.AddDbContext<MessagePersistenceDbContext>((sp, options) =>
+        {
+            var postgresOptions = sp.GetRequiredService<MessagePersistenceOptions>();
+
+            options.UseNpgsql(postgresOptions.ConnectionString, sqlOptions =>
             {
-                sqlOptions.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+                sqlOptions.MigrationsAssembly(postgresOptions.MigrationAssembly ??
+                                              typeof(MessagePersistenceDbContext).Assembly.GetName().Name);
                 sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
             }).UseSnakeCaseNamingConvention();
         });

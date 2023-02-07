@@ -4,7 +4,7 @@ namespace ECommerce.Services.Identity.Shared.Data;
 
 public class DbContextDesignFactory : DbContextDesignFactoryBase<IdentityContext>
 {
-    public DbContextDesignFactory() : base("ConnectionStrings:IdentityServiceConnection")
+    public DbContextDesignFactory() : base("PostgresOptions:ConnectionString")
     {
     }
 }

@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using Hellang.Middleware.ProblemDetails;
 
 namespace ECommerce.Services.Identity.Identity.Features.GettingClaims.v1;
 
@@ -9,7 +10,7 @@ public static class GetClaimsEndpoint
         return endpoints.MapGet("/claims", GetClaims)
             .RequireAuthorization()
             .Produces<GetClaimsResponse>()
-            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             .WithOpenApi(operation => new(operation)
             {
                 Summary = "Getting User Claims", Description = "Getting User Claims"

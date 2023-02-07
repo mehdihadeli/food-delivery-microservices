@@ -1,0 +1,160 @@
+# Back-merging should typically be done as part of your Continuous Integration (CI) process
+# By performing back-merging as part of the CI process, we can catch and fix any conflicts between the dev and main branches early in the development cycle, before the changes are deployed to production. This helps to ensure that the dev branch remains in a releasable state, and reduces the risk of integration issues when changes are eventually merged into the main branch.
+name: Back-Merge
+
+on:
+
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+  # This event will only trigger a workflow run if the workflow file is on the default branch.
+  workflow_run:
+    workflows: [ "Catalogs-CI", "Customers-CI", "Identity-CI", "Orders-CI" ]
+    branches: [ develop, main, preview, beta ]
+    types: [ completed ]
+
+  workflow_dispatch:
+    logLevel:
+      description: 'Log level'
+      required: true
+      default: 'info'
+      type: choice
+      options:
+        - info
+        - warning
+        - debug
+
+  pull_request:
+    types: [closed]  # when PR is merged, CD will be triggered
+    branches:
+      - develop
+      - beta
+      - preview
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+
+  pre-check:
+    runs-on: ubuntu-latest
+
+    # Skipping workflow runs for some commits types
+    # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
+    # https://github.com/actions/runner/issues/491#issuecomment-850884422
+    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+    if: |
+      !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message,  'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style')) &&
+      github.actor != 'dependabot[bot]' &&
+      contains(fromJson('["develop", "main", "preview", "beta"]'), github.ref_name) &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true))
+
+    steps:
+      - name: Job Info
+        run: |
+          echo "pre-check is successful."
+          echo workspace is: ${{ github.workspace }}
+          echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
+          echo "is push event? ${{ github.event_name == 'push' }}"
+          echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
+
+  back-merge:
+    runs-on: ubuntu-latest
+    needs: [ pre-check ]
+
+    permissions:
+      pull-requests: write
+
+    steps:
+
+      # https://github.com/cycjimmy/semantic-release-action/issues/6
+      # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
+      # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
+      # https://github.com/semantic-release/semantic-release/issues/1208
+      # https://github.com/orgs/community/discussions/26560
+      # https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L92
+      ## https://github.com/actions/checkout/issues/439#issuecomment-965968956
+      # get latest remote change because sematic-release in `verifyConditions` event checks local branch has latest remote branch changes, for preventing: The local branch `something` is behind the remote one, therefore a new version won't be published.
+      # By default checkout@v3, will check branch on ref/SHA that triggered in starting workflow, so if inner a job in the workflow we change HEAD of repository by changing code, subsequent jobs don't get these commits and they get ref/SHA that triggered in starting workflow
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md#keep-a-branch-up-to-date-with-another
+      - name: Merge Branches
+        shell: bash
+        run: |
+          if [ $GITHUB_REF_NAME = 'main' ]
+          then  echo "back-merge main branch to develop protected branch through pull-request"
+                git checkout develop
+                git fetch origin main:main
+                git reset --hard main
+          elif [ $GITHUB_REF_NAME = 'develop' ]
+          then echo "back-merge develop branch to all features"
+               ./back-merge.sh  ${{ github.ref_name }}
+          elif [ $GITHUB_REF_NAME = 'beta' ]
+          then echo "back-merge for beta branch"
+               echo "...."
+          elif [ $GITHUB_REF_NAME = 'preview' ]
+          then echo "back-merge for preview branch"
+               echo "...."
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          delete-branch: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          commit-message: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
+          title: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
+          branch: back-merge-update
+
+  back-merge-pr-closed:
+    runs-on: ubuntu-latest
+    needs: [ pre-check ]
+
+    permissions:
+      contents: write # for back-merging feature branch
+
+    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true && contains(fromJson('["develop", "preview", "beta"]'), github.ref_name))
+
+    steps:
+
+      # https://github.com/cycjimmy/semantic-release-action/issues/6
+      # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
+      # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
+      # https://github.com/semantic-release/semantic-release/issues/1208
+      # https://github.com/orgs/community/discussions/26560
+      # https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L92
+      ## https://github.com/actions/checkout/issues/439#issuecomment-965968956
+      # get latest remote change because sematic-release in `verifyConditions` event checks local branch has latest remote branch changes, for preventing: The local branch `something` is behind the remote one, therefore a new version won't be published.
+      # By default checkout@v3, will check branch on ref/SHA that triggered in starting workflow, so if inner a job in the workflow we change HEAD of repository by changing code, subsequent jobs don't get these commits and they get ref/SHA that triggered in starting workflow
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+      # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit
+      # https://github.com/orgs/community/discussions/26560
+      # https://github.com/semantic-release/semantic-release/discussions/2557
+      # https://github.com/semantic-release/github/issues/175
+      # this needs a PAT with write permission without doing pull request
+      - name: Back Merge Feature Branches
+        shell: bash
+        run: |
+          ./back-merge.sh  ${{ github.ref_name }}

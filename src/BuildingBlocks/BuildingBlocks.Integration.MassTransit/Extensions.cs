@@ -1,41 +1,49 @@
-﻿using Ardalis.GuardClauses;
+﻿using System.Reflection;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
+using BuildingBlocks.Core.Reflection;
+using BuildingBlocks.Core.Utils;
+using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Validation;
 using MassTransit;
-using MassTransit.Configuration;
-using MassTransit.Testing;
-using MassTransit.Testing.Implementations;
-using MassTransit.Transports;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Builder;
 using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
 
 namespace BuildingBlocks.Integration.MassTransit;
 
 public static class Extensions
 {
-    public static IServiceCollection AddCustomMassTransit(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment env,
+    public static WebApplicationBuilder AddCustomMassTransit(
+        this WebApplicationBuilder builder,
         Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureReceiveEndpoints = null,
         Action<IBusRegistrationConfigurator>? configureBusRegistration = null,
-        bool autoConfigEndpoints = false)
+        bool autoConfigEndpoints = false,
+        params Assembly[] scanAssemblies)
     {
-        var rabbitMqOptions = configuration.GetOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
+        // - should be placed out of action delegate for getting correct calling assembly
+        // - Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
+        // load all referenced assemblies explicitly.
+        var assemblies = scanAssemblies.Any()
+            ? scanAssemblies
+            : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).ToArray();
 
-        Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));
+        if (!builder.Environment.IsTest())
+        {
+            builder.Services.AddMassTransit(ConfiguratorAction);
+        }
+        else
+        {
+            builder.Services.AddMassTransitTestHarness(ConfiguratorAction);
+        }
 
         void ConfiguratorAction(IBusRegistrationConfigurator busRegistrationConfigurator)
         {
             configureBusRegistration?.Invoke(busRegistrationConfigurator);
 
             // https://masstransit-project.com/usage/configuration.html#receive-endpoints
-            busRegistrationConfigurator.AddConsumers(AppDomain.CurrentDomain.GetAssemblies());
+            busRegistrationConfigurator.AddConsumers(assemblies);
 
             // exclude namespace for the messages
             busRegistrationConfigurator.SetEndpointNameFormatter(new SnakeCaseEndpointNameFormatter(false));
@@ -59,7 +67,9 @@ public static class Extensions
                     cfg.ConfigureEndpoints(context);
                 }
 
-                cfg.Host(rabbitMqOptions.Host, "/", hostConfigurator =>
+                var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
+
+                cfg.Host(rabbitMqOptions.Host, rabbitMqOptions.Port, "/", hostConfigurator =>
                 {
                     hostConfigurator.Username(rabbitMqOptions.UserName);
                     hostConfigurator.Password(rabbitMqOptions.Password);
@@ -85,28 +95,20 @@ public static class Extensions
             });
         }
 
-        if (env.IsEnvironment("test") == false)
-        {
-            services.AddMassTransit(ConfiguratorAction);
-        }
-        else
-        {
-            services.AddMassTransitTestHarness(ConfiguratorAction);
-        }
+        builder.Services.AddTransient<IBus, MassTransitBus>();
 
-        services.AddTransient<IBus, MassTransitBus>();
-
-        return services;
+        return builder;
     }
 
     private static IRetryConfigurator AddRetryConfiguration(IRetryConfigurator retryConfigurator)
     {
         retryConfigurator.Exponential(
-            3,
-            TimeSpan.FromMilliseconds(200),
-            TimeSpan.FromMinutes(120),
-            TimeSpan.FromMilliseconds(200))
-            .Ignore<ValidationException>(); // don't retry if we have invalid data and message goes to _error queue masstransit
+                3,
+                TimeSpan.FromMilliseconds(200),
+                TimeSpan.FromMinutes(120),
+                TimeSpan.FromMilliseconds(200))
+            .Ignore<
+                ValidationException>(); // don't retry if we have invalid data and message goes to _error queue masstransit
 
         return retryConfigurator;
     }

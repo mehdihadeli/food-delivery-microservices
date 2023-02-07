@@ -1,6 +1,6 @@
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Messaging.MessagePersistence.InMemory;
+using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 
 namespace BuildingBlocks.Core.Registrations;
 

@@ -1,6 +1,8 @@
-using BuildingBlocks.Resiliency.Extensions;
+using Ardalis.GuardClauses;
+using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 using ECommerce.Services.Customers.Shared.Clients.Catalogs;
 using ECommerce.Services.Customers.Shared.Clients.Identity;
+using Microsoft.Extensions.Options;
 
 namespace ECommerce.Services.Customers.Shared.Extensions.WebApplicationBuilderExtensions;
 
@@ -9,15 +11,28 @@ public static partial class WebApplicationBuilderExtensions
     public static WebApplicationBuilder AddCustomHttpClients(
         this WebApplicationBuilder builder)
     {
-        builder.Services.AddOptions<IdentityApiClientOptions>()
-            .Bind(builder.Configuration.GetSection(nameof(IdentityApiClientOptions))).ValidateDataAnnotations();
+        builder.Services.AddValidatedOptions<IdentityApiClientOptions>();
+        builder.Services.AddValidatedOptions<CatalogsApiClientOptions>();
 
-        builder.Services.AddOptions<CatalogsApiClientOptions>()
-            .Bind(builder.Configuration.GetSection(nameof(CatalogsApiClientOptions)))
-            .ValidateDataAnnotations();
+        builder.Services.AddHttpClient<ICatalogApiClient, CatalogApiClient>((client, sp) =>
+        {
+            var catalogApiOptions = sp.GetRequiredService<IOptions<CatalogsApiClientOptions>>();
+            Guard.Against.Null(catalogApiOptions.Value);
 
-        builder.Services.AddHttpApiClient<ICatalogApiClient, CatalogApiClient>();
-        builder.Services.AddHttpApiClient<IIdentityApiClient, IdentityApiClient>();
+            var baseAddress = catalogApiOptions.Value.BaseApiAddress;
+            client.BaseAddress = new Uri(baseAddress);
+            return new CatalogApiClient(client, catalogApiOptions);
+        });
+
+        builder.Services.AddHttpClient<IIdentityApiClient, IdentityApiClient>((client, sp) =>
+        {
+            var identityApiOptions = sp.GetRequiredService<IOptions<IdentityApiClientOptions>>();
+            Guard.Against.Null(identityApiOptions.Value);
+
+            var baseAddress = identityApiOptions.Value.BaseApiAddress;
+            client.BaseAddress = new Uri(baseAddress);
+            return new IdentityApiClient(client, identityApiOptions);
+        });
 
         return builder;
     }

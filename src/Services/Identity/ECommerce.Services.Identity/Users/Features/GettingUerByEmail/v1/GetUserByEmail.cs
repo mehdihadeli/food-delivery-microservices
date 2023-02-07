@@ -1,6 +1,8 @@
 using Ardalis.GuardClauses;
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Core.Exception;
+using ECommerce.Services.Identity.Shared.Exceptions;
 using ECommerce.Services.Identity.Shared.Extensions;
 using ECommerce.Services.Identity.Shared.Models;
 using ECommerce.Services.Identity.Users.Dtos;
@@ -41,6 +43,7 @@ internal class GetUserByEmailHandler : IQueryHandler<GetUserByEmail, GetUserByEm
         Guard.Against.Null(query, nameof(query));
 
         var identityUser = await _userManager.FindUserWithRoleByEmailAsync(query.Email);
+        Guard.Against.NotFound(identityUser, new IdentityUserNotFoundException(query.Email));
 
         var userDto = _mapper.Map<IdentityUserDto>(identityUser);
 

@@ -4,7 +4,7 @@ namespace ECommerce.Services.Orders.Shared.Data;
 
 public class OrdersDbContextDesignFactory : DbContextDesignFactoryBase<OrdersDbContext>
 {
-    public OrdersDbContextDesignFactory() : base("ConnectionStrings:OrdersServiceConnection")
+    public OrdersDbContextDesignFactory() : base("PostgresOptions:ConnectionString")
     {
     }
 }

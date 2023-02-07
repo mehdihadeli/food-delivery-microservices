@@ -4,9 +4,11 @@
     <ContainerImageName>identity-services</ContainerImageName>
     <ContainerImageTag>1.1.0</ContainerImageTag>
     <ContainerBaseImage>mcr.microsoft.com/dotnet/nightly/runtime-deps:7.0</ContainerBaseImage>
-    <PublishTrimmed>true</PublishTrimmed>
-    <InvariantGlobalization>true</InvariantGlobalization>
     <UserSecretsId>526a05d0-3da0-4d64-b60b-47482dd0cbc0</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsPublishable>true</IsPublishable>
   </PropertyGroup>
 
   <ItemGroup>

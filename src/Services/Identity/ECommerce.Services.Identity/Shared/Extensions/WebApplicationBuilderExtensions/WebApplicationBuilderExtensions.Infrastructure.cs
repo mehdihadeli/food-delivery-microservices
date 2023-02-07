@@ -3,6 +3,7 @@ using BuildingBlocks.Caching.Behaviours;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
+using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Email;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
@@ -10,6 +11,8 @@ using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.OpenTelemetry;
 using BuildingBlocks.Persistence.EfCore.Postgres;
+using BuildingBlocks.Security.Extensions;
+using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
 using BuildingBlocks.Web.Extensions;
@@ -24,6 +27,14 @@ public static partial class WebApplicationBuilderExtensions
     {
         builder.Services.AddCore(builder.Configuration);
 
+        builder.Services.AddCustomJwtAuthentication(builder.Configuration);
+        builder.Services.AddCustomAuthorization(
+            rolePolicies: new List<RolePolicy>
+            {
+                new(IdentityConstants.Role.Admin, new List<string> {IdentityConstants.Role.Admin}),
+                new(IdentityConstants.Role.User, new List<string> {IdentityConstants.Role.User})
+            });
+
         // https://www.michaco.net/blog/EnvironmentVariablesAndConfigurationInASPNETCoreApps#environment-variables-and-configuration
         // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#non-prefixed-environment-variables
         builder.Configuration.AddEnvironmentVariables("ecommerce_identity_env_");
@@ -35,11 +46,7 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomProblemDetails();
 
-        builder.AddCustomSerilog(
-            optionsBuilder =>
-            {
-                optionsBuilder.SetLevel(LogEventLevel.Information);
-            });
+        builder.AddCustomSerilog();
 
         builder.AddCustomVersioning();
 
@@ -49,22 +56,25 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.Services.AddHttpContextAccessor();
 
-        builder.Services.AddCustomHealthCheck(healthChecksBuilder =>
+        if (builder.Environment.IsTest() == false)
         {
-            var postgresOptions = builder.Configuration.GetOptions<PostgresOptions>();
-            var rabbitMqOptions = builder.Configuration.GetOptions<RabbitMqOptions>();
+            builder.AddCustomHealthCheck(healthChecksBuilder =>
+            {
+                var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>();
+                var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
 
-            healthChecksBuilder
-                .AddNpgSql(
-                    postgresOptions.ConnectionString,
-                    name: "IdentityService-Postgres-Check",
-                    tags: new[] {"postgres", "database", "infra", "identity-service"})
-                .AddRabbitMQ(
-                    rabbitMqOptions.ConnectionString,
-                    name: "IdentityService-RabbitMQ-Check",
-                    timeout: TimeSpan.FromSeconds(3),
-                    tags: new[] {"rabbitmq", "bus", "infra", "identity-service"});
-        });
+                healthChecksBuilder
+                    .AddNpgSql(
+                        postgresOptions.ConnectionString,
+                        name: "IdentityService-Postgres-Check",
+                        tags: new[] {"postgres", "database", "infra", "identity-service"})
+                    .AddRabbitMQ(
+                        rabbitMqOptions.ConnectionString,
+                        name: "IdentityService-RabbitMQ-Check",
+                        timeout: TimeSpan.FromSeconds(3),
+                        tags: new[] {"rabbitmq", "bus", "infra", "identity-service"});
+            });
+        }
 
         builder.Services.AddEmailService(builder.Configuration);
 
@@ -80,9 +90,7 @@ public static partial class WebApplicationBuilderExtensions
         // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
         builder.AddCustomRateLimit();
 
-        builder.Services.AddCustomMassTransit(
-            builder.Configuration,
-            builder.Environment,
+        builder.AddCustomMassTransit(
             (context, cfg) =>
             {
                 cfg.AddUserPublishers();

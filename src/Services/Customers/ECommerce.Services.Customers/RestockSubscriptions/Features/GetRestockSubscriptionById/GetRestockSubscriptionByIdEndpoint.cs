@@ -2,6 +2,7 @@ using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionBySubscriptionId.v1;
+using Hellang.Middleware.ProblemDetails;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GetRestockSubscriptionById;
 
@@ -17,9 +18,9 @@ public class GetRestockSubscriptionByIdEndpoint : IQueryMinimalEndpoint<Guid>
         return builder.MapGet("/{id:guid}", HandleAsync)
             .RequireAuthorization(CustomersConstants.Role.Admin)
             .Produces<GetRestockSubscriptionByIdResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
             .WithName("GetRestockSubscriptionById")
             .WithOpenApi(operation => new(operation)
             {

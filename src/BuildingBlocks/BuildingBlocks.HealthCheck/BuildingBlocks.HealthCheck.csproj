@@ -6,6 +6,10 @@
     <RootNamespace>BuildingBlocks.HealthCheck</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
     <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />

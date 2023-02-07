@@ -92,9 +92,9 @@ runs:
                LATEST_TAG=$(git describe --abbrev=0 --tags --exclude "*dev*" --exclude "*beta*" --exclude "*preview*" --exclude "*ops*" | sed 's/^v//')
             fi
             echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
-      else
+        else
             echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_OUTPUT"
-      fi
+        fi
 
     - name: App Version Info
       shell: bash

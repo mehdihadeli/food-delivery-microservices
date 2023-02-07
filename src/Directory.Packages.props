@@ -178,7 +178,7 @@
     <PackageVersion Include="Scrutor" Version="4.1.0"/>
     <PackageVersion Include="SendGrid" Version="9.25.3"/>
     <PackageVersion Include="Spectre.Console" Version="0.45.0"/>
-    <PackageVersion Include="SqlKata" Version="2.3.7"/>
+    <PackageVersion Include="SqlKata" Version="2.4.0"/>
     <PackageVersion Include="SqlStreamStore" Version="1.2.1-alpha.3"/>
     <PackageVersion Include="System.Interactive.Async" Version="6.0.1"/>
     <PackageVersion Include="System.Reactive" Version="5.0.0"/>

@@ -133,7 +133,7 @@ runs:
         token: ${{ inputs.token }}
         delete-branch: true
         # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch
-        # branch-suffix: short-commit-hash
+        branch-suffix: timestamp
         assignees: mehdihadeli
         reviewers: mehdihadeli
         labels: |

@@ -252,7 +252,7 @@ jobs:
       # https://github.com/actions/download-artifact#download-all-artifacts
       # download artifacts in same workflow (artifacts for before job 'call-build-test-push')
       - name: Download All Artifacts For Push and workflow_dispatch
-        if: (github.event_name == 'workflow_dispatch')
+        if: (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
         uses: actions/download-artifact@v3
         with:
           path: artifacts

@@ -116,7 +116,6 @@ concurrency:
 
 # https://docs.github.com/en/actions/using-workflows/about-workflows
 jobs:
-
   pre-check:
     runs-on: ubuntu-latest
 

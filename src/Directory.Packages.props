@@ -7,9 +7,9 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <Version>1.2.0-dev.13</Version>
-    <ApplicationVersion>1.2.0-dev.13</ApplicationVersion>
-    <InformationalVersion>1.2.0-dev.13</InformationalVersion>
+    <Version>1.2.0-dev.16</Version>
+    <ApplicationVersion>1.2.0-dev.16</ApplicationVersion>
+    <InformationalVersion>1.2.0-dev.16</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup>  

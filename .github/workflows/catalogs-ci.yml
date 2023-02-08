@@ -135,7 +135,7 @@ jobs:
       contents: read
 
     # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
-    if: (github.event_name == 'pull_request' || (contains(fromJson('["develop", "main", "beta", "preview", "feat/", "fix/", "release/"]'), github.ref_name)) || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish == 'false'))
+    if: (github.event_name == 'pull_request' || (contains(fromJson('["feat/", "fix/", "release/"]'), github.ref_name)) || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish == 'false'))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/

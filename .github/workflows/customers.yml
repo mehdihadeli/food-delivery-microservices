@@ -230,7 +230,6 @@ jobs:
       registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
       registry-endpoint: ${{ github.repository }}
 
-
   ### CD
   # runs only for cd part when we have a push
   workflow-info:

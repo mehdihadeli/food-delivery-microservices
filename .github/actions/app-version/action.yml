@@ -11,20 +11,20 @@ description: "Update App Version"
 inputs:
   # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
   token:
-    description: 'A Github PAT'
+    description: A Github PAT
     required: true
   service-name:
-    description: 'Service name'
+    description: Service name
     required: true
   branches:
-    description: 'Branches to generate version'
+    description: Branches to generate version
     default: '["main", "develop", "beta", "preview", "devops/ci"]'
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputsoutput_idvalue
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputs-for-composite-actions
 outputs:
   application-version:
-    value: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+    value: ${{ steps.app-version-step.outputs.app-version }}
     description: "Application Version"
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
@@ -62,41 +62,57 @@ runs:
         npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p  @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release  --dry-run
 
       # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
-    - name: Semantic Release  Versions Outputs
+    - name: Semantic Release Versions Outputs
       shell: bash
-      if: ${{ success() }}
+      if: success()
       run: |
-        if [ -z ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} ]
-          then echo "semantic_nextRelease_version is empty, action cancelled..."
-               exit 1
-        else
           echo ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
           echo ${{ steps.semantic-version.outputs.semantic_nextRelease_channel }}
           echo ${{ steps.semantic-version.outputs.semantic_nextRelease_gitTag }}
           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_version }}
           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_channel }}
           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
+
+    - name: Set Application Version
+      id: app-version-step
+      shell: bash
+      if: success()
+      # https://gist.github.com/rponte/fdc0724dd984088606b0
+      # https://linuxhint.com/bash_if_else_examples/
+      # https://github.com/semantic-release/semantic-release/issues/2703
+      run: |
+        if [ -z "${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" ]; then
+            if [ "${{ github.ref_name }}" = "develop" ]; then
+               LATEST_TAG=$(git describe --abbrev=0 --tags --match "*dev*" | sed 's/^v//')
+            elif [ "${{ github.ref_name }}" = "beta" ]; then
+               LATEST_TAG=$(git describe --abbrev=0 --tags --match "*beta*" | sed 's/^v//')
+            elif [ "${{ github.ref_name }}" = "preview" ]; then
+               LATEST_TAG=$(git describe --abbrev=0 --tags --match "*preview*" | sed 's/^v//')
+            else
+               LATEST_TAG=$(git describe --abbrev=0 --tags --exclude "*dev*" --exclude "*beta*" --exclude "*preview*" --exclude "*ops*" | sed 's/^v//')
+            fi
+            echo "semantic_nextRelease_version is empty, so we get last tag for branch ${{ github.ref_name }}"
+            echo "latest tag is: $LATEST_TAG"
+            echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+        else
+            echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_OUTPUT"
         fi
 
-    # Save version in the artifacts to use in CD process
-    - name: Save image name
+    - name: App Version Info
       shell: bash
-      run: echo "${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" > version_name.txt
-
-    - name: Upload Version Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: ${{ inputs.service-name}}_version_artifacts
-        path: version_name.txt
+      run: |
+          echo "app version is: ${{ steps.app-version-step.outputs.app-version }}"
 
     - name: csproj version
       shell: bash
+      if: (success() && steps.semantic-version.outputs.semantic_nextRelease_version != '')
       run: ./update-version.sh ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
 
       # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
       # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md
     - name: Create Update Version Pull Request
       uses: peter-evans/create-pull-request@v4
+      if: (success() && steps.semantic-version.outputs.semantic_nextRelease_version != '')
       with:
         author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
         commit-message: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
@@ -110,6 +126,19 @@ runs:
         # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
         add-paths: |
           *.Packages.props
+
+      # Save version in the artifacts to use in CD process
+    - name: Save Version Name
+      if: success()
+      shell: bash
+      run: echo "${{ steps.app-version-step.outputs.app-version }}" > version_name.txt
+
+    - name: Upload Version Artifact
+      if: success()
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.service-name}}_version_artifacts
+        path: version_name.txt
 
 #      # https://github.com/semantic-release/semantic-release/discussions/2557
 #      # https://github.com/semantic-release/github/issues/175

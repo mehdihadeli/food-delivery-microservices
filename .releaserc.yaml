@@ -162,10 +162,13 @@ plugins:
         # verifyReleaseCmd event works also on dry-run mode (just for reading version instead of publishing)
   - - '@semantic-release/exec'
     -  verifyReleaseCmd: |
+         echo "verifyReleaseCmd"
          echo "job name is: $GITHUB_JOB"
-         ./set-output-version.sh ${nextRelease.version} ${nextRelease.channel} ${nextRelease.gitHead} ${nextRelease.gitTag} ${lastRelease.version} ${lastRelease.channel} ${lastRelease.gitHead} ${lastRelease.gitTag}
+         ./set-output-next-version.sh ${nextRelease.version} ${nextRelease.channel} ${nextRelease.gitHead} ${nextRelease.gitTag}
        generateNotesCmd: |
          echo "generateNotesCmd"
+         echo "job name is: $GITHUB_JOB"
+         ./set-output-last-version.sh ${lastRelease.version} ${lastRelease.channel} ${lastRelease.gitHead} ${lastRelease.gitTag}
        publishCmd: |
          echo "publishCmd"
 
@@ -175,6 +178,8 @@ plugins:
        # with back-merging in a hook if we have problem in the merge whole semantic-release action will fail and further actions don't execute it is better move it in seperated action
        successCmd: |
           echo "successCmd"
+          echo "job name is: $GITHUB_JOB"
+          ./set-output-last-version.sh ${lastRelease.version} ${lastRelease.channel} ${lastRelease.gitHead} ${lastRelease.gitTag}
        #./back-merge.sh
        prepareCmd: |
          echo "prepareCmd"

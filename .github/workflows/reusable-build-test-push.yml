@@ -8,43 +8,43 @@ on:
   workflow_call:
     inputs:
       tests-path:
-        description: "Tests path"
+        description: Tests path
         required: true
         type: string
       coverage-exclude:
-        description: "Coverage exclude filter"
+        description: Coverage exclude filter
         default: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
         type: string
       unit-test-filter:
-        description: "Unit tests filter"
+        description: Unit tests filter
         default: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
         type: string
       integration-test-filter:
-        description: "Integration tests filter"
+        description: Integration tests filter
         default: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
         type: string
       project-path:
-        description: "Project path"
+        description: Project path
         required: true
         type: string
       service-name:
-        description: "Service name"
+        description: Service name
         type: string
         required: true
       docker-file-path:
-        description: "Docker file path"
+        description: Docker file path
         type: string
         required: true
       registry:
-        description: "Docker registry"
+        description: Docker registry
         type: string
         default: "ghcr.io"
       registry-endpoint:
-        description: "Docker registry endpoint"
+        description: Docker registry endpoint
         type: string
         default: ${{ github.repository }}
       branches:
-        description: "Branches to generate application version"
+        description: Branches to generate application version
         type: string
         default: '["main", "develop", "beta", "preview", "devops/ci"]'
 
@@ -110,24 +110,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Call Composite Action build-test
-        uses: ./.github/actions/build-test
-        if: success()
-        id: build-test-step
-        with:
-          project-path: ${{ inputs.project-path }}
-          tests-path: ${{ inputs.tests-path }}
-          unit-test-filter: ${{ inputs.unit-test-filter }}
-          integration-test-filter: ${{ inputs.integration-test-filter }}
-          exclude-coverage: ${{ inputs.coverage-exclude }}
-          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
-          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
-          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-          reports-path: ${{ github.workspace }}/**/*.cobertura.xml
-          reports-output-path: ${{ github.workspace }}/output/test-results
-          service-name: ${{ inputs.service-name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Call Composite Action app-version
         uses: ./.github/actions/app-version
         if: success()
@@ -137,9 +119,28 @@ jobs:
           service-name: ${{ inputs.service-name }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Call Composite Action build-test
+        uses: ./.github/actions/build-test
+        if: success()
+        id: build-test-step
+        with:
+          application-version: ${{ steps.app-version-step.outputs.application-version }}
+          project-path: ${{ inputs.project-path }}
+          tests-path: ${{ inputs.tests-path }}
+          unit-test-filter: ${{ inputs.unit-test-filter }}
+          integration-test-filter: ${{ inputs.integration-test-filter }}
+          coverage-exclude: ${{ inputs.coverage-exclude }}
+          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
+          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+          reports-path: ${{ github.workspace }}/**/*.cobertura.xml
+          reports-output-path: ${{ github.workspace }}/output/test-results
+          service-name: ${{ inputs.service-name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Call Composite Action publish
         uses: ./.github/actions/publish-app
-        if:  success()
+        if: success()
         id: publish-step
         with:
             application-version: ${{ steps.app-version-step.outputs.application-version }}
@@ -160,3 +161,15 @@ jobs:
           registry-username: ${{ github.actor }}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           service-name: ${{ inputs.service-name }}
+
+      - name: Save CD Status
+        if: success()
+        shell: bash
+        run: echo "true" > cd_status.txt
+
+      - name: Upload CD Status artifact
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+           name: ${{ inputs.service-name}}_cd_status_artifacts
+           path: cd_status.txt

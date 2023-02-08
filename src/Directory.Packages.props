@@ -7,9 +7,9 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <Version>1.2.0</Version>
-    <ApplicationVersion>1.2.0</ApplicationVersion>
-    <InformationalVersion>1.2.0</InformationalVersion>
+    <Version>1.2.0-dev.16</Version>
+    <ApplicationVersion>1.2.0-dev.16</ApplicationVersion>
+    <InformationalVersion>1.2.0-dev.16</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup>  
@@ -93,7 +93,7 @@
     <PackageVersion Include="Serilog.Exceptions" Version="8.4.0"/>
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="5.0.1"/>
     <PackageVersion Include="Serilog.Sinks.Elasticsearch" Version="8.4.1"/>
-    <PackageVersion Include="Serilog.Formatting.Elasticsearch" Version="8.4.1"/>
+    <PackageVersion Include="Serilog.Formatting.Elasticsearch" Version="9.0.0"/>
     <PackageVersion Include="Serilog.Sinks.Async" Version="1.5.0"/>
     <PackageVersion Include="Serilog.Sinks.Console" Version="4.1.0"/>
     <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0"/>
@@ -128,7 +128,7 @@
     <PackageVersion Include="AspNetCoreAnalyzers" Version="0.3.0"/>
     <PackageVersion Include="AsyncFixer" Version="1.5.1"/>
     <PackageVersion Include="Meziantou.Analyzer" Version="1.0.688"/>
-    <PackageVersion Include="Roslynator.Analyzers" Version="3.3.0"/>
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.2.0"/>
     <PackageVersion Include="Roslynator.CodeAnalysis.Analyzers" Version="3.3.0"/>
     <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="3.3.0"/>
     <PackageVersion Include="Nito.AsyncEx" Version="5.1.2"/>
@@ -204,7 +204,7 @@
     <PackageVersion Include="EasyCaching.Serialization.Json" Version="1.7.0"/>
     <PackageVersion Include="EasyCaching.Redis" Version="1.7.0"/>
     <PackageVersion Include="EasyCaching.InMemory" Version="1.7.0"/>
-    <PackageVersion Include="EasyCaching.Core" Version="1.7.0"/>
+    <PackageVersion Include="EasyCaching.Core" Version="1.8.0"/>
   </ItemGroup>
 
 </Project>

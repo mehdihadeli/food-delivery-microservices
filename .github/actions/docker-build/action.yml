@@ -1,0 +1,45 @@
+# https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
+# https://doug.sh/posts/using-composite-actions-with-github-actions/
+# https://wallis.dev/blog/composite-github-actions
+
+name: "Docker Build"
+description: "Docker Build"
+
+# Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+inputs:
+  docker-file-path:
+    description: Docker file path
+    required: true
+  service-name:
+    description: Service name
+    required: true
+
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
+runs:
+  using: "composite"
+  steps:
+
+    - name: Info
+      shell: bash
+      run: |
+        echo actor is: "${{ github.actor }}"
+        echo docker-file-path is: "${{ inputs.docker-file-path }}"
+        echo service-name is: "${{ inputs.service-name }}"
+
+    - name: Set branch name as env variable
+      shell: bash
+      run: |
+        currentbranch=$(echo ${GITHUB_REF##*/})
+        echo "running on $currentbranch"
+        echo "BRANCH=$currentbranch" >> $GITHUB_ENV
+
+    # https://docs.docker.com/engine/reference/commandline/build/
+    # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    - name: docker build
+      shell: bash
+      if: success()
+      run: |
+        docker build . --tag  ${{ inputs.service-name }}:latest  -f "${{ inputs.docker-file-path }}"

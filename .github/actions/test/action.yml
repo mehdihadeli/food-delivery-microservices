@@ -61,7 +61,7 @@ runs:
       run: |
         for file in $(find . -name "*.csproj" -type f); do
           echo "Testing $file"
-          dotnet test "$file" -c Release --no-restore -p:Exclude="${{ inputs.exclude-coverage }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx"
+          dotnet test "$file" -c Release --no-restore -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx"
         done
 
     - name: Run Unit Tests
@@ -72,7 +72,7 @@ runs:
       run: |
         for file in $(find . -name "*.csproj" -type f); do
           echo "Testing $file"
-          dotnet test "$file" -c Release  -p:Exclude="${{ inputs.exclude-coverage }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx"
+          dotnet test "$file" -c Release  -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx"
         done
 
     - name: Run Integration And EndToEnd Tests with No Restore
@@ -83,7 +83,7 @@ runs:
       run: |
         for file in $(find . -name "*.csproj" -type f); do
           echo "Testing $file"
-          dotnet test "$file" -c Release --no-restore -p:Exclude="${{ inputs.exclude-coverage }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx"
+          dotnet test "$file" -c Release --no-restore -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx"
         done
 
     - name: Run Integration And EndToEnd Tests
@@ -94,7 +94,7 @@ runs:
       run: |
         for file in $(find . -name "*.csproj" -type f); do
           echo "Testing $file"
-          dotnet test "$file" -c Release -p:Exclude="${{ inputs.exclude-coverage }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx"
+          dotnet test "$file" -c Release -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx"
         done
 
     - name: Call Composite Action test-coverage

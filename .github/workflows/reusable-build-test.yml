@@ -8,27 +8,27 @@ on:
   workflow_call:
     inputs:
       tests-path:
-        description: "Tests path"
+        description: Tests path
         required: true
         type: string
       coverage-exclude:
-        description: "Coverage exclude filter"
+        description: Coverage exclude filter
         default: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
         type: string
       unit-test-filter:
-        description: "Unit tests filter"
+        description: Unit tests filter
         default: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
         type: string
       integration-test-filter:
-        description: "Integration tests filter"
+        description: Integration tests filter
         default: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
         type: string
       project-path:
-        description: "Project path"
+        description: Project path
         required: true
         type: string
       service-name:
-        description: "Service name"
+        description: Service name
         required: true
         type: string
 

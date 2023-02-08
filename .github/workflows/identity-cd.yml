@@ -71,7 +71,7 @@ jobs:
       !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style')) &&
        github.actor != 'dependabot[bot]' &&
        contains(fromJson('["develop", "main", "preview", "beta", "devops/ci"]'), github.ref_name) &&
-      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch')
+       ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event != 'pull_request') || github.event_name == 'workflow_dispatch')
 
     # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
     # Job outputs containing expressions are evaluated on the runner at the end of each job
@@ -85,8 +85,15 @@ jobs:
           echo "branch is: ${{ github.ref_name }}"
           echo workspace is: ${{ github.workspace }}
           echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
-          echo "is push event? ${{ github.event_name == 'push' }}"
-          echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
+          echo "is workflow_run event? ${{ github.event_name == 'workflow_run' }}"
+
+      - name: Print Triggered Workflow Information
+        run: |
+          echo "Triggering Workflow ID: ${{ github.event.workflow_run.id }}"
+          echo "Triggering Workflow Name: ${{ github.event.workflow_run.workflow_id }}"
+          echo "Triggering Workflow Run Number: ${{ github.event.workflow_run.run_number }}"
+          echo "Triggering Workflow Run event_name: ${{ github.event.workflow_run.event }}"
+          echo "Triggering Workflow Run head_branch: ${{ github.event.workflow_run.head_branch }}"
 
       # https://www.codewrecks.com/post/github/choose-environment-from-branch/
       # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch
@@ -151,20 +158,16 @@ jobs:
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+    # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
     if: |
       always() &&
+      (needs.pre-check.result == 'success') &&
       (needs.call-build-test-push.result == 'success' || needs.call-build-test-push.result == 'skipped') &&
       ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch')
 
     steps:
       - name: create output dir
         run: mkdir -p "output"
-
-      #      - name: Print Triggering Workflow Information
-      #        run: |
-      #          echo "Triggering Workflow ID: ${{ github.event.workflow_run.id }}"
-      #          echo "Triggering Workflow Name: ${{ github.event.workflow_run.workflow_id }}"
-      #          echo "Triggering Workflow Run Number: ${{ github.event.workflow_run.run_number }}"
 
       # https://github.com/actions/download-artifact#download-all-artifacts
       # download artifacts in same workflow (artifacts for before job 'call-build-test-push')
@@ -194,6 +197,49 @@ jobs:
         if: success()
         run: ls -R "${{ github.workspace }}/artifacts"
 
+      - name: Get CD Status
+        if: success()
+        id: cd-status-step
+        run: |
+          CD_STATUS_FILE="artifacts/${{ vars.IDENTITY_SERVICE_NAME }}_cd_status_artifacts/cd_status.txt"
+          if [ -f $CD_STATUS_FILE ]; then
+             CD_STATUS=$(cat $CD_STATUS_FILE)
+             echo "cd-status=$CD_STATUS" >> "$GITHUB_OUTPUT"
+             if [ $CD_STATUS != 'true' ]; then
+                echo "CD status is false, so CD will be skipped"
+                exit 1
+             fi
+             echo "cd-status is true, CD will be executed"
+          else
+             echo "Error: CD_STATUS_FILE not found."
+             exit 1
+          fi
+
+      - name: Get CI Application Version
+        id: application-version-step
+        if: success()
+        run: |
+          VERSION_FILE="artifacts/${{ vars.IDENTITY_SERVICE_NAME }}_version_artifacts/version_name.txt"
+          if [ -f $VERSION_FILE ]; then
+             VERSION=$(cat $VERSION_FILE)
+             echo "application-version=$VERSION" >> "$GITHUB_OUTPUT"
+          else
+             echo "Error: VERSION_FILE not found."
+          fi
+
+
+      - name: Get CI Image Name
+        if: success()
+        id: image-name-step
+        run: |
+          IMAGE_NAME_FILE="artifacts/${{ vars.IDENTITY_SERVICE_NAME }}_image_artifacts/image_name.txt"
+          if [ -f $IMAGE_NAME_FILE ]; then
+             IMAGE_NAME=$(cat $IMAGE_NAME_FILE)
+             echo "image-name=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
+          else
+             echo "Error: IMAGE_NAME_FILE not found."
+          fi
+
       # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
       - name: unzip artifacts
         if: success()
@@ -203,31 +249,6 @@ jobs:
       - name: Ls Output Files
         if: success()
         run: ls -R ${{ github.workspace }}/output
-
-      - name: Get CI Application Version
-        id: application-version-step
-        if: success()
-        run: |
-          VERSION=$(cat artifacts/${{ vars.IDENTITY_SERVICE_NAME }}_version_artifacts/version_name.txt)
-          echo "application-version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Get CI Image Name
-        if: success()
-        id: image-name-step
-        run: |
-          IMAGE_NAME=$(cat artifacts/${{ vars.IDENTITY_SERVICE_NAME }}_image_artifacts/image_name.txt)
-          echo "image-name=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
-
-      - name: Job Info
-        if: success()
-        run: |
-          echo "pre-check is successful."
-          echo workspace is: ${{ github.workspace }}
-          echo "I'm using environment: ${{ needs.pre-check.outputs.environment-name }}"
-          echo "CI application-version is: ${{ steps.application-version-step.outputs.application-version }}"
-          echo "CI image-name is: ${{ steps.image-name-step.outputs.image-name }}"
-          echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
-          echo "is workflow_run event? ${{ github.event_name == 'workflow_run' }}"
 
   # typically release notes are published as part of the Continuous Deployment (CD) process, after the software has been built, tested, and deployed to production.
   # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
@@ -242,12 +263,12 @@ jobs:
     ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
     permissions:
       contents: write # to be able to publish a GitHub release and tags
-      pull-requests: write # for back-merge pull requests
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
     if: |
       always() &&
+      (needs.pre-check.result == 'success') &&
       (needs.workflow-info.result == 'success') &&
       ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note == 'true'))
 
@@ -270,6 +291,7 @@ jobs:
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
     if: |
       always() &&
+      (needs.pre-check.result == 'success') &&
       (needs.call-release.result == 'success') &&
       ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-deploy == 'true'))
 

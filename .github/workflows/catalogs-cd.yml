@@ -214,6 +214,7 @@ jobs:
                 echo "CD status is false, so CD will be skipped"
                 exit 1
              fi
+             echo "cd-status is true, CD will be executed"
           else
              echo "Error: CD_STATUS_FILE not found."
              exit 1
@@ -266,7 +267,6 @@ jobs:
     ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
     permissions:
       contents: write # to be able to publish a GitHub release and tags
-      pull-requests: write # for back-merge pull requests
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped

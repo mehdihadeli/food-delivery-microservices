@@ -28,7 +28,6 @@ jobs:
     # The GITHUB_TOKEN permissions passed from the caller workflow can be only downgraded in called workflow
     permissions:
       contents: write # to be able to publish a GitHub release and tags
-      pull-requests: write # for back-merge pull requests
 
     # Map the job outputs to step outputs
     outputs:

@@ -89,10 +89,11 @@ jobs:
 
       - name: Print Triggered Workflow Information
         run: |
-          echo "${{ toJSON(github.event.workflow_run) }}"
           echo "Triggering Workflow ID: ${{ github.event.workflow_run.id }}"
           echo "Triggering Workflow Name: ${{ github.event.workflow_run.workflow_id }}"
           echo "Triggering Workflow Run Number: ${{ github.event.workflow_run.run_number }}"
+          echo "Triggering Workflow Run event_name: ${{ github.event.workflow_run.event }}"
+          echo "Triggering Workflow Run head_branch: ${{ github.event.workflow_run.head_branch }}"
 
       # https://www.codewrecks.com/post/github/choose-environment-from-branch/
       # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch
@@ -210,7 +211,9 @@ jobs:
              CD_STATUS=$(cat $CD_STATUS_FILE)
              echo "cd-status=$CD_STATUS" >> "$GITHUB_OUTPUT"
              if [ $CD_STATUS != 'true' ]; then
+                echo "CD status is false, so CD will be skipped"
                 exit 1
+             fi
           else
              echo "Error: CD_STATUS_FILE not found."
              exit 1

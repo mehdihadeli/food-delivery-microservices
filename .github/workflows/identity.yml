@@ -21,8 +21,9 @@ on:
       - src/BuildingBlocks/**
       - tests/Services/Identity/**
       - .github/actions/**
-      - .github/workflows/identity-ci.yml
-      - .github/workflows/identity-cd.yml
+      - .github/workflows/back-merge.yml
+      - .github/workflows/conventional-commits.yml
+      - .github/workflows/identity.yml
       - .github/workflows/reusable-build-test.yml
       - .github/workflows/reusable-build-test-push.yml
       - .github/workflows/reusable-release.yml
@@ -46,8 +47,9 @@ on:
       - src/BuildingBlocks/**
       - tests/Services/Identity/**
       - .github/actions/**
-      - .github/workflows/identity-ci.yml
-      - .github/workflows/identity-cd.yml
+      - .github/workflows/back-merge.yml
+      - .github/workflows/conventional-commits.yml
+      - .github/workflows/identity.yml
       - .github/workflows/reusable-build-test.yml
       - .github/workflows/reusable-build-test-push.yml
       - .github/workflows/reusable-release.yml

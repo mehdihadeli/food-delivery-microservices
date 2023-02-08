@@ -86,6 +86,34 @@ runs:
           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_channel }}
           echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
 
+    - name: csproj version
+      shell: bash
+      if: (success() && steps.semantic-version.outputs.semantic_nextRelease_version != '')
+      run: |
+        echo found next release version ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+        ./update-version.sh ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md
+    - name: Create Update Version Pull Request
+      uses: peter-evans/create-pull-request@v4
+      if: (success() && steps.semantic-version.outputs.semantic_nextRelease_version != '')
+      with:
+        author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+        commit-message: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
+        title: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
+        token: ${{ inputs.token }}
+        delete-branch: true
+        # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch
+        # branch-suffix: timestamp
+        assignees: mehdihadeli
+        reviewers: mehdihadeli
+        labels: |
+          chore
+        # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
+        add-paths: |
+          *.Packages.props
+
     - name: Set Application Version
       id: app-version-step
       shell: bash
@@ -110,37 +138,7 @@ runs:
         else
             echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_OUTPUT"
         fi
-
-    - name: App Version Info
-      shell: bash
-      run: |
-          echo "app version is: ${{ steps.app-version-step.outputs.app-version }}"
-
-    - name: csproj version
-      shell: bash
-      if: (success() && steps.semantic-version.outputs.semantic_nextRelease_version != '')
-      run: ./update-version.sh ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
-
-      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
-      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md
-    - name: Create Update Version Pull Request
-      uses: peter-evans/create-pull-request@v4
-      if: (success() && steps.semantic-version.outputs.semantic_nextRelease_version != '')
-      with:
-        author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-        commit-message: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
-        title: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
-        token: ${{ inputs.token }}
-        delete-branch: true
-        # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch
-        branch-suffix: timestamp
-        assignees: mehdihadeli
-        reviewers: mehdihadeli
-        labels: |
-          chore
-        # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
-        add-paths: |
-          *.Packages.props
+        echo "app version is: ${{ steps.app-version-step.outputs.app-version }}"
 
       # Save version in the artifacts to use in CD process
     - name: Save Version Name

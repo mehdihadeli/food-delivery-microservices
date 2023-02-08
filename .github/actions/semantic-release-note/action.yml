@@ -89,8 +89,4 @@ runs:
         else
             echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_OUTPUT"
         fi
-
-    - name: App Version Info
-      shell: bash
-      run: |
         echo "app version is: ${{ steps.app-version-step.outputs.app-version }}"

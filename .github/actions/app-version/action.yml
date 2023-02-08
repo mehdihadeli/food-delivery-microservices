@@ -132,6 +132,8 @@ runs:
         title: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
         token: ${{ inputs.token }}
         delete-branch: true
+        # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch
+        # branch-suffix: short-commit-hash
         assignees: mehdihadeli
         reviewers: mehdihadeli
         labels: |

@@ -72,6 +72,6 @@ runs:
         reports-path: ${{ github.workspace }}/**/*.cobertura.xml
         reports-output-path: ${{ github.workspace }}/output/test-results
         service-name: ${{ inputs.service-name }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ inputs.token }}
         no-restore: true
 

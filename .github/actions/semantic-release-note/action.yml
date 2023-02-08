@@ -44,6 +44,10 @@ runs:
       if: success()
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
+        GIT_AUTHOR_NAME: github-actions[bot]
+        GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
+        GIT_COMMITTER_NAME: github-actions[bot]
+        GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
       # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
       # using dry-run here for preventing publish release note and just calculate version, for develop and devops/ci we don't want to publish release
       run: |

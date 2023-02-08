@@ -16,8 +16,8 @@ inputs:
   service-name:
     description: Service name
     required: true
-  branches:
-    description: Branches to generate version
+  supported-branches:
+    description: Supported Branches to generate version
     default: '["main", "develop", "beta", "preview", "devops/ci"]'
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputsoutput_idvalue
@@ -38,10 +38,19 @@ runs:
 
     - name: Check Inputs
       shell: bash
-      if: ${{ !contains(fromJson(inputs.branches), github.ref_name) }}
+      if: ${{ !contains(fromJson(inputs.supported-branches), ${{ inputs.branch }}) }}
       run: |
-            echo "branch ${{ github.ref_name }} is not valid for generating version, action cancelled..."
+            echo "branch ${{ inputs.branch }} is not valid for generating version, action cancelled..."
             exit 1
+
+    - name: Set branch name as env variable
+      shell: bash
+      run: |
+        if [ ${{ github.event_name }} = 'workflow_run' ]; then
+           echo "BRANCH=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
+        else
+           echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+        fi
 
     # https://github.com/semantic-release/semantic-release/discussions/2674
     # https://medium.com/@michael.wolfenden/simplified-versioning-and-publishing-for-net-libraries-a28e5e740fa6
@@ -55,6 +64,10 @@ runs:
       shell: bash
       env:
         GITHUB_TOKEN:  ${{ inputs.token }}
+        GIT_AUTHOR_NAME: github-actions[bot]
+        GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
+        GIT_COMMITTER_NAME: github-actions[bot]
+        GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
       # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
       # using dry-run here for preventing publish release note and just calculate version
       run: |

@@ -83,6 +83,7 @@ jobs:
         run: |
           echo "job name is: ${{ github.job }}"
           echo "branch name is: ${{ github.ref_name }}"
+          echo "branch name is: ${{ github.ref_name }}"
           echo "actor is: ${{ github.actor }}"
           echo "workspace is: ${{ github.workspace }}"
           echo "job name is: ${{ github.job }}"
@@ -101,6 +102,7 @@ jobs:
         # By default checkout@v3, will check branch on ref/SHA that triggered in starting workflow, so if inner a job in the workflow we change HEAD of repository by changing code, subsequent jobs don't get these commits and they get ref/SHA that triggered in starting workflow
       - name: Check out code
         uses: actions/checkout@v3
+        if: (github.event_name != 'workflow_dispatch')
         with:
           # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
           # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
@@ -110,12 +112,27 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
+        # https://blog.pother.ca/github-actions-workflow_run-event/
+        # https://stackoverflow.com/questions/63343937/how-to-use-the-github-actions-workflow-run-event
+        # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+      - name: Check out code for workflow_dispatch
+        uses: actions/checkout@v3
+        if: (github.event_name == 'workflow_dispatch')
+        with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
+          fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_branch }}
+        - run: |
+            git config user.name 'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+
       - name: Call Composite Action app-version
         uses: ./.github/actions/app-version
         if: success()
         id: app-version-step
         with:
-          branches: ${{ inputs.branches }}
+          supported-branches: ${{ inputs.branches }}
           service-name: ${{ inputs.service-name }}
           token: ${{ secrets.GITHUB_TOKEN }}
 

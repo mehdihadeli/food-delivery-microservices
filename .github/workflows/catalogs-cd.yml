@@ -3,7 +3,10 @@ name: Catalogs-CD
 
 on:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+  # https://stackoverflow.com/questions/63343937/how-to-use-the-github-actions-workflow-run-event
+  # https://blog.pother.ca/github-actions-workflow_run-event/
   # This event will only trigger a workflow run if the workflow file is on the default branch.
+  # According documentation 'GITHUB_REF' for workflow_run always is default branch, and for access original branch we can use 'github.event.workflow_run.head_branch'
   workflow_run:
     workflows: [ "Catalogs-CI" ]
     branches: [ develop, main, preview, beta, devops/ci ]
@@ -86,14 +89,18 @@ jobs:
           echo workspace is: ${{ github.workspace }}
           echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
           echo "is workflow_run event? ${{ github.event_name == 'workflow_run' }}"
-
-      - name: Print Triggered Workflow Information
-        run: |
           echo "Triggering Workflow ID: ${{ github.event.workflow_run.id }}"
           echo "Triggering Workflow Name: ${{ github.event.workflow_run.workflow_id }}"
           echo "Triggering Workflow Run Number: ${{ github.event.workflow_run.run_number }}"
           echo "Triggering Workflow Run event_name: ${{ github.event.workflow_run.event }}"
           echo "Triggering Workflow Run head_branch: ${{ github.event.workflow_run.head_branch }}"
+
+      - name: Override GITHUB_REF For workflow_run
+        if: (github.event_name == 'workflow_run')
+        run: |
+          echo "current GITHUB_REF is: $GITHUB_REF"
+          echo "GITHUB_REF=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
+          echo "new GITHUB_REF is: $GITHUB_REF"
 
       # https://www.codewrecks.com/post/github/choose-environment-from-branch/
       # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch

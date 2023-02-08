@@ -56,9 +56,11 @@ runs:
     - name: Set branch name as env variable
       shell: bash
       run: |
-        currentbranch=$(echo ${GITHUB_REF##*/})
-        echo "running on $currentbranch"
-        echo "BRANCH=$currentbranch" >> $GITHUB_ENV
+        if [ ${{ github.event_name }} = 'workflow_run' ]; then
+           echo "BRANCH=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
+        else
+           echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+        fi
 
     # https://docs.docker.com/engine/reference/commandline/build/
     # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b

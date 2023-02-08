@@ -38,9 +38,9 @@ runs:
 
     - name: Check Inputs
       shell: bash
-      if: ${{ !contains(fromJson(inputs.supported-branches), ${{ inputs.branch }}) }}
+      if: ${{ !contains(fromJson(inputs.supported-branches), ${{ github.ref_name }}) }}
       run: |
-            echo "branch ${{ inputs.branch }} is not valid for generating version, action cancelled..."
+            echo "branch ${{ github.ref_name }} is not valid for generating version, action cancelled..."
             exit 1
 
     - name: Set branch name as env variable

@@ -75,6 +75,9 @@ jobs:
         # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
         # https://github.com/semantic-release/semantic-release/issues/1208
         # https://github.com/orgs/community/discussions/26560
+        # https://blog.pother.ca/github-actions-workflow_run-event/
+        # https://stackoverflow.com/questions/63343937/how-to-use-the-github-actions-workflow-run-event
+        # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
         # https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L92
         ## https://github.com/actions/checkout/issues/439#issuecomment-965968956
         # get latest remote change because sematic-release in `verifyConditions` event checks local branch has latest remote branch changes, for preventing: The local branch `something` is behind the remote one, therefore a new version won't be published.

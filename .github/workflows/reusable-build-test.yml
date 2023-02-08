@@ -103,3 +103,11 @@ jobs:
           reports-output-path: ${{ github.workspace }}/output/test-results
           service-name: ${{ inputs.service-name }}
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Call Composite Action docker-build
+        uses: ./.github/actions/docker-build
+        if: success()
+        id: docker-build-step
+        with:
+          docker-file-path: ${{ inputs.docker-file-path }}
+          service-name: ${{ inputs.service-name }}

@@ -4,141 +4,74 @@
 # https://wallis.dev/blog/composite-github-actions
 
 name: "Build-Test"
-description: "Builds and tests without pushing"
+description: "Build and test service"
 
 # Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
 inputs:
   application-version:
-    description: "Application version"
+    description: Application version
     required: false
   project-path:
-    description: "Path to project to test e.g. Services/Catalog/Catalog.API"
+    description: Path to project to test e.g. Services/Catalog/Catalog.API
     required: true
   tests-path:
-    description: "Path to test project e.g. Services/Catalog/Catalog.UnitTests"
+    description: Path to test project e.g. Services/Catalog/Catalog.UnitTests
     required: true
   # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
   coverage-exclude:
-    description: "Coverage exclude filter"
+    description: Coverage exclude filter
     default: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
   # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
   unit-test-filter:
-    description: "Unit tests filter"
+    description: Unit tests filter
     default: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
   integration-test-filter:
-    description: "Integration tests filter"
+    description: Integration tests filter
     default: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
   reports-path:
-    description: "Test report path"
+    description: Test report path
     required: true
   reports-output-path:
-    description: "Test report output path"
+    description: Test report output path
     required: true
   service-name:
-    description: "Service name"
+    description: Service name
     required: true
   # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
   token:
-    description: 'A Github PAT'
+    description: A Github PAT
     required: true
-
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
 runs:
   using: "composite"
   steps:
 
-    # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
-    # https://devblogs.microsoft.com/dotnet/dotnet-loves-github-actions/
-    # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net#caching-dependencies
-    - name: Cache NuGet Packages
-      uses: actions/cache@v3
+    - name: Call Composite Action build
+      uses: ./.github/actions/build
       if: success()
+      id: build-step
       with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-dotnet-nuget
+        application-version: ${{ inputs.application-version }}
+        project-path: ${{ inputs.project-path }}
+        service-name: ${{ inputs.service-name }}
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-
-      # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
-    - name: Restore .NET Tools
-      shell: bash
-      run: dotnet tool restore
-
-      # Note: `Ubuntu` file and folder names are case sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
-      # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476
-    - name: Restore NuGet packages
-      shell: bash
+    - name: Call Composite Action test
+      uses: ./.github/actions/test
       if: success()
-      # restore root solution
-      run: dotnet restore
-
-    - name: Build Service Without Version
-      shell: bash
-      if: ${{ success() && inputs.application-version == ''}}
-      working-directory: ${{ inputs.project-path }}
-      run: |
-          dotnet build -c Release --no-restore
-
-    - name: Build Service With Version
-      shell: bash
-      if: ${{ success() && inputs.application-version != ''}}
-      working-directory: ${{ inputs.project-path }}
-      run: |
-          dotnet build -c Release --no-restore -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
-
-    - name: Build Tests
-      shell: bash
-      if: success()
-      working-directory: ${{ inputs.tests-path }}
-      run: |
-        for file in $(find . -name "*.csproj" -type f); do
-          echo "Testing $file"
-          dotnet build "$file" -c Release --no-restore
-        done
-
-    # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
-    # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
-    # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
-    # https://josef.codes/dotnet-core-filter-out-specific-test-projects-when-running-dotnet-test/
-    # https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
-    # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-    # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md
-    # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
-    - name: Run Unit Tests with Coverage
-      id: unit-tests
-      shell: bash
-      if: success()
-      working-directory: ${{ inputs.tests-path }}
-      # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
-      run: |
-        for file in $(find . -name "*.csproj" -type f); do
-          echo "Testing $file"
-          dotnet test "$file" -c Release --no-build --no-restore -p:Exclude="${{ inputs.exclude-coverage }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx"
-        done
-
-    - name: Run Integration And EndToEnd Tests with Coverage
-      continue-on-error: false
-      id: integration-tests
-      if: success()
-      shell: bash
-      working-directory: ${{ inputs.tests-path }}
-      run: |
-        for file in $(find . -name "*.csproj" -type f); do
-          echo "Testing $file"
-          dotnet test "$file" -c Release --no-build --no-restore -p:Exclude="${{ inputs.exclude-coverage }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx"
-        done
-
-    - name: Call Composite Action test-coverage
-      uses: ./.github/actions/test-coverage
-      id: test-coverage-step
+      id: test-step
       with:
+        tests-path: ${{ inputs.tests-path }}
+        unit-test-filter: ${{ inputs.unit-test-filter }}
+        integration-test-filter: ${{ inputs.integration-test-filter }}
+        coverage-exclude: ${{ inputs.coverage-exclude }}
         # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
         # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
         # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
-        reports-path: ${{ inputs.reports-path }}
-        reports-output-path: ${{ inputs.reports-output-path }}
+        reports-path: ${{ github.workspace }}/**/*.cobertura.xml
+        reports-output-path: ${{ github.workspace }}/output/test-results
         service-name: ${{ inputs.service-name }}
-        token: ${{ inputs.token }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        no-restore: true
+

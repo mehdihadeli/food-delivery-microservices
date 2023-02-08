@@ -4,7 +4,7 @@
 # https://wallis.dev/blog/composite-github-actions
 
 name: "Publish Service Artifact"
-description: "Publishing application artifacts"
+description: "Publishing service artifacts"
 
 # Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
@@ -38,14 +38,6 @@ runs:
         echo service-name is: "${{ inputs.service-name }}"
         echo application-version is: "${{ inputs.application-version }}"
 
-    - name: Check Inputs
-      shell: bash
-      run: |
-        if [ -z ${{ inputs.application-version }} ]
-           then echo "application-version is empty, action cancelled..."
-                exit 1
-        fi
-
     # https://garywoodfine.com/how-to-use-github-actions-to-build-deploy-github-nuget-packages/
     # https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/docker/building-net-docker-images?view=aspnetcore-7.0#the-dockerfile
     # or calling dotnet publish on solution - we marked `publishable` and `packable` projects in their .csproj for doing easy publish in solution level
@@ -53,7 +45,7 @@ runs:
       shell: bash
       if: ${{ success() && inputs.application-version != ''}}
       working-directory: ${{ inputs.project-path }}
-      # we should build (without --no-build) here again, with new passed version for getting new version for dlls or at build stage we should pass correct version during build time as arguments for getting new version for dlls
+      # if we should use new version in publish time, we should do build (without --no-build) here, with new passed version for getting new version for dlls
       run: |
         if [ ${{ inputs.no-restore }} = true ]; then
            dotnet publish -c Release --no-restore -o ${{ github.workspace }}/output/${{inputs.service-name}} -p:Version=${{ inputs.application-version }} -p:InformationalVersion=${{ inputs.application-version }} -p:ApplicationVersion=${{ inputs.application-version }}
@@ -65,11 +57,12 @@ runs:
       shell: bash
       if: ${{ success() && inputs.application-version == ''}}
       working-directory: ${{ inputs.project-path }}
+      # version specified in build phase with passing version in the build arguments, here we just publish it with no-build
       run: |
         if [ ${{ inputs.no-restore }} = true ]; then
            dotnet publish -c Release --no-restore --no-build -o ${{ github.workspace }}/output/${{inputs.service-name}}
         else
-           dotnet publish -c Release -o ${{ github.workspace }}/output/${{inputs.service-name}}
+           dotnet publish -c Release --no-build -o ${{ github.workspace }}/output/${{inputs.service-name}}
         fi
 
       # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory

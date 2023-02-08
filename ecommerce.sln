@@ -275,6 +275,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "drafter-release-note", "dra
 		.github\actions\drafter-release-note\action.yml = .github\actions\drafter-release-note\action.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker-build", "docker-build", "{BAA63693-FD4F-4BE7-BD6F-B3921B521B2E}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\docker-build\action.yml = .github\actions\docker-build\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{17BF75B9-40EF-4EB7-BE1E-E2EF53E3F67A}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\build\action.yml = .github\actions\build\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{06D012EA-5E0F-49F4-823D-2E61CFAC72DA}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\test\action.yml = .github\actions\test\action.yml
+	EndProjectSection
+EndProject
 
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -365,6 +380,9 @@ Global
 		{5C4860A5-27EA-40F6-B116-A17F27E936A7} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{7F528D11-1B4D-4C86-8081-5BA40CE3852C} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{55445A98-C6E2-453B-955A-A823E7C2361A} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
+		{BAA63693-FD4F-4BE7-BD6F-B3921B521B2E} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
+		{17BF75B9-40EF-4EB7-BE1E-E2EF53E3F67A} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
+		{06D012EA-5E0F-49F4-823D-2E61CFAC72DA} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

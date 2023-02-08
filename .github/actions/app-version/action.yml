@@ -11,13 +11,13 @@ description: "Update App Version"
 inputs:
   # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
   token:
-    description: 'A Github PAT'
+    description: A Github PAT
     required: true
   service-name:
-    description: 'Service name'
+    description: Service name
     required: true
   branches:
-    description: 'Branches to generate version'
+    description: Branches to generate version
     default: '["main", "develop", "beta", "preview", "devops/ci"]'
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputsoutput_idvalue

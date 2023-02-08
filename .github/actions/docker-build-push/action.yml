@@ -3,32 +3,32 @@
 # https://doug.sh/posts/using-composite-actions-with-github-actions/
 # https://wallis.dev/blog/composite-github-actions
 
-name: "Generate Tests Report"
-description: "Generating tests reports for our application "
+name: "Docker Build and Push"
+description: "Docker Build and Push"
 
 # Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
 inputs:
   application-version:
-    description: "Application version"
+    description: Application version
     required: true
   docker-file-path:
-    description: "Docker file path"
+    description: Docker file path
     required: true
   registry:
-    description: "Docker registry to push"
+    description: Docker registry to push
     default: "ghcr.io"
   registry-endpoint:
-    description: "Image registry repo e.g. username/ecommerce-microservices"
+    description: Image registry repo e.g. username/ecommerce-microservices
     required: true
   registry-username:
-    description: "Registry username"
+    description: Registry username
     required: true
   registry-password:
-    description: "Registry password"
+    description: Registry password
     required: true
   service-name:
-    description: "Service name"
+    description: Service name
     required: true
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
@@ -79,16 +79,18 @@ runs:
 
     - name: docker publish
       shell: bash
-      if: success()
+      if: ${{ success() && inputs.should-push == 'true'}}
       run: |
         docker push  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}
 
       # Save image name in the artifacts to use in CD process for deploying image
     - name: Save image name
+      if:  ${{ success() && inputs.should-push == 'true'}}
       shell: bash
       run: echo "${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}" > image_name.txt
 
     - name: Upload artifact
+      if:  ${{ success() && inputs.should-push == 'true'}}
       uses: actions/upload-artifact@v2
       with:
         name: ${{ inputs.service-name}}_image_artifacts

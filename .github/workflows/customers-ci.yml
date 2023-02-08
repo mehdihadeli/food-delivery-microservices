@@ -133,7 +133,8 @@ jobs:
       checks: write # for test-reporter
       contents: read
 
-    if: (github.event_name == 'pull_request' || contains(fromJson('["feat/", "fix/", "release/"]'), github.ref_name) || (github.event_name == 'workflow_dispatch' && !github.event.inputs.should-publish))
+    # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
+    if: (github.event_name == 'pull_request' || (contains(fromJson('["feat/", "fix/", "release/"]'), github.ref_name)) || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish == 'false'))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
@@ -167,7 +168,9 @@ jobs:
       contents: write # for publishing in dry-run mode
       checks: write # for test-reporter
 
-    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish)))
+    # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
+    # input boolean type should compare with 'true' or 'false' string
+    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish == 'true')))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/

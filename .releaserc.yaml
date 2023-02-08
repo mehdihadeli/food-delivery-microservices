@@ -167,8 +167,6 @@ plugins:
          ./set-output-next-version.sh ${nextRelease.version} ${nextRelease.channel} ${nextRelease.gitHead} ${nextRelease.gitTag}
          ./set-output-last-version.sh ${lastRelease.version} ${lastRelease.channel} ${lastRelease.gitHead} ${lastRelease.gitTag}
 
-       generateNotesCmd: |
-         echo "generateNotesCmd"
        publishCmd: |
          echo "publishCmd"
        # https://codewithhugo.com/fix-git-failed-to-push-updates-were-rejected/

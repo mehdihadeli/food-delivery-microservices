@@ -152,6 +152,7 @@ jobs:
       tests-path: ${{ vars.CUSTOMERS_SERVICE_TESTS_PATH }} # tests/Services/Customers
       project-path: ${{ vars.CUSTOMERS_SERVICE_PROJECT_PATH }} # src/Services/Customers/ECommerce.Services.Customers.Api
       service-name: ${{ vars.CUSTOMERS_SERVICE_NAME }} # customers-service
+      docker-file-path: ${{ vars.CUSTOMERS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Customers/Dockerfile
 
   call-build-test-push:
     needs: pre-check

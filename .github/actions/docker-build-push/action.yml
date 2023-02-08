@@ -79,18 +79,18 @@ runs:
 
     - name: docker publish
       shell: bash
-      if: ${{ success() && inputs.should-push == 'true'}}
+      if: success()
       run: |
         docker push  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}
 
       # Save image name in the artifacts to use in CD process for deploying image
     - name: Save image name
-      if:  ${{ success() && inputs.should-push == 'true'}}
+      if: success()
       shell: bash
       run: echo "${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}" > image_name.txt
 
     - name: Upload artifact
-      if:  ${{ success() && inputs.should-push == 'true'}}
+      if: success()
       uses: actions/upload-artifact@v2
       with:
         name: ${{ inputs.service-name}}_image_artifacts

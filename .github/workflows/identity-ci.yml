@@ -152,6 +152,7 @@ jobs:
       tests-path: ${{ vars.IDENTITY_SERVICE_TESTS_PATH }} # tests/Services/Identity
       project-path: ${{ vars.IDENTITY_SERVICE_PROJECT_PATH }} # src/Services/Identity/ECommerce.Services.Identity.Api
       service-name: ${{ vars.IDENTITY_SERVICE_NAME }} # identity-service
+      docker-file-path: ${{ vars.IDENTITY_SERVICE_DOCKER_FILE_PATH }} # src/Services/Identity/Dockerfile
 
   call-build-test-push:
     needs: pre-check

@@ -31,6 +31,10 @@ on:
         description: Service name
         required: true
         type: string
+      docker-file-path:
+        description: Docker file path
+        required: true
+        type: string
 
 jobs:
   build-test:

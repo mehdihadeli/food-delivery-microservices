@@ -237,7 +237,7 @@ jobs:
   # runs only for cd part when we have a push
   workflow-info:
     runs-on: ubuntu-latest
-    needs: [pre-check, back-merge]
+    needs: [pre-check, call-build-test-push]
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped

@@ -37,7 +37,7 @@ inputs:
     description: A Github PAT
     required: true
   no-restore:
-    description: No restore nuget packages but building tests because they don't build in the build composition action
+    description: No restore nuget packages, but building tests because they don't build in the build composition action
     default: 'true'
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
@@ -55,7 +55,7 @@ runs:
     # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
     - name: Run Unit Tests with No Restore
       shell: bash
-      if: ${{ success() && inputs.no-restore-build == 'true' }}
+      if: ${{ success() && inputs.no-restore == true }}
       working-directory: ${{ inputs.tests-path }}
       # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
       run: |
@@ -66,7 +66,7 @@ runs:
 
     - name: Run Unit Tests
       shell: bash
-      if: ${{ success() && inputs.no-restore-build == 'false' }}
+      if: ${{ success() && inputs.no-restore == false }}
       working-directory: ${{ inputs.tests-path }}
       # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
       run: |
@@ -77,7 +77,7 @@ runs:
 
     - name: Run Integration And EndToEnd Tests with No Restore
       continue-on-error: false
-      if: ${{ success() && inputs.no-restore-build == 'true' }}
+      if: ${{ success() && inputs.no-restore == true }}
       shell: bash
       working-directory: ${{ inputs.tests-path }}
       run: |
@@ -88,7 +88,7 @@ runs:
 
     - name: Run Integration And EndToEnd Tests
       continue-on-error: false
-      if: ${{ success() && inputs.no-restore-build == 'false' }}
+      if: ${{ success() && inputs.no-restore == false }}
       shell: bash
       working-directory: ${{ inputs.tests-path }}
       run: |

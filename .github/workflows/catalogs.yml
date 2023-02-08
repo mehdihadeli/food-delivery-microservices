@@ -197,7 +197,9 @@ jobs:
 
     # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
     # input boolean type should compare with 'true' or 'false' string
-    if: (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish == 'true')))
+    if: |
+      success() &&
+      (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish == 'true')))
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
@@ -235,7 +237,7 @@ jobs:
   # runs only for cd part when we have a push
   workflow-info:
     runs-on: ubuntu-latest
-    needs: [pre-check, call-build-test-push]
+    needs: [pre-check, back-merge]
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped

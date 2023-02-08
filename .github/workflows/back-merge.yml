@@ -5,11 +5,23 @@ name: Back-Merge
 on:
 
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+  # https://stackoverflow.com/questions/63343937/how-to-use-the-github-actions-workflow-run-event
+  # https://blog.pother.ca/github-actions-workflow_run-event/
   # This event will only trigger a workflow run if the workflow file is on the default branch.
+  # According documentation 'GITHUB_REF' for workflow_run always is default branch(develop), and for access original branch for workflow_run we can use 'github.event.workflow_run.head_branch'
   workflow_run:
-    workflows: [ "Catalogs-CI", "Customers-CI", "Identity-CI", "Orders-CI" ]
+    workflows: [ "Catalogs-CI-CD", "Customers-CI-CD", "Identity-CI-CD", "Orders-CI-CD" ]
     branches: [ develop, main, preview, beta ]
     types: [ completed ]
+
+
+  pull_request:
+    types: [closed]  # when PR is merged, CD will be triggered
+    branches:
+      - develop
+      - beta
+      - preview
+      - main
 
   workflow_dispatch:
     logLevel:
@@ -22,16 +34,9 @@ on:
         - warning
         - debug
 
-  pull_request:
-    types: [closed]  # when PR is merged, CD will be triggered
-    branches:
-      - develop
-      - beta
-      - preview
-
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
+  group: ${{ github.workflow }}
   cancel-in-progress: true
 
 jobs:
@@ -45,9 +50,7 @@ jobs:
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
     if: |
       !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message,  'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style')) &&
-      github.actor != 'dependabot[bot]' &&
-      contains(fromJson('["develop", "main", "preview", "beta"]'), github.ref_name) &&
-      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true))
+      github.actor != 'dependabot[bot]'
 
     steps:
       - name: Job Info
@@ -55,17 +58,33 @@ jobs:
           echo "pre-check is successful."
           echo workspace is: ${{ github.workspace }}
           echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
+          echo "is workflow_run event? ${{ github.event_name == 'workflow_run' }}"
           echo "is push event? ${{ github.event_name == 'push' }}"
           echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
+          echo branch is: ${{ github.ref_name }}
+          echo workflow_run head_branch is: ${{ github.event.workflow_run.head_branch }}
 
   back-merge:
     runs-on: ubuntu-latest
     needs: [ pre-check ]
 
+    if: |
+      success() &&
+      github.event_name != 'pull_request' &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && contains(fromJson('["develop", "main", "preview", "beta"]'), github.event.workflow_run.head_branch))  || (github.event_name == 'workflow_dispatch' && contains(fromJson('["develop", "main", "preview", "beta"]'), github.ref_name)))
+
     permissions:
       pull-requests: write
 
     steps:
+      - name: Set branch name as env variable
+        shell: bash
+        run: |
+          if [ ${{ github.event_name }} = 'workflow_run' ]; then
+            echo "BRANCH=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
+          else
+            echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
 
       # https://github.com/cycjimmy/semantic-release-action/issues/6
       # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
@@ -92,18 +111,18 @@ jobs:
       - name: Merge Branches
         shell: bash
         run: |
-          if [ $GITHUB_REF_NAME = 'main' ]; then
+          if [ $BRANCH = 'main' ]; then
               echo "back-merge main branch to develop protected branch through pull-request"
               git checkout develop
               git fetch origin main:main
               git reset --hard main
-          elif [ $GITHUB_REF_NAME = 'develop' ]; then
+          elif [ $BRANCH = 'develop' ]; then
               echo "back-merge develop branch to all features"
               ./back-merge.sh  ${{ github.ref_name }}
-          elif [ $GITHUB_REF_NAME = 'beta' ]; then
+          elif [ $BRANCH = 'beta' ]; then
           echo "back-merge for beta branch"
               echo "...."
-          elif [ $GITHUB_REF_NAME = 'preview' ]; then
+          elif [ $BRANCH = 'preview' ]; then
               echo "back-merge for preview branch"
               echo "...."
           fi
@@ -125,9 +144,20 @@ jobs:
     permissions:
       contents: write # for back-merging feature branch
 
-    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true && contains(fromJson('["develop", "preview", "beta"]'), github.ref_name))
+    if: |
+      success() &&
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true && contains(fromJson('["develop", "preview", "beta"]'), github.ref_name))
 
     steps:
+
+      - name: Set branch name as env variable
+        shell: bash
+        run: |
+          if [ ${{ github.event_name }} = 'workflow_run' ]; then
+             echo "BRANCH=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
+          else
+             echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
 
       # https://github.com/cycjimmy/semantic-release-action/issues/6
       # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token

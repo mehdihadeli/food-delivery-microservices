@@ -32,7 +32,7 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(MicrosoftConfigurationVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftConfigurationVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftDependencyInjectionVersion)"/>
-    <PackageVersion Include="Microsoft.Extensions.DiagnosticAdapter" Version="3.1.22"/>
+    <PackageVersion Include="Microsoft.Extensions.DiagnosticAdapter" Version="3.1.32"/>
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(AspNetCoreVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(AspNetCoreVersion)"/>

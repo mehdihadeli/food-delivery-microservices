@@ -185,7 +185,7 @@
     <PackageVersion Include="System.Reactive.Linq" Version="5.0.0"/>
     <PackageVersion Include="MongoDB.Driver" Version="2.17.1"/>
     <PackageVersion Include="Ardalis.GuardClauses" Version="4.0.1"/>
-    <PackageVersion Include="Duende.BFF.Yarp" Version="1.2.3"/>
+    <PackageVersion Include="Duende.BFF.Yarp" Version="2.0.0"/>
     <PackageVersion Include="Yarp.ReverseProxy" Version="1.1.1"/>
     <PackageVersion Include="Ardalis.ApiEndpoints" Version="4.0.1"/>
     <PackageVersion Include="EntityFrameworkCore.Projectables" Version="2.3.0"/>

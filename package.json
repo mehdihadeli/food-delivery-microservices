@@ -1,0 +1,23 @@
+{
+  "name": "ecommerce-microservices",
+  "version": "1.0.0",
+  "description": "ecommerce-microservices",
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mehdihadeli/ecommerce-microservices.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mehdihadeli/ecommerce-microservices/issues"
+  },
+  "homepage": "https://github.com/mehdihadeli/ecommerce-microservices#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^17.4.2",
+    "@commitlint/config-conventional": "^17.4.2",
+    "husky": "^8.0.3"
+  }
+}

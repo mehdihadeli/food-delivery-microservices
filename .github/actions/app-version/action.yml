@@ -22,9 +22,11 @@ inputs:
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputsoutput_idvalue
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputs-for-composite-actions
+# https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
+# we can't use env here because here env evaluate before executing steps and env only accessible in subsequent actions so we should use step output
 outputs:
   application-version:
-    value: ${{ env.APP_VERSION }}
+    value: ${{ steps.app-version-step.outputs.app-version }}
     description: "Application Version"
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
@@ -43,6 +45,7 @@ runs:
             echo "branch ${{ github.ref_name }} is not valid for generating version, action cancelled..."
             exit 1
 
+    # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
     - name: Set branch name as env variable
       shell: bash
       run: |
@@ -95,6 +98,8 @@ runs:
       # https://gist.github.com/rponte/fdc0724dd984088606b0
       # https://linuxhint.com/bash_if_else_examples/
       # https://github.com/semantic-release/semantic-release/issues/2703
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
       run: |
         if [ -z "${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" ]; then
             if [ "${{ github.ref_name }}" = "develop" ]; then
@@ -108,16 +113,19 @@ runs:
             fi
             echo "latest tag for ${{ github.ref_name }} branch is: $LATEST_TAG"
             echo "APP_VERSION=$LATEST_TAG" >> "$GITHUB_ENV"
+            echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
             echo "app version is: $APP_VERSION"
         else
             echo "APP_VERSION=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_ENV"
+            echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_OUTPUT"
+            echo "app version is: $APP_VERSION"
         fi
 
     - name: csproj version
       shell: bash
       if: success()
       run: |
-        echo update app version to $APP_VERSION
+        echo update app version to ${{ env.APP_VERSION }}
         ./update-version.sh "$APP_VERSION"
 
     - run: |

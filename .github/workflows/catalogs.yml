@@ -133,10 +133,8 @@ jobs:
        github.actor != 'dependabot[bot]'
 
     steps:
-      - name: check-pull-request-conventional-commits
-        uses: amannn/action-semantic-pull-request@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Conventional Commits Checks
+        uses: webiny/action-conventional-commits@v1.1.0
 
       - name: Job Info
         if: success()

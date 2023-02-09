@@ -135,7 +135,7 @@ jobs:
           author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
           commit-message: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
           title: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
-          branch: back-merge-update
+          branch: back-merge-${{ env.BRANCH }}
 
   back-merge-pr-closed:
     runs-on: ubuntu-latest

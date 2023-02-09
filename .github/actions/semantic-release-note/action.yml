@@ -38,6 +38,8 @@ runs:
     # https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
     # https://github.com/semantic-release/semantic-release/issues/753#issuecomment-706971174
     # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
+    # https://github.com/semantic-release/semantic-release/issues/2704
+    # https://github.com/semantic-release/semantic-release/issues/2703
     - name: Semantic Release Publish
       id: semantic
       shell: bash

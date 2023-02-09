@@ -20,7 +20,7 @@
     <PackageVersion Include="AutoBogus" Version="2.13.1" />
     <PackageVersion Include="AutoBogus.NSubstitute" Version="2.13.1" />
     <PackageVersion Include="AutoFixture" Version="4.17.0" />
-    <PackageVersion Include="FluentAssertions" Version="6.8.0" />
+    <PackageVersion Include="FluentAssertions" Version="6.9.0" />
     <PackageVersion Include="FluentAssertions.Web" Version="1.2.5" />
     <PackageVersion Include="FluentResults.Extensions.FluentAssertions" Version="2.1.0" />
     <PackageVersion Include="Hypothesist" Version="2.0.30" />

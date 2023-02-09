@@ -162,7 +162,7 @@
     <PackageVersion Include="Bogus" Version="34.0.2"/>
     <PackageVersion Include="AutoBogus" Version="2.13.1"/>
     <PackageVersion Include="Dapper" Version="2.0.123"/>
-    <PackageVersion Include="DotNetEnv" Version="2.3.0"/>
+    <PackageVersion Include="DotNetEnv" Version="2.5.0"/>
     <PackageVersion Include="FluentMigrator.Extensions.Postgres" Version="3.3.2"/>
     <PackageVersion Include="FluentMigrator.Runner.Postgres" Version="3.3.2"/>
     <PackageVersion Include="FluentValidation.AspNetCore" Version="10.4.0"/>

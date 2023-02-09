@@ -117,7 +117,7 @@
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9.9" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.0.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9.9" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9.9" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9.12" />
     <PackageVersion Include="OpenTelemetry.Contrib.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta2" />
     <PackageVersion Include="OpenTelemetry.Contrib.Instrumentation.MassTransit" Version="1.0.0-beta2" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.EventCounters" Version="1.0.0-alpha.2" />

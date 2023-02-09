@@ -14,6 +14,9 @@ on:
       - devops/ci
       - fix/*
       - feat/*
+      - test/*
+      - build/*
+      - ci/*
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-affects-specific-files
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
     paths:
@@ -147,7 +150,6 @@ jobs:
           echo "is push event? ${{ github.event_name == 'push' }}"
           echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
           echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
-          echo "should publish? ${{ ((github.event_name != 'pull_request' && contains(fromJson('["develop", "main",  "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish)))) == 'true' }}"
 
       # https://www.codewrecks.com/post/github/choose-environment-from-branch/
       # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch
@@ -177,7 +179,7 @@ jobs:
       contents: read
 
     # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
-    if: (github.event_name == 'pull_request' || (contains(fromJson('["feat/", "fix/", "release/"]'), github.ref_name)) || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish == 'false') || contains(github.event.head_commit.message, 'build'))
+    if: (github.event_name == 'pull_request' || (contains(fromJson('["feat/", "fix/", "test/", "build/", "ci/", "release/"]'), github.ref_name)) || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish == 'false') || contains(github.event.head_commit.message, 'build') || contains(github.event.head_commit.message, 'test'))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
@@ -214,11 +216,9 @@ jobs:
 
     # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
     # input boolean type should compare with 'true' or 'false' string
+    # our main branches always should trigger push and CD workflow, because if we filter them based on head message, it is possible last commit exclude entire push from triggering
     if: |
       success() &&
-      !contains(github.event.head_commit.message, 'Merge') &&
-      !contains(github.event.head_commit.message, 'build') &&
-      !contains(github.event.head_commit.message, 'test') &&
       (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish == 'true')))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
@@ -250,11 +250,9 @@ jobs:
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
     # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
+    # our main branches always should trigger push and CD workflow, because if we filter them based on head message, it is possible last commit exclude entire push from triggering
     if: |
       success() &&
-      !contains(github.event.head_commit.message, 'Merge') &&
-      !contains(github.event.head_commit.message, 'build') &&
-      !contains(github.event.head_commit.message, 'test') &&
       (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note == 'true')))
 
     steps:
@@ -357,11 +355,9 @@ jobs:
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+    # our main branches always should trigger push and CD workflow, because if we filter them based on head message, it is possible last commit exclude entire push from triggering
     if: |
       success() &&
-      !contains(github.event.head_commit.message, 'Merge') &&
-      !contains(github.event.head_commit.message, 'test') &&
-      !contains(github.event.head_commit.message, 'build') &&
       (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note == 'true')))
 
     uses: ./.github/workflows/reusable-release.yml
@@ -381,11 +377,9 @@ jobs:
 
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+    # our main branches always should trigger push and CD workflow, because if we filter them based on head message, it is possible last commit exclude entire push from triggering
     if: |
       success() &&
-      !contains(github.event.head_commit.message, 'Merge') &&
-      !contains(github.event.head_commit.message, 'test') &&
-      !contains(github.event.head_commit.message, 'build') &&
       (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-deploy == 'true')))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow

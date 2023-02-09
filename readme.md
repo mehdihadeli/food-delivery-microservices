@@ -13,44 +13,20 @@
 > **Warning**
 > This is project in progress. I'm add new features over the time. You can check the [Release Notes](https://github.com/mehdihadeli/ecommerce-microservices/releases) and follow the progress on Twitter [@mehdi_hedli](https://twitter.com/shadcn) and Linkedin [mehdihadeli](https://www.linkedin.com/in/mehdihadeli/).
 
-# Development Ready
-Start to develop with a pre config environment contains all needed infrastructures in the Gitpod:
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/https://github.com/mehdihadeli/ecommerce-microservices)
 
 # ⭐ Support
 If you like feel free to ⭐ this repository, It helps out :)
 
 Thanks a bunch for supporting me!
 
-Configuration sample:
-```bash
-# Installing commitlint
-npm install @commitlint/config-conventional @commitlint/cli -g
-# Configure commitlint to use conventional config
-echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
-
-# Installing husky
-npm install husky -g
-# running this command in the root of the repository for creating .husky folder
-npx husky install
-
-npx husky add .husky/pre-commit "dotnet format"
-npx husky add .husky/commit-msg  'npx --no -- commitlint --edit ${1}'
-
-# https://csharpier.com/docs/Editors
-# https://csharpier.com/docs/CLI
-# If you prefer csharpier for your formatting
-# npx husky add .husky/pre-commit "dotnet csharpier ."
-```
-
 # Table of Contents
 
 - [Features](#features)
 - [Plan](#plan)
 - [Setup](#setup)
-  - [Conventional Commit](#conventional-commit)
-  - [Formatting And Analizers](#formatting-and-analizers)
+  - [Development Envionment](#development-envionment)
+  - [Formatting](#formatting)
+  - [Analizers](#analizers)
 - [Technologies - Libraries](#technologies---libraries)
 - [The Domain and Bounded Context - Service Boundary](#the-domain-and-bounded-context---service-boundary)
 - [Application Architecture](#application-architecture)
@@ -86,15 +62,15 @@ npx husky add .husky/commit-msg  'npx --no -- commitlint --edit ${1}'
 ## Plan
 > This project is in progress, New features will be added over time.
 
-| Feature          | Architecture Pattern                  | Status | CI                                                                                                                                                                                                                                              |
-|------------------|---------------------------------------| ------ |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| API Gateway      | Microsoft YARP Reverse Proxy          | Completed ✔️ | -                                                                                                                                                                                                                                               |
-| Identity Service | Data Centeric Architecture (CRUD)     | Completed ✔️ | [![Identity-CI](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity-ci.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity-ci.yml) |
-| Customer Service | Domain Driven Design                  | Completed ✔️ | [![Customers-CI](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/customers-ci.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/ci.yml) |
-| Catalog Service  | Domain Driven Design                  |Completed ✔️ | [![Catalogs-CI](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs-ci.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs-ci.yml) |
-| Order Service    | Event Sourccing, Domain Driven Design | In Progress 👷‍| - |                                                                                                                                                                                                                                              |
-| Shipping Service | Domain Driven Design                  | Not Started 🚩 | - |
-| Payment Service  | Event Sourccing, Domain Driven Design | Not Started 🚩 | - |
+| Feature          | Architecture Pattern                  | Status | CI                                                                                                                                                                                                                                                     |
+|------------------|---------------------------------------| ------ |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| API Gateway      | Microsoft YARP Reverse Proxy          | Completed ✔️ | -                                                                                                                                                                                                                                                      |
+| Identity Service | Data Centeric Architecture (CRUD)     | Completed ✔️ | [![Identity-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml)           |
+| Customer Service | Domain Driven Design                  | Completed ✔️ | [![Customers-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/customers.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/customers.yml) |
+| Catalog Service  | Domain Driven Design                  |Completed ✔️ | [![Catalogs-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs.yml)           |
+| Order Service    | Event Sourccing, Domain Driven Design | In Progress 👷‍| -                                                                                                                                                                                                                                                      |                                                                                                                                                                                                                                              |
+| Shipping Service | Domain Driven Design                  | Not Started 🚩 | -                                                                                                                                                                                                                                                      |
+| Payment Service  | Event Sourccing, Domain Driven Design | Not Started 🚩 | -                                                                                                                                                                                                                                                      |
 
 ## Technologies - Libraries
 
@@ -120,12 +96,40 @@ npx husky add .husky/commit-msg  'npx --no -- commitlint --edit ${1}'
 
 ## Setup
 
+### Development Envionment
+
+#### Gitpod
+Start to develop with a pre config environment contains all needed infrastructures in the Gitpod:
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/https://github.com/mehdihadeli/ecommerce-microservices)
+
 ### Conventional Commit
-In this app I use [Conventional Commit](https://www.conventionalcommits.org/en/) and for enforcing its rule I use [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) and [typicode/husky](https://github.com/typicode/husky) with a pre-commit hook. For read more about its setup see [commitlint docs](https://github.com/conventional-changelog/commitlint#getting-started) and [this article](https://betterprogramming.pub/how-to-lint-commit-messages-with-husky-and-commitlint-b51d20a5e514).
+In this app I use [Conventional Commit](https://www.conventionalcommits.org/en/) and for enforcing its rule I use [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) and [typicode/husky](https://github.com/typicode/husky) with a pre-commit hook. For read more about its setup see [commitlint docs](https://github.com/conventional-changelog/commitlint#getting-started) and [this article](https://betterprogramming.pub/how-to-lint-commit-messages-with-husky-and-commitlint-b51d20a5e514) and [this article](https://www.code4it.dev/blog/conventional-commit-with-githooks).
 
-### Formatting And Analizers
-For formatting I use [belav/csharpier](https://github.com/belav/csharpier), you can integrate it with your [prefered IDE](https://csharpier.com/docs/Editors).
+Here I configured a husky hook for conventional commits:
 
+1. Install NPM: `npm init`;
+2. Install Husky: `npm install husky --save-dev`
+3. Add `prepare` command for installing and activating `husky hooks` in the package.json file: `npm pkg set scripts.prepare="husky install"`
+4. Install CommitLint: `npm install --save-dev @commitlint/config-conventional @commitlint/cli`
+5. Create the `commitlint.config.js` file with this content: `module.exports = { extends: '@commitlint/config-conventional']};`
+6. Create the Husky folder: `mkdir .husky`
+7. Link Husky and CommitLint: `npx husky add .husky/commit-msg 'npx --no -- commitlint --edit ${1}'`
+8. Activate and installing all husky hooks with this command: `npm run prepare`
+
+
+### Formatting
+For formatting I use [belav/csharpier](https://github.com/belav/csharpier) but you can also use `dotnet format`, you can integrate it with your [prefered IDE](https://csharpier.com/docs/Editors).
+
+Here I configured a husky hook for formatting:
+1. Install NPM: `npm init`;
+2. Install Husky: `npm install husky --save-dev`
+3. Add `prepare` command for installing and activating `husky hooks` in the package.json file: `npm pkg set scripts.prepare="husky install"`
+4. Create the Husky folder: `mkdir .husky`
+5. Link Husky and formatting tools: `npx husky add .husky/pre-commit "dotnet format"` or `npx husky add .husky/pre-commit "dotnet csharpier ."`
+6. Activate and installing all husky hooks with this command: `npm run prepare`
+
+### Analizers
 For roslyn analizers I use serveral analyzers and config the in `.editorconfig` file:
 - [StyleCop/StyleCop](https://github.com/StyleCop/StyleCop)
 - [JosefPihrt/Roslynator](https://github.com/JosefPihrt/Roslynator)

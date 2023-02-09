@@ -118,7 +118,7 @@ runs:
       id: test-report
       if: always()
       with:
-        name: DotNET Tests
+        name: {{ inputs.service-name }} Test Reports
         reporter: dotnet-trx
         token: ${{ inputs.token }}
         path: "**/test-results.trx"

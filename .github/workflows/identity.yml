@@ -217,6 +217,7 @@ jobs:
     if: |
       success() &&
       !contains(github.event.head_commit.message, 'Merge') &&
+      !contains(github.event.head_commit.message, 'test') &&
       !contains(github.event.head_commit.message, 'build') &&
       (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish == 'true')))
 
@@ -252,6 +253,7 @@ jobs:
     if: |
       success() &&
       !contains(github.event.head_commit.message, 'Merge') &&
+      !contains(github.event.head_commit.message, 'test') &&
       !contains(github.event.head_commit.message, 'build') &&
       (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note == 'true')))
 
@@ -358,6 +360,7 @@ jobs:
     if: |
       success() &&
       !contains(github.event.head_commit.message, 'Merge') &&
+      !contains(github.event.head_commit.message, 'test') &&
       !contains(github.event.head_commit.message, 'build') &&
       (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note == 'true')))
 
@@ -381,6 +384,7 @@ jobs:
     if: |
       success() &&
       !contains(github.event.head_commit.message, 'Merge') &&
+      !contains(github.event.head_commit.message, 'test') &&
       !contains(github.event.head_commit.message, 'build') &&
       (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-deploy == 'true')))
 

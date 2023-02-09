@@ -1,7 +1,6 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Reflection;
-using BuildingBlocks.Core.Utils;
 using LinqKit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -14,46 +13,54 @@ public static class MinimalApiExtensions
 {
     public static IServiceCollection AddMinimalEndpoints(
         this WebApplicationBuilder applicationBuilder,
-        params Assembly[] scanAssemblies)
+        params Assembly[] scanAssemblies
+    )
     {
-        // Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
-        // load all referenced assemblies explicitly.
+        // Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it load all referenced assemblies explicitly.
+        // we also load assmblies that have some endpoints and known as a application part, because assemblies are lazy and maybe at the time of scanning, assmblies contain endpoints not visited yet.
         var assemblies = scanAssemblies.Any()
             ? scanAssemblies
-            : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly())
+            : ReflectionUtilities
+                .GetReferencedAssemblies(Assembly.GetCallingAssembly())
                 .Concat(ReflectionUtilities.GetApplicationPartAssemblies(Assembly.GetCallingAssembly()))
                 .Distinct()
                 .ToArray();
 
-        applicationBuilder.Services.Scan(scan => scan
-            .FromAssemblies(assemblies)
-            .AddClasses(classes => classes.AssignableTo(typeof(IMinimalEndpoint)))
-            .UsingRegistrationStrategy(RegistrationStrategy.Append)
-            .As<IMinimalEndpoint>()
-            .WithLifetime(ServiceLifetime.Scoped));
+        applicationBuilder.Services.Scan(
+            scan =>
+                scan.FromAssemblies(assemblies)
+                    .AddClasses(classes => classes.AssignableTo(typeof(IMinimalEndpoint)))
+                    .UsingRegistrationStrategy(RegistrationStrategy.Append)
+                    .As<IMinimalEndpoint>()
+                    .WithLifetime(ServiceLifetime.Scoped)
+        );
 
         return applicationBuilder.Services;
     }
 
     public static IServiceCollection AddMinimalEndpoints(
         this IServiceCollection services,
-        params Assembly[] scanAssemblies)
+        params Assembly[] scanAssemblies
+    )
     {
-        // Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
-        // load all referenced assemblies explicitly.
+        // Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it load all referenced assemblies explicitly.
+        // we also load assmblies that have some endpoints and known as a application part, because assemblies are lazy and maybe at the time of scanning, assmblies contain endpoints not visited yet.
         var assemblies = scanAssemblies.Any()
             ? scanAssemblies
-            : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly())
+            : ReflectionUtilities
+                .GetReferencedAssemblies(Assembly.GetCallingAssembly())
                 .Concat(ReflectionUtilities.GetApplicationPartAssemblies(Assembly.GetCallingAssembly()))
                 .Distinct()
                 .ToArray();
 
-        services.Scan(scan => scan
-            .FromAssemblies(assemblies)
-            .AddClasses(classes => classes.AssignableTo(typeof(IMinimalEndpoint)))
-            .UsingRegistrationStrategy(RegistrationStrategy.Append)
-            .As<IMinimalEndpoint>()
-            .WithLifetime(ServiceLifetime.Scoped));
+        services.Scan(
+            scan =>
+                scan.FromAssemblies(assemblies)
+                    .AddClasses(classes => classes.AssignableTo(typeof(IMinimalEndpoint)))
+                    .UsingRegistrationStrategy(RegistrationStrategy.Append)
+                    .As<IMinimalEndpoint>()
+                    .WithLifetime(ServiceLifetime.Scoped)
+        );
 
         return services;
     }
@@ -69,24 +76,40 @@ public static class MinimalApiExtensions
 
         var endpoints = scope.ServiceProvider.GetServices<IMinimalEndpoint>().ToList();
 
-        var versionGroups =
-            endpoints.GroupBy(x => x.GroupName)
-                .ToDictionary(x => x.Key, c => builder.MapApiGroup(c.Key).WithTags(c.Key));
+        var versionGroups = endpoints
+            .GroupBy(x => x.GroupName)
+            .ToDictionary(x => x.Key, c => builder.MapApiGroup(c.Key).WithTags(c.Key));
 
-        var versionSubGroups = endpoints.GroupBy(x => new {x.GroupName, x.PrefixRoute, x.Version})
+        var versionSubGroups = endpoints
+            .GroupBy(
+                x =>
+                    new
+                    {
+                        x.GroupName,
+                        x.PrefixRoute,
+                        x.Version
+                    }
+            )
             .ToDictionary(
                 x => x.Key,
-                c => versionGroups[c.Key.GroupName].MapGroup(c.Key.PrefixRoute).HasApiVersion(c.Key.Version));
+                c => versionGroups[c.Key.GroupName].MapGroup(c.Key.PrefixRoute).HasApiVersion(c.Key.Version)
+            );
 
-        var endpointVersions = endpoints.GroupBy(x => new {x.GroupName, x.Version}).Select(x => new
-        {
-            Verion = x.Key.Version, x.Key.GroupName, Endpoints = x.Select(v => v)
-        });
+        var endpointVersions = endpoints
+            .GroupBy(x => new { x.GroupName, x.Version })
+            .Select(
+                x =>
+                    new
+                    {
+                        Verion = x.Key.Version,
+                        x.Key.GroupName,
+                        Endpoints = x.Select(v => v)
+                    }
+            );
 
         foreach (var endpointVersion in endpointVersions)
         {
-            var versionGroup = versionSubGroups
-                .FirstOrDefault(x => x.Key.GroupName == endpointVersion.GroupName).Value;
+            var versionGroup = versionSubGroups.FirstOrDefault(x => x.Key.GroupName == endpointVersion.GroupName).Value;
 
             endpointVersion.Endpoints.ForEach(ep =>
             {

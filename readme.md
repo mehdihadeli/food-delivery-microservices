@@ -62,7 +62,7 @@ Thanks a bunch for supporting me!
 ## Plan
 > This project is in progress, New features will be added over time.
 
-| Feature          | Architecture Pattern                  | Status | CI                                                                                                                                                                                                                                                     |
+| Feature          | Architecture Pattern                  | Status | CI-CD                                                                                                                                                                                                                                                  |
 |------------------|---------------------------------------| ------ |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | API Gateway      | Microsoft YARP Reverse Proxy          | Completed ✔️ | -                                                                                                                                                                                                                                                      |
 | Identity Service | Data Centeric Architecture (CRUD)     | Completed ✔️ | [![Identity-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml)           |
@@ -108,26 +108,82 @@ In this app I use [Conventional Commit](https://www.conventionalcommits.org/en/)
 
 Here I configured a husky hook for conventional commits:
 
-1. Install NPM: `npm init`;
-2. Install Husky: `npm install husky --save-dev`
-3. Add `prepare` command for installing and activating `husky hooks` in the package.json file: `npm pkg set scripts.prepare="husky install"`
-4. Install CommitLint: `npm install --save-dev @commitlint/config-conventional @commitlint/cli`
-5. Create the `commitlint.config.js` file with this content: `module.exports = { extends: '@commitlint/config-conventional']};`
-6. Create the Husky folder: `mkdir .husky`
-7. Link Husky and CommitLint: `npx husky add .husky/commit-msg 'npx --no -- commitlint --edit ${1}'`
-8. Activate and installing all husky hooks with this command: `npm run prepare`
+1. Install NPM:
+```bash
+npm init
+```
 
+2. Install Husky:
+```bash
+npm install husky --save-dev
+```
+3. Add `prepare` command for installing and activating `husky hooks` in the package.json file:
+```bash
+npm pkg set scripts.prepare="husky install"
+```
+
+4. Install CommitLint:
+```bash
+npm install --save-dev @commitlint/config-conventional @commitlint/cli
+```
+
+5. Create the `commitlint.config.js` file with this content:
+```js
+module.exports = { extends: '@commitlint/config-conventional']};
+```
+
+6. Create the Husky folder:
+```bash
+mkdir .husky
+```
+
+7. Link Husky and CommitLint:
+```bash
+npx husky add .husky/commit-msg 'npx --no -- commitlint --edit ${1}'
+```
+
+8. Activate and installing all husky hooks with this command:
+```bash
+npm run prepare
+```
 
 ### Formatting
 For formatting I use [belav/csharpier](https://github.com/belav/csharpier) but you can also use `dotnet format`, you can integrate it with your [prefered IDE](https://csharpier.com/docs/Editors).
 
 Here I configured a husky hook for formatting:
-1. Install NPM: `npm init`;
-2. Install Husky: `npm install husky --save-dev`
-3. Add `prepare` command for installing and activating `husky hooks` in the package.json file: `npm pkg set scripts.prepare="husky install"`
-4. Create the Husky folder: `mkdir .husky`
-5. Link Husky and formatting tools: `npx husky add .husky/pre-commit "dotnet format"` or `npx husky add .husky/pre-commit "dotnet csharpier ."`
-6. Activate and installing all husky hooks with this command: `npm run prepare`
+
+1. Install NPM:
+```bash
+npm init
+```
+
+2. Install Husky:
+```bash
+npm install husky --save-dev
+```
+
+3. Add `prepare` command for installing and activating `husky hooks` in the package.json file:
+```bash
+npm pkg set scripts.prepare="husky install"
+```
+
+4. Create the Husky folder:
+```bash
+mkdir .husky
+```
+
+5. Link Husky and formatting tools:
+```bash
+npx husky add .husky/pre-commit "dotnet format"
+
+# Or using csharpier
+npx husky add .husky/pre-commit "dotnet csharpier ."
+```
+
+7. Activate and installing all husky hooks with this command:
+```bash
+npm run prepare
+```
 
 ### Analizers
 For roslyn analizers I use serveral analyzers and config the in `.editorconfig` file:

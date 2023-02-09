@@ -178,7 +178,7 @@ jobs:
 
     # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
     # we should not filter on head commit message like 'build', 'test' because it is possible it beside of this job it trigger also 'call-build-test-push' job when we commit on main branches (just filter on branches)
-    if: (github.event_name == 'pull_request' || (contains(fromJson('["feat/", "fix/", "test/", "build/", "ci/", "release/"]'), github.ref_name)) || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish == 'false'))
+    if: (github.event_name == 'pull_request' || !contains(fromJson('["develop", "main", "beta", "preview"]'), github.ref_name) || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish == 'false'))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/

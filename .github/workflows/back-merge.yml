@@ -117,8 +117,8 @@ jobs:
               git fetch origin main:main
               git reset --hard main
           elif [ $BRANCH = 'develop' ]; then
-              echo "back-merge develop branch to all features"
               ./back-merge.sh  ${{ github.ref_name }}
+              echo "back-merge develop branch to all features"
           elif [ $BRANCH = 'beta' ]; then
           echo "back-merge for beta branch"
               echo "...."

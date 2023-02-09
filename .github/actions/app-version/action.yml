@@ -100,6 +100,7 @@ runs:
       # https://github.com/semantic-release/semantic-release/issues/2703
       # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
       # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
+      # environment variable available to any 'subsequent steps' (not in the current step that is set) in a workflow job by defining or updating the environment variable and writing this to the GITHUB_ENV environment file
       run: |
         if [ -z "${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" ]; then
             if [ "${{ github.ref_name }}" = "develop" ]; then
@@ -114,16 +115,17 @@ runs:
             echo "latest tag for ${{ github.ref_name }} branch is: $LATEST_TAG"
             echo "APP_VERSION=$LATEST_TAG" >> "$GITHUB_ENV"
             echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
-            echo "app version is: $APP_VERSION"
+            echo "app version is: $LATEST_TAG"
         else
             echo "APP_VERSION=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_ENV"
             echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_OUTPUT"
-            echo "app version is: $APP_VERSION"
+            echo "app version is: $LATEST_TAG"
         fi
 
     - name: csproj version
       shell: bash
       if: success()
+      # our environment is available in this subsequent step
       run: |
         echo update app version to ${{ env.APP_VERSION }}
         ./update-version.sh "$APP_VERSION"

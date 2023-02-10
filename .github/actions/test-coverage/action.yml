@@ -96,6 +96,8 @@ runs:
         # get generated summary from `CodeCoverageSummary` step
         path: code-coverage-results.md
 
+    # https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/
+    # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary
     - name: Write to Job Summary
       shell: bash
       if: success()
@@ -108,21 +110,3 @@ runs:
       with:
         github-token: ${{ inputs.token }}
         path-to-lcov: "output/test-results/lcov.info"
-
-    # GitHub Api call permissions problem here
-    # https://github.com/dorny/test-reporter
-    # https://github.com/dorny/test-reporter/pull/174
-    # https://github.com/dorny/test-reporter/issues/168
-    - name: Test Results
-      uses: dorny/test-reporter@v1
-      id: test-report
-      if: always()
-      with:
-        name: ${{ inputs.service-name }} Test Reports
-        reporter: dotnet-trx
-        token: ${{ inputs.token }}
-        path: "**/test-results.trx"
-        ## https://github.com/dorny/test-reporter#recommended-setup-for-public-repositories
-        ## https://github.com/dorny/test-reporter/blob/0d9714ddc7ff86918ec725a527a3a069419d301a/src/utils/github-utils.ts#L44
-        ## artifact name to download trx test result if it is in seperated workflow with github rest call, if it is not in another workflow skip this
-        # artifact: "'

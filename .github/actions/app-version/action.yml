@@ -122,41 +122,6 @@ runs:
             echo "app version is: $LATEST_TAG"
         fi
 
-    - name: csproj version
-      shell: bash
-      if: success()
-      # our environment is available in this subsequent step
-      run: |
-        echo update app version to ${{ env.APP_VERSION }}
-        ./update-version.sh "$APP_VERSION"
-
-    - run: |
-        git pull origin ${{ github.ref_name }}
-      shell: bash
-
-      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
-      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md
-      # https://github.com/peter-evans/create-pull-request/issues/1608
-    - name: Create Update Version Pull Request
-      uses: peter-evans/create-pull-request@v4
-      if: success() && steps.semantic-version.outputs.semantic_nextRelease_version != ''
-      with:
-        author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-        commit-message: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
-        title: "chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]"
-        token: ${{ inputs.token }}
-        delete-branch: true
-        # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch
-        # branch-suffix: timestamp
-        assignees: mehdihadeli
-        reviewers: mehdihadeli
-        branch: upgrade-app-version-${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
-        labels: |
-          chore
-        # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
-        add-paths: |
-          *.Packages.props
-
       # Save version in the artifacts to use in CD process
     - name: Save Version Name
       if: success()
@@ -169,20 +134,3 @@ runs:
       with:
         name: ${{ inputs.service-name}}_version_artifacts
         path: version_name.txt
-
-#      # https://github.com/semantic-release/semantic-release/discussions/2557
-#      # https://github.com/semantic-release/github/issues/175
-#      # this needs a PAT with write permission without doing pull request
-#    - name: Commit Updated Application Version File
-#      uses: stefanzweifel/git-auto-commit-action@v4
-#      if: ${{ success() }}
-#      with:
-#        commit_message: 'chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]'
-#        file_pattern: '**/Directory.Packages.props'
-#        disable_globbing: true
-#        # https://github.com/stefanzweifel/git-auto-commit-action#usage
-#        commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com> # defaults to author of the commit that triggered the run
-#        commit_user_name: github-actions[bot] # defaults to "github-actions[bot]"
-#        commit_user_email: github-actions[bot]@users.noreply.github.com # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
-
-

@@ -107,6 +107,7 @@ runs:
         # only-summary: 'true'
         output-to: "step-summary"
         path: "**/test-results.trx"
+        # Set action as failed if test report contains any failed test
         fail-on-error: true
         ## https://github.com/dorny/test-reporter#recommended-setup-for-public-repositories
         ## https://github.com/dorny/test-reporter/blob/0d9714ddc7ff86918ec725a527a3a069419d301a/src/utils/github-utils.ts#L44
@@ -122,12 +123,15 @@ runs:
         check_name: ${{ inputs.service-name }} Test Result Report
         comment_mode: off
         github_token: ${{ inputs.token }}
+        # https://github.com/EnricoMi/publish-unit-test-result-action#configuration
+        # Configures the state of the created test result check run. With "test failures" it fails if any test fails or test errors occur
         fail_on: "test failures"
+        action_fail: true
 
     - name: Call Composite Action test-coverage
       uses: ./.github/actions/test-coverage
       # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
-      if: (steps.integration-test-step.outcome == "success" && steps.unit-test-step.outcome == "success" )
+      if: success()
       id: test-coverage-step
       with:
         # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory

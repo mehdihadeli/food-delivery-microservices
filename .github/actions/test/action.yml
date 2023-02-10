@@ -53,52 +53,85 @@ runs:
     # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
     # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md
     # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
-    - name: Run Unit Tests with No Restore
-      shell: bash
-      if: ${{ inputs.no-restore == 'true' }}
-      working-directory: ${{ inputs.tests-path }}
-      # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
-      run: |
-        for file in $(find . -name "*.csproj" -type f); do
-          echo "Testing $file"
-          dotnet test "$file" -c Release --no-restore -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx"
-        done
-
     - name: Run Unit Tests
       shell: bash
-      if: ${{ success() && inputs.no-restore == 'false' }}
+      id: unit-test-step
       working-directory: ${{ inputs.tests-path }}
       # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
+      # https://octopus.com/blog/githubactions-running-unit-tests
+      # we should not do 'no-build' here, because our tests not build in build phase (build composite action) and should build here
       run: |
         for file in $(find . -name "*.csproj" -type f); do
           echo "Testing $file"
-          dotnet test "$file" -c Release  -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx"
-        done
-
-    - name: Run Integration And EndToEnd Tests with No Restore
-      continue-on-error: false
-      if: ${{ success() && inputs.no-restore == 'true' }}
-      shell: bash
-      working-directory: ${{ inputs.tests-path }}
-      run: |
-        for file in $(find . -name "*.csproj" -type f); do
-          echo "Testing $file"
-          dotnet test "$file" -c Release --no-restore -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx"
+          if [ ${{ inputs.no-restore }} == 'true' ]; then
+             echo "run tests in no-restore mode"
+             dotnet test "$file" -c Release --no-restore -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+          else
+             echo "run tests in restore nuget mode"
+             dotnet test "$file" -c Release  -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+          fi
         done
 
     - name: Run Integration And EndToEnd Tests
-      continue-on-error: false
-      if: ${{ success() && inputs.no-restore == 'false' }}
       shell: bash
+      id: integration-test-step
       working-directory: ${{ inputs.tests-path }}
+      # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
+      # https://octopus.com/blog/githubactions-running-unit-tests
+      # we should not do 'no-build' here, because our tests not build in build phase (build composite action) and should build here
       run: |
         for file in $(find . -name "*.csproj" -type f); do
           echo "Testing $file"
-          dotnet test "$file" -c Release -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx"
+          if [ ${{ inputs.no-restore }} == 'true' ]; then
+              echo "run tests in no-restore mode"
+              dotnet test "$file" -c Release --no-restore -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+          else
+              echo "run tests in restore nuget mode"
+              echo "run tests in restore nuget mode" dotnet test "$file" -c Release -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+          fi
         done
+
+    # GitHub Api call permissions problem here
+    # https://github.com/dorny/test-reporter/issues/168
+    # https://octopus.com/blog/githubactions-running-unit-tests
+    # https://github.com/dorny/test-reporter/issues/67
+    # https://github.com/phoenix-actions/test-reporting/pull/21
+    - name: Test Results
+      uses: phoenix-actions/test-reporting@v10
+      id: test-report
+      if: always()
+      with:
+        name: ${{ inputs.service-name }} Test Reports
+        reporter: dotnet-trx
+        token: ${{ inputs.token }}
+        # only-summary: 'true'
+        output-to: "step-summary"
+        path: "**/test-results.trx"
+        # Set action as failed if test report contains any failed test
+        fail-on-error: true
+        ## https://github.com/dorny/test-reporter#recommended-setup-for-public-repositories
+        ## https://github.com/dorny/test-reporter/blob/0d9714ddc7ff86918ec725a527a3a069419d301a/src/utils/github-utils.ts#L44
+        ## artifact name to download trx test result if it is in seperated workflow with github rest call, if it is not in another workflow skip this
+        # artifact: "'
+
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: |
+          **/test-results.trx
+        check_name: ${{ inputs.service-name }} Test Result Report
+        comment_mode: off
+        github_token: ${{ inputs.token }}
+        # https://github.com/EnricoMi/publish-unit-test-result-action#configuration
+        # Configures the state of the created test result check run. With "test failures" it fails if any test fails or test errors occur
+        fail_on: "test failures"
+        action_fail: true
 
     - name: Call Composite Action test-coverage
       uses: ./.github/actions/test-coverage
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
+      if: success()
       id: test-coverage-step
       with:
         # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory

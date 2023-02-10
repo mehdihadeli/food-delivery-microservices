@@ -8,11 +8,10 @@
 
 💡 This application is not business oriented and my focus is mostly on technical part, I just want to implement a sample with using different technologies, software architecture design, principles and all the thing we need for creating a microservices app.
 
-🎯 This Application ported to `modular monolith` approach in [ecommerce-modular-monolith](https://github.com/mehdihadeli/ecommerce-modular-monolith) repository, we can choose best fit architecture for our projects based on production needs.
-
 > **Warning**
-> This is project in progress. I'm add new features over the time. You can check the [Release Notes](https://github.com/mehdihadeli/ecommerce-microservices/releases) and follow the progress on Twitter [@mehdi_hedli](https://twitter.com/shadcn) and Linkedin [mehdihadeli](https://www.linkedin.com/in/mehdihadeli/).
+> This project is in progress. I add new features over the time. You can check the [Release Notes](https://github.com/mehdihadeli/ecommerce-microservices/releases) and follow the progress on Twitter [@mehdi_hedli](https://twitter.com/shadcn) and Linkedin [mehdihadeli](https://www.linkedin.com/in/mehdihadeli/).
 
+🎯 This Application ported to `modular monolith` approach in [ecommerce-modular-monolith](https://github.com/mehdihadeli/ecommerce-modular-monolith) repository, we can choose best fit architecture for our projects based on production needs.
 
 # ⭐ Support
 If you like feel free to ⭐ this repository, It helps out :)

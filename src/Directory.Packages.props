@@ -44,7 +44,7 @@
     <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.0.64" />
     <PackageVersion Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6" />
     <PackageVersion Include="Asp.Versioning.Http" Version="7.0.0-preview.2" />
-    <PackageVersion Include="Asp.Versioning.Mvc" Version="7.0.0-preview.2" />
+    <PackageVersion Include="Asp.Versioning.Mvc" Version="7.0.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.0-preview.2" />
     <PackageVersion Include="Asp.Versioning.Abstractions" Version="7.0.0" />
     <PackageVersion Include="Microsoft.NET.Build.Containers" Version="0.2.7" />

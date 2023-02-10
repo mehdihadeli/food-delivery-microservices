@@ -128,12 +128,11 @@ jobs:
     outputs:
       environment-name: ${{ steps.environment-name-step.outputs.environment-name }}
 
-    # Skipping workflow runs for some commits types
     # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+    # we should not filter on head commit message types like 'chore', 'docs' because it is possible it our latest SHA commit in integration branches like develop and main be these types and it will skips whole of our trigger
     if: |
-      !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style')) &&
        github.actor != 'dependabot[bot]'
 
     steps:
@@ -181,7 +180,9 @@ jobs:
 
     # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
     # we should not filter on head commit message like 'build', 'test' because it is possible it beside of this job it trigger also 'call-build-test-push' job when we commit on main branches (just filter on branches)
-    if: (github.event_name == 'pull_request' || !contains(fromJson('["develop", "main", "beta", "preview"]'), github.ref_name) || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish == 'false'))
+    if: |
+      !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style')) &&
+      (github.event_name == 'pull_request' || !contains(fromJson('["develop", "main", "beta", "preview"]'), github.ref_name) || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish == 'false'))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/

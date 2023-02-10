@@ -7,7 +7,9 @@ inputs:
   # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
   token:
     description: A Github PAT
-    required: true
+    required: false
+    # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#about-the-github_token-secret
+    default: ${{ github.token }}
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
 runs:
@@ -32,6 +34,7 @@ runs:
         # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
         # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
         fetch-depth: 0
+        token: ${{ inputs.token }}
         # set ref to 'github.ref' works correctly with both pull_requests event and push event and this is default behavior checkout action when we don't use ref attribute
         ref: ${{ github.ref }}
     - run: |

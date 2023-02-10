@@ -94,6 +94,12 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
       - name: Call Composite Action build-test
+        if: success()
+        uses: ./.github/actions/formatting
+        with:
+          formatting-tool: csharpier
+
+      - name: Call Composite Action build-test
         uses: ./.github/actions/build-test
         if: success()
         id: build-test-step

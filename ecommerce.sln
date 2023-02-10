@@ -286,6 +286,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".husky", ".husky", "{FCA71BE1-9420-4B96-B297-A2170400E061}"
 	ProjectSection(SolutionItems) = preProject
 		.husky\commit-msg = .husky\commit-msg
+		.husky\pre-commit = .husky\pre-commit
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{485C9283-A8D1-4B48-B968-9DABAA274EBE}"
@@ -293,6 +294,17 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Shared", "tests\Shared\Tests.Shared\Tests.Shared.csproj", "{86D7C387-FD24-4F6A-828C-D2AF6C16FE7B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Integration.MassTransit.IntegrationTests", "tests\BuildingBlocks\MassTransit\BuildingBlocks.Integration.MassTransit.IntegrationTests\BuildingBlocks.Integration.MassTransit.IntegrationTests.csproj", "{33C38A19-362D-4BEF-AE4B-9BCD677C610C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_", "_", "{99F91770-A9FF-43E8-B210-AECD8E28886E}"
+	ProjectSection(SolutionItems) = preProject
+		.husky\_\.gitignore = .husky\_\.gitignore
+		.husky\_\husky.sh = .husky\_\husky.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "formatting", "formatting", "{7DE5D0ED-9B20-4007-8E8C-5FB30E1C8C2E}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\formatting\action.yml = .github\actions\formatting\action.yml
+	EndProjectSection
 EndProject
 
 Global
@@ -388,6 +400,8 @@ Global
 		{485C9283-A8D1-4B48-B968-9DABAA274EBE} = {22F07A80-31B8-4196-8DCD-CB6E3F888BEA}
 		{86D7C387-FD24-4F6A-828C-D2AF6C16FE7B} = {485C9283-A8D1-4B48-B968-9DABAA274EBE}
 		{33C38A19-362D-4BEF-AE4B-9BCD677C610C} = {85ED6805-E7DC-43DB-9306-72A9CC5B2776}
+		{99F91770-A9FF-43E8-B210-AECD8E28886E} = {FCA71BE1-9420-4B96-B297-A2170400E061}
+		{7DE5D0ED-9B20-4007-8E8C-5FB30E1C8C2E} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

@@ -162,17 +162,30 @@ npm init
 npm install husky --save-dev
 ```
 
-3. Add `prepare` command for installing and activating `husky hooks` in the package.json file:
+2. Install Husky:
 ```bash
-npm pkg set scripts.prepare="husky install"
+npm install husky --save-dev
 ```
 
-4. Create the Husky folder:
+3. Install manifest file with `dotnet new tool-manifest` because it doesn't exist at first time and then install our required packages as dependency with [dotnet tool install](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-install), that will add to [dotnet-tools.json](.config/dotnet-tools.json) file in a `.config` directory:
+```bash
+dotnet new tool-manifest
+
+dotnet tool install csharpier
+dotnet tool install dotnet-format
+```
+
+4. Add `prepare` command for installing and activating `husky hooks` and `restoring` our installed [dotnet tools](.config/dotnet-tools.json) in the previous step to the [package.json](package.json) file:
+```bash
+npm pkg set scripts.prepare="husky install && dotnet tool restore"
+```
+
+5. Create the Husky folder:
 ```bash
 mkdir .husky
 ```
 
-5. Link Husky and formatting tools:
+6. Link Husky and formatting tools:
 ```bash
 npx husky add .husky/pre-commit "dotnet format"
 

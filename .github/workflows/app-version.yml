@@ -62,8 +62,8 @@ jobs:
         if: success()
         with:
           author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-          commit-message: "chore(release): ⬆️ upgrading application version to: $APP_VERSION [skip ci]"
-          title: "chore(release): ⬆️ upgrading application version to: $APP_VERSION [skip ci]"
+          commit-message: "chore(release): ⬆️ upgrading application version to: ${{ env.APP_VERSION }} [skip ci]"
+          title: "chore(release): ⬆️ upgrading application version to: ${{ env.APP_VERSION }} [skip ci]"
           token: ${{ secrets.GITHUB_TOKEN }}
           delete-branch: true
           # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch
@@ -121,8 +121,8 @@ jobs:
         if: success()
         with:
           author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-          commit-message: "chore(release): ⬆️ upgrading application version to: $APP_VERSION [skip ci]"
-          title: "chore(release): ⬆️ upgrading application version to: $APP_VERSION [skip ci]"
+          commit-message: "chore(release): ⬆️ upgrading application version to: ${{ env.APP_VERSION }} [skip ci]"
+          title: "chore(release): ⬆️ upgrading application version to: ${{ env.APP_VERSION }} [skip ci]"
           token: ${{ secrets.GITHUB_TOKEN }}
           delete-branch: true
           # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch

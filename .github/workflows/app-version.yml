@@ -38,7 +38,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Set Application Version
+      - name: Application Version
         id: app-version-step
         shell: bash
         if: success()
@@ -52,6 +52,7 @@ jobs:
             LATEST_TAG=$(git describe --abbrev=0 --tags --exclude "*dev*" --exclude "*beta*" --exclude "*preview*" --exclude "*ops*" | sed 's/^v//')
             echo "latest tag for main branch is: $LATEST_TAG"
             echo "APP_VERSION=$LATEST_TAG" >> "$GITHUB_ENV"
+            echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
             ./update-version.sh "$LATEST_TAG"
 
       # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
@@ -62,8 +63,8 @@ jobs:
         if: success()
         with:
           author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-          commit-message: "chore(release): ⬆️ upgrading application version to: ${{ env.APP_VERSION }} [skip ci]"
-          title: "chore(release): ⬆️ upgrading application version to: ${{ env.APP_VERSION }} [skip ci]"
+          commit-message: "chore(release): ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
+          title: "chore(release): ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
           token: ${{ secrets.GITHUB_TOKEN }}
           delete-branch: true
           # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch
@@ -97,7 +98,7 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
 
-      - name: Set Application Version
+      - name: Application Version
         id: app-version-step
         shell: bash
         if: success()
@@ -111,6 +112,7 @@ jobs:
           LATEST_TAG=$(git describe --abbrev=0 --tags --match "*dev*" | sed 's/^v//')
           echo "latest tag for develop branch is: $LATEST_TAG"
           echo "APP_VERSION=$LATEST_TAG" >> "$GITHUB_ENV"
+          echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
           ./update-version.sh "$LATEST_TAG"
 
       # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
@@ -121,8 +123,8 @@ jobs:
         if: success()
         with:
           author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-          commit-message: "chore(release): ⬆️ upgrading application version to: ${{ env.APP_VERSION }} [skip ci]"
-          title: "chore(release): ⬆️ upgrading application version to: ${{ env.APP_VERSION }} [skip ci]"
+          commit-message: "chore(release): ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
+          title: "chore(release): ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
           token: ${{ secrets.GITHUB_TOKEN }}
           delete-branch: true
           # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch

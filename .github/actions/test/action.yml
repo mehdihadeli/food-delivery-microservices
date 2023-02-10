@@ -97,7 +97,7 @@ runs:
     # https://github.com/dorny/test-reporter/issues/67
     # https://github.com/phoenix-actions/test-reporting/pull/21
     - name: Test Results
-      uses: phoenix-actions/test-reporting
+      uses: phoenix-actions/test-reporting@v10
       id: test-report
       if: always()
       with:

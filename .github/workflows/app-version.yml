@@ -24,6 +24,7 @@ jobs:
 
     permissions:
       pull-requests: write # app-version pull request
+      contents: write
 
     steps:
       - name: Check out code
@@ -81,6 +82,7 @@ jobs:
 
     permissions:
       pull-requests: write # app-version pull request
+      contents: write
 
     steps:
       - name: Check out code

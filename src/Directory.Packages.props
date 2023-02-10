@@ -163,7 +163,7 @@
     <PackageVersion Include="MinimalApis.Extensions" Version="0.10.1" />
     <PackageVersion Include="NetFabric.Hyperlinq.Analyzer" Version="2.0.4" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageVersion Include="Scrutor" Version="4.1.0" />
+    <PackageVersion Include="Scrutor" Version="4.2.1" />
     <PackageVersion Include="SendGrid" Version="9.25.3" />
     <PackageVersion Include="Spectre.Console" Version="0.45.0" />
     <PackageVersion Include="SqlKata" Version="2.4.0" />

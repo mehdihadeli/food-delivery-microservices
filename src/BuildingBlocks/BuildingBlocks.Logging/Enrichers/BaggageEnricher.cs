@@ -6,9 +6,7 @@ namespace BuildingBlocks.Logging;
 
 public class BaggageEnricher : ILogEventEnricher
 {
-    public void Enrich(
-        LogEvent logEvent,
-        ILogEventPropertyFactory propertyFactory)
+    public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
     {
         if (Activity.Current == null)
             return;

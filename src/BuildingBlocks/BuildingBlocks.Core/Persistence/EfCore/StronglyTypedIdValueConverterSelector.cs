@@ -13,9 +13,7 @@ public class StronglyTypedIdValueConverterSelector<TId> : ValueConverterSelector
         new();
 
     public StronglyTypedIdValueConverterSelector(ValueConverterSelectorDependencies dependencies)
-        : base(dependencies)
-    {
-    }
+        : base(dependencies) { }
 
     public override IEnumerable<ValueConverterInfo> Select(Type? modelClrType, Type? providerClrType = null)
     {
@@ -34,29 +32,40 @@ public class StronglyTypedIdValueConverterSelector<TId> : ValueConverterSelector
             var isEntityTypedIdValue = typeof(EntityId<TId>).IsAssignableFrom(underlyingModelType);
             if (isAggregateTypedIdValue)
             {
-                var converterType = typeof(AggregateIdValueConverter<,>).MakeGenericType(underlyingModelType, typeof(TId));
+                var converterType = typeof(AggregateIdValueConverter<,>).MakeGenericType(
+                    underlyingModelType,
+                    typeof(TId)
+                );
 
-                yield return _converters.GetOrAdd((underlyingModelType, typeof(TId)), _ =>
-                {
-                    return new ValueConverterInfo(
-                        modelClrType: modelClrType,
-                        providerClrType: typeof(TId),
-                        factory: valueConverterInfo =>
-                            (ValueConverter)Activator.CreateInstance(converterType, valueConverterInfo.MappingHints));
-                });
+                yield return _converters.GetOrAdd(
+                    (underlyingModelType, typeof(TId)),
+                    _ =>
+                    {
+                        return new ValueConverterInfo(
+                            modelClrType: modelClrType,
+                            providerClrType: typeof(TId),
+                            factory: valueConverterInfo =>
+                                (ValueConverter)Activator.CreateInstance(converterType, valueConverterInfo.MappingHints)
+                        );
+                    }
+                );
             }
             else if (isEntityTypedIdValue)
             {
                 var converterType = typeof(EntityIdValurConverter<,>).MakeGenericType(underlyingModelType, typeof(TId));
 
-                yield return _converters.GetOrAdd((underlyingModelType, typeof(TId)), _ =>
-                {
-                    return new ValueConverterInfo(
-                        modelClrType: modelClrType,
-                        providerClrType: typeof(TId),
-                        factory: valueConverterInfo =>
-                            (ValueConverter)Activator.CreateInstance(converterType, valueConverterInfo.MappingHints));
-                });
+                yield return _converters.GetOrAdd(
+                    (underlyingModelType, typeof(TId)),
+                    _ =>
+                    {
+                        return new ValueConverterInfo(
+                            modelClrType: modelClrType,
+                            providerClrType: typeof(TId),
+                            factory: valueConverterInfo =>
+                                (ValueConverter)Activator.CreateInstance(converterType, valueConverterInfo.MappingHints)
+                        );
+                    }
+                );
             }
         }
     }

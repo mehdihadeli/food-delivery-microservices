@@ -6,12 +6,10 @@ namespace BuildingBlocks.Core.Domain.ValueObjects;
 public record Money
 {
     // EF
-    private Money()
-    {
-    }
+    private Money() { }
 
     public decimal Value { get; private set; }
-    public string Currency { get; private set;} = default!;
+    public string Currency { get; private set; } = default!;
 
     public static Money Of(decimal value, string currency)
     {
@@ -19,7 +17,7 @@ public record Money
         Guard.Against.NegativeOrZero(value, nameof(value));
         Guard.Against.NullOrWhiteSpace(currency, nameof(currency));
 
-        return new Money {Currency = currency, Value = value};
+        return new Money { Currency = currency, Value = value };
     }
 
     public static Money operator *(int left, Money right)

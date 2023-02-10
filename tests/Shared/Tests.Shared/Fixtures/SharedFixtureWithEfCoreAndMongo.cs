@@ -7,9 +7,8 @@ using Xunit.Sdk;
 
 namespace Tests.Shared.Fixtures;
 
-public class
-    SharedFixtureWithEfCoreAndMongo<TEntryPoint, TEfCoreDbContext, TMongoDbContext> : SharedFixtureWithEfCore<
-        TEntryPoint, TEfCoreDbContext>
+public class SharedFixtureWithEfCoreAndMongo<TEntryPoint, TEfCoreDbContext, TMongoDbContext>
+    : SharedFixtureWithEfCore<TEntryPoint, TEfCoreDbContext>
     where TEfCoreDbContext : DbContext
     where TMongoDbContext : MongoDbContext
     where TEntryPoint : class
@@ -26,25 +25,29 @@ public class
         return await ExecuteScopeAsync(sp => action(scope.ServiceProvider, sp.GetRequiredService<TMongoDbContext>()));
     }
 
-    public Task ExecuteMongoDbContextAsync(Func<TMongoDbContext, Task> action)
-        => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TMongoDbContext>()));
+    public Task ExecuteMongoDbContextAsync(Func<TMongoDbContext, Task> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetRequiredService<TMongoDbContext>()));
 
-    public Task ExecuteMongoDbContextAsync(Func<TMongoDbContext, ICommandProcessor, Task> action)
-        => ExecuteScopeAsync(sp =>
-            action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<ICommandProcessor>()));
+    public Task ExecuteMongoDbContextAsync(Func<TMongoDbContext, ICommandProcessor, Task> action) =>
+        ExecuteScopeAsync(
+            sp => action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<ICommandProcessor>())
+        );
 
-    public Task<T> ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, ICommandProcessor, Task<T>> action)
-        => ExecuteScopeAsync(sp =>
-            action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<ICommandProcessor>()));
+    public Task<T> ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, ICommandProcessor, Task<T>> action) =>
+        ExecuteScopeAsync(
+            sp => action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<ICommandProcessor>())
+        );
 
-    public Task ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, IQueryProcessor, Task<T>> action)
-        => ExecuteScopeAsync(sp =>
-            action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<IQueryProcessor>()));
+    public Task ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, IQueryProcessor, Task<T>> action) =>
+        ExecuteScopeAsync(
+            sp => action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<IQueryProcessor>())
+        );
 
-    public Task<T> ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, Task<T>> action)
-        => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TMongoDbContext>()));
+    public Task<T> ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, Task<T>> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetRequiredService<TMongoDbContext>()));
 
-    public async Task InsertMongoDbContextAsync<T>(string collectionName, params T[] entities) where T : class
+    public async Task InsertMongoDbContextAsync<T>(string collectionName, params T[] entities)
+        where T : class
     {
         await ExecuteMongoDbContextAsync(async db =>
         {
@@ -52,7 +55,8 @@ public class
         });
     }
 
-    public SharedFixtureWithEfCoreAndMongo(IMessageSink messageSink) : base(messageSink)
+    public SharedFixtureWithEfCoreAndMongo(IMessageSink messageSink)
+        : base(messageSink)
     {
         messageSink.OnMessage(new DiagnosticMessage("Constructing SharedFixtureWithEfCoreAndMongo ..."));
     }

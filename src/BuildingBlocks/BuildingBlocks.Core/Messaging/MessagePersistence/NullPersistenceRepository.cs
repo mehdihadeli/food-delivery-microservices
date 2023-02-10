@@ -27,7 +27,8 @@ public class NullPersistenceRepository : IMessagePersistenceRepository
 
     public Task<IReadOnlyList<StoreMessage>> GetByFilterAsync(
         Expression<Func<StoreMessage, bool>> predicate,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         return new Task<IReadOnlyList<StoreMessage>>(null);
     }

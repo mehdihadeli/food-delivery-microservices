@@ -14,7 +14,8 @@ public record RestockSubscriptionCreated(RestockSubscription RestockSubscription
 {
     public CreateMongoRestockSubscriptionReadModels ToCreateMongoRestockSubscriptionReadModels(
         long customerId,
-        string customerName)
+        string customerName
+    )
     {
         return new CreateMongoRestockSubscriptionReadModels(
             RestockSubscription.Id,
@@ -25,7 +26,8 @@ public record RestockSubscriptionCreated(RestockSubscription RestockSubscription
             RestockSubscription.Email.Value,
             RestockSubscription.Created,
             RestockSubscription.Processed,
-            RestockSubscription.ProcessedTime);
+            RestockSubscription.ProcessedTime
+        );
     }
 }
 
@@ -46,12 +48,12 @@ internal class RestockSubscriptionCreatedHandler : IDomainEventHandler<RestockSu
 
         var customer = await _customersDbContext.FindCustomerByIdAsync(notification.RestockSubscription.CustomerId);
 
-        Guard.Against.NotFound(
-            customer,
-            new CustomerNotFoundException(notification.RestockSubscription.CustomerId));
+        Guard.Against.NotFound(customer, new CustomerNotFoundException(notification.RestockSubscription.CustomerId));
 
-        var mongoReadCommand =
-            notification.ToCreateMongoRestockSubscriptionReadModels(customer!.Id, customer.Name.FullName);
+        var mongoReadCommand = notification.ToCreateMongoRestockSubscriptionReadModels(
+            customer!.Id,
+            customer.Name.FullName
+        );
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         // Schedule multiple read sides to execute here

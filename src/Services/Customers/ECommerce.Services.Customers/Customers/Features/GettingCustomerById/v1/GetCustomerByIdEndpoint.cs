@@ -15,13 +15,19 @@ public class GetCustomerByIdEndpointEndpoint : IQueryMinimalEndpoint<Guid>
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
-        return builder.MapGet("/{id:guid}", HandleAsync)
+        return builder
+            .MapGet("/{id:guid}", HandleAsync)
             // .RequireAuthorization()
             .Produces<GetCustomerByIdResponse>(StatusCodes.Status200OK)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
-            .WithMetadata(new SwaggerOperationAttribute("Getting a Customer By InternalCommandId", "Getting a Customer By InternalCommandId"))
+            .WithMetadata(
+                new SwaggerOperationAttribute(
+                    "Getting a Customer By InternalCommandId",
+                    "Getting a Customer By InternalCommandId"
+                )
+            )
             .WithName("GetCustomerById")
             .WithDisplayName("Get Customer By InternalCommandId.");
     }
@@ -31,7 +37,8 @@ public class GetCustomerByIdEndpointEndpoint : IQueryMinimalEndpoint<Guid>
         Guid id,
         IQueryProcessor queryProcessor,
         IMapper mapper,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         Guard.Against.Null(id, nameof(id));
 

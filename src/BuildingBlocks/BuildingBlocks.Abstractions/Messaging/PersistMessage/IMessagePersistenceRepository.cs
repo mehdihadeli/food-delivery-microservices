@@ -7,16 +7,14 @@ public interface IMessagePersistenceRepository
     Task AddAsync(StoreMessage storeMessage, CancellationToken cancellationToken = default);
     Task UpdateAsync(StoreMessage storeMessage, CancellationToken cancellationToken = default);
 
-    Task ChangeStateAsync(
-        Guid messageId,
-        MessageStatus status,
-        CancellationToken cancellationToken = default);
+    Task ChangeStateAsync(Guid messageId, MessageStatus status, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<StoreMessage>> GetAllAsync(CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<StoreMessage>> GetByFilterAsync(
         Expression<Func<StoreMessage, bool>> predicate,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     Task<StoreMessage?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 

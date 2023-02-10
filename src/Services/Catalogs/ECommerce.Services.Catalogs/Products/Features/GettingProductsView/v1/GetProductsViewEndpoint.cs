@@ -9,7 +9,8 @@ public static class GetProductsViewEndpoint
 {
     internal static RouteHandlerBuilder MapGetProductsViewEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/products-view/{page}/{pageSize}", GetProductsView)
+        return endpoints
+            .MapGet("/products-view/{page}/{pageSize}", GetProductsView)
             // .RequireAuthorization()
             .Produces<GetProductsViewResponse>(StatusCodes.Status200OK)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
@@ -23,13 +24,15 @@ public static class GetProductsViewEndpoint
         IQueryProcessor queryProcessor,
         CancellationToken cancellationToken,
         int page = 1,
-        int pageSize = 20)
+        int pageSize = 20
+    )
     {
         using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(GetProductsViewEndpoint)))
         {
             var result = await queryProcessor.SendAsync(
-                new GetProductsView {Page = page, PageSize = pageSize},
-                cancellationToken);
+                new GetProductsView { Page = page, PageSize = pageSize },
+                cancellationToken
+            );
 
             return Results.Ok(result);
         }

@@ -12,12 +12,17 @@ public static class EventsExtensions
 {
     public static IEnumerable<Type> GetHandledIntegrationEventTypes(this Assembly[] assemblies)
     {
-        var messageHandlerTypes = typeof(IIntegrationEventHandler<>).GetAllTypesImplementingOpenGenericInterface(assemblies)
+        var messageHandlerTypes = typeof(IIntegrationEventHandler<>)
+            .GetAllTypesImplementingOpenGenericInterface(assemblies)
             .ToList();
 
-        var inheritsTypes = messageHandlerTypes.SelectMany(x => x.GetInterfaces())
-            .Where(x => x.GetInterfaces().Any(i => i.IsGenericType) &&
-                        x.GetGenericTypeDefinition() == typeof(IIntegrationEventHandler<>));
+        var inheritsTypes = messageHandlerTypes
+            .SelectMany(x => x.GetInterfaces())
+            .Where(
+                x =>
+                    x.GetInterfaces().Any(i => i.IsGenericType)
+                    && x.GetGenericTypeDefinition() == typeof(IIntegrationEventHandler<>)
+            );
 
         foreach (var inheritsType in inheritsTypes)
         {
@@ -31,12 +36,17 @@ public static class EventsExtensions
 
     public static IEnumerable<Type> GetHandledDomainNotificationEventTypes(this Assembly[] assemblies)
     {
-        var messageHandlerTypes = typeof(IDomainNotificationEventHandler<>).GetAllTypesImplementingOpenGenericInterface(assemblies)
+        var messageHandlerTypes = typeof(IDomainNotificationEventHandler<>)
+            .GetAllTypesImplementingOpenGenericInterface(assemblies)
             .ToList();
 
-        var inheritsTypes = messageHandlerTypes.SelectMany(x => x.GetInterfaces())
-            .Where(x => x.GetInterfaces().Any(i => i.IsGenericType) &&
-                        x.GetGenericTypeDefinition() == typeof(IDomainNotificationEventHandler<>));
+        var inheritsTypes = messageHandlerTypes
+            .SelectMany(x => x.GetInterfaces())
+            .Where(
+                x =>
+                    x.GetInterfaces().Any(i => i.IsGenericType)
+                    && x.GetGenericTypeDefinition() == typeof(IDomainNotificationEventHandler<>)
+            );
 
         foreach (var inheritsType in inheritsTypes)
         {
@@ -50,12 +60,17 @@ public static class EventsExtensions
 
     public static IEnumerable<Type> GetHandledDomainEventTypes(this Assembly[] assemblies)
     {
-        var messageHandlerTypes = typeof(IDomainEventHandler<>).GetAllTypesImplementingOpenGenericInterface(assemblies)
+        var messageHandlerTypes = typeof(IDomainEventHandler<>)
+            .GetAllTypesImplementingOpenGenericInterface(assemblies)
             .ToList();
 
-        var inheritsTypes = messageHandlerTypes.SelectMany(x => x.GetInterfaces())
-            .Where(x => x.GetInterfaces().Any(i => i.IsGenericType) &&
-                        x.GetGenericTypeDefinition() == typeof(IDomainEventHandler<>));
+        var inheritsTypes = messageHandlerTypes
+            .SelectMany(x => x.GetInterfaces())
+            .Where(
+                x =>
+                    x.GetInterfaces().Any(i => i.IsGenericType)
+                    && x.GetGenericTypeDefinition() == typeof(IDomainEventHandler<>)
+            );
 
         foreach (var inheritsType in inheritsTypes)
         {
@@ -68,16 +83,19 @@ public static class EventsExtensions
     }
 
     public static IEnumerable<IDomainNotificationEvent> GetWrappedDomainNotificationEvents(
-        this IEnumerable<IDomainEvent> domainEvents)
+        this IEnumerable<IDomainEvent> domainEvents
+    )
     {
-        foreach (IDomainEvent domainEvent in domainEvents.Where(x =>
-                     typeof(IHaveNotificationEvent).IsAssignableFrom(x.GetType())))
+        foreach (
+            IDomainEvent domainEvent in domainEvents.Where(
+                x => typeof(IHaveNotificationEvent).IsAssignableFrom(x.GetType())
+            )
+        )
         {
-            Type genericType = typeof(DomainNotificationEventWrapper<>)
-                .MakeGenericType(domainEvent.GetType());
+            Type genericType = typeof(DomainNotificationEventWrapper<>).MakeGenericType(domainEvent.GetType());
 
-            IDomainNotificationEvent? domainNotificationEvent = (IDomainNotificationEvent?)Activator
-                .CreateInstance(genericType, domainEvent);
+            IDomainNotificationEvent? domainNotificationEvent = (IDomainNotificationEvent?)
+                Activator.CreateInstance(genericType, domainEvent);
 
             if (domainNotificationEvent is not null)
                 yield return domainNotificationEvent;
@@ -85,16 +103,19 @@ public static class EventsExtensions
     }
 
     public static IEnumerable<IIntegrationEvent> GetWrappedIntegrationEvents(
-        this IEnumerable<IDomainEvent> domainEvents)
+        this IEnumerable<IDomainEvent> domainEvents
+    )
     {
-        foreach (IDomainEvent domainEvent in domainEvents.Where(x =>
-                     typeof(IHaveExternalEvent).IsAssignableFrom(x.GetType())))
+        foreach (
+            IDomainEvent domainEvent in domainEvents.Where(
+                x => typeof(IHaveExternalEvent).IsAssignableFrom(x.GetType())
+            )
+        )
         {
-            Type genericType = typeof(IntegrationEventWrapper<>)
-                .MakeGenericType(domainEvent.GetType());
+            Type genericType = typeof(IntegrationEventWrapper<>).MakeGenericType(domainEvent.GetType());
 
-            IIntegrationEvent? domainNotificationEvent =
-                (IIntegrationEvent?)Activator.CreateInstance(genericType, domainEvent);
+            IIntegrationEvent? domainNotificationEvent = (IIntegrationEvent?)
+                Activator.CreateInstance(genericType, domainEvent);
 
             if (domainNotificationEvent is not null)
                 yield return domainNotificationEvent;

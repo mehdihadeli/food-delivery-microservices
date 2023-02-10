@@ -6,9 +6,8 @@ namespace ECommerce.Services.Customers.RestockSubscriptions.ValueObjects;
 public record RestockSubscriptionId : AggregateId<long>
 {
     // EF
-    private RestockSubscriptionId(long value) : base(value)
-    {
-    }
+    private RestockSubscriptionId(long value)
+        : base(value) { }
 
     public static implicit operator long(RestockSubscriptionId id) => id.Value;
 

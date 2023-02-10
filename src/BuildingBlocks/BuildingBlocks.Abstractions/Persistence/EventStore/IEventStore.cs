@@ -24,7 +24,8 @@ public interface IEventStore
         string streamId,
         StreamReadPosition? fromVersion = null,
         int maxCount = int.MaxValue,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Gets events for an specific stream.
@@ -36,7 +37,8 @@ public interface IEventStore
     Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Append event to aggregate with no stream.
@@ -48,7 +50,8 @@ public interface IEventStore
     Task<AppendResult> AppendEventAsync(
         string streamId,
         IStreamEvent @event,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Append event to aggregate with a existing or none existing stream.
@@ -62,7 +65,8 @@ public interface IEventStore
         string streamId,
         IStreamEvent @event,
         ExpectedStreamVersion expectedRevision,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Append events to aggregate with a existing or none existing stream.
@@ -76,7 +80,8 @@ public interface IEventStore
         string streamId,
         IReadOnlyCollection<IStreamEvent> events,
         ExpectedStreamVersion expectedRevision,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Rehydrating aggregate from events in the event store.
@@ -94,7 +99,8 @@ public interface IEventStore
         StreamReadPosition fromVersion,
         TAggregate defaultAggregateState,
         Action<object> fold,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TAggregate : class, IEventSourcedAggregate<TId>, new();
 
     /// <summary>
@@ -111,7 +117,8 @@ public interface IEventStore
         string streamId,
         TAggregate defaultAggregateState,
         Action<object> fold,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TAggregate : class, IEventSourcedAggregate<TId>, new();
 
     /// <summary>

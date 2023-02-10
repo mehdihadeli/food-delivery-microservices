@@ -4,8 +4,9 @@ namespace BuildingBlocks.Core.Mapping;
 
 public static class Mapper
 {
-    private static readonly Func<IMapper> _autoMapperFunc =
-        ServiceActivator.GetScope().ServiceProvider.GetRequiredService<IMapper>;
+    private static readonly Func<IMapper> _autoMapperFunc = ServiceActivator
+        .GetScope()
+        .ServiceProvider.GetRequiredService<IMapper>;
 
     public static TDestination Map<TDestination>(object source)
     {

@@ -6,9 +6,7 @@ namespace ECommerce.Services.Orders.Orders.ValueObjects;
 public record CustomerInfo
 {
     // EF
-    public CustomerInfo()
-    {
-    }
+    public CustomerInfo() { }
 
     public string Name { get; private set; } = default!;
     public long CustomerId { get; private set; }
@@ -18,6 +16,6 @@ public record CustomerInfo
         Guard.Against.NullOrWhiteSpace(name);
         Guard.Against.NegativeOrZero(customerId);
 
-        return new CustomerInfo {Name = name, CustomerId = customerId};
+        return new CustomerInfo { Name = name, CustomerId = customerId };
     }
 }

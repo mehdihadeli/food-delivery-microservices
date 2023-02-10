@@ -6,7 +6,8 @@ public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection Replace<TService, TImplementation>(
         this IServiceCollection services,
-        ServiceLifetime lifetime)
+        ServiceLifetime lifetime
+    )
     {
         return services.Replace(new ServiceDescriptor(typeof(TService), typeof(TImplementation), lifetime));
     }
@@ -20,7 +21,8 @@ public static partial class ServiceCollectionExtensions
 
     public static IServiceCollection ReplaceScoped<TService>(
         this IServiceCollection services,
-        Func<IServiceProvider, TService> implementationFactory)
+        Func<IServiceProvider, TService> implementationFactory
+    )
         where TService : class
     {
         return services.Replace(ServiceDescriptor.Scoped(implementationFactory));
@@ -35,7 +37,8 @@ public static partial class ServiceCollectionExtensions
 
     public static IServiceCollection ReplaceTransient<TService>(
         this IServiceCollection services,
-        Func<IServiceProvider, TService> implementationFactory)
+        Func<IServiceProvider, TService> implementationFactory
+    )
         where TService : class
     {
         return services.Replace(ServiceDescriptor.Transient(implementationFactory));
@@ -50,7 +53,8 @@ public static partial class ServiceCollectionExtensions
 
     public static IServiceCollection ReplaceSingleton<TService>(
         this IServiceCollection services,
-        Func<IServiceProvider, TService> implementationFactory)
+        Func<IServiceProvider, TService> implementationFactory
+    )
         where TService : class
     {
         return services.Replace(ServiceDescriptor.Singleton(implementationFactory));
@@ -93,7 +97,8 @@ public static partial class ServiceCollectionExtensions
     public static IServiceCollection Add<TService, TImplementation>(
         this IServiceCollection services,
         Func<IServiceProvider, TImplementation> implementationFactory,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+        ServiceLifetime serviceLifetime = ServiceLifetime.Transient
+    )
         where TService : class
         where TImplementation : class, TService
     {
@@ -116,7 +121,8 @@ public static partial class ServiceCollectionExtensions
     public static IServiceCollection Add<TService>(
         this IServiceCollection services,
         Func<IServiceProvider, TService> implementationFactory,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+        ServiceLifetime serviceLifetime = ServiceLifetime.Transient
+    )
         where TService : class
     {
         switch (serviceLifetime)
@@ -137,7 +143,8 @@ public static partial class ServiceCollectionExtensions
 
     public static IServiceCollection Add<TService>(
         this IServiceCollection services,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+        ServiceLifetime serviceLifetime = ServiceLifetime.Transient
+    )
         where TService : class
     {
         switch (serviceLifetime)
@@ -159,7 +166,8 @@ public static partial class ServiceCollectionExtensions
     public static IServiceCollection Add(
         this IServiceCollection services,
         Type serviceType,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+        ServiceLifetime serviceLifetime = ServiceLifetime.Transient
+    )
     {
         switch (serviceLifetime)
         {
@@ -179,7 +187,8 @@ public static partial class ServiceCollectionExtensions
 
     public static IServiceCollection Add<TService, TImplementation>(
         this IServiceCollection services,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+        ServiceLifetime serviceLifetime = ServiceLifetime.Transient
+    )
         where TService : class
         where TImplementation : class, TService
     {
@@ -203,7 +212,8 @@ public static partial class ServiceCollectionExtensions
         this IServiceCollection services,
         Type serviceType,
         Func<IServiceProvider, object> implementationFactory,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+        ServiceLifetime serviceLifetime = ServiceLifetime.Transient
+    )
     {
         switch (serviceLifetime)
         {
@@ -225,7 +235,8 @@ public static partial class ServiceCollectionExtensions
         this IServiceCollection services,
         Type serviceType,
         Type implementationType,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+        ServiceLifetime serviceLifetime = ServiceLifetime.Transient
+    )
     {
         switch (serviceLifetime)
         {

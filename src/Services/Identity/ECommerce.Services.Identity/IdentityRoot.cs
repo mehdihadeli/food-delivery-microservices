@@ -1,5 +1,3 @@
 namespace ECommerce.Services.Identity;
 
-public class IdentityRoot
-{
-}
+public class IdentityRoot { }

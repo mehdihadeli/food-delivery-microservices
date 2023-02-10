@@ -6,9 +6,11 @@ public class OnlyThirdPartiesAuthorizationHandler : AuthorizationHandler<OnlyThi
 {
     protected override Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
-        OnlyThirdPartiesRequirement requirement)
+        OnlyThirdPartiesRequirement requirement
+    )
     {
-        if (context.User.IsInRole(Roles.ThirdParty)) context.Succeed(requirement);
+        if (context.User.IsInRole(Roles.ThirdParty))
+            context.Succeed(requirement);
 
         return Task.CompletedTask;
     }

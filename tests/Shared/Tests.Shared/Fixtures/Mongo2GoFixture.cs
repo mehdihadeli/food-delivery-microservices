@@ -25,7 +25,9 @@ public class Mongo2GoFixture : IAsyncLifetime
     {
         MongoDbRunner.Dispose();
         MongoDbRunner = MongoDbRunner.Start();
-        _messageSink.OnMessage(new DiagnosticMessage($"Mongo fixture started on connection string: {MongoDbRunner.ConnectionString}..."));
+        _messageSink.OnMessage(
+            new DiagnosticMessage($"Mongo fixture started on connection string: {MongoDbRunner.ConnectionString}...")
+        );
     }
 
     public Task DisposeAsync()

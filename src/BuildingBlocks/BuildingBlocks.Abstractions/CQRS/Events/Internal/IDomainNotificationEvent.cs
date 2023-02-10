@@ -6,6 +6,4 @@ public interface IDomainNotificationEvent<TDomainEventType> : IDomainNotificatio
     TDomainEventType DomainEvent { get; set; }
 }
 
-public interface IDomainNotificationEvent : IEvent
-{
-}
+public interface IDomainNotificationEvent : IEvent { }

@@ -18,11 +18,9 @@ internal class UpdateUserStateValidator : AbstractValidator<UpdateUserState>
     {
         CascadeMode = CascadeMode.Stop;
 
-        RuleFor(v => v.State)
-            .NotEmpty();
+        RuleFor(v => v.State).NotEmpty();
 
-        RuleFor(v => v.UserId)
-            .NotEmpty();
+        RuleFor(v => v.UserId).NotEmpty();
     }
 }
 
@@ -35,7 +33,8 @@ internal class UpdateUserStateHandler : ICommandHandler<UpdateUserState>
     public UpdateUserStateHandler(
         IBus bus,
         UserManager<ApplicationUser> userManager,
-        ILogger<UpdateUserStateHandler> logger)
+        ILogger<UpdateUserStateHandler> logger
+    )
     {
         _bus = bus;
         _logger = logger;
@@ -65,16 +64,17 @@ internal class UpdateUserStateHandler : ICommandHandler<UpdateUserState>
         var userStateUpdated = new UserStateUpdated(
             request.UserId,
             (UserState)(int)previousState,
-            (UserState)(int)request.State);
+            (UserState)(int)request.State
+        );
 
         await _bus.PublishAsync(userStateUpdated, null, cancellationToken);
-
 
         _logger.LogInformation(
             "Updated state for user with ID: '{UserId}', '{PreviousState}' -> '{UserState}'",
             identityUser.Id,
             previousState,
-            identityUser.UserState);
+            identityUser.UserState
+        );
 
         return Unit.Value;
     }

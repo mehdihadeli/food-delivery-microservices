@@ -12,9 +12,7 @@ public class Customer : Aggregate<CustomerId>
 {
     // EF
     // this constructor is needed when we have a parameter constructor that has some navigation property classes in the parameters and ef will skip it and try to find other constructor, here default constructor (maybe will fix .net 8)
-    private Customer()
-    {
-    }
+    private Customer() { }
 
     public Guid IdentityId { get; private set; }
     public Email Email { get; private set; } = default!;
@@ -29,7 +27,8 @@ public class Customer : Aggregate<CustomerId>
         Email email,
         PhoneNumber phoneNumber,
         CustomerName name,
-        Guid identityId)
+        Guid identityId
+    )
     {
         var customer = new Customer
         {

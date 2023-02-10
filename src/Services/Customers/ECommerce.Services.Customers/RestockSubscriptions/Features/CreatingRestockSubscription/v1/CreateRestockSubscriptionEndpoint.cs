@@ -14,7 +14,8 @@ public class CreateRestockSubscriptionEndpoint : ICommandMinimalEndpoint<CreateR
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
-        return builder.MapPost("/", HandleAsync)
+        return builder
+            .MapPost("/", HandleAsync)
             .AllowAnonymous()
             .Produces<CreateRestockSubscriptionResponse>(StatusCodes.Status201Created)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
@@ -28,7 +29,8 @@ public class CreateRestockSubscriptionEndpoint : ICommandMinimalEndpoint<CreateR
         CreateRestockSubscriptionRequest request,
         ICommandProcessor commandProcessor,
         IMapper mapper,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         Guard.Against.Null(request, nameof(request));
 
@@ -41,7 +43,8 @@ public class CreateRestockSubscriptionEndpoint : ICommandMinimalEndpoint<CreateR
 
             return Results.Created(
                 $"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}/{result.RestockSubscriptionId}",
-                result);
+                result
+            );
         }
     }
 }

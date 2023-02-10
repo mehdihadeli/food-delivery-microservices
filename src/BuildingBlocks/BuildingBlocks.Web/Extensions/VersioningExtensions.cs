@@ -7,7 +7,8 @@ public static partial class VersioningExtensions
 {
     public static WebApplicationBuilder AddCustomVersioning(
         this WebApplicationBuilder builder,
-        Action<ApiVersioningOptions>? configurator = null)
+        Action<ApiVersioningOptions>? configurator = null
+    )
     {
         // https://www.meziantou.net/versioning-an-asp-net-core-api.htm
         // https://dotnetthoughts.net/aspnetcore-api-versioning-with-net-6-minimal-apis/
@@ -16,7 +17,8 @@ public static partial class VersioningExtensions
         // https://www.nuget.org/packages/Asp.Versioning.Http
 
         // Support versioning in minimal apis with (Asp.Versioning.Http) dll
-        builder.Services.AddApiVersioning(options =>
+        builder.Services
+            .AddApiVersioning(options =>
             {
                 // Add the headers "api-supported-versions" and "api-deprecated-versions"
                 // This is better for discoverability
@@ -33,24 +35,23 @@ public static partial class VersioningExtensions
                 options.ApiVersionReader = ApiVersionReader.Combine(
                     new HeaderApiVersionReader("api-version"),
                     new QueryStringApiVersionReader(),
-                    new UrlSegmentApiVersionReader());
+                    new UrlSegmentApiVersionReader()
+                );
 
                 configurator?.Invoke(options);
             })
-            .AddApiExplorer(
-                options =>
-                {
-                    // add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
-                    // note: the specified format code will format the version as "'v'major[.minor][-status]"
-                    options.GroupNameFormat = "'v'VVV";
+            .AddApiExplorer(options =>
+            {
+                // add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
+                // note: the specified format code will format the version as "'v'major[.minor][-status]"
+                options.GroupNameFormat = "'v'VVV";
 
-                    // note1: this option is only necessary when versioning by url segment.
-                    // note2:if we set it to true version will infer automatically in swagger based on mapped versions to api (swagger infer api versions in different tab in header Swagger UI),
-                    // but if we set it to false we should put version for api endpoint manually.
-                    // https://github.com/dotnet/aspnet-api-versioning/issues/909
-                    options.SubstituteApiVersionInUrl = true;
-                })
-
+                // note1: this option is only necessary when versioning by url segment.
+                // note2:if we set it to true version will infer automatically in swagger based on mapped versions to api (swagger infer api versions in different tab in header Swagger UI),
+                // but if we set it to false we should put version for api endpoint manually.
+                // https://github.com/dotnet/aspnet-api-versioning/issues/909
+                options.SubstituteApiVersionInUrl = true;
+            })
             // Support versioning in mvc with with (Asp.Versioning.Mvc.ApiExplorer) dll
             .AddMvc(); // https://www.nuget.org/packages/Asp.Versioning.Mvc.ApiExplorer
 

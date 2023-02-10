@@ -10,19 +10,23 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ECommerce.Services.Identity.Shared.Data;
 
-public class IdentityContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid,
+public class IdentityContext
+    : IdentityDbContext<
+        ApplicationUser,
+        ApplicationRole,
+        Guid,
         IdentityUserClaim<Guid>,
         ApplicationUserRole,
         IdentityUserLogin<Guid>,
         IdentityRoleClaim<Guid>,
-        IdentityUserToken<Guid>>,
-    IDbFacadeResolver,
-    IDomainEventContext,
-    ITxDbContextExecution
+        IdentityUserToken<Guid>
+    >,
+        IDbFacadeResolver,
+        IDomainEventContext,
+        ITxDbContextExecution
 {
-    public IdentityContext(DbContextOptions<IdentityContext> options) : base(options)
-    {
-    }
+    public IdentityContext(DbContextOptions<IdentityContext> options)
+        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -36,8 +40,10 @@ public class IdentityContext : IdentityDbContext<ApplicationUser, ApplicationRol
             // Replace table names
             entity.SetTableName(entity.GetTableName()?.Underscore());
 
-            var ecommerceObjectIdentifier =
-                StoreObjectIdentifier.Table(entity.GetTableName()?.Underscore()!, entity.GetSchema());
+            var ecommerceObjectIdentifier = StoreObjectIdentifier.Table(
+                entity.GetTableName()?.Underscore()!,
+                entity.GetSchema()
+            );
 
             // Replace column names
             foreach (var property in entity.GetProperties())
@@ -62,8 +68,10 @@ public class IdentityContext : IdentityDbContext<ApplicationUser, ApplicationRol
         var strategy = Database.CreateExecutionStrategy();
         return strategy.ExecuteAsync(async () =>
         {
-            await using var transaction = await Database
-                .BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
+            await using var transaction = await Database.BeginTransactionAsync(
+                IsolationLevel.ReadCommitted,
+                cancellationToken
+            );
             try
             {
                 await action();
@@ -83,8 +91,10 @@ public class IdentityContext : IdentityDbContext<ApplicationUser, ApplicationRol
         var strategy = Database.CreateExecutionStrategy();
         return strategy.ExecuteAsync(async () =>
         {
-            await using var transaction = await Database
-                .BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
+            await using var transaction = await Database.BeginTransactionAsync(
+                IsolationLevel.ReadCommitted,
+                cancellationToken
+            );
             try
             {
                 var result = await action();

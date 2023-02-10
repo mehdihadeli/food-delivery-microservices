@@ -5,12 +5,10 @@ namespace Tests.Shared.Extensions;
 
 public static class WebApplicationFactoryExtensions
 {
-    public static HttpClient CreateClientWithTestAuth<T>(this WebApplicationFactory<T> factory) where T : class
+    public static HttpClient CreateClientWithTestAuth<T>(this WebApplicationFactory<T> factory)
+        where T : class
     {
-        var client = factory.CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false
-        });
+        var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthConstants.Scheme);
 

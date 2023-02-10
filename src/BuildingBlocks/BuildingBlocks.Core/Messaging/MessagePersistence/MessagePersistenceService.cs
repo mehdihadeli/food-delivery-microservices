@@ -49,7 +49,7 @@ public class MessagePersistenceService : IMessagePersistenceService
         TMessageEnvelope messageEnvelope,
         CancellationToken cancellationToken = default
     )
-    where TMessageEnvelope : MessageEnvelope
+        where TMessageEnvelope : MessageEnvelope
     {
         await AddMessageCore(messageEnvelope, MessageDeliveryType.Outbox, cancellationToken);
     }
@@ -58,7 +58,7 @@ public class MessagePersistenceService : IMessagePersistenceService
         TMessageEnvelope messageEnvelope,
         CancellationToken cancellationToken = default
     )
-    where TMessageEnvelope : MessageEnvelope
+        where TMessageEnvelope : MessageEnvelope
     {
         await AddMessageCore(messageEnvelope, MessageDeliveryType.Inbox, cancellationToken);
     }
@@ -67,7 +67,7 @@ public class MessagePersistenceService : IMessagePersistenceService
         TCommand internalCommand,
         CancellationToken cancellationToken = default
     )
-    where TCommand : class, IInternalCommand
+        where TCommand : class, IInternalCommand
     {
         await AddMessageCore(new MessageEnvelope(internalCommand), MessageDeliveryType.Internal, cancellationToken);
     }
@@ -82,8 +82,10 @@ public class MessagePersistenceService : IMessagePersistenceService
                 notification.EventId,
                 TypeMapper.GetFullTypeName(notification.GetType()), // same process so we use full type name
                 _serializer.Serialize(notification),
-                MessageDeliveryType.Internal),
-            cancellationToken);
+                MessageDeliveryType.Internal
+            ),
+            cancellationToken
+        );
     }
 
     private async Task AddMessageCore(
@@ -111,27 +113,26 @@ public class MessagePersistenceService : IMessagePersistenceService
         await _messagePersistenceRepository.AddAsync(
             new StoreMessage(
                 id,
-                TypeMapper.GetFullTypeName(
-                    messageEnvelope.Message
-                        .GetType()), // because each service has its own persistence and same process (outbox,inbox), full name message type but in microservices we should just use type name for message
+                TypeMapper.GetFullTypeName(messageEnvelope.Message.GetType()), // because each service has its own persistence and same process (outbox,inbox), full name message type but in microservices we should just use type name for message
                 _messageSerializer.Serialize(messageEnvelope),
-                deliveryType),
-            cancellationToken);
+                deliveryType
+            ),
+            cancellationToken
+        );
 
         _logger.LogInformation(
             "Message with id: {MessageID} and delivery type: {DeliveryType} saved in persistence message store",
             id,
-            deliveryType.ToString());
+            deliveryType.ToString()
+        );
     }
 
-    public async Task ProcessAsync(
-        Guid messageId,
-        CancellationToken cancellationToken = default
-    )
+    public async Task ProcessAsync(Guid messageId, CancellationToken cancellationToken = default)
     {
         var message = await _messagePersistenceRepository.GetByIdAsync(messageId, cancellationToken);
 
-        if (message is null) return;
+        if (message is null)
+            return;
 
         switch (message.DeliveryType)
         {
@@ -151,8 +152,10 @@ public class MessagePersistenceService : IMessagePersistenceService
 
     public async Task ProcessAllAsync(CancellationToken cancellationToken = default)
     {
-        var messages = await _messagePersistenceRepository
-                           .GetByFilterAsync(x => x.MessageStatus != MessageStatus.Processed, cancellationToken);
+        var messages = await _messagePersistenceRepository.GetByFilterAsync(
+            x => x.MessageStatus != MessageStatus.Processed,
+            cancellationToken
+        );
 
         foreach (var message in messages)
         {
@@ -164,24 +167,24 @@ public class MessagePersistenceService : IMessagePersistenceService
     {
         MessageEnvelope? messageEnvelope = _messageSerializer.Deserialize<MessageEnvelope>(message.Data, true);
 
-        if (messageEnvelope is null || messageEnvelope.Message is null) return;
+        if (messageEnvelope is null || messageEnvelope.Message is null)
+            return;
 
         var data = _messageSerializer.Deserialize(
             messageEnvelope.Message.ToString()!,
-            TypeMapper.GetType(message.DataType));
+            TypeMapper.GetType(message.DataType)
+        );
 
         if (data is IMessage)
         {
             // we should pass a object type message or explicit our message type, not cast to IMessage (data is IMessage integrationEvent) because masstransit doesn't work with IMessage cast.
-            await _bus.PublishAsync(
-                data,
-                messageEnvelope.Headers,
-                cancellationToken);
+            await _bus.PublishAsync(data, messageEnvelope.Headers, cancellationToken);
 
             _logger.LogInformation(
                 "Message with id: {MessageId} and delivery type: {DeliveryType} processed from the persistence message store",
                 message.Id,
-                message.DeliveryType);
+                message.DeliveryType
+            );
         }
     }
 
@@ -189,11 +192,13 @@ public class MessagePersistenceService : IMessagePersistenceService
     {
         MessageEnvelope? messageEnvelope = _messageSerializer.Deserialize<MessageEnvelope>(message.Data, true);
 
-        if (messageEnvelope is null || messageEnvelope.Message is null) return;
+        if (messageEnvelope is null || messageEnvelope.Message is null)
+            return;
 
         var data = _messageSerializer.Deserialize(
             messageEnvelope.Message.ToString()!,
-            TypeMapper.GetType(message.DataType));
+            TypeMapper.GetType(message.DataType)
+        );
 
         if (data is IDomainNotificationEvent domainNotificationEvent)
         {
@@ -202,7 +207,8 @@ public class MessagePersistenceService : IMessagePersistenceService
             _logger.LogInformation(
                 "Domain-Notification with id: {EventID} and delivery type: {DeliveryType} processed from the persistence message store",
                 message.Id,
-                message.DeliveryType);
+                message.DeliveryType
+            );
         }
 
         if (data is IInternalCommand internalCommand)
@@ -212,7 +218,8 @@ public class MessagePersistenceService : IMessagePersistenceService
             _logger.LogInformation(
                 "InternalCommand with id: {EventID} and delivery type: {DeliveryType} processed from the persistence message store",
                 message.Id,
-                message.DeliveryType);
+                message.DeliveryType
+            );
         }
     }
 

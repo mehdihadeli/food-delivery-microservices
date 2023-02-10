@@ -14,10 +14,13 @@ public class RevokeAccessTokenMiddleware : IMiddleware
 
     public RevokeAccessTokenMiddleware(
         IEasyCachingProviderFactory cachingProviderFactory,
-        IOptions<CacheOptions> options)
+        IOptions<CacheOptions> options
+    )
     {
         Guard.Against.Null(options);
-        _cachingProvider = Guard.Against.Null(cachingProviderFactory).GetCachingProvider(options.Value.DefaultCacheType);
+        _cachingProvider = Guard.Against
+            .Null(cachingProviderFactory)
+            .GetCachingProvider(options.Value.DefaultCacheType);
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -31,8 +34,7 @@ public class RevokeAccessTokenMiddleware : IMiddleware
         var accessToken = GetTokenFromHeader(context);
         var userName = context.User.Identity.Name;
 
-        var revokedToken = await _cachingProvider.GetAsync<string>
-            ($"{userName}_{accessToken}_revoked_token");
+        var revokedToken = await _cachingProvider.GetAsync<string>($"{userName}_{accessToken}_revoked_token");
         if (string.IsNullOrWhiteSpace(revokedToken.Value))
         {
             await next(context);

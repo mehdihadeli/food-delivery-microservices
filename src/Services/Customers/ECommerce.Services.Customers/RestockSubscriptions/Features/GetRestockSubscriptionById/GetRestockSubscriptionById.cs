@@ -12,19 +12,16 @@ using MongoDB.Driver;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GetRestockSubscriptionById;
 
-public record GetRestockSubscriptionById
-    (Guid Id) : IQuery<GetRestockSubscriptionByIdResponse>
+public record GetRestockSubscriptionById(Guid Id) : IQuery<GetRestockSubscriptionByIdResponse>
 {
     internal class Validator : AbstractValidator<GetRestockSubscriptionById>
     {
         public Validator()
         {
-            RuleFor(x => x.Id)
-                .NotEmpty();
+            RuleFor(x => x.Id).NotEmpty();
         }
 
-        internal class Handler : IQueryHandler<GetRestockSubscriptionById,
-            GetRestockSubscriptionByIdResponse>
+        internal class Handler : IQueryHandler<GetRestockSubscriptionById, GetRestockSubscriptionByIdResponse>
         {
             private readonly CustomersReadDbContext _customersReadDbContext;
             private readonly IMapper _mapper;
@@ -37,20 +34,17 @@ public record GetRestockSubscriptionById
 
             public async Task<GetRestockSubscriptionByIdResponse> Handle(
                 GetRestockSubscriptionById query,
-                CancellationToken cancellationToken)
+                CancellationToken cancellationToken
+            )
             {
                 Guard.Against.Null(query, nameof(query));
 
-                var restockSubscription =
-                    await _customersReadDbContext.RestockSubscriptions.AsQueryable()
-                        .Where(x => x.IsDeleted == false)
-                        .SingleOrDefaultAsync(
-                            x => x.Id == query.Id,
-                            cancellationToken);
+                var restockSubscription = await _customersReadDbContext.RestockSubscriptions
+                    .AsQueryable()
+                    .Where(x => x.IsDeleted == false)
+                    .SingleOrDefaultAsync(x => x.Id == query.Id, cancellationToken);
 
-                Guard.Against.NotFound(
-                    restockSubscription,
-                    new RestockSubscriptionNotFoundException(query.Id));
+                Guard.Against.NotFound(restockSubscription, new RestockSubscriptionNotFoundException(query.Id));
 
                 var subscriptionDto = _mapper.Map<RestockSubscriptionDto>(restockSubscription);
 

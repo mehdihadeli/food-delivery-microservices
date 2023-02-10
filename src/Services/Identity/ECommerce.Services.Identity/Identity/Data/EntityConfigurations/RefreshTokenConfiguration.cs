@@ -10,15 +10,12 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
     {
         builder.ToTable("RefreshTokens");
 
-        builder.Property<Guid>("InternalCommandId")
-            .ValueGeneratedOnAdd();
+        builder.Property<Guid>("InternalCommandId").ValueGeneratedOnAdd();
         builder.HasKey("InternalCommandId");
 
         builder.HasIndex(x => new { x.Token, x.UserId }).IsUnique();
 
-        builder.HasOne(rt => rt.ApplicationUser)
-            .WithMany(au => au.RefreshTokens)
-            .HasForeignKey(x => x.UserId);
+        builder.HasOne(rt => rt.ApplicationUser).WithMany(au => au.RefreshTokens).HasForeignKey(x => x.UserId);
 
         builder.Property(rt => rt.Token).HasMaxLength(100);
         builder.Property(rt => rt.CreatedAt);

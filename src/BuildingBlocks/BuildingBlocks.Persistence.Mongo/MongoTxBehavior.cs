@@ -28,7 +28,8 @@ public class MongoTxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         if (request is not ITxRequest)
         {
@@ -38,16 +39,19 @@ public class MongoTxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         _logger.LogInformation(
             "{Prefix} Handled command {MediatRRequest}",
             nameof(MongoTxBehavior<TRequest, TResponse>),
-            typeof(TRequest).FullName);
+            typeof(TRequest).FullName
+        );
         _logger.LogDebug(
             "{Prefix} Handled command {MediatRRequest} with content {RequestContent}",
             nameof(MongoTxBehavior<TRequest, TResponse>),
             typeof(TRequest).FullName,
-            JsonSerializer.Serialize(request));
+            JsonSerializer.Serialize(request)
+        );
         _logger.LogInformation(
             "{Prefix} Open the transaction for {MediatRRequest}",
             nameof(MongoTxBehavior<TRequest, TResponse>),
-            typeof(TRequest).FullName);
+            typeof(TRequest).FullName
+        );
 
         try
         {
@@ -58,7 +62,8 @@ public class MongoTxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
             _logger.LogInformation(
                 "{Prefix} Executed the {MediatRRequest} request",
                 nameof(MongoTxBehavior<TRequest, TResponse>),
-                typeof(TRequest).FullName);
+                typeof(TRequest).FullName
+            );
 
             await _dbContext.CommitTransactionAsync(cancellationToken);
 

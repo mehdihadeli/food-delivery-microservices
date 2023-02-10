@@ -69,7 +69,8 @@ public class EventProcessor : IEventProcessor
             _logger.LogDebug(
                 "Dispatched integration notification event {IntegrationEventName} with payload {IntegrationEventContent}",
                 integrationEvent.GetType().FullName,
-                integrationEvent);
+                integrationEvent
+            );
 
             return;
         }
@@ -81,7 +82,8 @@ public class EventProcessor : IEventProcessor
             _logger.LogDebug(
                 "Dispatched domain event {DomainEventName} with payload {DomainEventContent}",
                 domainEvent.GetType().FullName,
-                domainEvent);
+                domainEvent
+            );
 
             return;
         }
@@ -93,7 +95,8 @@ public class EventProcessor : IEventProcessor
             _logger.LogDebug(
                 "Dispatched domain notification event {DomainNotificationEventName} with payload {DomainNotificationEventContent}",
                 notificationEvent.GetType().FullName,
-                notificationEvent);
+                notificationEvent
+            );
             return;
         }
 

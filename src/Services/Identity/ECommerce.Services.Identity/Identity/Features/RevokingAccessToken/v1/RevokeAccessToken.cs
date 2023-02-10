@@ -18,10 +18,13 @@ public class RevokeAccessTokenHandler : ICommandHandler<RevokeAccessToken>
     public RevokeAccessTokenHandler(
         IEasyCachingProviderFactory cachingProviderFactory,
         IOptions<JwtOptions> jwtOptions,
-        IOptions<CacheOptions> cacheOptions)
+        IOptions<CacheOptions> cacheOptions
+    )
     {
         Guard.Against.Null(cacheOptions);
-        _cachingProvider = Guard.Against.Null(cachingProviderFactory).GetCachingProvider(cacheOptions.Value.DefaultCacheType);
+        _cachingProvider = Guard.Against
+            .Null(cachingProviderFactory)
+            .GetCachingProvider(cacheOptions.Value.DefaultCacheType);
         _jwtOptions = jwtOptions.Value;
     }
 
@@ -37,7 +40,8 @@ public class RevokeAccessTokenHandler : ICommandHandler<RevokeAccessToken>
             $"{request.UserName}_{request.Token}_revoked_token",
             request.Token,
             TimeSpan.FromSeconds(_jwtOptions.TokenLifeTimeSecond),
-            cancellationToken);
+            cancellationToken
+        );
 
         return Unit.Value;
     }

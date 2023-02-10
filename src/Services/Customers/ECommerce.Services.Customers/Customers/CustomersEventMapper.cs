@@ -17,7 +17,8 @@ public class CustomersEventMapper : IIntegrationEventMapper
         return domainEvent switch
         {
             TestDomainEvent e => new TestIntegration(e.Data),
-            CustomerCreated e => new Services.Shared.Customers.Customers.Events.v1.Integration.CustomerCreatedV1(e.Customer.Id),
+            CustomerCreated e
+                => new Services.Shared.Customers.Customers.Events.v1.Integration.CustomerCreatedV1(e.Customer.Id),
             _ => null
         };
     }

@@ -22,9 +22,7 @@ public record PhoneNumber
     public static PhoneNumber Of(string value)
     {
         // validations should be placed here instead of constructor
-        Guard.Against.InvalidPhoneNumber(
-            value,
-            new DomainException($"Phone number {value} is invalid."));
+        Guard.Against.InvalidPhoneNumber(value, new DomainException($"Phone number {value} is invalid."));
         return new PhoneNumber(value);
     }
 

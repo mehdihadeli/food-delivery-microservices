@@ -16,9 +16,7 @@ public static class StreamEventDataSerializationExtensions
         var eventType = TypeMapper.GetType(eventData.EventType);
 
         // deserialize event
-        return JsonConvert.DeserializeObject(
-            Encoding.UTF8.GetString(eventData.Data),
-            eventType)!;
+        return JsonConvert.DeserializeObject(Encoding.UTF8.GetString(eventData.Data), eventType)!;
     }
 
     public static IStreamEventMetadata? DeserializeMetadata(this StreamEventData eventData)
@@ -27,8 +25,7 @@ public static class StreamEventDataSerializationExtensions
             return null;
 
         // deserialize event
-        return JsonConvert.DeserializeObject<StreamEventMetadata>(
-            Encoding.UTF8.GetString(eventData.Metadata))!;
+        return JsonConvert.DeserializeObject<StreamEventMetadata>(Encoding.UTF8.GetString(eventData.Metadata))!;
     }
 
     public static StreamEvent ToStreamEvent(this StreamEventData streamEventData)
@@ -38,10 +35,7 @@ public static class StreamEventDataSerializationExtensions
 
         var type = typeof(StreamEvent<>).MakeGenericType(eventData.GetType());
 
-        return (StreamEvent)Activator.CreateInstance(
-            type,
-            eventData,
-            metaData)!;
+        return (StreamEvent)Activator.CreateInstance(type, eventData, metaData)!;
     }
 
     public static StreamEventData ToJsonStreamEventData(this IStreamEvent @event)

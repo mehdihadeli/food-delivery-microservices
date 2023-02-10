@@ -9,9 +9,8 @@ namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRest
 
 // https://www.youtube.com/watch?v=SDu0MA6TmuM
 // https://github.com/ardalis/ApiEndpoints
-public class GetRestockSubscriptionsEndpoint : EndpointBaseAsync
-    .WithRequest<GetRestockSubscriptionsRequest?>
-    .WithActionResult<GetRestockSubscriptionsResponse>
+public class GetRestockSubscriptionsEndpoint
+    : EndpointBaseAsync.WithRequest<GetRestockSubscriptionsRequest?>.WithActionResult<GetRestockSubscriptionsResponse>
 {
     private readonly IQueryProcessor _queryProcessor;
 
@@ -28,13 +27,15 @@ public class GetRestockSubscriptionsEndpoint : EndpointBaseAsync
         Summary = "Getting Restock Subscriptions.",
         Description = "Getting Restock Subscriptions.",
         OperationId = "GetRestockSubscriptions",
-        Tags = new[] {RestockSubscriptionsConfigs.Tag})]
+        Tags = new[] { RestockSubscriptionsConfigs.Tag }
+    )]
     [HttpGet(RestockSubscriptionsConfigs.RestockSubscriptionsUrl, Name = "GetRestockSubscriptions")]
     [ApiVersion(1.0)]
     [Authorize(Roles = CustomersConstants.Role.Admin)]
     public override async Task<ActionResult<GetRestockSubscriptionsResponse>> HandleAsync(
         [FromQuery] GetRestockSubscriptionsRequest? request,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         Guard.Against.Null(request, nameof(request));
 
@@ -52,7 +53,8 @@ public class GetRestockSubscriptionsEndpoint : EndpointBaseAsync
                     From = request.From,
                     To = request.To
                 },
-                cancellationToken);
+                cancellationToken
+            );
 
             return Ok(result);
         }

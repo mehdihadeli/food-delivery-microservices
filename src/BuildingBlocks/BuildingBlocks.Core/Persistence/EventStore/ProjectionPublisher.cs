@@ -33,7 +33,6 @@ public class ReadProjectionPublisher : IReadProjectionPublisher
             .Single(m => m.Name == nameof(PublishAsync) && m.GetGenericArguments().Any())
             .MakeGenericMethod(streamData);
 
-        return (Task)method
-            .Invoke(this, new object[] { streamEvent, cancellationToken })!;
+        return (Task)method.Invoke(this, new object[] { streamEvent, cancellationToken })!;
     }
 }

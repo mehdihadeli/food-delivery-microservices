@@ -16,11 +16,7 @@ public class EmailObject
         MailBody = Guard.Against.NullOrEmpty(mailBody, nameof(mailBody));
     }
 
-    public EmailObject(
-        string receiverEmail,
-        string senderEmail,
-        string subject,
-        string mailBody)
+    public EmailObject(string receiverEmail, string senderEmail, string subject, string mailBody)
     {
         ReceiverEmail = Guard.Against.NullOrEmpty(receiverEmail, nameof(receiverEmail));
         SenderEmail = Guard.Against.NullOrEmpty(senderEmail, nameof(senderEmail));

@@ -20,22 +20,28 @@ AnsiConsole.Write(new FigletText("Identity Service").Centered().Color(Color.From
 // https://benfoster.io/blog/mvc-to-minimal-apis-aspnet-6/
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseDefaultServiceProvider((context, options) =>
-{
-    // Handling Captive Dependency Problem
-    // https://ankitvijay.net/2020/03/17/net-core-and-di-beware-of-captive-dependency/
-    // https://levelup.gitconnected.com/top-misconceptions-about-dependency-injection-in-asp-net-core-c6a7afd14eb4
-    // https://blog.ploeh.dk/2014/06/02/captive-dependency/
-    // https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/
-    options.ValidateScopes = context.HostingEnvironment.IsDevelopment() || context.HostingEnvironment.IsTest() ||
-                             context.HostingEnvironment.IsStaging();
+builder.Host.UseDefaultServiceProvider(
+    (context, options) =>
+    {
+        // Handling Captive Dependency Problem
+        // https://ankitvijay.net/2020/03/17/net-core-and-di-beware-of-captive-dependency/
+        // https://levelup.gitconnected.com/top-misconceptions-about-dependency-injection-in-asp-net-core-c6a7afd14eb4
+        // https://blog.ploeh.dk/2014/06/02/captive-dependency/
+        // https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/
+        options.ValidateScopes =
+            context.HostingEnvironment.IsDevelopment()
+            || context.HostingEnvironment.IsTest()
+            || context.HostingEnvironment.IsStaging();
 
-    // Issue with masstransit #85
-    // options.ValidateOnBuild = true;
-});
+        // Issue with masstransit #85
+        // options.ValidateOnBuild = true;
+    }
+);
 
-builder.Services.AddControllers(options =>
-        options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer())))
+builder.Services
+    .AddControllers(
+        options => options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()))
+    )
     .AddNewtonsoftJson(options =>
     {
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -92,6 +98,4 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("docker"))
 
 await app.RunAsync();
 
-public partial class Program
-{
-}
+public partial class Program { }

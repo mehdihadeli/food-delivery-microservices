@@ -10,7 +10,8 @@ public interface IBusConsumer
     /// <typeparam name="TMessage">A type that implements the <see cref="IMessage"/>.</typeparam>
     void Consume<TMessage>(
         IMessageHandler<TMessage> handler,
-        Action<IConsumeConfigurationBuilder>? consumeBuilder = null)
+        Action<IConsumeConfigurationBuilder>? consumeBuilder = null
+    )
         where TMessage : class, IMessage;
 
     /// <summary>
@@ -24,7 +25,8 @@ public interface IBusConsumer
     Task Consume<TMessage>(
         MessageHandler<TMessage> subscribeMethod,
         Action<IConsumeConfigurationBuilder>? consumeBuilder = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TMessage : class, IMessage;
 
     /// <summary>
@@ -43,7 +45,6 @@ public interface IBusConsumer
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task Consume(Type messageType, CancellationToken cancellationToken = default);
-
 
     /// <summary>
     /// Consume a message with <see cref="TMessage"/> type and <see cref="THandler"/> handler.

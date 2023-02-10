@@ -11,7 +11,8 @@ public static class MediatRExtensions
 {
     public static async Task SendScheduleObject(
         this IMediator mediator,
-        ScheduleSerializedObject scheduleSerializedObject)
+        ScheduleSerializedObject scheduleSerializedObject
+    )
     {
         var type = scheduleSerializedObject.GetPayloadType();
 

@@ -6,9 +6,8 @@ namespace ECommerce.Services.Customers.Products;
 public record ProductId : AggregateId<long>
 {
     // EF
-    protected ProductId(long value) : base(value)
-    {
-    }
+    protected ProductId(long value)
+        : base(value) { }
 
     public static implicit operator long(ProductId id) => id.Value;
 

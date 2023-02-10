@@ -13,7 +13,8 @@ public class RetryBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TR
 
     public RetryBehavior(
         IEnumerable<IRetryableRequest<TRequest, TResponse>> retryHandlers,
-        ILogger<RetryBehavior<TRequest, TResponse>> logger)
+        ILogger<RetryBehavior<TRequest, TResponse>> logger
+    )
     {
         _retryHandlers = retryHandlers;
         _logger = logger;
@@ -22,7 +23,8 @@ public class RetryBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TR
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var retryHandler = _retryHandlers.FirstOrDefault();
 
@@ -34,24 +36,28 @@ public class RetryBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TR
 
         var circuitBreaker = Policy<TResponse>
             .Handle<System.Exception>()
-            .CircuitBreakerAsync(retryHandler.ExceptionsAllowedBeforeCircuitTrip, TimeSpan.FromMilliseconds(5000),
+            .CircuitBreakerAsync(
+                retryHandler.ExceptionsAllowedBeforeCircuitTrip,
+                TimeSpan.FromMilliseconds(5000),
                 (exception, things) => _logger.LogDebug("Circuit Tripped!"),
-                () =>
-                {
-                });
+                () => { }
+            );
 
         var retryPolicy = Policy<TResponse>
             .Handle<System.Exception>()
-            .WaitAndRetryAsync(retryHandler.RetryAttempts, retryAttempt =>
-            {
-                var retryDelay = retryHandler.RetryWithExponentialBackoff
-                    ? TimeSpan.FromMilliseconds(Math.Pow(2, retryAttempt) * retryHandler.RetryDelay)
-                    : TimeSpan.FromMilliseconds(retryHandler.RetryDelay);
+            .WaitAndRetryAsync(
+                retryHandler.RetryAttempts,
+                retryAttempt =>
+                {
+                    var retryDelay = retryHandler.RetryWithExponentialBackoff
+                        ? TimeSpan.FromMilliseconds(Math.Pow(2, retryAttempt) * retryHandler.RetryDelay)
+                        : TimeSpan.FromMilliseconds(retryHandler.RetryDelay);
 
-                _logger.LogDebug("Retrying, waiting {RetryDelay}...", retryDelay);
+                    _logger.LogDebug("Retrying, waiting {RetryDelay}...", retryDelay);
 
-                return retryDelay;
-            });
+                    return retryDelay;
+                }
+            );
 
         var response = await retryPolicy.ExecuteAsync(() => next());
 

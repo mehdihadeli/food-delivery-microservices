@@ -7,9 +7,8 @@ namespace ECommerce.Services.Customers.Customers.ValueObjects;
 public record CustomerId : AggregateId
 {
     // EF
-    private CustomerId(long value) : base(value)
-    {
-    }
+    private CustomerId(long value)
+        : base(value) { }
 
     // validations should be placed here instead of constructor
     public static CustomerId Of(long id) => new(Guard.Against.NegativeOrZero(id));

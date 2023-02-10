@@ -25,57 +25,78 @@ public static partial class WebApplicationBuilderExtensions
                 var env = ctx.RequestServices.GetRequiredService<IHostEnvironment>();
                 return env.IsDevelopment() || env.IsStaging();
             };
-            x.Map<ConflictException>(ex => new ProblemDetails
-            {
-                Title = ex.GetType().Name,
-                Status = StatusCodes.Status409Conflict,
-                Detail = ex.Message,
-                Type = "https://somedomain/application-rule-validation-error"
-            });
+            x.Map<ConflictException>(
+                ex =>
+                    new ProblemDetails
+                    {
+                        Title = ex.GetType().Name,
+                        Status = StatusCodes.Status409Conflict,
+                        Detail = ex.Message,
+                        Type = "https://somedomain/application-rule-validation-error"
+                    }
+            );
 
             // Exception will produce and returns from our FluentValidation RequestValidationBehavior
-            x.Map<ValidationException>(ex => new ProblemDetails
-            {
-                Title = ex.GetType().Name,
-                Status = StatusCodes.Status400BadRequest,
-                Detail = JsonConvert.SerializeObject(ex.ValidationResultModel.Errors),
-                Type = "https://somedomain/input-validation-rules-error"
-            });
-            x.Map<BadRequestException>(ex => new ProblemDetails
-            {
-                Title = ex.GetType().Name,
-                Status = StatusCodes.Status400BadRequest,
-                Detail = ex.Message,
-                Type = "https://somedomain/bad-request-error"
-            });
-            x.Map<ArgumentException>(ex => new ProblemDetails
-            {
-                Title = ex.GetType().Name,
-                Status = StatusCodes.Status400BadRequest,
-                Detail = ex.Message,
-                Type = "https://somedomain/argument-error"
-            });
-            x.Map<NotFoundException>(ex => new ProblemDetails
-            {
-                Title = ex.GetType().Name,
-                Status = (int)ex.StatusCode,
-                Detail = ex.Message,
-                Type = "https://somedomain/not-found-error"
-            });
-            x.Map<ApiException>(ex => new ProblemDetails
-            {
-                Title = ex.GetType().Name,
-                Status = (int)ex.StatusCode,
-                Detail = ex.Message,
-                Type = "https://somedomain/api-server-error"
-            });
-            x.Map<AppException>(ex => new ProblemDetails
-            {
-                Title = ex.GetType().Name,
-                Status = (int)ex.StatusCode,
-                Detail = ex.Message,
-                Type = "https://somedomain/application-error"
-            });
+            x.Map<ValidationException>(
+                ex =>
+                    new ProblemDetails
+                    {
+                        Title = ex.GetType().Name,
+                        Status = StatusCodes.Status400BadRequest,
+                        Detail = JsonConvert.SerializeObject(ex.ValidationResultModel.Errors),
+                        Type = "https://somedomain/input-validation-rules-error"
+                    }
+            );
+            x.Map<BadRequestException>(
+                ex =>
+                    new ProblemDetails
+                    {
+                        Title = ex.GetType().Name,
+                        Status = StatusCodes.Status400BadRequest,
+                        Detail = ex.Message,
+                        Type = "https://somedomain/bad-request-error"
+                    }
+            );
+            x.Map<ArgumentException>(
+                ex =>
+                    new ProblemDetails
+                    {
+                        Title = ex.GetType().Name,
+                        Status = StatusCodes.Status400BadRequest,
+                        Detail = ex.Message,
+                        Type = "https://somedomain/argument-error"
+                    }
+            );
+            x.Map<NotFoundException>(
+                ex =>
+                    new ProblemDetails
+                    {
+                        Title = ex.GetType().Name,
+                        Status = (int)ex.StatusCode,
+                        Detail = ex.Message,
+                        Type = "https://somedomain/not-found-error"
+                    }
+            );
+            x.Map<ApiException>(
+                ex =>
+                    new ProblemDetails
+                    {
+                        Title = ex.GetType().Name,
+                        Status = (int)ex.StatusCode,
+                        Detail = ex.Message,
+                        Type = "https://somedomain/api-server-error"
+                    }
+            );
+            x.Map<AppException>(
+                ex =>
+                    new ProblemDetails
+                    {
+                        Title = ex.GetType().Name,
+                        Status = (int)ex.StatusCode,
+                        Detail = ex.Message,
+                        Type = "https://somedomain/application-error"
+                    }
+            );
             x.Map<ForbiddenException>(ex => new ForbiddenProblemDetails(ex.Message));
             x.Map<UnAuthorizedException>(ex => new UnauthorizedProblemDetails(ex.Message));
             x.Map<IdentityException>(ex =>

@@ -31,23 +31,23 @@ public interface IMinimalEndpoint<in TRequest, in TDependency, TResult> : IMinim
         HttpContext context,
         TRequest request,
         TDependency dependency,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }
 
-public interface IMinimalEndpoint<in TRequest, in TDependency1, in TDependency2, TResult> :
-    IMinimalEndpoint
+public interface IMinimalEndpoint<in TRequest, in TDependency1, in TDependency2, TResult> : IMinimalEndpoint
 {
     Task<TResult> HandleAsync(
         HttpContext context,
         TRequest request,
         TDependency1 dependency1,
         TDependency2 dependency2,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }
 
-public interface
-    IMinimalEndpoint<in TRequest, in TDependency1, in TDependency2, in TDependency3, TResult> :
-        IMinimalEndpoint
+public interface IMinimalEndpoint<in TRequest, in TDependency1, in TDependency2, in TDependency3, TResult>
+    : IMinimalEndpoint
 {
     Task<TResult> HandleAsync(
         HttpContext context,
@@ -55,7 +55,8 @@ public interface
         TDependency1 dependency1,
         TDependency2 dependency2,
         TDependency3 dependency3,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }
 
 public interface ICommandMinimalEndpoint<in TRequest> : IMinimalEndpoint
@@ -65,7 +66,8 @@ public interface ICommandMinimalEndpoint<in TRequest> : IMinimalEndpoint
         TRequest request,
         ICommandProcessor commandProcessor,
         IMapper mapper,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }
 
 public interface ICommandMinimalEndpoint<in TRequest, TResult> : IMinimalEndpoint
@@ -75,7 +77,8 @@ public interface ICommandMinimalEndpoint<in TRequest, TResult> : IMinimalEndpoin
         TRequest request,
         ICommandProcessor commandProcessor,
         IMapper mapper,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }
 
 public interface ICommandMinimalEndpoint<in TRequest, in TDependency, TResult> : IMinimalEndpoint
@@ -86,7 +89,8 @@ public interface ICommandMinimalEndpoint<in TRequest, in TDependency, TResult> :
         ICommandProcessor commandProcessor,
         IMapper mapper,
         TDependency dependency1,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }
 
 public interface ICommandMinimalEndpoint<in TRequest, in TDependency1, in TDependency2, TResult> : IMinimalEndpoint
@@ -98,7 +102,8 @@ public interface ICommandMinimalEndpoint<in TRequest, in TDependency1, in TDepen
         IMapper mapper,
         TDependency1 dependency1,
         TDependency2 dependency2,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }
 
 public interface IQueryMinimalEndpoint<in TRequest> : IMinimalEndpoint
@@ -108,7 +113,8 @@ public interface IQueryMinimalEndpoint<in TRequest> : IMinimalEndpoint
         TRequest request,
         IQueryProcessor queryProcessor,
         IMapper mapper,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }
 
 public interface IQueryMinimalEndpoint<in TRequest, TResult> : IMinimalEndpoint
@@ -118,7 +124,8 @@ public interface IQueryMinimalEndpoint<in TRequest, TResult> : IMinimalEndpoint
         TRequest request,
         IQueryProcessor queryProcessor,
         IMapper mapper,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }
 
 public interface IQueryMinimalEndpoint<in TRequest, in TDependency, TResult> : IMinimalEndpoint
@@ -129,7 +136,8 @@ public interface IQueryMinimalEndpoint<in TRequest, in TDependency, TResult> : I
         IQueryProcessor queryProcessor,
         IMapper mapper,
         TDependency dependency,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }
 
 public interface IQueryMinimalEndpoint<in TRequest, in TDependency1, in TDependency2, TResult> : IMinimalEndpoint
@@ -141,5 +149,6 @@ public interface IQueryMinimalEndpoint<in TRequest, in TDependency1, in TDepende
         IMapper mapper,
         TDependency1 dependency1,
         TDependency2 dependency2,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }

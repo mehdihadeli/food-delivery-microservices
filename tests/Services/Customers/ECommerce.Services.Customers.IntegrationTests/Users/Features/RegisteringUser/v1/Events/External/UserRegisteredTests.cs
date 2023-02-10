@@ -19,7 +19,8 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
 
     public UserRegisteredTests(
         SharedFixtureWithEfCoreAndMongo<Api.Program, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-        ITestOutputHelper outputHelper)
+        ITestOutputHelper outputHelper
+    )
         : base(sharedFixture, outputHelper)
     {
         _userRegistered = new FakeUserRegisteredV1().Generate();

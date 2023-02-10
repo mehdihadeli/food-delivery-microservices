@@ -2,11 +2,7 @@
 
 public class ScheduleSerializedObject
 {
-    public ScheduleSerializedObject(
-        string fullTypeName,
-        string data,
-        string additionalDescription,
-        string assemblyName)
+    public ScheduleSerializedObject(string fullTypeName, string data, string additionalDescription, string assemblyName)
     {
         FullTypeName = fullTypeName;
         Data = data;

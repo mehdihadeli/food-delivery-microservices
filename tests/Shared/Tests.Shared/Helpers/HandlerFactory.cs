@@ -10,18 +10,22 @@ namespace Tests.Shared.Helpers;
 
 public static class HandlerFactory
 {
-    public static IMessageHandler<T> AsMessageHandler<T>(this IHypothesis<T> hypothesis) where T : class, IMessage
+    public static IMessageHandler<T> AsMessageHandler<T>(this IHypothesis<T> hypothesis)
+        where T : class, IMessage
     {
         return new SimpleMessageConsumer<T>(hypothesis);
     }
 
-    public static IConsumer<T> AsConsumer<T>(this IHypothesis<T> hypothesis) where T : class, IMessage
+    public static IConsumer<T> AsConsumer<T>(this IHypothesis<T> hypothesis)
+        where T : class, IMessage
     {
         return new MassTransitSimpleMessageConsumer<T>(hypothesis);
     }
 
     public static IConsumer<TMessage> AsConsumer<TMessage, TConsumer>(
-        this IHypothesis<TMessage> hypothesis, IServiceProvider serviceProvider)
+        this IHypothesis<TMessage> hypothesis,
+        IServiceProvider serviceProvider
+    )
         where TMessage : class, IMessage
         where TConsumer : IConsumer<TMessage>
     {
@@ -29,14 +33,17 @@ public static class HandlerFactory
     }
 
     public static BuildingBlocks.Abstractions.Messaging.MessageHandler<T> AsMessageHandlerDelegate<T>(
-        this IHypothesis<T> hypothesis)
+        this IHypothesis<T> hypothesis
+    )
         where T : class, IMessage
     {
         return (context, cancellationToken) => hypothesis.Test(context.Message, cancellationToken);
     }
 
     public static IMessageHandler<TMessage> AsMessageHandler<TMessage, TMessageHandler>(
-        this IHypothesis<TMessage> hypothesis, IServiceProvider serviceProvider)
+        this IHypothesis<TMessage> hypothesis,
+        IServiceProvider serviceProvider
+    )
         where TMessage : class, IMessage
         where TMessageHandler : IMessageHandler<TMessage>
     {
@@ -88,7 +95,6 @@ internal class SimpleMessageConsumer<T> : IMessageHandler<T>
         return _hypothesis.Test(messageContext.Message);
     }
 }
-
 
 internal class MassTransitConsumer<T> : IConsumer<T>
     where T : class, IMessage

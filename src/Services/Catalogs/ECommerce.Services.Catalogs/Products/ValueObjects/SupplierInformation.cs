@@ -9,9 +9,7 @@ namespace ECommerce.Services.Catalogs.Products.ValueObjects;
 public record SupplierInformation
 {
     // EF
-    private SupplierInformation()
-    {
-    }
+    private SupplierInformation() { }
 
     public Name Name { get; private set; } = default!;
     public SupplierId Id { get; private set; } = default!;
@@ -22,6 +20,6 @@ public record SupplierInformation
         Guard.Against.Null(id, new ProductDomainException("SupplierId can not be null."));
         Guard.Against.Null(name, new ProductDomainException("Name cannot be null."));
 
-        return new SupplierInformation {Id = id, Name = name};
+        return new SupplierInformation { Id = id, Name = name };
     }
 }

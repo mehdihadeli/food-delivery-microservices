@@ -5,7 +5,6 @@ namespace ECommerce.Services.Identity.Identity.Exceptions;
 
 public class RequiresTwoFactorException : AppException
 {
-    public RequiresTwoFactorException(string message) : base(message, HttpStatusCode.BadRequest)
-    {
-    }
+    public RequiresTwoFactorException(string message)
+        : base(message, HttpStatusCode.BadRequest) { }
 }

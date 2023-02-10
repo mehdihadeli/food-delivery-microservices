@@ -1,5 +1,3 @@
 namespace BuildingBlocks.Abstractions.CQRS.Events.Internal;
 
-public interface IHaveNotificationEvent
-{
-}
+public interface IHaveNotificationEvent { }

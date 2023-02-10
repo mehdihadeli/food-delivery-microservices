@@ -17,9 +17,7 @@ public static class ServiceActivator
     public static IServiceScope? GetScope(IServiceProvider? serviceProvider = null)
     {
         var provider = serviceProvider ?? _serviceProvider;
-        return provider?
-            .GetRequiredService<IServiceScopeFactory>()
-            .CreateScope();
+        return provider?.GetRequiredService<IServiceScopeFactory>().CreateScope();
     }
 
     public static T? GetService<T>()
@@ -36,7 +34,6 @@ public static class ServiceActivator
     {
         return _serviceProvider.GetRequiredService(type);
     }
-
 
     public static IEnumerable<T> GetServices<T>()
     {

@@ -8,7 +8,8 @@ public static class ObjectExtensions
 {
     public static string GetQueryString(this object obj)
     {
-        var properties = from p in obj.GetType().GetProperties()
+        var properties =
+            from p in obj.GetType().GetProperties()
             where p.GetValue(obj, null) != null
             select p.Name + "=" + HttpUtility.UrlEncode(p.GetValue(obj, null).ToString());
 
@@ -29,13 +30,12 @@ public static class ObjectExtensions
         string methodName,
         Type[] genericTypes,
         Type? returnType = null,
-        params object[] parameters)
+        params object[] parameters
+    )
     {
-        var method = instanceObject.GetType().GetGenericMethod(
-            methodName,
-            genericTypes,
-            parameters.Select(y => y.GetType()).ToArray(),
-            returnType);
+        var method = instanceObject
+            .GetType()
+            .GetGenericMethod(methodName, genericTypes, parameters.Select(y => y.GetType()).ToArray(), returnType);
 
         if (method == null)
         {
@@ -61,7 +61,8 @@ public static class ObjectExtensions
         string methodName,
         Type[] genericTypes,
         Type? returnType = null,
-        params object[] parameters)
+        params object[] parameters
+    )
     {
         dynamic? awaitable = InvokeGenericMethod(instanceObject, methodName, genericTypes, returnType, parameters);
 
@@ -75,17 +76,15 @@ public static class ObjectExtensions
     /// <param name="methodName"></param>
     /// <param name="parameters"></param>
     /// <returns></returns>
-    public static dynamic InvokeMethod(
-        this object instanceObject,
-        string methodName,
-        params object[] parameters)
+    public static dynamic InvokeMethod(this object instanceObject, string methodName, params object[] parameters)
     {
         var method = instanceObject
             .GetType()
             .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
             .Where(x => x.Name == methodName)
-            .FirstOrDefault(x =>
-                x.GetParameters().Select(p => p.ParameterType).All(parameters.Select(p => p.GetType()).Contains));
+            .FirstOrDefault(
+                x => x.GetParameters().Select(p => p.ParameterType).All(parameters.Select(p => p.GetType()).Contains)
+            );
 
         if (method is null)
             return null!;
@@ -103,7 +102,8 @@ public static class ObjectExtensions
     public static Task<dynamic> InvokeMethodAsync(
         this object instanceObject,
         string methodName,
-        params object[] parameters)
+        params object[] parameters
+    )
     {
         dynamic awaitable = InvokeMethod(instanceObject, methodName, parameters);
 
@@ -120,7 +120,8 @@ public static class ObjectExtensions
     public static async Task InvokeMethodWithoutResultAsync(
         this object instanceObject,
         string methodName,
-        params object[] parameters)
+        params object[] parameters
+    )
     {
         dynamic awaitable = InvokeMethod(instanceObject, methodName, parameters);
 

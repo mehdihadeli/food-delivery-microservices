@@ -19,11 +19,9 @@ internal class RefreshTokenValidator : AbstractValidator<RefreshToken>
 {
     public RefreshTokenValidator()
     {
-        RuleFor(v => v.AccessTokenData)
-            .NotEmpty();
+        RuleFor(v => v.AccessTokenData).NotEmpty();
 
-        RuleFor(v => v.RefreshTokenData)
-            .NotEmpty();
+        RuleFor(v => v.RefreshTokenData).NotEmpty();
     }
 }
 
@@ -36,7 +34,8 @@ internal class RefreshTokenHandler : ICommandHandler<RefreshToken, RefreshTokenR
     public RefreshTokenHandler(
         IJwtService jwtService,
         UserManager<ApplicationUser> userManager,
-        ICommandProcessor commandProcessor)
+        ICommandProcessor commandProcessor
+    )
     {
         _jwtService = jwtService;
         _userManager = userManager;
@@ -60,14 +59,17 @@ internal class RefreshTokenHandler : ICommandHandler<RefreshToken, RefreshTokenR
         if (identityUser == null)
             throw new IdentityUserNotFoundException(userId);
 
-        var refreshToken =
-            (await _commandProcessor.SendAsync(
-                new GenerateRefreshToken(identityUser.Id, request.RefreshTokenData),
-                cancellationToken)).RefreshToken;
-
-        var accessToken =
+        var refreshToken = (
             await _commandProcessor.SendAsync(
-                new GenerateJwtToken(identityUser, refreshToken.Token), cancellationToken);
+                new GenerateRefreshToken(identityUser.Id, request.RefreshTokenData),
+                cancellationToken
+            )
+        ).RefreshToken;
+
+        var accessToken = await _commandProcessor.SendAsync(
+            new GenerateJwtToken(identityUser, refreshToken.Token),
+            cancellationToken
+        );
 
         return new RefreshTokenResponse(identityUser, accessToken.Token, refreshToken.Token);
     }

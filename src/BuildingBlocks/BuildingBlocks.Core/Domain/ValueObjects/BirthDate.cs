@@ -10,7 +10,6 @@ public record BirthDate
 
     public DateTime Value { get; private set; }
 
-
     public static BirthDate Of(DateTime value)
     {
         // validations should be placed here instead of constructor
@@ -28,7 +27,7 @@ public record BirthDate
             throw new DomainException("The minimum age has to be 15 years.");
         }
 
-        return new BirthDate {Value = value};
+        return new BirthDate { Value = value };
     }
 
     public static implicit operator DateTime(BirthDate value) => value.Value;

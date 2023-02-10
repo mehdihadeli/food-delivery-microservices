@@ -5,10 +5,10 @@ using BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 
 namespace BuildingBlocks.Abstractions.Persistence.EventStore;
 
-public interface IHaveEventSourcingAggregate :
-    IHaveAggregateStateProjection,
-    IHaveAggregate,
-    IHaveEventSourcedAggregateVersion
+public interface IHaveEventSourcingAggregate
+    : IHaveAggregateStateProjection,
+        IHaveAggregate,
+        IHaveEventSourcedAggregateVersion
 {
     /// <summary>
     /// Loads the current state of the aggregate from a list of events.

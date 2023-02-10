@@ -10,13 +10,19 @@ public static class GetProductByIdEndpoint
 {
     internal static RouteHandlerBuilder MapGetProductByIdEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/{id}", GetProductById)
+        return endpoints
+            .MapGet("/{id}", GetProductById)
             // .RequireAuthorization()
             .Produces<GetProductByIdResponse>(StatusCodes.Status200OK)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
-            .WithMetadata(new SwaggerOperationAttribute("Getting Product by InternalCommandId", "Getting Product by InternalCommandId"))
+            .WithMetadata(
+                new SwaggerOperationAttribute(
+                    "Getting Product by InternalCommandId",
+                    "Getting Product by InternalCommandId"
+                )
+            )
             .WithName("GetProductById")
             .WithDisplayName("Get product By InternalCommandId.");
     }
@@ -24,7 +30,8 @@ public static class GetProductByIdEndpoint
     private static async Task<IResult> GetProductById(
         long id,
         IQueryProcessor queryProcessor,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         Guard.Against.Null(id, nameof(id));
 

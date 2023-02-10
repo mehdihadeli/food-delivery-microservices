@@ -9,17 +9,18 @@ public class AggregateIdValueConverter<TAggregateId, TId> : ValueConverter<TAggr
     where TAggregateId : AggregateId<TId>
 {
     public AggregateIdValueConverter(ConverterMappingHints mappingHints = null!)
-        : base(id => id.Value, value => Create(value), mappingHints)
-    {
-    }
+        : base(id => id.Value, value => Create(value), mappingHints) { }
 
     // instantiate AggregateId and pass id to its protected or private constructor
     private static TAggregateId Create(TId id) =>
-        (Activator.CreateInstance(
-            typeof(TAggregateId),
-            BindingFlags.Instance | BindingFlags.NonPublic,
-            null,
-            new object?[] {id},
-            null,
-            null) as TAggregateId)!;
+        (
+            Activator.CreateInstance(
+                typeof(TAggregateId),
+                BindingFlags.Instance | BindingFlags.NonPublic,
+                null,
+                new object?[] { id },
+                null,
+                null
+            ) as TAggregateId
+        )!;
 }

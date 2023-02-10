@@ -28,9 +28,7 @@ public class Tests
         }
     }
 
-    public class Dtos
-    {
-    }
+    public class Dtos { }
 
     public class Entities
     {

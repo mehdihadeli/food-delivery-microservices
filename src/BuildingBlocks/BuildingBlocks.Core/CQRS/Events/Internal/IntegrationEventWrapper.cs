@@ -3,6 +3,5 @@ using BuildingBlocks.Core.Messaging;
 
 namespace BuildingBlocks.Core.CQRS.Events.Internal;
 
-public record IntegrationEventWrapper<TDomainEventType>
-    : IntegrationEvent
+public record IntegrationEventWrapper<TDomainEventType> : IntegrationEvent
     where TDomainEventType : IDomainEvent;

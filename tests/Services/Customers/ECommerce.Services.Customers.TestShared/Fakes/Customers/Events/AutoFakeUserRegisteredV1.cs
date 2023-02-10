@@ -8,6 +8,6 @@ public sealed class AutoFakeUserRegisteredV1 : AutoFaker<UserRegisteredV1>
 {
     public AutoFakeUserRegisteredV1()
     {
-        RuleFor(r => r.Roles, r => new List<string> {"user"});
+        RuleFor(r => r.Roles, r => new List<string> { "user" });
     }
 }

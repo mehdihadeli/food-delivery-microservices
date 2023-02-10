@@ -7,9 +7,7 @@ namespace ECommerce.Services.Orders.Orders.ValueObjects;
 public record ProductInfo
 {
     // EF
-    public ProductInfo()
-    {
-    }
+    public ProductInfo() { }
 
     public string Name { get; private set; } = default!;
     public long ProductId { get; private set; }
@@ -21,6 +19,11 @@ public record ProductInfo
         Guard.Against.NegativeOrZero(productId);
         Guard.Against.NegativeOrZero(price);
 
-        return new ProductInfo {Name = name, ProductId = productId, Price = price};
+        return new ProductInfo
+        {
+            Name = name,
+            ProductId = productId,
+            Price = price
+        };
     }
 }

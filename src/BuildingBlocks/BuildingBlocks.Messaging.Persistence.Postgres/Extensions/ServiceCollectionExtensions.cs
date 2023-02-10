@@ -24,17 +24,26 @@ public static class ServiceCollectionExtensions
             return new NpgsqlMessagePersistenceConnectionFactory(postgresOptions.ConnectionString);
         });
 
-        services.AddDbContext<MessagePersistenceDbContext>((sp, options) =>
-        {
-            var postgresOptions = sp.GetRequiredService<MessagePersistenceOptions>();
-
-            options.UseNpgsql(postgresOptions.ConnectionString, sqlOptions =>
+        services.AddDbContext<MessagePersistenceDbContext>(
+            (sp, options) =>
             {
-                sqlOptions.MigrationsAssembly(postgresOptions.MigrationAssembly ??
-                                              typeof(MessagePersistenceDbContext).Assembly.GetName().Name);
-                sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-            }).UseSnakeCaseNamingConvention();
-        });
+                var postgresOptions = sp.GetRequiredService<MessagePersistenceOptions>();
+
+                options
+                    .UseNpgsql(
+                        postgresOptions.ConnectionString,
+                        sqlOptions =>
+                        {
+                            sqlOptions.MigrationsAssembly(
+                                postgresOptions.MigrationAssembly
+                                    ?? typeof(MessagePersistenceDbContext).Assembly.GetName().Name
+                            );
+                            sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                        }
+                    )
+                    .UseSnakeCaseNamingConvention();
+            }
+        );
 
         services.ReplaceScoped<IMessagePersistenceRepository, PostgresMessagePersistenceRepository>();
     }

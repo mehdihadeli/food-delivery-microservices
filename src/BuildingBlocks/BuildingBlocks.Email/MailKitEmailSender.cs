@@ -28,7 +28,11 @@ public class MailKitEmailSender : IEmailSender
             var builder = new BodyBuilder { HtmlBody = emailObject.MailBody };
             email.Body = builder.ToMessageBody();
             using var smtp = new SmtpClient();
-            await smtp.ConnectAsync(_config.MimeKitOptions.Host, _config.MimeKitOptions.Port, SecureSocketOptions.StartTls);
+            await smtp.ConnectAsync(
+                _config.MimeKitOptions.Host,
+                _config.MimeKitOptions.Port,
+                SecureSocketOptions.StartTls
+            );
             await smtp.AuthenticateAsync(_config.MimeKitOptions.UserName, _config.MimeKitOptions.Password);
             smtp.DeliveryStatusNotificationType = DeliveryStatusNotificationType.Full;
             var response = await smtp.SendAsync(email);
@@ -39,7 +43,8 @@ public class MailKitEmailSender : IEmailSender
                 _config.From,
                 emailObject.ReceiverEmail,
                 emailObject.Subject,
-                emailObject.MailBody);
+                emailObject.MailBody
+            );
         }
         catch (System.Exception ex)
         {

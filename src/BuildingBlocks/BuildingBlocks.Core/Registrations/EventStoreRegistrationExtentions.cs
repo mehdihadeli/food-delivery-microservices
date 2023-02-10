@@ -18,16 +18,21 @@ public static class EventStoreRegistrationExtentions
 
     public static IServiceCollection AddEventStore<TEventStore>(
         this IServiceCollection services,
-        ServiceLifetime withLifetime = ServiceLifetime.Scoped)
+        ServiceLifetime withLifetime = ServiceLifetime.Scoped
+    )
         where TEventStore : class, IEventStore
     {
         services.Add<IAggregateStore, AggregateStore>(withLifetime);
 
-        return services.Add<TEventStore, TEventStore>(withLifetime)
+        return services
+            .Add<TEventStore, TEventStore>(withLifetime)
             .Add<IEventStore>(sp => sp.GetRequiredService<TEventStore>(), withLifetime);
     }
 
-    public static IServiceCollection AddReadProjections(this IServiceCollection services, params Assembly[] scanAssemblies)
+    public static IServiceCollection AddReadProjections(
+        this IServiceCollection services,
+        params Assembly[] scanAssemblies
+    )
     {
         services.AddSingleton<IReadProjectionPublisher, ReadProjectionPublisher>();
 
@@ -43,10 +48,12 @@ public static class EventStoreRegistrationExtentions
 
     private static void RegisterProjections(IServiceCollection services, Assembly[] assembliesToScan)
     {
-        services.Scan(scan => scan
-            .FromAssemblies(assembliesToScan)
-            .AddClasses(classes => classes.AssignableTo<IHaveReadProjection>()) // Filter classes
-            .AsImplementedInterfaces()
-            .WithTransientLifetime());
+        services.Scan(
+            scan =>
+                scan.FromAssemblies(assembliesToScan)
+                    .AddClasses(classes => classes.AssignableTo<IHaveReadProjection>()) // Filter classes
+                    .AsImplementedInterfaces()
+                    .WithTransientLifetime()
+        );
     }
 }

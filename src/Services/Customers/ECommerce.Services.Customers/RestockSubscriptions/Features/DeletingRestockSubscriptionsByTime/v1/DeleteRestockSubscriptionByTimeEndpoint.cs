@@ -6,8 +6,7 @@ using Hellang.Middleware.ProblemDetails;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime.v1;
 
-public class DeleteRestockSubscriptionByTimeEndpoint :
-    ICommandMinimalEndpoint<DeleteRestockSubscriptionByTimeRequest>
+public class DeleteRestockSubscriptionByTimeEndpoint : ICommandMinimalEndpoint<DeleteRestockSubscriptionByTimeRequest>
 {
     public string GroupName => RestockSubscriptionsConfigs.Tag;
     public string PrefixRoute => RestockSubscriptionsConfigs.RestockSubscriptionsUrl;
@@ -15,7 +14,8 @@ public class DeleteRestockSubscriptionByTimeEndpoint :
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
-        return builder.MapDelete("/", HandleAsync)
+        return builder
+            .MapDelete("/", HandleAsync)
             .Produces(StatusCodes.Status204NoContent)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
@@ -29,7 +29,8 @@ public class DeleteRestockSubscriptionByTimeEndpoint :
         [FromBody] DeleteRestockSubscriptionByTimeRequest request,
         ICommandProcessor commandProcessor,
         IMapper mapper,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         Guard.Against.Null(request, nameof(request));
 

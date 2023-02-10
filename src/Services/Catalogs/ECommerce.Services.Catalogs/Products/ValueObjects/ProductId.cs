@@ -7,9 +7,8 @@ namespace ECommerce.Services.Catalogs.Products.ValueObjects;
 public record ProductId : AggregateId
 {
     // EF
-    private ProductId(long value) : base(value)
-    {
-    }
+    private ProductId(long value)
+        : base(value) { }
 
     // validations should be placed here instead of constructor
     public static ProductId Of(long id) => new(Guard.Against.NegativeOrZero(id));

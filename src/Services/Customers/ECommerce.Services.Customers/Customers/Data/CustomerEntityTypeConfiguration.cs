@@ -35,7 +35,8 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
                 // https://github.com/dotnet/efcore/issues/11336
                 // https://github.com/dotnet/efcore/issues/12637
                 a.HasIndex(p => p.Value).IsUnique();
-            });
+            }
+        );
 
         builder.OwnsOne(
             x => x.PhoneNumber,
@@ -50,7 +51,8 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
                 // https://github.com/dotnet/efcore/issues/11336
                 // https://github.com/dotnet/efcore/issues/12637
                 a.HasIndex(p => p.Value).IsUnique();
-            });
+            }
+        );
 
         builder.OwnsOne(m => m.Name);
 
@@ -58,16 +60,14 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
             m => m.Address,
             a =>
             {
-                a.Property(p => p.City)
-                    .HasMaxLength(EfConstants.Lenght.Short);
-                a.Property(p => p.Country)
-                    .HasMaxLength(EfConstants.Lenght.Medium);
-                a.Property(p => p.Detail)
-                    .HasMaxLength(EfConstants.Lenght.Medium);
+                a.Property(p => p.City).HasMaxLength(EfConstants.Lenght.Short);
+                a.Property(p => p.Country).HasMaxLength(EfConstants.Lenght.Medium);
+                a.Property(p => p.Detail).HasMaxLength(EfConstants.Lenght.Medium);
                 a.Property(p => p.PostalCode)
-                    .HasConversion(s => s.Value, v => new PostalCode {Value = v})
+                    .HasConversion(s => s.Value, v => new PostalCode { Value = v })
                     .IsRequired(false);
-            });
+            }
+        );
 
         builder.OwnsOne(
             x => x.Nationality,
@@ -77,16 +77,17 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
                 a.Property(x => x.Value)
                     .HasColumnName(nameof(Customer.Nationality).Underscore())
                     .HasMaxLength(EfConstants.Lenght.Short);
-            });
+            }
+        );
 
         builder.OwnsOne(
             x => x.BirthDate,
             a =>
             {
                 // configuration just for  changing column name in db (instead of birthDate_value)
-                a.Property(x => x.Value)
-                    .HasColumnName(nameof(Customer.BirthDate).Underscore());
-            });
+                a.Property(x => x.Value).HasColumnName(nameof(Customer.BirthDate).Underscore());
+            }
+        );
 
         builder.Property(x => x.Created).HasDefaultValueSql(EfConstants.DateAlgorithm);
     }

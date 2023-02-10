@@ -19,7 +19,8 @@ public class QueryProcessor : IQueryProcessor
 
     public IAsyncEnumerable<TResponse> SendAsync<TResponse>(
         IStreamQuery<TResponse> query,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         return _mediator.CreateStream(query, cancellationToken);
     }

@@ -10,12 +10,17 @@ public static class MessageExtensions
 {
     public static IEnumerable<Type> GetHandledMessageTypes(this Assembly[] assemblies)
     {
-        var messageHandlerTypes = typeof(IMessageHandler<>).GetAllTypesImplementingOpenGenericInterface(assemblies)
+        var messageHandlerTypes = typeof(IMessageHandler<>)
+            .GetAllTypesImplementingOpenGenericInterface(assemblies)
             .ToList();
 
-        var inheritsTypes = messageHandlerTypes.SelectMany(x => x.GetInterfaces())
-            .Where(x => x.GetInterfaces().Any(i => i.IsGenericType) &&
-                        x.GetGenericTypeDefinition() == typeof(IMessageHandler<>));
+        var inheritsTypes = messageHandlerTypes
+            .SelectMany(x => x.GetInterfaces())
+            .Where(
+                x =>
+                    x.GetInterfaces().Any(i => i.IsGenericType)
+                    && x.GetGenericTypeDefinition() == typeof(IMessageHandler<>)
+            );
 
         foreach (var inheritsType in inheritsTypes)
         {

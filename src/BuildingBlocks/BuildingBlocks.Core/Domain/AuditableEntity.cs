@@ -9,10 +9,6 @@ public class AuditableEntity<TId> : Entity<TId>, IAuditableEntity<TId>
 }
 
 public abstract class AuditableEntity<TIdentity, TId> : AuditableEntity<TIdentity>
-    where TIdentity : Identity<TId>
-{
-}
+    where TIdentity : Identity<TId> { }
 
-public class AuditableEntity : AuditableEntity<Identity<long>, long>
-{
-}
+public class AuditableEntity : AuditableEntity<Identity<long>, long> { }

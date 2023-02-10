@@ -13,7 +13,8 @@ public static class ConfigurationHelper
         _configurationRoot = BuildConfiguration();
     }
 
-    public static TOptions BindOptions<TOptions>() where TOptions : new()
+    public static TOptions BindOptions<TOptions>()
+        where TOptions : new()
     {
         return _configurationRoot.BindOptions<TOptions>();
     }

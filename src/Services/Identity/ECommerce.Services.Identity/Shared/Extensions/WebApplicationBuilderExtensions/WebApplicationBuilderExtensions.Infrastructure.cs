@@ -31,9 +31,10 @@ public static partial class WebApplicationBuilderExtensions
         builder.Services.AddCustomAuthorization(
             rolePolicies: new List<RolePolicy>
             {
-                new(IdentityConstants.Role.Admin, new List<string> {IdentityConstants.Role.Admin}),
-                new(IdentityConstants.Role.User, new List<string> {IdentityConstants.Role.User})
-            });
+                new(IdentityConstants.Role.Admin, new List<string> { IdentityConstants.Role.Admin }),
+                new(IdentityConstants.Role.User, new List<string> { IdentityConstants.Role.User })
+            }
+        );
 
         // https://www.michaco.net/blog/EnvironmentVariablesAndConfigurationInASPNETCoreApps#environment-variables-and-configuration
         // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#non-prefixed-environment-variables
@@ -67,23 +68,32 @@ public static partial class WebApplicationBuilderExtensions
                     .AddNpgSql(
                         postgresOptions.ConnectionString,
                         name: "IdentityService-Postgres-Check",
-                        tags: new[] {"postgres", "database", "infra", "identity-service"})
+                        tags: new[] { "postgres", "database", "infra", "identity-service" }
+                    )
                     .AddRabbitMQ(
                         rabbitMqOptions.ConnectionString,
                         name: "IdentityService-RabbitMQ-Check",
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] {"rabbitmq", "bus", "infra", "identity-service"});
+                        tags: new[] { "rabbitmq", "bus", "infra", "identity-service" }
+                    );
             });
         }
 
         builder.Services.AddEmailService(builder.Configuration);
 
-        builder.Services.AddCqrs(pipelines: new[]
-        {
-            typeof(RequestValidationBehavior<,>), typeof(StreamRequestValidationBehavior<,>),
-            typeof(StreamLoggingBehavior<,>), typeof(StreamCachingBehavior<,>), typeof(LoggingBehavior<,>),
-            typeof(CachingBehavior<,>), typeof(InvalidateCachingBehavior<,>), typeof(EfTxBehavior<,>)
-        });
+        builder.Services.AddCqrs(
+            pipelines: new[]
+            {
+                typeof(RequestValidationBehavior<,>),
+                typeof(StreamRequestValidationBehavior<,>),
+                typeof(StreamLoggingBehavior<,>),
+                typeof(StreamCachingBehavior<,>),
+                typeof(LoggingBehavior<,>),
+                typeof(CachingBehavior<,>),
+                typeof(InvalidateCachingBehavior<,>),
+                typeof(EfTxBehavior<,>)
+            }
+        );
 
         builder.Services.AddPostgresMessagePersistence(builder.Configuration);
 
@@ -95,7 +105,8 @@ public static partial class WebApplicationBuilderExtensions
             {
                 cfg.AddUserPublishers();
             },
-            autoConfigEndpoints: false);
+            autoConfigEndpoints: false
+        );
 
         builder.AddCustomCaching();
 

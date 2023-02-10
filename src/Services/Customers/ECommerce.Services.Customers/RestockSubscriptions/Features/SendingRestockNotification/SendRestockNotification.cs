@@ -19,11 +19,9 @@ internal class SendRestockNotificationValidator : AbstractValidator<SendRestockN
 {
     public SendRestockNotificationValidator()
     {
-        RuleFor(x => x.RestockSubscriptionId)
-            .NotEmpty();
+        RuleFor(x => x.RestockSubscriptionId).NotEmpty();
 
-        RuleFor(x => x.CurrentStock)
-            .NotEmpty();
+        RuleFor(x => x.CurrentStock).NotEmpty();
     }
 }
 
@@ -38,7 +36,8 @@ internal class SendRestockNotificationHandler : ICommandHandler<SendRestockNotif
         CustomersDbContext customersDbContext,
         IEmailSender emailSender,
         IOptions<EmailOptions> emailConfig,
-        ILogger<SendRestockNotificationHandler> logger)
+        ILogger<SendRestockNotificationHandler> logger
+    )
     {
         _customersDbContext = customersDbContext;
         _emailSender = emailSender;
@@ -50,9 +49,10 @@ internal class SendRestockNotificationHandler : ICommandHandler<SendRestockNotif
     {
         Guard.Against.Null(command, new RestockSubscriptionDomainException("Command cannot be null"));
 
-        var restockSubscription =
-            await _customersDbContext.RestockSubscriptions
-                .FirstOrDefaultAsync(x => x.Id == command.RestockSubscriptionId, cancellationToken: cancellationToken);
+        var restockSubscription = await _customersDbContext.RestockSubscriptions.FirstOrDefaultAsync(
+            x => x.Id == command.RestockSubscriptionId,
+            cancellationToken: cancellationToken
+        );
 
         if (_emailConfig.Enable && restockSubscription is not null)
         {
@@ -61,7 +61,9 @@ internal class SendRestockNotificationHandler : ICommandHandler<SendRestockNotif
                     restockSubscription.Email!,
                     _emailConfig.From,
                     "Restock Notification",
-                    $"Your product {restockSubscription.ProductInformation.Name} is back in stock. Current stock is {command.CurrentStock}"));
+                    $"Your product {restockSubscription.ProductInformation.Name} is back in stock. Current stock is {command.CurrentStock}"
+                )
+            );
 
             _logger.LogInformation("Restock notification sent to email {Email}", restockSubscription.Email);
         }

@@ -5,16 +5,14 @@ namespace BuildingBlocks.Web;
 
 public class HttpQueryAttribute : HttpMethodAttribute
 {
-    private static readonly IEnumerable<string> _supportedMethods = new[] {"QUERY"};
+    private static readonly IEnumerable<string> _supportedMethods = new[] { "QUERY" };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpQueryAttribute"/> class.
     /// Creates a new <see cref="Microsoft.AspNetCore.Mvc.HttpGetAttribute"/>.
     /// </summary>
     public HttpQueryAttribute()
-        : base(_supportedMethods)
-    {
-    }
+        : base(_supportedMethods) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpQueryAttribute"/> class.

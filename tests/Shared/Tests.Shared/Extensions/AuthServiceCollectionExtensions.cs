@@ -19,21 +19,27 @@ public static class AuthServiceCollectionExtensions
                 .Build();
         });
 
-        return services.AddAuthentication(Constants.AuthConstants.Scheme)
+        return services
+            .AddAuthentication(Constants.AuthConstants.Scheme)
             .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>(
-                Constants.AuthConstants.Scheme, options => { });
+                Constants.AuthConstants.Scheme,
+                options => { }
+            );
     }
 
     //Approach2: https://stebet.net/mocking-jwt-tokens-in-asp-net-core-integration-tests/
     public static IServiceCollection AddAuthenticationWithFakeToken(this IServiceCollection services)
     {
-        services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
-        {
-            var config = new OpenIdConnectConfiguration {Issuer = MockJwtTokens.Issuer};
+        services.Configure<JwtBearerOptions>(
+            JwtBearerDefaults.AuthenticationScheme,
+            options =>
+            {
+                var config = new OpenIdConnectConfiguration { Issuer = MockJwtTokens.Issuer };
 
-            config.SigningKeys.Add(MockJwtTokens.SecurityKey);
-            options.Configuration = config;
-        });
+                config.SigningKeys.Add(MockJwtTokens.SecurityKey);
+                options.Configuration = config;
+            }
+        );
 
         return services;
     }

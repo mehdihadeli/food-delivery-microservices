@@ -9,15 +9,19 @@ public static class ReplenishingProductStockEndpoint
 {
     internal static RouteHandlerBuilder MapReplenishProductStockEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapPost("/{productId}/replenish-stock", ReplenishProductStock)
+        return endpoints
+            .MapPost("/{productId}/replenish-stock", ReplenishProductStock)
             .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
-            .WithMetadata(new SwaggerOperationAttribute(
-                "Replenishing ProductStock Products ",
-                "Replenishing ProductStock Products"))
+            .WithMetadata(
+                new SwaggerOperationAttribute(
+                    "Replenishing ProductStock Products ",
+                    "Replenishing ProductStock Products"
+                )
+            )
             .WithName("ReplenishProductStock")
             .WithDisplayName("Replenish product stock");
     }
@@ -26,7 +30,8 @@ public static class ReplenishingProductStockEndpoint
         long productId,
         int quantity,
         ICommandProcessor commandProcessor,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(ReplenishingProductStockEndpoint)))
         using (Serilog.Context.LogContext.PushProperty("ProductId", productId))

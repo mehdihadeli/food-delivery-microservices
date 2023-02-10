@@ -7,7 +7,9 @@ public class CustomException : System.Exception
     public CustomException(
         string message,
         HttpStatusCode statusCode = HttpStatusCode.InternalServerError,
-        params string[] errors) : base(message)
+        params string[] errors
+    )
+        : base(message)
     {
         ErrorMessages = errors;
         StatusCode = statusCode;

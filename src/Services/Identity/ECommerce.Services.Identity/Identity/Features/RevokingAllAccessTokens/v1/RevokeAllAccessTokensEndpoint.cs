@@ -11,7 +11,8 @@ public static class RevokeAllAccessTokensEndpoint
 {
     public static IEndpointRouteBuilder MapRevokeAllAccessTokensEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/revoke-all-tokens", RevokeAllAccessTokens)
+        endpoints
+            .MapPost("/revoke-all-tokens", RevokeAllAccessTokens)
             .RequireAuthorization(IdentityConstants.Role.User)
             .Produces<bool>()
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
@@ -26,7 +27,8 @@ public static class RevokeAllAccessTokensEndpoint
         HttpContext httpContext,
         RevokeAccessTokenRequest? request,
         ICommandProcessor commandProcessor,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var command = new RevokeAllAccessTokens(httpContext.User.Identity!.Name!);
 

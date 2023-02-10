@@ -15,7 +15,8 @@ public class DomainNotificationEventPublisher : IDomainNotificationEventPublishe
 
     public Task PublishAsync(
         IDomainNotificationEvent domainNotificationEvent,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         Guard.Against.Null(domainNotificationEvent, nameof(domainNotificationEvent));
 
@@ -24,7 +25,8 @@ public class DomainNotificationEventPublisher : IDomainNotificationEventPublishe
 
     public async Task PublishAsync(
         IDomainNotificationEvent[] domainNotificationEvents,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         Guard.Against.Null(domainNotificationEvents, nameof(domainNotificationEvents));
 

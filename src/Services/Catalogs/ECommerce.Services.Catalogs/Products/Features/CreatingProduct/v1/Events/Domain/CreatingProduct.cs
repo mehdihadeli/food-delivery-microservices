@@ -17,4 +17,5 @@ public record CreatingProduct(
     Category? Category,
     Supplier? Supplier,
     Brand? Brand,
-    string? Description = null) : DomainEvent;
+    string? Description = null
+) : DomainEvent;

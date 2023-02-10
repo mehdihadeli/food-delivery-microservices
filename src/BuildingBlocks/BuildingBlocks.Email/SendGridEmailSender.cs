@@ -25,11 +25,7 @@ public class SendGridEmailSender : IEmailSender
     {
         Guard.Against.Null(emailObject, nameof(EmailObject));
 
-        var message = new SendGridMessage
-        {
-            Subject = emailObject.Subject,
-            HtmlContent = emailObject.MailBody,
-        };
+        var message = new SendGridMessage { Subject = emailObject.Subject, HtmlContent = emailObject.MailBody, };
 
         message.AddTo(new EmailAddress(emailObject.ReceiverEmail));
 
@@ -43,6 +39,7 @@ public class SendGridEmailSender : IEmailSender
             _config.From,
             emailObject.ReceiverEmail,
             emailObject.Subject,
-            emailObject.MailBody);
+            emailObject.MailBody
+        );
     }
 }

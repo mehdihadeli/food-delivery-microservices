@@ -24,12 +24,14 @@ public class PostgresContainerFixture : IAsyncLifetime
         _postgresContainerOptions = postgresOptions;
 
         var postgresContainerBuilder = new TestcontainersBuilder<PostgreSqlTestcontainer>()
-            .WithDatabase(new PostgreSqlTestcontainerConfiguration
-            {
-                Database = postgresOptions.DatabaseName,
-                Username = postgresOptions.UserName,
-                Password = postgresOptions.Password,
-            })
+            .WithDatabase(
+                new PostgreSqlTestcontainerConfiguration
+                {
+                    Database = postgresOptions.DatabaseName,
+                    Username = postgresOptions.UserName,
+                    Password = postgresOptions.Password,
+                }
+            )
             .WithCleanUp(true)
             .WithName(postgresOptions.Name)
             .WithImage(postgresOptions.ImageName);
@@ -52,8 +54,10 @@ public class PostgresContainerFixture : IAsyncLifetime
 
             await CheckForExistingDatabase(connection);
 
-            var checkpoint =
-                await Respawner.CreateAsync(connection, new RespawnerOptions {DbAdapter = DbAdapter.Postgres});
+            var checkpoint = await Respawner.CreateAsync(
+                connection,
+                new RespawnerOptions { DbAdapter = DbAdapter.Postgres }
+            );
             await checkpoint.ResetAsync(connection)!;
         }
         catch (Exception e)
@@ -72,12 +76,15 @@ public class PostgresContainerFixture : IAsyncLifetime
     private async Task CheckForExistingDatabase(NpgsqlConnection connection)
     {
         var existsDb = await connection.ExecuteScalarAsync<bool>(
-            "SELECT 1 FROM  pg_catalog.pg_database WHERE datname= @dbname", param: new {dbname = Container.Database});
+            "SELECT 1 FROM  pg_catalog.pg_database WHERE datname= @dbname",
+            param: new { dbname = Container.Database }
+        );
         if (existsDb == false)
         {
             await connection.ExecuteAsync(
                 "CREATE DATABASE @DBName",
-                param: new {DBName = _postgresContainerOptions.DatabaseName});
+                param: new { DBName = _postgresContainerOptions.DatabaseName }
+            );
         }
 
         // //https://github.com/jbogard/Respawn/issues/108

@@ -13,8 +13,7 @@ namespace Tests.Shared.Factory;
 /// This WebApplicationFactory only use for testing web components without needing Program entrypoint and it doesn't work for web app with Program file and for this case we should use original WebApplicationFactory.
 /// </summary>
 /// <typeparam name="TEntryPoint"></typeparam>
-class WebApplicationFactoryWithHost<TEntryPoint> :
-    WebApplicationFactory<TEntryPoint>
+class WebApplicationFactoryWithHost<TEntryPoint> : WebApplicationFactory<TEntryPoint>
     where TEntryPoint : class
 {
     private readonly Action<IServiceCollection> _configureServices;
@@ -28,7 +27,8 @@ class WebApplicationFactoryWithHost<TEntryPoint> :
     public WebApplicationFactoryWithHost(
         Action<IServiceCollection> configureServices,
         Action<IApplicationBuilder> configure,
-        string[]? args = null)
+        string[]? args = null
+    )
     {
         _configureServices = configureServices;
         _configure = configure;
@@ -66,19 +66,21 @@ class WebApplicationFactoryWithHost<TEntryPoint> :
     {
         var hostBuilder = Host.CreateDefaultBuilder(_args);
         // create startup with these configs
-        hostBuilder.ConfigureWebHostDefaults((webBuilder) =>
-        {
-            webBuilder.ConfigureServices(_configureServices);
+        hostBuilder.ConfigureWebHostDefaults(
+            (webBuilder) =>
+            {
+                webBuilder.ConfigureServices(_configureServices);
 
-            //https://github.com/dotnet/aspnetcore/issues/37680#issuecomment-1331559463
-            //https://github.com/dotnet/aspnetcore/issues/45319#issuecomment-1334355103
-            // Set this so that the async context flows
-            _configure.ConfigureTestApplicationBuilder();
+                //https://github.com/dotnet/aspnetcore/issues/37680#issuecomment-1331559463
+                //https://github.com/dotnet/aspnetcore/issues/45319#issuecomment-1334355103
+                // Set this so that the async context flows
+                _configure.ConfigureTestApplicationBuilder();
 
-            webBuilder.Configure(_configure);
+                webBuilder.Configure(_configure);
 
-            WebHostBuilderCustomization?.Invoke(webBuilder);
-        });
+                WebHostBuilderCustomization?.Invoke(webBuilder);
+            }
+        );
 
         HostBuilderCustomization?.Invoke(hostBuilder);
 

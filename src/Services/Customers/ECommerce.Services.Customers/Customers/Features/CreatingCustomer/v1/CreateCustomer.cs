@@ -22,11 +22,7 @@ internal class CreateCustomerValidator : AbstractValidator<CreateCustomer>
     {
         CascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => x.Email)
-            .NotNull()
-            .NotEmpty()
-            .EmailAddress()
-            .WithMessage("Email address is invalid.");
+        RuleFor(x => x.Email).NotNull().NotEmpty().EmailAddress().WithMessage("Email address is invalid.");
     }
 }
 
@@ -39,7 +35,8 @@ internal class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCus
     public CreateCustomerHandler(
         IIdentityApiClient identityApiClient,
         CustomersDbContext customersDbContext,
-        ILogger<CreateCustomerHandler> logger)
+        ILogger<CreateCustomerHandler> logger
+    )
     {
         _identityApiClient = identityApiClient;
         _customersDbContext = customersDbContext;
@@ -55,15 +52,17 @@ internal class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCus
         if (_customersDbContext.Customers.Any(x => x.Email.Value == command.Email))
             throw new CustomerAlreadyExistsException($"Customer with email '{command.Email}' already exists.");
 
-        var identityUser = (await _identityApiClient.GetUserByEmailAsync(command.Email, cancellationToken))
-            ?.UserIdentity;
+        var identityUser = (
+            await _identityApiClient.GetUserByEmailAsync(command.Email, cancellationToken)
+        )?.UserIdentity;
 
         var customer = Customer.Create(
             CustomerId.Of(command.Id),
             Email.Of(identityUser!.Email),
             PhoneNumber.Of(identityUser.PhoneNumber),
             CustomerName.Of(identityUser.FirstName, identityUser.LastName),
-            identityUser.Id);
+            identityUser.Id
+        );
 
         await _customersDbContext.AddAsync(customer, cancellationToken);
 

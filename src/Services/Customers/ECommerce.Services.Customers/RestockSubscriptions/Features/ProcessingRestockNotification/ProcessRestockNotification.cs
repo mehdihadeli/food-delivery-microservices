@@ -15,11 +15,9 @@ internal class ProcessRestockNotificationValidator : AbstractValidator<ProcessRe
 {
     public ProcessRestockNotificationValidator()
     {
-        RuleFor(x => x.CurrentStock)
-            .NotEmpty();
+        RuleFor(x => x.CurrentStock).NotEmpty();
 
-        RuleFor(x => x.ProductId)
-            .NotEmpty();
+        RuleFor(x => x.ProductId).NotEmpty();
     }
 }
 
@@ -32,7 +30,8 @@ internal class ProcessRestockNotificationHandler : ICommandHandler<ProcessRestoc
     public ProcessRestockNotificationHandler(
         CustomersDbContext customersDbContext,
         ICommandProcessor commandProcessor,
-        ILogger<ProcessRestockNotificationHandler> logger)
+        ILogger<ProcessRestockNotificationHandler> logger
+    )
     {
         _customersDbContext = customersDbContext;
         _commandProcessor = commandProcessor;
@@ -43,9 +42,9 @@ internal class ProcessRestockNotificationHandler : ICommandHandler<ProcessRestoc
     {
         Guard.Against.Null(command, new RestockSubscriptionDomainException("Command cannot be null"));
 
-        var subscribedCustomers =
-            _customersDbContext.RestockSubscriptions.Where(x =>
-                x.ProductInformation.Id == command.ProductId && !x.Processed);
+        var subscribedCustomers = _customersDbContext.RestockSubscriptions.Where(
+            x => x.ProductInformation.Id == command.ProductId && !x.Processed
+        );
 
         if (!await subscribedCustomers.AnyAsync(cancellationToken: cancellationToken))
             return Unit.Value;
@@ -58,7 +57,8 @@ internal class ProcessRestockNotificationHandler : ICommandHandler<ProcessRestoc
             // schedule `SendRestockNotification` for running as a internal command after commenting transaction
             await _commandProcessor.ScheduleAsync(
                 new SendRestockNotification(restockSubscription.Id, command.CurrentStock),
-                cancellationToken);
+                cancellationToken
+            );
         }
 
         await _customersDbContext.SaveChangesAsync(cancellationToken);

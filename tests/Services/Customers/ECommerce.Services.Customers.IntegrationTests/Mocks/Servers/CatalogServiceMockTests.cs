@@ -22,7 +22,7 @@ public class CatalogServiceMockTests
     [CategoryTrait(TestCategory.Unit)]
     public async Task root_address()
     {
-        var client = new HttpClient {BaseAddress = new Uri(_catalogsServiceMock.Url!)};
+        var client = new HttpClient { BaseAddress = new Uri(_catalogsServiceMock.Url!) };
         var res = await client.GetAsync("/");
         res.EnsureSuccessStatusCode();
 
@@ -38,15 +38,12 @@ public class CatalogServiceMockTests
         var (response, endpoint) = _catalogsServiceMock.SetupGetProductById();
         var fakeProduct = response.Product;
 
-        var client = new HttpClient {BaseAddress = new Uri(_catalogsServiceMock.Url!)};
+        var client = new HttpClient { BaseAddress = new Uri(_catalogsServiceMock.Url!) };
         var httpResponse = await client.GetAsync(endpoint);
 
         await httpResponse.EnsureSuccessStatusCodeWithDetailAsync();
         var data = await httpResponse.Content.ReadFromJsonAsync<GetProductByIdResponse>();
         data.Should().NotBeNull();
-        data!.Product.Should().BeEquivalentTo(
-            fakeProduct,
-            options => options.ExcludingMissingMembers());
+        data!.Product.Should().BeEquivalentTo(fakeProduct, options => options.ExcludingMissingMembers());
     }
-
 }

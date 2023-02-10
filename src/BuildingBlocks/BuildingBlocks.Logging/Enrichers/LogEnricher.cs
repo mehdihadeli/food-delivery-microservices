@@ -34,9 +34,7 @@ public static class LogEnricher
         diagnosticContext.Set("ContentType", httpContext.Response.ContentType);
 
         // Set userId
-        diagnosticContext.Set(
-            "UserId",
-            httpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier)?.Value);
+        diagnosticContext.Set("UserId", httpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier)?.Value);
 
         // Retrieve the IEndpointFeature selected for the request
         var endpoint = httpContext.GetEndpoint();

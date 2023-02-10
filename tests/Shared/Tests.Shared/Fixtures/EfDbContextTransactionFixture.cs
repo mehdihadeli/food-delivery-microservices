@@ -32,12 +32,14 @@ public class EfDbContextTransactionFixture<TContext> : IAsyncLifetime
         Guard.Against.Null(postgresOptions);
 
         var postgresContainerBuilder = new TestcontainersBuilder<PostgreSqlTestcontainer>()
-            .WithDatabase(new PostgreSqlTestcontainerConfiguration
-            {
-                Database = postgresOptions.DatabaseName,
-                Username = postgresOptions.UserName,
-                Password = postgresOptions.Password,
-            })
+            .WithDatabase(
+                new PostgreSqlTestcontainerConfiguration
+                {
+                    Database = postgresOptions.DatabaseName,
+                    Username = postgresOptions.UserName,
+                    Password = postgresOptions.Password,
+                }
+            )
             .WithCleanUp(true)
             .WithName(postgresOptions.Name)
             .WithImage(postgresOptions.ImageName);
@@ -74,8 +76,8 @@ public class EfDbContextTransactionFixture<TContext> : IAsyncLifetime
         var optionBuilder = new DbContextOptionsBuilder<TContext>()
             .UseNpgsql(
                 options.ConnectionString,
-                optionsBuilder =>
-                    optionsBuilder.MigrationsAssembly(options.MigrationAssembly))
+                optionsBuilder => optionsBuilder.MigrationsAssembly(options.MigrationAssembly)
+            )
             .UseSnakeCaseNamingConvention()
             .Options;
 

@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace BuildingBlocks.Core.Persistence.EfCore;
 
-public abstract class EfRepositoryBase<TDbContext, TEntity, TKey> :
-    IEfRepository<TEntity, TKey>,
-    IPageRepository<TEntity, TKey>
+public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>
+    : IEfRepository<TEntity, TKey>,
+        IPageRepository<TEntity, TKey>
     where TEntity : class, IHaveIdentity<TKey>
     where TDbContext : DbContext
 {
@@ -32,7 +32,8 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey> :
 
     public Task<TEntity?> FindOneAsync(
         Expression<Func<TEntity, bool>> predicate,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         Guard.Against.Null(predicate, nameof(predicate));
 
@@ -41,7 +42,8 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey> :
 
     public async Task<IReadOnlyList<TEntity>> FindAsync(
         Expression<Func<TEntity, bool>> predicate,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         return await DbSet.Where(predicate).ToListAsync(cancellationToken);
     }
@@ -53,7 +55,9 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey> :
 
     public virtual IEnumerable<TEntity> GetInclude(
         Expression<Func<TEntity, bool>> predicate,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null, bool withTracking = true)
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null,
+        bool withTracking = true
+    )
     {
         IQueryable<TEntity> query = DbSet;
 
@@ -73,7 +77,8 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey> :
     }
 
     public virtual IEnumerable<TEntity> GetInclude(
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null)
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null
+    )
     {
         IQueryable<TEntity> query = DbSet;
 
@@ -86,7 +91,8 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey> :
     }
 
     public virtual async Task<IEnumerable<TEntity>> GetIncludeAsync(
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null)
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null
+    )
     {
         IQueryable<TEntity> query = DbSet;
 
@@ -101,7 +107,8 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey> :
     public virtual async Task<IEnumerable<TEntity>> GetIncludeAsync(
         Expression<Func<TEntity, bool>> predicate,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null,
-        bool withTracking = true)
+        bool withTracking = true
+    )
     {
         IQueryable<TEntity> query = DbSet;
 

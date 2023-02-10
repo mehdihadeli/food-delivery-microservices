@@ -18,8 +18,7 @@ public record GetCustomerByCustomerId(long CustomerId) : IQuery<GetCustomerByCus
     {
         public Validator()
         {
-            RuleFor(x => x.CustomerId)
-                .NotEmpty();
+            RuleFor(x => x.CustomerId).NotEmpty();
         }
     }
 
@@ -36,11 +35,13 @@ public record GetCustomerByCustomerId(long CustomerId) : IQuery<GetCustomerByCus
 
         public async Task<GetCustomerByCustomerIdResponse> Handle(
             GetCustomerByCustomerId query,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             Guard.Against.Null(query, nameof(query));
 
-            var customer = await _customersReadDbContext.Customers.AsQueryable()
+            var customer = await _customersReadDbContext.Customers
+                .AsQueryable()
                 .FirstOrDefaultAsync(x => x.CustomerId == query.CustomerId, cancellationToken: cancellationToken);
 
             Guard.Against.NotFound(customer, new CustomerNotFoundException(query.CustomerId));

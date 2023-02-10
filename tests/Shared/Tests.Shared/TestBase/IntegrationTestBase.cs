@@ -19,9 +19,9 @@ public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLif
     protected int Timeout => 180;
     protected IServiceScope Scope { get; }
     protected SharedFixture<TEntryPoint> SharedFixture { get; }
-    protected IntegrationTest(
-        SharedFixture<TEntryPoint> sharedFixture,
-        ITestOutputHelper outputHelper): base(outputHelper)
+
+    protected IntegrationTest(SharedFixture<TEntryPoint> sharedFixture, ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
         SharedFixture = sharedFixture;
         SharedFixture.SetOutputHelper(outputHelper);
@@ -29,10 +29,12 @@ public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLif
         CancellationTokenSource = new(TimeSpan.FromSeconds(Timeout));
         CancellationToken.ThrowIfCancellationRequested();
 
-        SharedFixture.WithConfigureAppConfigurations((context, configurationBuilder) =>
-        {
-            RegisterTestAppConfigurations(configurationBuilder, context.Configuration, context.HostingEnvironment);
-        });
+        SharedFixture.WithConfigureAppConfigurations(
+            (context, configurationBuilder) =>
+            {
+                RegisterTestAppConfigurations(configurationBuilder, context.Configuration, context.HostingEnvironment);
+            }
+        );
 
         SharedFixture.ConfigureTestServices(RegisterTestConfigureServices);
 
@@ -41,9 +43,7 @@ public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLif
     }
 
     // we use IAsyncLifetime in xunit instead of constructor when we have async operation
-    public virtual async Task InitializeAsync()
-    {
-    }
+    public virtual async Task InitializeAsync() { }
 
     public virtual async Task DisposeAsync()
     {
@@ -56,16 +56,13 @@ public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLif
         Scope.Dispose();
     }
 
-    protected virtual void RegisterTestConfigureServices(IServiceCollection services)
-    {
-    }
+    protected virtual void RegisterTestConfigureServices(IServiceCollection services) { }
 
     protected virtual void RegisterTestAppConfigurations(
         IConfigurationBuilder builder,
         IConfiguration configuration,
-        IHostEnvironment environment)
-    {
-    }
+        IHostEnvironment environment
+    ) { }
 }
 
 public abstract class IntegrationTestBase<TEntryPoint, TContext> : IntegrationTest<TEntryPoint>
@@ -73,7 +70,9 @@ public abstract class IntegrationTestBase<TEntryPoint, TContext> : IntegrationTe
     where TContext : DbContext
 {
     protected IntegrationTestBase(
-        SharedFixtureWithEfCore<TEntryPoint, TContext> sharedFixture, ITestOutputHelper outputHelper)
+        SharedFixtureWithEfCore<TEntryPoint, TContext> sharedFixture,
+        ITestOutputHelper outputHelper
+    )
         : base(sharedFixture, outputHelper)
     {
         SharedFixture = sharedFixture;
@@ -82,15 +81,16 @@ public abstract class IntegrationTestBase<TEntryPoint, TContext> : IntegrationTe
     public new SharedFixtureWithEfCore<TEntryPoint, TContext> SharedFixture { get; }
 }
 
-public abstract class
-    IntegrationTestBase<TEntryPoint, TWContext, TRContext> : IntegrationTest<TEntryPoint>
+public abstract class IntegrationTestBase<TEntryPoint, TWContext, TRContext> : IntegrationTest<TEntryPoint>
     where TEntryPoint : class
     where TWContext : DbContext
     where TRContext : MongoDbContext
 {
     protected IntegrationTestBase(
         SharedFixtureWithEfCoreAndMongo<TEntryPoint, TWContext, TRContext> sharedFixture,
-        ITestOutputHelper outputHelper) : base(sharedFixture, outputHelper)
+        ITestOutputHelper outputHelper
+    )
+        : base(sharedFixture, outputHelper)
     {
         SharedFixture = sharedFixture;
     }

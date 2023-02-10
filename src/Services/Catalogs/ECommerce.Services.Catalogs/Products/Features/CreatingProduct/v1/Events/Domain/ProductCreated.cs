@@ -24,8 +24,10 @@ internal class ProductCreatedHandler : IDomainEventHandler<ProductCreated>
     {
         Guard.Against.Null(notification, nameof(notification));
 
-        var existed = await _dbContext.ProductsView
-            .SingleOrDefaultAsync(x => x.ProductId == notification.Product.Id.Value, cancellationToken);
+        var existed = await _dbContext.ProductsView.SingleOrDefaultAsync(
+            x => x.ProductId == notification.Product.Id.Value,
+            cancellationToken
+        );
 
         if (existed is null)
         {
@@ -58,9 +60,7 @@ internal class ProductCreatedHandler : IDomainEventHandler<ProductCreated>
 // Mapping domain event to integration event in domain event handler is better from mapping in command handler (for preserving our domain rule invariants).
 internal class ProductCreatedDomainEventToIntegrationMappingHandler : IDomainEventHandler<ProductCreated>
 {
-    public ProductCreatedDomainEventToIntegrationMappingHandler()
-    {
-    }
+    public ProductCreatedDomainEventToIntegrationMappingHandler() { }
 
     public Task Handle(ProductCreated domainEvent, CancellationToken cancellationToken)
     {

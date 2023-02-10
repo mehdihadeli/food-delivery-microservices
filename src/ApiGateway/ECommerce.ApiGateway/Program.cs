@@ -6,13 +6,13 @@ using Serilog.Events;
 using Serilog.Sinks.SpectreConsole;
 using Yarp.ReverseProxy.Transforms;
 
-
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+Log.Logger = new LoggerConfiguration().MinimumLevel
+    .Override("Microsoft", LogEventLevel.Information)
     .Enrich.FromLogContext()
     .WriteTo.SpectreConsole(
         "{Timestamp:HH:mm:ss} [{Level:u4}] {Message:lj}{NewLine}{Exception}",
-        LogEventLevel.Information)
+        LogEventLevel.Information
+    )
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,7 +27,6 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services
     .AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("yarp"))
-
     // .AddTransforms<AccessTokenTransformProvider>()
     .AddTransforms(transforms =>
     {
@@ -48,16 +47,18 @@ var app = builder.Build();
 
 // request logging just log in information level and above as default
 app.UseSerilogRequestLogging(opts =>
+{
+    opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest;
+    opts.GetLevel = LogEnricher.GetLogLevel;
+});
+
+app.MapGet(
+    "/",
+    async (HttpContext context) =>
     {
-        opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest;
-        opts.GetLevel = LogEnricher.GetLogLevel;
+        await context.Response.WriteAsync($"ECommerce Gateway");
     }
 );
-
-app.MapGet("/", async (HttpContext context) =>
-{
-    await context.Response.WriteAsync($"ECommerce Gateway");
-});
 
 app.MapReverseProxy();
 

@@ -6,9 +6,11 @@ public class OnlyAdminsAuthorizationHandler : AuthorizationHandler<OnlyAdminsReq
 {
     protected override Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
-        OnlyAdminsRequirement requirement)
+        OnlyAdminsRequirement requirement
+    )
     {
-        if (context.User.IsInRole(Roles.Admin)) context.Succeed(requirement);
+        if (context.User.IsInRole(Roles.Admin))
+            context.Succeed(requirement);
 
         return Task.CompletedTask;
     }

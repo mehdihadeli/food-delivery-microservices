@@ -10,6 +10,4 @@ public interface IInvalidateCacheRequest<in TRequest, TResponse>
 }
 
 public interface IInvalidateCacheRequest<in TRequest> : IInvalidateCacheRequest<TRequest, Unit>
-    where TRequest : IRequest<Unit>
-{
-}
+    where TRequest : IRequest<Unit> { }

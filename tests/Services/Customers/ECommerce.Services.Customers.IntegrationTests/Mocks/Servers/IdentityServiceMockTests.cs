@@ -22,7 +22,7 @@ public class IdentityServiceMockTests
     [Fact]
     public async Task root_address()
     {
-        var client = new HttpClient {BaseAddress = new Uri(_identityServiceMock.Url!)};
+        var client = new HttpClient { BaseAddress = new Uri(_identityServiceMock.Url!) };
         var res = await client.GetAsync("/");
         res.EnsureSuccessStatusCode();
 
@@ -38,15 +38,13 @@ public class IdentityServiceMockTests
         var (response, endpoint) = _identityServiceMock.SetupGetUserByEmail();
         var fakeIdentityUser = response.UserIdentity;
 
-        var client = new HttpClient {BaseAddress = new Uri(_identityServiceMock.Url!)};
+        var client = new HttpClient { BaseAddress = new Uri(_identityServiceMock.Url!) };
         var httpResponse = await client.GetAsync(endpoint);
 
         await httpResponse.EnsureSuccessStatusCodeWithDetailAsync();
         var data = await httpResponse.Content.ReadFromJsonAsync<GetUserByEmailResponse>();
         data.Should().NotBeNull();
-        data!.UserIdentity.Should().BeEquivalentTo(
-            fakeIdentityUser,
-            options => options.ExcludingMissingMembers());
+        data!.UserIdentity.Should().BeEquivalentTo(fakeIdentityUser, options => options.ExcludingMissingMembers());
     }
 
     [Fact]
@@ -57,14 +55,12 @@ public class IdentityServiceMockTests
         var (response, endpoint) = _identityServiceMock.SetupGetUserByEmail(userRegistered);
         var fakeIdentityUser = response.UserIdentity;
 
-        var client = new HttpClient {BaseAddress = new Uri(_identityServiceMock.Url!)};
+        var client = new HttpClient { BaseAddress = new Uri(_identityServiceMock.Url!) };
         var res = await client.GetAsync(endpoint);
         res.EnsureSuccessStatusCode();
 
         var g = await res.Content.ReadFromJsonAsync<GetUserByEmailResponse>();
         g.Should().NotBeNull();
-        g!.UserIdentity.Should().BeEquivalentTo(
-            fakeIdentityUser,
-            options => options.ExcludingMissingMembers());
+        g!.UserIdentity.Should().BeEquivalentTo(fakeIdentityUser, options => options.ExcludingMissingMembers());
     }
 }

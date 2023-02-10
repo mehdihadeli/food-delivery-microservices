@@ -21,28 +21,29 @@ public class IdentityApiClient : IIdentityApiClient
 
     public async Task<GetUserByEmailResponse?> GetUserByEmailAsync(
         string email,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         Guard.Against.NullOrEmpty(email);
         Guard.Against.InvalidEmail(email);
 
         // https://stackoverflow.com/questions/21097730/usage-of-ensuresuccessstatuscode-and-handling-of-httprequestexception-it-throws
         // https: //github.com/App-vNext/Polly#step-1--specify-the--exceptionsfaults-you-want-the-policy-to-handle
-        var httpResponse = await _httpClient.GetAsync(
-            $"/{_options.UsersEndpoint}/by-email/{email}",
-            cancellationToken);
+        var httpResponse = await _httpClient.GetAsync($"/{_options.UsersEndpoint}/by-email/{email}", cancellationToken);
 
         // https://stackoverflow.com/questions/21097730/usage-of-ensuresuccessstatuscode-and-handling-of-httprequestexception-it-throws
         // throw HttpResponseException instead of HttpRequestException (because we want detail response exception) with corresponding status code
         await httpResponse.EnsureSuccessStatusCodeWithDetailAsync();
 
         return await httpResponse.Content.ReadFromJsonAsync<GetUserByEmailResponse>(
-            cancellationToken: cancellationToken);
+            cancellationToken: cancellationToken
+        );
     }
 
     public async Task<CreateUserResponse?> CreateUserIdentityAsync(
         CreateUserRequest createUserRequest,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         Guard.Against.Null(createUserRequest);
 
@@ -51,13 +52,13 @@ public class IdentityApiClient : IIdentityApiClient
         var httpResponse = await _httpClient.PostAsJsonAsync(
             _options.UsersEndpoint,
             createUserRequest,
-            cancellationToken);
+            cancellationToken
+        );
 
         // https://stackoverflow.com/questions/21097730/usage-of-ensuresuccessstatuscode-and-handling-of-httprequestexception-it-throws
         // throw HttpResponseException instead of HttpRequestException (because we want detail response exception) with corresponding status code
         await httpResponse.EnsureSuccessStatusCodeWithDetailAsync();
 
-        return await httpResponse.Content.ReadFromJsonAsync<CreateUserResponse>(
-            cancellationToken: cancellationToken);
+        return await httpResponse.Content.ReadFromJsonAsync<CreateUserResponse>(cancellationToken: cancellationToken);
     }
 }

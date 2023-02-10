@@ -25,7 +25,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddPostgresDbContext<TDbContext>(
         this IServiceCollection services,
         Assembly? migrationAssembly = null,
-        Action<DbContextOptionsBuilder>? builder = null)
+        Action<DbContextOptionsBuilder>? builder = null
+    )
         where TDbContext : DbContext, IDbFacadeResolver, IDomainEventContext
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -39,30 +40,40 @@ public static class ServiceCollectionExtensions
             return new NpgsqlConnectionFactory(postgresOptions.ConnectionString);
         });
 
-        services.AddDbContext<TDbContext>((sp, options) =>
-        {
-            var postgresOptions = sp.GetRequiredService<PostgresOptions>();
+        services.AddDbContext<TDbContext>(
+            (sp, options) =>
+            {
+                var postgresOptions = sp.GetRequiredService<PostgresOptions>();
 
-            options.UseNpgsql(postgresOptions.ConnectionString, sqlOptions =>
-                {
-                    var name =
-                        migrationAssembly?.GetName().Name ?? postgresOptions.MigrationAssembly ??
-                        typeof(TDbContext).Assembly.GetName().Name;
+                options
+                    .UseNpgsql(
+                        postgresOptions.ConnectionString,
+                        sqlOptions =>
+                        {
+                            var name =
+                                migrationAssembly?.GetName().Name
+                                ?? postgresOptions.MigrationAssembly
+                                ?? typeof(TDbContext).Assembly.GetName().Name;
 
-                    sqlOptions.MigrationsAssembly(name);
-                    sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-                })
+                            sqlOptions.MigrationsAssembly(name);
+                            sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                        }
+                    )
+                    // https://github.com/efcore/EFCore.NamingConventions
+                    .UseSnakeCaseNamingConvention();
 
-                // https://github.com/efcore/EFCore.NamingConventions
-                .UseSnakeCaseNamingConvention();
+                // ref: https://andrewlock.net/series/using-strongly-typed-entity-ids-to-avoid-primitive-obsession/
+                options.ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector<long>>();
 
-            // ref: https://andrewlock.net/series/using-strongly-typed-entity-ids-to-avoid-primitive-obsession/
-            options.ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector<long>>();
+                options.AddInterceptors(
+                    new AuditInterceptor(),
+                    new SoftDeleteInterceptor(),
+                    new ConcurrencyInterceptor()
+                );
 
-            options.AddInterceptors(new AuditInterceptor(), new SoftDeleteInterceptor(), new ConcurrencyInterceptor());
-
-            builder?.Invoke(options);
-        });
+                builder?.Invoke(options);
+            }
+        );
 
         services.AddScoped<IDbFacadeResolver>(provider => provider.GetService<TDbContext>()!);
         services.AddScoped<IDomainEventContext>(provider => provider.GetService<TDbContext>()!);
@@ -73,14 +84,18 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddPostgresCustomRepository(
         this IServiceCollection services,
-        Type customRepositoryType)
+        Type customRepositoryType
+    )
     {
-        services.Scan(scan => scan
-            .FromAssembliesOf(customRepositoryType)
-            .AddClasses(classes =>
-                classes.AssignableTo(customRepositoryType)).As(typeof(IRepository<,>)).WithScopedLifetime()
-            .AddClasses(classes =>
-                classes.AssignableTo(customRepositoryType)).As(typeof(IPageRepository<>)).WithScopedLifetime()
+        services.Scan(
+            scan =>
+                scan.FromAssembliesOf(customRepositoryType)
+                    .AddClasses(classes => classes.AssignableTo(customRepositoryType))
+                    .As(typeof(IRepository<,>))
+                    .WithScopedLifetime()
+                    .AddClasses(classes => classes.AssignableTo(customRepositoryType))
+                    .As(typeof(IPageRepository<>))
+                    .WithScopedLifetime()
         );
 
         return services;
@@ -88,7 +103,8 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddPostgresRepository<TEntity, TKey, TRepository>(
         this IServiceCollection services,
-        ServiceLifetime lifeTime = ServiceLifetime.Scoped)
+        ServiceLifetime lifeTime = ServiceLifetime.Scoped
+    )
         where TEntity : class, IAggregate<TKey>
         where TRepository : class, IRepository<TEntity, TKey>
     {
@@ -98,7 +114,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddUnitOfWork<TContext>(
         this IServiceCollection services,
         ServiceLifetime lifeTime = ServiceLifetime.Scoped,
-        bool registerGeneric = false)
+        bool registerGeneric = false
+    )
         where TContext : EfDbContextBase
     {
         if (registerGeneric)
@@ -111,7 +128,8 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection RegisterService<TService, TImplementation>(
         this IServiceCollection services,
-        ServiceLifetime lifeTime = ServiceLifetime.Scoped)
+        ServiceLifetime lifeTime = ServiceLifetime.Scoped
+    )
         where TService : class
         where TImplementation : class, TService
     {

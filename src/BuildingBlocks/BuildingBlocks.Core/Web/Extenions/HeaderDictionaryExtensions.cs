@@ -5,9 +5,7 @@ namespace BuildingBlocks.Core.Web.Extenions;
 // https://khalidabuhakmeh.com/read-and-convert-querycollection-values-in-aspnet
 public static class HeaderDictionaryExtensions
 {
-    public static IEnumerable<T> All<T>(
-        this IHeaderDictionary collection,
-        string key)
+    public static IEnumerable<T> All<T>(this IHeaderDictionary collection, string key)
     {
         var values = new List<T>();
 
@@ -36,7 +34,8 @@ public static class HeaderDictionaryExtensions
         this IHeaderDictionary collection,
         string key,
         T @default = default,
-        ParameterPick option = ParameterPick.First)
+        ParameterPick option = ParameterPick.First
+    )
     {
         var values = All<T>(collection, key).ToList();
         var value = @default;

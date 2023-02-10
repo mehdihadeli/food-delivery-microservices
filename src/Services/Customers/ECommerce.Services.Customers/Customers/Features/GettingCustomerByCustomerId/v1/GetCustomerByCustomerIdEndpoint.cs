@@ -15,15 +15,16 @@ public class GetCustomerByCustomerIdEndpointEndpoint : IQueryMinimalEndpoint<lon
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
-        return builder.MapGet("/{customerId}", HandleAsync)
+        return builder
+            .MapGet("/{customerId}", HandleAsync)
             // .RequireAuthorization()
             .Produces<GetCustomerByCustomerIdResponse>(StatusCodes.Status200OK)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
-            .WithMetadata(new SwaggerOperationAttribute(
-                "Getting a Customer By CustomerId",
-                "Getting a Customer By CustomerId"))
+            .WithMetadata(
+                new SwaggerOperationAttribute("Getting a Customer By CustomerId", "Getting a Customer By CustomerId")
+            )
             .WithName("GetCustomerByCustomerId")
             .WithDisplayName("Get Customer By CustomerId.");
     }
@@ -33,7 +34,8 @@ public class GetCustomerByCustomerIdEndpointEndpoint : IQueryMinimalEndpoint<lon
         long customerId,
         IQueryProcessor queryProcessor,
         IMapper mapper,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         // https://github.com/serilog/serilog/wiki/Enrichment
         // https://dotnetdocs.ir/Post/34/categorizing-logs-with-serilog-in-aspnet-core

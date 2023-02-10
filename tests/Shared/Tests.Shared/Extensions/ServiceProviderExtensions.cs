@@ -7,7 +7,8 @@ public static class ServiceProviderExtensions
     public static async Task StartTestHostedServices(
         this IServiceProvider serviceProvider,
         Type[] hostedServiceTypes,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         foreach (var hostedServiceType in hostedServiceTypes)
         {
@@ -19,7 +20,8 @@ public static class ServiceProviderExtensions
     public static async Task StopTestHostedServices(
         this IServiceProvider serviceProvider,
         Type[] hostedServiceTypes,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         foreach (var hostedServiceType in hostedServiceTypes)
         {

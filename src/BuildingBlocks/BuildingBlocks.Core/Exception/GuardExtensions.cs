@@ -6,10 +6,12 @@ namespace BuildingBlocks.Core.Exception;
 
 public static class GuardExtensions
 {
-    private static readonly Regex _regex = new(
-        @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
-        @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-0-9a-z]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
-        RegexOptions.Compiled);
+    private static readonly Regex _regex =
+        new(
+            @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))"
+                + @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-0-9a-z]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
+            RegexOptions.Compiled
+        );
 
     private static readonly HashSet<string> _allowedCurrency = new() { "USD", "EUR", };
 
@@ -190,7 +192,8 @@ public static class GuardExtensions
     public static string InvalidPhoneNumber(
         this IGuardClause guardClause,
         string phoneNumber,
-        System.Exception exception)
+        System.Exception exception
+    )
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))
         {

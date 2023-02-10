@@ -12,19 +12,18 @@ using MongoDB.Driver.Linq;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionBySubscriptionId.v1;
 
-public record GetRestockSubscriptionBySubscriptionId
-    (long RestockSubscriptionId) : IQuery<GetRestockSubscriptionBySubscriptionIdResponse>
+public record GetRestockSubscriptionBySubscriptionId(long RestockSubscriptionId)
+    : IQuery<GetRestockSubscriptionBySubscriptionIdResponse>
 {
     internal class Validator : AbstractValidator<GetRestockSubscriptionBySubscriptionId>
     {
         public Validator()
         {
-            RuleFor(x => x.RestockSubscriptionId)
-                .NotEmpty();
+            RuleFor(x => x.RestockSubscriptionId).NotEmpty();
         }
 
-        internal class Handler : IQueryHandler<GetRestockSubscriptionBySubscriptionId,
-            GetRestockSubscriptionBySubscriptionIdResponse>
+        internal class Handler
+            : IQueryHandler<GetRestockSubscriptionBySubscriptionId, GetRestockSubscriptionBySubscriptionIdResponse>
         {
             private readonly CustomersReadDbContext _customersReadDbContext;
             private readonly IMapper _mapper;
@@ -37,20 +36,23 @@ public record GetRestockSubscriptionBySubscriptionId
 
             public async Task<GetRestockSubscriptionBySubscriptionIdResponse> Handle(
                 GetRestockSubscriptionBySubscriptionId query,
-                CancellationToken cancellationToken)
+                CancellationToken cancellationToken
+            )
             {
                 Guard.Against.Null(query, nameof(query));
 
-                var restockSubscription =
-                    await _customersReadDbContext.RestockSubscriptions.AsQueryable()
-                        .Where(x => x.IsDeleted == false)
-                        .SingleOrDefaultAsync(
-                            x => x.RestockSubscriptionId == query.RestockSubscriptionId,
-                            cancellationToken);
+                var restockSubscription = await _customersReadDbContext.RestockSubscriptions
+                    .AsQueryable()
+                    .Where(x => x.IsDeleted == false)
+                    .SingleOrDefaultAsync(
+                        x => x.RestockSubscriptionId == query.RestockSubscriptionId,
+                        cancellationToken
+                    );
 
                 Guard.Against.NotFound(
                     restockSubscription,
-                    new RestockSubscriptionNotFoundException(query.RestockSubscriptionId));
+                    new RestockSubscriptionNotFoundException(query.RestockSubscriptionId)
+                );
 
                 var subscriptionDto = _mapper.Map<RestockSubscriptionDto>(restockSubscription);
 

@@ -1,10 +1,6 @@
 namespace BuildingBlocks.Abstractions.CQRS.Commands;
 
 public interface ICreateCommand<out TResponse> : ICommand<TResponse>
-    where TResponse : notnull
-{
-}
+    where TResponse : notnull { }
 
-public interface ICreateCommand : ICommand
-{
-}
+public interface ICreateCommand : ICommand { }

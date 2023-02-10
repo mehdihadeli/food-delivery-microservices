@@ -20,7 +20,6 @@ public static class IdentityServerConfig
             new("roles", "User Roles", new List<string> { "role" })
         };
 
-
     public static IEnumerable<ApiScope> ApiScopes =>
         new List<ApiScope> { new("shop-api", "ECommerce.Services.Catalogs Web API") };
 
@@ -33,7 +32,6 @@ public static class IdentityServerConfig
                 UserClaims = { JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id }
             }
         };
-
 
     public static IEnumerable<Client> Clients =>
         new List<Client>

@@ -17,6 +17,4 @@ public class RedisCacheOptions
     public string ConnectionString { get; set; } = default!;
 }
 
-public class InMemoryCacheOptions
-{
-}
+public class InMemoryCacheOptions { }

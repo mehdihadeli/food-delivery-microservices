@@ -15,16 +15,18 @@ public class InvalidateCachingBehavior<TRequest, TResponse> : IPipelineBehavior<
     private readonly IEasyCachingProvider _cacheProvider;
     private readonly IEnumerable<IInvalidateCacheRequest<TRequest, TResponse>> _invalidateCachingPolicies;
 
-
     public InvalidateCachingBehavior(
         ILogger<InvalidateCachingBehavior<TRequest, TResponse>> logger,
         IEasyCachingProviderFactory cachingProviderFactory,
         IOptions<CacheOptions> cacheOptions,
-        IEnumerable<IInvalidateCacheRequest<TRequest, TResponse>> invalidateCachingPolicies)
+        IEnumerable<IInvalidateCacheRequest<TRequest, TResponse>> invalidateCachingPolicies
+    )
     {
         _logger = Guard.Against.Null(logger);
         Guard.Against.Null(cacheOptions.Value);
-        _cacheProvider = Guard.Against.Null(cachingProviderFactory).GetCachingProvider(cacheOptions.Value.DefaultCacheType);
+        _cacheProvider = Guard.Against
+            .Null(cachingProviderFactory)
+            .GetCachingProvider(cacheOptions.Value.DefaultCacheType);
 
         // cachePolicies inject like `FluentValidation` approach as a nested or seperated cache class for commands ,queries
         _invalidateCachingPolicies = invalidateCachingPolicies;
@@ -33,7 +35,8 @@ public class InvalidateCachingBehavior<TRequest, TResponse> : IPipelineBehavior<
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var cacheRequest = _invalidateCachingPolicies.FirstOrDefault();
         if (cacheRequest == null)

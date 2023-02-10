@@ -16,14 +16,18 @@ public static class MongoQueryableExtensions
         this IMongoQueryable<T> collection,
         int page = 1,
         int pageSize = 10,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        if (page <= 0) page = 1;
+        if (page <= 0)
+            page = 1;
 
-        if (pageSize <= 0) pageSize = 10;
+        if (pageSize <= 0)
+            pageSize = 10;
 
         var isEmpty = await collection.AnyAsync(cancellationToken: cancellationToken) == false;
-        if (isEmpty) return ListResultModel<T>.Empty;
+        if (isEmpty)
+            return ListResultModel<T>.Empty;
 
         var totalItems = await collection.CountAsync(cancellationToken: cancellationToken);
         var totalPages = (int)Math.Ceiling((decimal)totalItems / pageSize);
@@ -37,14 +41,18 @@ public static class MongoQueryableExtensions
         IConfigurationProvider configuration,
         int page = 1,
         int pageSize = 10,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        if (page <= 0) page = 1;
+        if (page <= 0)
+            page = 1;
 
-        if (pageSize <= 0) pageSize = 10;
+        if (pageSize <= 0)
+            pageSize = 10;
 
         var isEmpty = await collection.AnyAsync(cancellationToken: cancellationToken) == false;
-        if (isEmpty) return ListResultModel<R>.Empty;
+        if (isEmpty)
+            return ListResultModel<R>.Empty;
 
         var totalItems = await collection.CountAsync(cancellationToken: cancellationToken);
         var totalPages = (int)Math.Ceiling((decimal)totalItems / pageSize);
@@ -53,25 +61,24 @@ public static class MongoQueryableExtensions
         return ListResultModel<R>.Create(data, totalItems, page, pageSize);
     }
 
-    public static IMongoQueryable<T> Skip<T>(
-        this IMongoQueryable<T> collection,
-        int page = 1,
-        int resultsPerPage = 10)
+    public static IMongoQueryable<T> Skip<T>(this IMongoQueryable<T> collection, int page = 1, int resultsPerPage = 10)
     {
-        if (page <= 0) page = 1;
+        if (page <= 0)
+            page = 1;
 
-        if (resultsPerPage <= 0) resultsPerPage = 10;
+        if (resultsPerPage <= 0)
+            resultsPerPage = 10;
 
         var skip = (page - 1) * resultsPerPage;
-        var data = MongoQueryable.Skip(collection, skip)
-            .Take(resultsPerPage);
+        var data = MongoQueryable.Skip(collection, skip).Take(resultsPerPage);
 
         return data;
     }
 
     public static IMongoQueryable<TEntity> ApplyFilter<TEntity>(
         this IMongoQueryable<TEntity> source,
-        IEnumerable<FilterModel>? filters)
+        IEnumerable<FilterModel>? filters
+    )
         where TEntity : class
     {
         if (filters is null)

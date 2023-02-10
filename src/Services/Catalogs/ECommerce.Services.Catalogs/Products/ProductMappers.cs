@@ -45,22 +45,26 @@ public class ProductMappers : Profile
         CreateMap<CreateProduct, Product>();
 
         CreateMap<CreateProductRequest, CreateProduct>()
-            .ConstructUsing(req => new CreateProduct(
-                req.Name,
-                req.Price,
-                req.Stock,
-                req.RestockThreshold,
-                req.MaxStockThreshold,
-                req.Status,
-                req.Width,
-                req.Height,
-                req.Depth,
-                req.Size,
-                req.Color,
-                req.CategoryId,
-                req.SupplierId,
-                req.BrandId,
-                req.Description,
-                req.Images));
+            .ConstructUsing(
+                req =>
+                    new CreateProduct(
+                        req.Name,
+                        req.Price,
+                        req.Stock,
+                        req.RestockThreshold,
+                        req.MaxStockThreshold,
+                        req.Status,
+                        req.Width,
+                        req.Height,
+                        req.Depth,
+                        req.Size,
+                        req.Color,
+                        req.CategoryId,
+                        req.SupplierId,
+                        req.BrandId,
+                        req.Description,
+                        req.Images
+                    )
+            );
     }
 }

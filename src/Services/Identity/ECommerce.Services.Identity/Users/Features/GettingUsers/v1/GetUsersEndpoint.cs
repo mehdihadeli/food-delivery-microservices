@@ -9,9 +9,7 @@ namespace ECommerce.Services.Identity.Users.Features.GettingUsers.v1;
 
 // https://www.youtube.com/watch?v=SDu0MA6TmuM
 // https://github.com/ardalis/ApiEndpoints
-public class GetUsersEndpoint : EndpointBaseAsync
-    .WithRequest<GetUsersRequest?>
-    .WithActionResult<GetUsersResponse>
+public class GetUsersEndpoint : EndpointBaseAsync.WithRequest<GetUsersRequest?>.WithActionResult<GetUsersResponse>
 {
     private readonly IQueryProcessor _queryProcessor;
 
@@ -27,12 +25,14 @@ public class GetUsersEndpoint : EndpointBaseAsync
         Summary = "Get all users",
         Description = "Get all users",
         OperationId = "GetUsers",
-        Tags = new[] {UsersConfigs.Tag})]
+        Tags = new[] { UsersConfigs.Tag }
+    )]
     [ApiVersion(1.0)]
     [HttpGet(UsersConfigs.UsersPrefixUri, Name = "GetUsers")]
     public override async Task<ActionResult<GetUsersResponse>> HandleAsync(
         [FromQuery] GetUsersRequest? request,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         Guard.Against.Null(request, nameof(request));
 
@@ -45,7 +45,8 @@ public class GetUsersEndpoint : EndpointBaseAsync
                 Sorts = request.Sorts,
                 PageSize = request.PageSize
             },
-            cancellationToken);
+            cancellationToken
+        );
 
         return Ok(result);
     }

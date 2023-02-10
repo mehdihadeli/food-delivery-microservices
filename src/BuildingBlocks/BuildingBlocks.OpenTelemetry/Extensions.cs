@@ -19,19 +19,17 @@ public static class Extensions
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
         var options = builder.Configuration.BindOptions<OpenTelemetryOptions>();
 
-        builder.Services.AddOpenTelemetryTracing(
-            tracerProviderBuilder =>
-            {
-                tracerProviderBuilder
-                    .SetResourceBuilder(resourceBuilder)
-                    .AddSource("MassTransit") // https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/326
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddEntityFrameworkCoreInstrumentation();
+        builder.Services.AddOpenTelemetryTracing(tracerProviderBuilder =>
+        {
+            tracerProviderBuilder
+                .SetResourceBuilder(resourceBuilder)
+                .AddSource("MassTransit") // https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/326
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddEntityFrameworkCoreInstrumentation();
 
-                SetTracingExporters(options, tracerProviderBuilder);
-            }
-        );
+            SetTracingExporters(options, tracerProviderBuilder);
+        });
 
         builder.Logging.AddOpenTelemetry(o =>
         {
@@ -42,7 +40,8 @@ public static class Extensions
 
         builder.Services.AddOpenTelemetryMetrics(metrics =>
         {
-            metrics.SetResourceBuilder(resourceBuilder)
+            metrics
+                .SetResourceBuilder(resourceBuilder)
                 .AddPrometheusExporter()
                 .AddAspNetCoreInstrumentation()
                 .AddRuntimeInstrumentation()
@@ -55,7 +54,8 @@ public static class Extensions
                         "System.Net.Http",
                         "System.Net.Sockets",
                         "System.Net.NameResolution",
-                        "System.Net.Security");
+                        "System.Net.Security"
+                    );
                 });
 
             SetMetricsExporters(options, metrics);
@@ -69,11 +69,10 @@ public static class Extensions
         });
 
         // For options which can be configured from code only.
-        builder.Services.Configure<AspNetCoreInstrumentationOptions>(
-            aspNetCoreInstrumentationOptions =>
-            {
-                aspNetCoreInstrumentationOptions.Filter = _ => true;
-            });
+        builder.Services.Configure<AspNetCoreInstrumentationOptions>(aspNetCoreInstrumentationOptions =>
+        {
+            aspNetCoreInstrumentationOptions.Filter = _ => true;
+        });
 
         return builder;
     }
@@ -87,7 +86,10 @@ public static class Extensions
                 break;
 
             case nameof(LogExporterType.OTLP):
-                loggerOptions.AddOtlpExporter(otlpOptions => { otlpOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint); });
+                loggerOptions.AddOtlpExporter(otlpOptions =>
+                {
+                    otlpOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint);
+                });
                 break;
             case nameof(LogExporterType.None):
                 break;
@@ -99,15 +101,20 @@ public static class Extensions
         switch (options.MetricsExporterType)
         {
             case nameof(MetricsExporterType.Console):
-                metrics.AddConsoleExporter((exporterOptions, metricReaderOptions) =>
-                {
-                    exporterOptions.Targets = ConsoleExporterOutputTargets.Console;
-                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 10000;
-                });
+                metrics.AddConsoleExporter(
+                    (exporterOptions, metricReaderOptions) =>
+                    {
+                        exporterOptions.Targets = ConsoleExporterOutputTargets.Console;
+                        metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 10000;
+                    }
+                );
                 break;
 
             case nameof(MetricsExporterType.OTLP):
-                metrics.AddOtlpExporter(otlpOptions => { otlpOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint); });
+                metrics.AddOtlpExporter(otlpOptions =>
+                {
+                    otlpOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint);
+                });
                 break;
             case nameof(MetricsExporterType.None):
                 break;
@@ -129,7 +136,10 @@ public static class Extensions
                 });
                 break;
             case nameof(TracingExporterType.Zipkin):
-                tracerProviderBuilder.AddZipkinExporter(x => { x.Endpoint = new Uri(options.ZipkinOptions.Endpoint); });
+                tracerProviderBuilder.AddZipkinExporter(x =>
+                {
+                    x.Endpoint = new Uri(options.ZipkinOptions.Endpoint);
+                });
                 break;
             case nameof(TracingExporterType.Jaeger):
                 tracerProviderBuilder.AddJaegerExporter(x =>

@@ -26,9 +26,12 @@ public static class ReflectionUtilities
     private static IEnumerable<Type> GetAllTypesImplementingInterface<TInterface>(Assembly? assembly = null)
     {
         var inputAssembly = assembly ?? Assembly.GetExecutingAssembly();
-        return inputAssembly.GetTypes()
-            .Where(type => typeof(TInterface).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract &&
-                           type.IsClass);
+        return inputAssembly
+            .GetTypes()
+            .Where(
+                type =>
+                    typeof(TInterface).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract && type.IsClass
+            );
     }
 
     public static IEnumerable<string?> GetPropertyNames<T>(params Expression<Func<T, object>>[] propertyExpressions)
@@ -66,14 +69,13 @@ public static class ReflectionUtilities
 
     public static Type? GetTypeFromAnyReferencingAssembly(string typeName)
     {
-        var referencedAssemblies = Assembly.GetEntryAssembly()?
-            .GetReferencedAssemblies()
-            .Select(a => a.FullName);
+        var referencedAssemblies = Assembly.GetEntryAssembly()?.GetReferencedAssemblies().Select(a => a.FullName);
 
         if (referencedAssemblies == null)
             return null;
 
-        return AppDomain.CurrentDomain.GetAssemblies()
+        return AppDomain.CurrentDomain
+            .GetAssemblies()
             .Where(a => referencedAssemblies.Contains(a.FullName))
             .SelectMany(a => a.GetTypes().Where(x => x.FullName == typeName || x.Name == typeName))
             .FirstOrDefault();
@@ -81,7 +83,8 @@ public static class ReflectionUtilities
 
     public static Type? GetFirstMatchingTypeFromCurrentDomainAssemblies(string typeName)
     {
-        return AppDomain.CurrentDomain.GetAssemblies()
+        return AppDomain.CurrentDomain
+            .GetAssemblies()
             .SelectMany(a => a.GetTypes().Where(x => x.FullName == typeName || x.Name == typeName))
             .FirstOrDefault();
     }
@@ -103,21 +106,26 @@ public static class ReflectionUtilities
 
         var instanceArgument = Expression.Parameter(genericArguments[0]);
 
-        var argumentPairs = funcArgumentList.Zip(methodArgumentList, (s, d) => new {Source = s, Destination = d})
+        var argumentPairs = funcArgumentList
+            .Zip(methodArgumentList, (s, d) => new { Source = s, Destination = d })
             .ToList();
         if (argumentPairs.All(a => a.Source == a.Destination))
         {
             // No need to do anything fancy, the types are the same
             var parameters = funcArgumentList.Select(Expression.Parameter).ToList();
-            return Expression.Lambda<TResult>(Expression.Call(instanceArgument, methodInfo, parameters),
-                new[] {instanceArgument}.Concat(parameters)).Compile();
+            return Expression
+                .Lambda<TResult>(
+                    Expression.Call(instanceArgument, methodInfo, parameters),
+                    new[] { instanceArgument }.Concat(parameters)
+                )
+                .Compile();
         }
 
-        var lambdaArgument = new List<ParameterExpression> {instanceArgument,};
+        var lambdaArgument = new List<ParameterExpression> { instanceArgument, };
 
         var type = methodInfo.DeclaringType;
         var instanceVariable = Expression.Variable(type);
-        var blockVariables = new List<ParameterExpression> {instanceVariable,};
+        var blockVariables = new List<ParameterExpression> { instanceVariable, };
         var blockExpressions = new List<Expression>
         {
             Expression.Assign(instanceVariable, Expression.ConvertChecked(instanceArgument, type))
@@ -136,8 +144,10 @@ public static class ReflectionUtilities
             {
                 var sourceParameter = Expression.Parameter(a.Source);
                 var destinationVariable = Expression.Variable(a.Destination);
-                var assignToDestination = Expression.Assign(destinationVariable,
-                    Expression.Convert(sourceParameter, a.Destination));
+                var assignToDestination = Expression.Assign(
+                    destinationVariable,
+                    Expression.Convert(sourceParameter, a.Destination)
+                );
 
                 lambdaArgument.Add(sourceParameter);
                 callArguments.Add(destinationVariable);
@@ -165,7 +175,8 @@ public static class ReflectionUtilities
     public static IReadOnlyList<Assembly> GetApplicationPartAssemblies(Assembly rootAssembly)
     {
         var rootNamespace = rootAssembly.GetName().Name!.Split('.').First();
-        var list = rootAssembly!.GetCustomAttributes<ApplicationPartAttribute>()
+        var list = rootAssembly!
+            .GetCustomAttributes<ApplicationPartAttribute>()
             .Where(x => x.AssemblyName.StartsWith(rootNamespace, StringComparison.InvariantCulture))
             .Select(name => Assembly.Load(name.AssemblyName))
             .Distinct();
@@ -180,7 +191,8 @@ public static class ReflectionUtilities
     /// <returns></returns>
     public static IReadOnlyList<Assembly> GetBinDirectoryAssemblies()
     {
-        var assemblies = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll")
+        var assemblies = Directory
+            .GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll")
             .Select(x => Assembly.Load(AssemblyName.GetAssemblyName(x)))
             .Distinct();
 

@@ -10,9 +10,8 @@ public class CustomersDbContext : EfDbContextBase, ICustomersDbContext
 {
     public const string DefaultSchema = "customer";
 
-    public CustomersDbContext(DbContextOptions<CustomersDbContext> options) : base(options)
-    {
-    }
+    public CustomersDbContext(DbContextOptions<CustomersDbContext> options)
+        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

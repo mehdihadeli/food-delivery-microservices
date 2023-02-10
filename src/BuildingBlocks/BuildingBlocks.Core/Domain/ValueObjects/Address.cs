@@ -4,9 +4,7 @@ namespace BuildingBlocks.Core.Domain.ValueObjects;
 public record Address
 {
     // EF
-    private Address()
-    {
-    }
+    private Address() { }
 
     public string Country { get; private set; } = default!;
     public string City { get; private set; } = default!;
@@ -17,7 +15,13 @@ public record Address
 
     public static Address Of(string country, string city, string detail, PostalCode postalCode)
     {
-        var address = new Address {Country = country, City = city, Detail = detail, PostalCode = postalCode};
+        var address = new Address
+        {
+            Country = country,
+            City = city,
+            Detail = detail,
+            PostalCode = postalCode
+        };
 
         return address;
     }
@@ -27,13 +31,12 @@ public record PostalCode
 {
     // EF
     // because it is public we don't use value in the parameter, and ef sets value through `Value` property setter
-    public PostalCode()
-    {
-    }
+    public PostalCode() { }
 
     public string Value { get; init; } = default!;
 
     // validations should be placed here instead of constructor
-    public static PostalCode Of(string postalCode) => new() {Value = postalCode};
+    public static PostalCode Of(string postalCode) => new() { Value = postalCode };
+
     public static implicit operator string(PostalCode postalCode) => postalCode.Value;
 }

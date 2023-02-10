@@ -20,7 +20,8 @@ public abstract class CommandHandler<TCommand, TResponse> : ICommandHandler<TCom
 {
     protected abstract Task<TResponse> HandleCommandAsync(
         TCommand command,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     public Task<TResponse> Handle(TCommand request, CancellationToken cancellationToken)
     {

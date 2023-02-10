@@ -1,5 +1,3 @@
 namespace ECommerce.Services.Catalogs.Api;
 
-public class CatalogsApiRoot
-{
-}
+public class CatalogsApiRoot { }

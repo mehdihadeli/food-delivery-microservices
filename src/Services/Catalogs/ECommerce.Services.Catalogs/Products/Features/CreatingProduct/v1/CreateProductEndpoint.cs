@@ -16,18 +16,20 @@ public static class CreateProductEndpoint
         // https://github.com/dotnet/aspnetcore/issues/40753
         // https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/2414
         // https://github.com/dotnet/aspnetcore/issues/45871
-        return endpoints.MapPost("/", CreateProducts)
-
+        return endpoints
+            .MapPost("/", CreateProducts)
             // WithOpenApi should placed before versioning and other things - this fixed in Aps.Versioning.Http 7.0.0-preview.1
             .WithOpenApi(operation =>
             {
                 // we could use our `WithResponseDescription` extension method also
                 operation.Summary = "Creating a New Product";
                 operation.Description = "Creating a New Product";
-                operation.Responses[StatusCodes.Status401Unauthorized.ToString(CultureInfo.InvariantCulture)]
-                    .Description = "UnAuthorized request.";
-                operation.Responses[StatusCodes.Status400BadRequest.ToString(CultureInfo.InvariantCulture)]
-                    .Description = "Invalid input for creating product.";
+                operation.Responses[
+                    StatusCodes.Status401Unauthorized.ToString(CultureInfo.InvariantCulture)
+                ].Description = "UnAuthorized request.";
+                operation.Responses[
+                    StatusCodes.Status400BadRequest.ToString(CultureInfo.InvariantCulture)
+                ].Description = "Invalid input for creating product.";
                 operation.Responses[StatusCodes.Status201Created.ToString(CultureInfo.InvariantCulture)].Description =
                     "Product created successfully.";
 
@@ -62,7 +64,8 @@ public static class CreateProductEndpoint
         CreateProductRequest request,
         ICommandProcessor commandProcessor,
         IMapper mapper,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         Guard.Against.Null(request, nameof(request));
 
@@ -72,7 +75,7 @@ public static class CreateProductEndpoint
         {
             var result = await commandProcessor.SendAsync(command, cancellationToken);
 
-            return Results.CreatedAtRoute("GetProductById", new {id = result.Product.Id}, result);
+            return Results.CreatedAtRoute("GetProductById", new { id = result.Product.Id }, result);
         }
     }
 }

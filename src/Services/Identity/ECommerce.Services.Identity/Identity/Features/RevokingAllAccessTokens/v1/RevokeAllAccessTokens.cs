@@ -18,7 +18,8 @@ public class RevokeAllAccessTokenHandler : ICommandHandler<RevokeAllAccessTokens
     public RevokeAllAccessTokenHandler(
         IdentityDbContext identityDbContext,
         IMediator mediator,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager
+    )
     {
         _identityDbContext = identityDbContext;
         _mediator = mediator;
@@ -33,7 +34,8 @@ public class RevokeAllAccessTokenHandler : ICommandHandler<RevokeAllAccessTokens
             throw new IdentityUserNotFoundException(request.UserName);
         }
 
-        var tokens = _identityDbContext.Set<AccessToken>()
+        var tokens = _identityDbContext
+            .Set<AccessToken>()
             .Where(x => x.UserId == appUser.Id && x.ExpiredAt > DateTime.Now);
 
         foreach (var accessToken in tokens)

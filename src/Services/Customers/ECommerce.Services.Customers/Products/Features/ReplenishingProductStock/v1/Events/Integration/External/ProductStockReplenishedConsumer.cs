@@ -12,7 +12,8 @@ public class ProductStockReplenishedConsumer : IConsumer<ProductStockReplenished
 
     public ProductStockReplenishedConsumer(
         ICommandProcessor commandProcessor,
-        ILogger<ProductStockReplenishedConsumer> logger)
+        ILogger<ProductStockReplenishedConsumer> logger
+    )
     {
         _commandProcessor = commandProcessor;
         _logger = logger;
@@ -25,10 +26,12 @@ public class ProductStockReplenishedConsumer : IConsumer<ProductStockReplenished
         var productStockReplenished = context.Message;
 
         await _commandProcessor.SendAsync(
-            new ProcessRestockNotification(productStockReplenished.ProductId, productStockReplenished.NewStock));
+            new ProcessRestockNotification(productStockReplenished.ProductId, productStockReplenished.NewStock)
+        );
 
         _logger.LogInformation(
             "Sending restock notification command for product {ProductId}",
-            productStockReplenished.ProductId);
+            productStockReplenished.ProductId
+        );
     }
 }

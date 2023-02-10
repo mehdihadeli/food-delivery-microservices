@@ -10,21 +10,23 @@ public static class RevokeAccessTokenEndpoint
 {
     public static RouteHandlerBuilder MapRevokeAccessTokenEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapPost("/revoke-token", RevokeAccessToken)
+        return endpoints
+            .MapPost("/revoke-token", RevokeAccessToken)
             .RequireAuthorization(IdentityConstants.Role.User)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithDisplayName("Revoke Current User Access Token From the Header.")
             .WithName("RevokeAccessToken")
-            .WithMetadata(new SwaggerOperationAttribute(
-                "Revoking Token",
-                "Revoking Current User Access Token From the Header."));
+            .WithMetadata(
+                new SwaggerOperationAttribute("Revoking Token", "Revoking Current User Access Token From the Header.")
+            );
     }
 
     private static async Task<IResult> RevokeAccessToken(
         HttpContext httpContext,
         RevokeAccessTokenRequest? request,
         ICommandProcessor commandProcessor,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         string token;
         if (request is null || string.IsNullOrWhiteSpace(request.AccessToken))

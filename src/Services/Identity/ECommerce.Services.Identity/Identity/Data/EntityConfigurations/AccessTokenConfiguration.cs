@@ -10,15 +10,12 @@ public class AccessTokenConfiguration : IEntityTypeConfiguration<AccessToken>
     {
         builder.ToTable("AccessTokens");
 
-        builder.Property<Guid>("InternalCommandId")
-            .ValueGeneratedOnAdd();
+        builder.Property<Guid>("InternalCommandId").ValueGeneratedOnAdd();
         builder.HasKey("InternalCommandId");
 
         builder.HasIndex(x => new { x.Token, x.UserId }).IsUnique();
 
-        builder.HasOne(rt => rt.ApplicationUser)
-            .WithMany(au => au.AccessTokens)
-            .HasForeignKey(x => x.UserId);
+        builder.HasOne(rt => rt.ApplicationUser).WithMany(au => au.AccessTokens).HasForeignKey(x => x.UserId);
 
         builder.Property(rt => rt.Token);
 

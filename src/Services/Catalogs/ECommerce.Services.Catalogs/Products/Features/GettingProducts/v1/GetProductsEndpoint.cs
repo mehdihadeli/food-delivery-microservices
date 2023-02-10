@@ -10,9 +10,8 @@ namespace ECommerce.Services.Catalogs.Products.Features.GettingProducts.v1;
 // https://www.youtube.com/watch?v=SDu0MA6TmuM
 // https://github.com/ardalis/ApiEndpoints
 // https://im5tu.io/article/2022/09/asp.net-core-versioning-mvc-apis/
-public class GetProductsEndpoint : EndpointBaseAsync
-    .WithRequest<GetProductsRequest?>
-    .WithActionResult<GetProductsResponse>
+public class GetProductsEndpoint
+    : EndpointBaseAsync.WithRequest<GetProductsRequest?>.WithActionResult<GetProductsResponse>
 {
     private readonly IQueryProcessor _queryProcessor;
 
@@ -31,10 +30,12 @@ public class GetProductsEndpoint : EndpointBaseAsync
         Summary = "Getting All Products",
         Description = "Getting All Products",
         OperationId = "GetProducts",
-        Tags = new[] {ProductsConfigs.Tag})]
+        Tags = new[] { ProductsConfigs.Tag }
+    )]
     public override async Task<ActionResult<GetProductsResponse>> HandleAsync(
         [FromQuery] GetProductsRequest? request,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         Guard.Against.Null(request, nameof(request));
 
@@ -49,7 +50,8 @@ public class GetProductsEndpoint : EndpointBaseAsync
                     Filters = request.Filters,
                     Includes = request.Includes,
                 },
-                cancellationToken);
+                cancellationToken
+            );
 
             return Ok(result);
         }

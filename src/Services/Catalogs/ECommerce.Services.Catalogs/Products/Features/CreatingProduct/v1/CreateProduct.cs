@@ -49,10 +49,7 @@ public class CreateProductValidator : AbstractValidator<CreateProduct>
     {
         CascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => x.Id)
-            .NotEmpty()
-            .GreaterThan(0)
-            .WithMessage("InternalCommandId must be greater than 0");
+        RuleFor(x => x.Id).NotEmpty().GreaterThan(0).WithMessage("InternalCommandId must be greater than 0");
 
         RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required.");
 
@@ -74,20 +71,11 @@ public class CreateProductValidator : AbstractValidator<CreateProduct>
             .GreaterThan(0)
             .WithMessage("RestockThreshold must be greater than 0");
 
-        RuleFor(x => x.CategoryId)
-            .NotEmpty()
-            .GreaterThan(0)
-            .WithMessage("CategoryId must be greater than 0");
+        RuleFor(x => x.CategoryId).NotEmpty().GreaterThan(0).WithMessage("CategoryId must be greater than 0");
 
-        RuleFor(x => x.SupplierId)
-            .NotEmpty()
-            .GreaterThan(0)
-            .WithMessage("SupplierId must be greater than 0");
+        RuleFor(x => x.SupplierId).NotEmpty().GreaterThan(0).WithMessage("SupplierId must be greater than 0");
 
-        RuleFor(x => x.BrandId)
-            .NotEmpty()
-            .GreaterThan(0)
-            .WithMessage("BrandId must be greater than 0");
+        RuleFor(x => x.BrandId).NotEmpty().GreaterThan(0).WithMessage("BrandId must be greater than 0");
     }
 }
 
@@ -108,10 +96,7 @@ public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProduct
         _catalogDbContext = Guard.Against.Null(catalogDbContext, nameof(catalogDbContext));
     }
 
-    public async Task<CreateProductResponse> Handle(
-        CreateProduct command,
-        CancellationToken cancellationToken
-    )
+    public async Task<CreateProductResponse> Handle(CreateProduct command, CancellationToken cancellationToken)
     {
         Guard.Against.Null(command, nameof(command));
 
@@ -133,9 +118,7 @@ public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProduct
         var brand = await _catalogDbContext.FindBrandAsync(BrandId.Of(command.BrandId));
         Guard.Against.NotFound(brand, new BrandNotFoundException(command.BrandId));
 
-        var supplier = await _catalogDbContext.FindSupplierByIdAsync(
-            SupplierId.Of(command.SupplierId)
-        );
+        var supplier = await _catalogDbContext.FindSupplierByIdAsync(SupplierId.Of(command.SupplierId));
         Guard.Against.NotFound(supplier, new SupplierNotFoundException(command.SupplierId));
 
         // await _domainEventDispatcher.DispatchAsync(cancellationToken, new Events.Domain.CreatingProduct());

@@ -5,7 +5,6 @@ namespace BuildingBlocks.Messaging.Persistence.Postgres.MessagePersistence;
 
 public class NpgsqlMessagePersistenceConnectionFactory : NpgsqlConnectionFactory, IMessagePersistenceConnectionFactory
 {
-    public NpgsqlMessagePersistenceConnectionFactory(string connectionString) : base(connectionString)
-    {
-    }
+    public NpgsqlMessagePersistenceConnectionFactory(string connectionString)
+        : base(connectionString) { }
 }

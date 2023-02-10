@@ -11,8 +11,7 @@ namespace BuildingBlocks.Persistence.Mongo;
 
 public static class Extensions
 {
-    public static IServiceCollection AddMongoDbContext<TContext>(
-        this IServiceCollection services)
+    public static IServiceCollection AddMongoDbContext<TContext>(this IServiceCollection services)
         where TContext : MongoDbContext, IMongoDbContext
     {
         services.AddValidatedOptions<MongoOptions>(nameof(MongoOptions));
@@ -55,6 +54,7 @@ public static class Extensions
                 new IgnoreIfDefaultConvention(false),
                 new ImmutablePocoConvention(),
             },
-            _ => true);
+            _ => true
+        );
     }
 }

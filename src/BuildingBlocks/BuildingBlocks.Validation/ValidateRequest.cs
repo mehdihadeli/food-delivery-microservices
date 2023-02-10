@@ -20,8 +20,7 @@ public class ValidateRequest<T>
     public bool IsValid => Validation.IsValid;
 
     public IDictionary<string, string[]> Errors =>
-        Validation
-            .Errors
+        Validation.Errors
             .GroupBy(x => x.PropertyName)
             .ToDictionary(x => x.Key, x => x.Select(e => e.ErrorMessage).ToArray());
 
@@ -38,7 +37,8 @@ public class ValidateRequest<T>
         var value = await context.Request.ReadFromJsonAsync<T>();
         var validator = context.RequestServices.GetRequiredService<IValidator<T>>();
 
-        if (value is null) {
+        if (value is null)
+        {
             throw new ArgumentException(parameter.Name);
         }
 

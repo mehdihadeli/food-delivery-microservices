@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\Tests.Shared\Tests.Shared.csproj" />
+    <ProjectReference Include="..\..\..\Shared\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
-  
+
 <!--  &lt;!&ndash;  https://devblogs.microsoft.com/nuget/introducing-central-package-management/&ndash;&gt;-->
 <!--  <ItemGroup>-->
 <!--    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" VersionOverride="11.0.0"/>-->

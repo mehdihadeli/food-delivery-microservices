@@ -41,8 +41,8 @@ tasks:
     # We load docker on pre-build for increasing speed
     init: |
       docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml pull
-    # https://www.gitpod.io/docs/configure/workspaces/tasks#wait-for-commands-to-complete
-    # https://github.com/gitpod-io/openvscode-server/discussions/373
+      # https://www.gitpod.io/docs/configure/workspaces/tasks#wait-for-commands-to-complete
+      # https://github.com/gitpod-io/openvscode-server/discussions/373
       gp sync-done docker-bundle
     command: |
       docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d
@@ -51,8 +51,8 @@ tasks:
     # https://www.gitpod.io/docs/configure/workspaces/tasks#wait-for-commands-to-complete
     # https://github.com/gitpod-io/openvscode-server/discussions/373
     init: |
-        gp sync-await docker-bundle # wait for the above 'init' to finish
-        gp sync-await build-bundle  # wait for the above 'init' to finish
+      gp sync-await docker-bundle # wait for the above 'init' to finish
+      gp sync-await build-bundle  # wait for the above 'init' to finish
     # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-run#options
     command: |
       cd src/Services/Catalogs/ECommerce.Services.Catalogs.Api
@@ -63,8 +63,8 @@ tasks:
       gp sync-await docker-bundle # wait for the above 'init' to finish
       gp sync-await build-bundle  # wait for the above 'init' to finish
     command: |
-     cd src/Services/Identity/ECommerce.Services.Identity.Api
-     dotnet run --launch-profile "Identity.Api.Watch"
+      cd src/Services/Identity/ECommerce.Services.Identity.Api
+      dotnet run --launch-profile "Identity.Api.Watch"
 
   - name: Run Customers in Watch Mode
     init: |

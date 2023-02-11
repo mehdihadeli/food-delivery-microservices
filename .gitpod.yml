@@ -11,13 +11,11 @@ image:
 vscode:
   extensions:
     - muhammad-sammy.csharp
-    - csharpier.csharpier-vscode
-    - ms-dotnettools.csharp
     - editorconfig.editorconfig
     - vivaxy.vscode-conventional-commits
     - humao.rest-client
     - ms-azuretools.vscode-docker
-    - huizhou.githd
+    - donjayamanne.githistory
     - pkief.material-icon-theme
     - emmanuelbeziat.vscode-great-icons
     - fernandoescolar.vscode-solution-explorer
@@ -93,9 +91,9 @@ github:
     # add a "Review in Gitpod" button to the pull request's description (defaults to false)
     addBadge: false
 
-##https://www.gitpod.io/docs/configure/workspaces/ports#exposing-ports
-##https://github.com/gitpod-io/gitpod/issues/1867
-#ports:
-#  - port: 2000-9000
-#    onOpen: ignore
-#    visibility: private
+#https://www.gitpod.io/docs/configure/workspaces/ports#exposing-ports
+#https://github.com/gitpod-io/gitpod/issues/1867
+ports:
+  - port: 2000-9000
+    onOpen: ignore
+    visibility: private

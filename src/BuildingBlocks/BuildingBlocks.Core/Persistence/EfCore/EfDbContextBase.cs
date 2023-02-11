@@ -10,18 +10,13 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BuildingBlocks.Core.Persistence.EfCore;
 
-public abstract class EfDbContextBase :
-    DbContext,
-    IDbFacadeResolver,
-    IDbContext,
-    IDomainEventContext
+public abstract class EfDbContextBase : DbContext, IDbFacadeResolver, IDbContext, IDomainEventContext
 {
     // private readonly IDomainEventPublisher _domainEventPublisher;
     private IDbContextTransaction? _currentTransaction;
 
-    protected EfDbContextBase(DbContextOptions options) : base(options)
-    {
-    }
+    protected EfDbContextBase(DbContextOptions options)
+        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,7 +31,9 @@ public abstract class EfDbContextBase :
         var types = builder.Model.GetEntityTypes().Where(x => x.ClrType.IsAssignableTo(typeof(IHaveAggregateVersion)));
         foreach (var entityType in types)
         {
-            builder.Entity(entityType.ClrType).Property(nameof(IHaveAggregateVersion.OriginalVersion))
+            builder
+                .Entity(entityType.ClrType)
+                .Property(nameof(IHaveAggregateVersion.OriginalVersion))
                 .IsConcurrencyToken();
         }
     }
@@ -58,8 +55,11 @@ public abstract class EfDbContextBase :
             var isDeletedProperty = Expression.Call(propertyMethodInfo, parameter, Expression.Constant("IsDeleted"));
 
             // EF.Property<bool>(TEntity, "IsDeleted") == false
-            BinaryExpression compareExpression =
-                Expression.MakeBinary(ExpressionType.Equal, isDeletedProperty, Expression.Constant(false));
+            BinaryExpression compareExpression = Expression.MakeBinary(
+                ExpressionType.Equal,
+                isDeletedProperty,
+                Expression.Constant(false)
+            );
 
             // TEntity => EF.Property<bool>(TEntity, "IsDeleted") == false
             var lambda = Expression.Lambda(compareExpression, parameter);
@@ -70,7 +70,8 @@ public abstract class EfDbContextBase :
 
     public async Task BeginTransactionAsync(
         IsolationLevel isolationLevel,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         _currentTransaction ??= await Database.BeginTransactionAsync(cancellationToken);
     }
@@ -135,7 +136,8 @@ public abstract class EfDbContextBase :
 
     public void MarkUncommittedDomainEventAsCommitted()
     {
-        ChangeTracker.Entries<IHaveAggregate>()
+        ChangeTracker
+            .Entries<IHaveAggregate>()
             .Where(x => x.Entity.GetUncommittedDomainEvents().Any())
             .ToList()
             .ForEach(x => x.Entity.MarkUncommittedDomainEventAsCommitted());
@@ -146,8 +148,7 @@ public abstract class EfDbContextBase :
         var strategy = Database.CreateExecutionStrategy();
         return strategy.ExecuteAsync(async () =>
         {
-            await using var transaction = await Database
-                .BeginTransactionAsync(cancellationToken);
+            await using var transaction = await Database.BeginTransactionAsync(cancellationToken);
             try
             {
                 await action();
@@ -167,8 +168,7 @@ public abstract class EfDbContextBase :
         var strategy = Database.CreateExecutionStrategy();
         return strategy.ExecuteAsync(async () =>
         {
-            await using var transaction = await Database
-                .BeginTransactionAsync(cancellationToken);
+            await using var transaction = await Database.BeginTransactionAsync(cancellationToken);
             try
             {
                 var result = await action();

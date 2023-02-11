@@ -15,7 +15,8 @@ public static class ApplicationBuilderExtensions
     private static async Task ApplyDatabaseMigrations(this IApplicationBuilder app, ILogger logger)
     {
         using var serviceScope = app.ApplicationServices.CreateScope();
-        var messagePersistenceDbContext = serviceScope.ServiceProvider.GetRequiredService<MessagePersistenceDbContext>();
+        var messagePersistenceDbContext =
+            serviceScope.ServiceProvider.GetRequiredService<MessagePersistenceDbContext>();
 
         logger.LogInformation("Applying persistence-message migrations...");
 

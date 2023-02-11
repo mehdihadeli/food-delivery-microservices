@@ -8,5 +8,6 @@ public interface IIdentityApiClient
 
     Task<CreateUserResponse?> CreateUserIdentityAsync(
         CreateUserRequest createUserRequest,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

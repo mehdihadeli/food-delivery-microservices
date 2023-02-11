@@ -8,9 +8,7 @@ namespace ECommerce.Services.Catalogs.Products.ValueObjects;
 public record Stock
 {
     // EF
-    private Stock()
-    {
-    }
+    private Stock() { }
 
     /// <summary>
     /// Gets quantity in stock.

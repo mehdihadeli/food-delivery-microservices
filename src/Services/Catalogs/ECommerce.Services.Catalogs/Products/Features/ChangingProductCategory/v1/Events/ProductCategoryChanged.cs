@@ -4,5 +4,4 @@ using ECommerce.Services.Catalogs.Products.ValueObjects;
 
 namespace ECommerce.Services.Catalogs.Products.Features.ChangingProductCategory.v1.Events;
 
-public record ProductCategoryChanged(CategoryId CategoryId, ProductId ProductId) :
-    DomainEvent;
+public record ProductCategoryChanged(CategoryId CategoryId, ProductId ProductId) : DomainEvent;

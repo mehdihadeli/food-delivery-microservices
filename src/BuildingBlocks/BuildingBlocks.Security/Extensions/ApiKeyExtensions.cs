@@ -8,7 +8,8 @@ public static class ApiKeyExtensions
 {
     public static IServiceCollection AddCustomApiKeyAuthentication(this IServiceCollection services)
     {
-        services.AddAuthentication(options =>
+        services
+            .AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = ApiKeyAuthenticationOptions.DefaultScheme;
                 options.DefaultChallengeScheme = ApiKeyAuthenticationOptions.DefaultScheme;
@@ -19,11 +20,13 @@ public static class ApiKeyExtensions
         {
             options.AddPolicy(
                 Policies.OnlyCustomers,
-                policy => policy.Requirements.Add(new OnlyCustomersRequirement()));
+                policy => policy.Requirements.Add(new OnlyCustomersRequirement())
+            );
             options.AddPolicy(Policies.OnlyAdmins, policy => policy.Requirements.Add(new OnlyAdminsRequirement()));
             options.AddPolicy(
                 Policies.OnlyThirdParties,
-                policy => policy.Requirements.Add(new OnlyThirdPartiesRequirement()));
+                policy => policy.Requirements.Add(new OnlyThirdPartiesRequirement())
+            );
         });
 
         services.AddSingleton<IAuthorizationHandler, OnlyCustomersAuthorizationHandler>();

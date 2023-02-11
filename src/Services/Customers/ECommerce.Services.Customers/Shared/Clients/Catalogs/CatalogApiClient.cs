@@ -20,21 +20,21 @@ public class CatalogApiClient : ICatalogApiClient
 
     public async Task<GetProductByIdResponse?> GetProductByIdAsync(
         long id,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         Guard.Against.NegativeOrZero(id);
 
         // https://stackoverflow.com/questions/21097730/usage-of-ensuresuccessstatuscode-and-handling-of-httprequestexception-it-throws
         // https: //github.com/App-vNext/Polly#step-1--specify-the--exceptionsfaults-you-want-the-policy-to-handle
-        var httpResponse = await _httpClient.GetAsync(
-            $"{_options.ProductsEndpoint}/{id}",
-            cancellationToken);
+        var httpResponse = await _httpClient.GetAsync($"{_options.ProductsEndpoint}/{id}", cancellationToken);
 
         // https://stackoverflow.com/questions/21097730/usage-of-ensuresuccessstatuscode-and-handling-of-httprequestexception-it-throws
         // throw HttpResponseException instead of HttpRequestException (because we want detail response exception) with corresponding status code
         await httpResponse.EnsureSuccessStatusCodeWithDetailAsync();
 
         return await httpResponse.Content.ReadFromJsonAsync<GetProductByIdResponse>(
-            cancellationToken: cancellationToken);
+            cancellationToken: cancellationToken
+        );
     }
 }

@@ -21,13 +21,13 @@ internal class VerifyEmailHandler : ICommandHandler<VerifyEmail>
     public VerifyEmailHandler(
         UserManager<ApplicationUser> userManager,
         IdentityContext dbContext,
-        ILogger<VerifyEmailHandler> logger)
+        ILogger<VerifyEmailHandler> logger
+    )
     {
         _userManager = userManager;
         _dbContext = dbContext;
         _logger = logger;
     }
-
 
     public async Task<Unit> Handle(VerifyEmail request, CancellationToken cancellationToken)
     {
@@ -44,7 +44,8 @@ internal class VerifyEmailHandler : ICommandHandler<VerifyEmail>
             throw new EmailAlreadyVerifiedException(user.Email);
         }
 
-        var emailVerificationCode = await _dbContext.Set<EmailVerificationCode>()
+        var emailVerificationCode = await _dbContext
+            .Set<EmailVerificationCode>()
             .Where(x => x.Email == request.Email && x.Code == request.Code && x.UsedAt == null)
             .SingleOrDefaultAsync(cancellationToken: cancellationToken);
 

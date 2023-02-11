@@ -16,7 +16,8 @@ public class MessageEnvelope
 public class MessageEnvelope<TMessage> : MessageEnvelope
     where TMessage : class, IMessage
 {
-    public MessageEnvelope(TMessage message, IDictionary<string, object?> header) : base(message, header)
+    public MessageEnvelope(TMessage message, IDictionary<string, object?> header)
+        : base(message, header)
     {
         Message = message;
     }

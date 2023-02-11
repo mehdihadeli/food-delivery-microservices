@@ -9,9 +9,7 @@ namespace ECommerce.Services.Customers.RestockSubscriptions.ValueObjects;
 public record ProductInformation
 {
     // EF
-    public ProductInformation()
-    {
-    }
+    public ProductInformation() { }
 
     public string Name { get; private set; } = default!;
     public ProductId Id { get; private set; } = default!;
@@ -21,6 +19,6 @@ public record ProductInformation
         Guard.Against.NullOrWhiteSpace(name);
         Guard.Against.Null(id);
 
-        return new ProductInformation {Name = name, Id = id};
+        return new ProductInformation { Name = name, Id = id };
     }
 }

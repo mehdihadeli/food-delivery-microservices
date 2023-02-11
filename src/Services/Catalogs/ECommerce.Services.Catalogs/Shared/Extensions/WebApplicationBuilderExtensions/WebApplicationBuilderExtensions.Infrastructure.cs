@@ -35,17 +35,25 @@ public static partial class WebApplicationBuilderExtensions
         builder.Services.AddCustomAuthorization(
             rolePolicies: new List<RolePolicy>
             {
-                new(CatalogConstants.Role.Admin, new List<string> {CatalogConstants.Role.Admin}),
-                new(CatalogConstants.Role.User, new List<string> {CatalogConstants.Role.User})
-            });
+                new(CatalogConstants.Role.Admin, new List<string> { CatalogConstants.Role.Admin }),
+                new(CatalogConstants.Role.User, new List<string> { CatalogConstants.Role.User })
+            }
+        );
 
         builder.Services.AddEmailService(builder.Configuration);
-        builder.Services.AddCqrs(pipelines: new[]
-        {
-            typeof(RequestValidationBehavior<,>), typeof(StreamRequestValidationBehavior<,>),
-            typeof(StreamLoggingBehavior<,>), typeof(StreamCachingBehavior<,>), typeof(LoggingBehavior<,>),
-            typeof(CachingBehavior<,>), typeof(InvalidateCachingBehavior<,>), typeof(EfTxBehavior<,>)
-        });
+        builder.Services.AddCqrs(
+            pipelines: new[]
+            {
+                typeof(RequestValidationBehavior<,>),
+                typeof(StreamRequestValidationBehavior<,>),
+                typeof(StreamLoggingBehavior<,>),
+                typeof(StreamCachingBehavior<,>),
+                typeof(LoggingBehavior<,>),
+                typeof(CachingBehavior<,>),
+                typeof(InvalidateCachingBehavior<,>),
+                typeof(EfTxBehavior<,>)
+            }
+        );
 
         // https://github.com/tonerdo/dotnet-env
         DotNetEnv.Env.TraversePath().Load();
@@ -76,7 +84,8 @@ public static partial class WebApplicationBuilderExtensions
             (busRegistrationContext, busFactoryConfigurator) =>
             {
                 busFactoryConfigurator.AddProductPublishers();
-            });
+            }
+        );
 
         if (builder.Environment.IsTest() == false)
         {
@@ -92,12 +101,14 @@ public static partial class WebApplicationBuilderExtensions
                     .AddNpgSql(
                         postgresOptions.ConnectionString,
                         name: "CatalogsService-Postgres-Check",
-                        tags: new[] {"postgres", "infra", "database", "catalogs-service"})
+                        tags: new[] { "postgres", "infra", "database", "catalogs-service" }
+                    )
                     .AddRabbitMQ(
                         rabbitMqOptions.ConnectionString,
                         name: "CatalogsService-RabbitMQ-Check",
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] {"rabbitmq", "infra", "bus", "catalogs-service"});
+                        tags: new[] { "rabbitmq", "infra", "bus", "catalogs-service" }
+                    );
             });
         }
 

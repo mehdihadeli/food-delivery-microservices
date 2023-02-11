@@ -19,10 +19,11 @@ public static class CQRSRegistrationExtensions
         this IServiceCollection services,
         Assembly[]? assemblies = null,
         ServiceLifetime serviceLifetime = ServiceLifetime.Transient,
-        params Type[] pipelines)
+        params Type[] pipelines
+    )
     {
         services.AddMediatR(
-            assemblies ?? new[] {Assembly.GetCallingAssembly()},
+            assemblies ?? new[] { Assembly.GetCallingAssembly() },
             x =>
             {
                 switch (serviceLifetime)
@@ -37,7 +38,8 @@ public static class CQRSRegistrationExtensions
                         x.AsSingleton();
                         break;
                 }
-            });
+            }
+        );
 
         foreach (var pipeline in pipelines)
         {

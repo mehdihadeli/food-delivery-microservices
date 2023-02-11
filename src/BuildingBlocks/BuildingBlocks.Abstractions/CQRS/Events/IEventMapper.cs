@@ -3,9 +3,7 @@ using BuildingBlocks.Abstractions.Messaging;
 
 namespace BuildingBlocks.Abstractions.CQRS.Events;
 
-public interface IEventMapper : IIDomainNotificationEventMapper, IIntegrationEventMapper
-{
-}
+public interface IEventMapper : IIDomainNotificationEventMapper, IIntegrationEventMapper { }
 
 public interface IIDomainNotificationEventMapper
 {

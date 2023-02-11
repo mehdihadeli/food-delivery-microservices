@@ -6,7 +6,8 @@ namespace ECommerce.Services.Customers.RestockSubscriptions.Features.CreatingRes
 public class ProductAlreadySubscribedException : AppException
 {
     public ProductAlreadySubscribedException(long productId, string productName)
-        : base($"Product with InternalCommandId '{productId}' and Name '{productName}' is already subscribed", HttpStatusCode.Conflict)
-    {
-    }
+        : base(
+            $"Product with InternalCommandId '{productId}' and Name '{productName}' is already subscribed",
+            HttpStatusCode.Conflict
+        ) { }
 }

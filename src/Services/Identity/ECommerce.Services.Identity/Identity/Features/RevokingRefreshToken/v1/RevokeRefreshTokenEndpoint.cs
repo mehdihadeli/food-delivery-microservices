@@ -8,7 +8,8 @@ public static class RevokeRefreshTokenEndpoint
 {
     internal static IEndpointRouteBuilder MapRevokeTokenEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/revoke-refresh-token", RevokeToken)
+        endpoints
+            .MapPost("/revoke-refresh-token", RevokeToken)
             .RequireAuthorization()
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status204NoContent)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
@@ -22,7 +23,8 @@ public static class RevokeRefreshTokenEndpoint
     private static async Task<IResult> RevokeToken(
         RevokeRefreshTokenRequest request,
         ICommandProcessor commandProcessor,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var command = new RevokeRefreshToken(request.RefreshToken);
 

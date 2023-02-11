@@ -34,7 +34,7 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
 
     public void Dispose()
     {
-        while (Session is {IsInTransaction: true})
+        while (Session is { IsInTransaction: true })
             Thread.Sleep(TimeSpan.FromMilliseconds(100));
 
         GC.SuppressFinalize(this);
@@ -76,7 +76,7 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
-        if (Session is {IsInTransaction: true})
+        if (Session is { IsInTransaction: true })
             await Session.CommitTransactionAsync(cancellationToken);
 
         Session?.Dispose();
@@ -110,7 +110,8 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
 
     public async Task<T> ExecuteTransactionalAsync<T>(
         Func<Task<T>> action,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         await BeginTransactionAsync(cancellationToken);
         try

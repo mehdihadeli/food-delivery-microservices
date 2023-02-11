@@ -28,7 +28,8 @@ public class JwtService : IJwtService
         string? refreshToken = null,
         IReadOnlyList<Claim>? usersClaims = null,
         IReadOnlyList<string>? rolesClaims = null,
-        IReadOnlyList<string>? permissionsClaims = null)
+        IReadOnlyList<string>? permissionsClaims = null
+    )
     {
         if (string.IsNullOrWhiteSpace(userName))
             throw new ArgumentException("User ID claim (subject) cannot be empty.", nameof(userName));
@@ -49,8 +50,10 @@ public class JwtService : IJwtService
             new(JwtRegisteredClaimNames.Email, email),
             new(JwtRegisteredClaimNames.GivenName, fullName ?? ""),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Iat,
-                DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)),
+            new(
+                JwtRegisteredClaimNames.Iat,
+                DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)
+            ),
             new(CustomClaimTypes.RefreshToken, refreshToken ?? ""),
             new(CustomClaimTypes.IpAddress, ipAddress),
         };
@@ -68,9 +71,9 @@ public class JwtService : IJwtService
         {
             foreach (var permissionsClaim in permissionsClaims)
             {
-                jwtClaims.Add(new Claim(
-                    CustomClaimTypes.Permission,
-                    permissionsClaim.ToLower(CultureInfo.InvariantCulture)));
+                jwtClaims.Add(
+                    new Claim(CustomClaimTypes.Permission, permissionsClaim.ToLower(CultureInfo.InvariantCulture))
+                );
             }
         }
 
@@ -89,7 +92,8 @@ public class JwtService : IJwtService
             notBefore: now,
             claims: jwtClaims,
             expires: expireTime,
-            signingCredentials: signingCredentials);
+            signingCredentials: signingCredentials
+        );
 
         var token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
@@ -116,7 +120,8 @@ public class JwtService : IJwtService
         ClaimsPrincipal principal = tokenHandler.ValidateToken(
             token,
             tokenValidationParameters,
-            out SecurityToken securityToken);
+            out SecurityToken securityToken
+        );
 
         JwtSecurityToken? jwtSecurityToken = securityToken as JwtSecurityToken;
 

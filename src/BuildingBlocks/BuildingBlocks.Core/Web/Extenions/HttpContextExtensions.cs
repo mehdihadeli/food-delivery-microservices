@@ -33,14 +33,16 @@ public static class HttpContextExtensions
             "x-query",
             JsonConvert.SerializeObject(
                 queryModel,
-                new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()}));
+                new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }
+            )
+        );
 
         return queryModel;
     }
 
     public static string? GetUserHostAddress(this HttpContext context)
     {
-        return context.Request.Headers["X-Forwarded-For"].FirstOrDefault() ??
-               context.Connection.RemoteIpAddress?.ToString();
+        return context.Request.Headers["X-Forwarded-For"].FirstOrDefault()
+            ?? context.Connection.RemoteIpAddress?.ToString();
     }
 }

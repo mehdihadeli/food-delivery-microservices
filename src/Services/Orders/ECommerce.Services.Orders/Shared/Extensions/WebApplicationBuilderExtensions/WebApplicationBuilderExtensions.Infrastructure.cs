@@ -36,9 +36,10 @@ internal static partial class WebApplicationBuilderExtensions
         builder.Services.AddCustomAuthorization(
             rolePolicies: new List<RolePolicy>
             {
-                new(OrdersConstants.Role.Admin, new List<string> {OrdersConstants.Role.Admin}),
-                new(OrdersConstants.Role.User, new List<string> {OrdersConstants.Role.User})
-            });
+                new(OrdersConstants.Role.Admin, new List<string> { OrdersConstants.Role.Admin }),
+                new(OrdersConstants.Role.User, new List<string> { OrdersConstants.Role.User })
+            }
+        );
 
         // https://www.michaco.net/blog/EnvironmentVariablesAndConfigurationInASPNETCoreApps#environment-variables-and-configuration
         // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#non-prefixed-environment-variables
@@ -75,23 +76,32 @@ internal static partial class WebApplicationBuilderExtensions
                     .AddNpgSql(
                         postgresOptions.ConnectionString,
                         name: "OrdersService-Postgres-Check",
-                        tags: new[] {"postgres", "database", "infra", "orders-service"})
+                        tags: new[] { "postgres", "database", "infra", "orders-service" }
+                    )
                     .AddRabbitMQ(
                         rabbitMqOptions.ConnectionString,
                         name: "OrdersService-RabbitMQ-Check",
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] {"rabbitmq", "bus", "infra", "orders-service"});
+                        tags: new[] { "rabbitmq", "bus", "infra", "orders-service" }
+                    );
             });
         }
 
         builder.Services.AddEmailService(builder.Configuration);
 
-        builder.Services.AddCqrs(pipelines: new[]
-        {
-            typeof(RequestValidationBehavior<,>), typeof(StreamRequestValidationBehavior<,>),
-            typeof(StreamLoggingBehavior<,>), typeof(StreamCachingBehavior<,>), typeof(LoggingBehavior<,>),
-            typeof(CachingBehavior<,>), typeof(InvalidateCachingBehavior<,>), typeof(EfTxBehavior<,>)
-        });
+        builder.Services.AddCqrs(
+            pipelines: new[]
+            {
+                typeof(RequestValidationBehavior<,>),
+                typeof(StreamRequestValidationBehavior<,>),
+                typeof(StreamLoggingBehavior<,>),
+                typeof(StreamCachingBehavior<,>),
+                typeof(LoggingBehavior<,>),
+                typeof(CachingBehavior<,>),
+                typeof(InvalidateCachingBehavior<,>),
+                typeof(EfTxBehavior<,>)
+            }
+        );
 
         builder.Services.AddPostgresMessagePersistence(builder.Configuration);
 
@@ -99,13 +109,20 @@ internal static partial class WebApplicationBuilderExtensions
         builder.Services.AddRateLimiter(options =>
         {
             // rate limiter that limits all to 10 requests per minute, per authenticated username (or hostname if not authenticated)
-            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-                RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
-                    factory: partition => new FixedWindowRateLimiterOptions
-                    {
-                        AutoReplenishment = true, PermitLimit = 10, QueueLimit = 0, Window = TimeSpan.FromMinutes(1)
-                    }));
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
+                httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+                        factory: partition =>
+                            new FixedWindowRateLimiterOptions
+                            {
+                                AutoReplenishment = true,
+                                PermitLimit = 10,
+                                QueueLimit = 0,
+                                Window = TimeSpan.FromMinutes(1)
+                            }
+                    )
+            );
         });
 
         builder.AddCustomMassTransit(
@@ -113,7 +130,8 @@ internal static partial class WebApplicationBuilderExtensions
             {
                 cfg.AddCustomerEndpoints(context);
             },
-            autoConfigEndpoints: false);
+            autoConfigEndpoints: false
+        );
 
         builder.Services.AddCustomValidators(Assembly.GetExecutingAssembly());
 

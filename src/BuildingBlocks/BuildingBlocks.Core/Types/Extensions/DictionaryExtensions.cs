@@ -23,7 +23,6 @@ public static class DictionaryExtensions
         return dictionary.TryAdd(key, value);
     }
 
-
     public static object? Get(this IDictionary<string, object?> dictionary, string key)
     {
         dictionary.TryGetValue(key, out object? val);

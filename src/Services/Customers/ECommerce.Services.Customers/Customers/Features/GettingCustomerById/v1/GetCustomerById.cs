@@ -18,13 +18,11 @@ public record GetCustomerById(Guid Id) : IQuery<GetCustomerByIdResponse>
     {
         public Validator()
         {
-            RuleFor(x => x.Id)
-                .NotEmpty();
+            RuleFor(x => x.Id).NotEmpty();
         }
     }
 
-    internal class Handler
-        : IQueryHandler<GetCustomerById, GetCustomerByIdResponse>
+    internal class Handler : IQueryHandler<GetCustomerById, GetCustomerByIdResponse>
     {
         private readonly CustomersReadDbContext _customersReadDbContext;
         private readonly IMapper _mapper;
@@ -35,13 +33,12 @@ public record GetCustomerById(Guid Id) : IQuery<GetCustomerByIdResponse>
             _mapper = mapper;
         }
 
-        public async Task<GetCustomerByIdResponse> Handle(
-            GetCustomerById query,
-            CancellationToken cancellationToken)
+        public async Task<GetCustomerByIdResponse> Handle(GetCustomerById query, CancellationToken cancellationToken)
         {
             Guard.Against.Null(query, nameof(query));
 
-            var customer = await _customersReadDbContext.Customers.AsQueryable()
+            var customer = await _customersReadDbContext.Customers
+                .AsQueryable()
                 .SingleOrDefaultAsync(x => x.Id == query.Id, cancellationToken: cancellationToken);
 
             Guard.Against.NotFound(customer, new CustomerNotFoundException(query.Id));

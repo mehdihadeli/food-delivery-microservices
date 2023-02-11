@@ -18,12 +18,9 @@ internal class DebitProductStockValidator : AbstractValidator<DebitProductStock>
         // https://docs.fluentvalidation.net/en/latest/conditions.html#stop-vs-stoponfirstfailure
         CascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => x.Quantity)
-            .GreaterThan(0);
+        RuleFor(x => x.Quantity).GreaterThan(0);
 
-        RuleFor(x => x.ProductId)
-            .NotEmpty()
-            .WithMessage("ProductId must be greater than 0");
+        RuleFor(x => x.ProductId).NotEmpty().WithMessage("ProductId must be greater than 0");
     }
 }
 
@@ -40,8 +37,10 @@ internal class DebitProductStockHandler : ICommandHandler<DebitProductStock>
     {
         Guard.Against.Null(command, nameof(command));
 
-        var product =
-            await _catalogDbContext.Products.FirstOrDefaultAsync(x => x.Id == command.ProductId, cancellationToken);
+        var product = await _catalogDbContext.Products.FirstOrDefaultAsync(
+            x => x.Id == command.ProductId,
+            cancellationToken
+        );
 
         await _catalogDbContext.SaveChangesAsync(cancellationToken);
         Guard.Against.NotFound(product, new ProductNotFoundException(command.ProductId));

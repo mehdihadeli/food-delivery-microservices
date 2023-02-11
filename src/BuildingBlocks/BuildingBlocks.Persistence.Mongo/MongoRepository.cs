@@ -29,14 +29,16 @@ public class MongoRepository<TEntity, TId> : IMongoRepository<TEntity, TId>
 
     public Task<TEntity?> FindOneAsync(
         Expression<Func<TEntity, bool>> predicate,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         return DbSet.Find(predicate).SingleOrDefaultAsync(cancellationToken: cancellationToken)!;
     }
 
     public async Task<IReadOnlyList<TEntity>> FindAsync(
         Expression<Func<TEntity, bool>> predicate,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         return await DbSet.Find(predicate).ToListAsync(cancellationToken: cancellationToken)!;
     }
@@ -65,10 +67,8 @@ public class MongoRepository<TEntity, TId> : IMongoRepository<TEntity, TId>
         return DbSet.DeleteOneAsync(e => entities.Any(i => e.Id.Equals(i.Id)), cancellationToken);
     }
 
-    public Task DeleteAsync(
-        Expression<Func<TEntity, bool>> predicate,
-        CancellationToken cancellationToken = default)
-        => DbSet.DeleteOneAsync(predicate, cancellationToken);
+    public Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default) =>
+        DbSet.DeleteOneAsync(predicate, cancellationToken);
 
     public Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {

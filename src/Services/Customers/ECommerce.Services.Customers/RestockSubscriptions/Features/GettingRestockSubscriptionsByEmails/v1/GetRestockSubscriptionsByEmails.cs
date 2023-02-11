@@ -19,9 +19,7 @@ internal class GetRestockSubscriptionsByEmailsValidator : AbstractValidator<GetR
     {
         CascadeMode = CascadeMode.Stop;
 
-        RuleFor(request => request.Emails)
-            .NotNull()
-            .NotEmpty();
+        RuleFor(request => request.Emails).NotNull().NotEmpty();
     }
 }
 
@@ -39,11 +37,13 @@ internal class GetRestockSubscriptionsByEmailsHandler
 
     public IAsyncEnumerable<RestockSubscriptionDto> Handle(
         GetRestockSubscriptionsByEmails query,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         Guard.Against.Null(query, nameof(query));
 
-        var result = _customersReadDbContext.RestockSubscriptions.AsQueryable()
+        var result = _customersReadDbContext.RestockSubscriptions
+            .AsQueryable()
             .Where(x => !x.IsDeleted)
             .Where(x => query.Emails.Contains(x.Email!))
             .ProjectTo<RestockSubscriptionDto>(_mapper.ConfigurationProvider)

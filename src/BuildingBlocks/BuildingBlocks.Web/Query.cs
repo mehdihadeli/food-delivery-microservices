@@ -8,9 +8,7 @@ public class Query
 {
     public string? Text { get; set; }
 
-    public static async ValueTask<Query> BindAsync(
-        HttpContext context,
-        ParameterInfo parameter)
+    public static async ValueTask<Query> BindAsync(HttpContext context, ParameterInfo parameter)
     {
         string? text = null;
         var request = context.Request;

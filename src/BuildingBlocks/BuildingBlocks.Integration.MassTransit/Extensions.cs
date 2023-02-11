@@ -20,7 +20,8 @@ public static class Extensions
         Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureReceiveEndpoints = null,
         Action<IBusRegistrationConfigurator>? configureBusRegistration = null,
         bool autoConfigEndpoints = false,
-        params Assembly[] scanAssemblies)
+        params Assembly[] scanAssemblies
+    )
     {
         // - should be placed out of action delegate for getting correct calling assembly
         // - Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
@@ -57,42 +58,49 @@ public static class Extensions
             // https://masstransit-project.com/usage/consumers.html
             // https://masstransit-project.com/usage/messages.html
             // https://wrapt.dev/blog/building-an-event-driven-dotnet-application-setting-up-masstransit-and-rabbitmq
-            busRegistrationConfigurator.UsingRabbitMq((context, cfg) =>
-            {
-                cfg.PublishTopology.BrokerTopologyOptions = PublishBrokerTopologyOptions.FlattenHierarchy;
-
-                if (autoConfigEndpoints)
+            busRegistrationConfigurator.UsingRabbitMq(
+                (context, cfg) =>
                 {
-                    // https://masstransit-project.com/usage/consumers.html#consumer
-                    cfg.ConfigureEndpoints(context);
+                    cfg.PublishTopology.BrokerTopologyOptions = PublishBrokerTopologyOptions.FlattenHierarchy;
+
+                    if (autoConfigEndpoints)
+                    {
+                        // https://masstransit-project.com/usage/consumers.html#consumer
+                        cfg.ConfigureEndpoints(context);
+                    }
+
+                    var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
+
+                    cfg.Host(
+                        rabbitMqOptions.Host,
+                        rabbitMqOptions.Port,
+                        "/",
+                        hostConfigurator =>
+                        {
+                            hostConfigurator.Username(rabbitMqOptions.UserName);
+                            hostConfigurator.Password(rabbitMqOptions.Password);
+                        }
+                    );
+
+                    // https://masstransit-project.com/usage/exceptions.html#retry
+                    // https://markgossa.com/2022/06/masstransit-exponential-back-off.html
+                    cfg.UseMessageRetry(r => AddRetryConfiguration(r));
+
+                    // cfg.UseInMemoryOutbox();
+
+                    // https: // github.com/MassTransit/MassTransit/issues/2018
+                    cfg.Publish<IIntegrationEvent>(p => p.Exclude = true);
+                    cfg.Publish<IntegrationEvent>(p => p.Exclude = true);
+                    cfg.Publish<IMessage>(p => p.Exclude = true);
+                    cfg.Publish<Message>(p => p.Exclude = true);
+                    cfg.Publish<ITxRequest>(p => p.Exclude = true);
+
+                    // for setting exchange name for message type as default. masstransit by default uses fully message type name for exchange name.
+                    cfg.MessageTopology.SetEntityNameFormatter(new CustomEntityNameFormatter());
+
+                    configureReceiveEndpoints?.Invoke(context, cfg);
                 }
-
-                var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
-
-                cfg.Host(rabbitMqOptions.Host, rabbitMqOptions.Port, "/", hostConfigurator =>
-                {
-                    hostConfigurator.Username(rabbitMqOptions.UserName);
-                    hostConfigurator.Password(rabbitMqOptions.Password);
-                });
-
-                // https://masstransit-project.com/usage/exceptions.html#retry
-                // https://markgossa.com/2022/06/masstransit-exponential-back-off.html
-                cfg.UseMessageRetry(r => AddRetryConfiguration(r));
-
-                // cfg.UseInMemoryOutbox();
-
-                // https: // github.com/MassTransit/MassTransit/issues/2018
-                cfg.Publish<IIntegrationEvent>(p => p.Exclude = true);
-                cfg.Publish<IntegrationEvent>(p => p.Exclude = true);
-                cfg.Publish<IMessage>(p => p.Exclude = true);
-                cfg.Publish<Message>(p => p.Exclude = true);
-                cfg.Publish<ITxRequest>(p => p.Exclude = true);
-
-                // for setting exchange name for message type as default. masstransit by default uses fully message type name for exchange name.
-                cfg.MessageTopology.SetEntityNameFormatter(new CustomEntityNameFormatter());
-
-                configureReceiveEndpoints?.Invoke(context, cfg);
-            });
+            );
         }
 
         builder.Services.AddTransient<IBus, MassTransitBus>();
@@ -102,13 +110,9 @@ public static class Extensions
 
     private static IRetryConfigurator AddRetryConfiguration(IRetryConfigurator retryConfigurator)
     {
-        retryConfigurator.Exponential(
-                3,
-                TimeSpan.FromMilliseconds(200),
-                TimeSpan.FromMinutes(120),
-                TimeSpan.FromMilliseconds(200))
-            .Ignore<
-                ValidationException>(); // don't retry if we have invalid data and message goes to _error queue masstransit
+        retryConfigurator
+            .Exponential(3, TimeSpan.FromMilliseconds(200), TimeSpan.FromMinutes(120), TimeSpan.FromMilliseconds(200))
+            .Ignore<ValidationException>(); // don't retry if we have invalid data and message goes to _error queue masstransit
 
         return retryConfigurator;
     }

@@ -22,7 +22,8 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         // https://dotnetdocs.ir/Post/34/categorizing-logs-with-serilog-in-aspnet-core
         using (Serilog.Context.LogContext.PushProperty("RequestObject", _serializer.Serialize(request)))
@@ -33,7 +34,8 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
                 "[{Prefix}] Handle request={X-RequestData} and response={X-ResponseData}",
                 prefix,
                 typeof(TRequest).Name,
-                typeof(TResponse).Name);
+                typeof(TResponse).Name
+            );
 
             var timer = new Stopwatch();
             timer.Start();
@@ -48,7 +50,8 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
                     "[{Perf-Possible}] The request {X-RequestData} took {TimeTaken} seconds",
                     prefix,
                     typeof(TRequest).Name,
-                    timeTaken.Seconds);
+                    timeTaken.Seconds
+                );
             }
             else
             {
@@ -56,7 +59,8 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
                     "[{Perf-Possible}] The request {X-RequestData} took {TimeTaken} seconds",
                     prefix,
                     typeof(TRequest).Name,
-                    timeTaken.Seconds);
+                    timeTaken.Seconds
+                );
             }
 
             _logger.LogInformation("[{Prefix}] Handled {X-RequestData}", prefix, typeof(TRequest).Name);
@@ -77,7 +81,11 @@ public class StreamLoggingBehavior<TRequest, TResponse> : IStreamPipelineBehavio
         _logger = logger;
     }
 
-    public IAsyncEnumerable<TResponse> Handle(TRequest request, StreamHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public IAsyncEnumerable<TResponse> Handle(
+        TRequest request,
+        StreamHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken
+    )
     {
         const string prefix = nameof(StreamLoggingBehavior<TRequest, TResponse>);
 
@@ -85,7 +93,8 @@ public class StreamLoggingBehavior<TRequest, TResponse> : IStreamPipelineBehavio
             "[{Prefix}] Handle request={X-RequestData} and response={X-ResponseData}",
             prefix,
             typeof(TRequest).Name,
-            typeof(TResponse).Name);
+            typeof(TResponse).Name
+        );
 
         var timer = new Stopwatch();
         timer.Start();
@@ -100,7 +109,8 @@ public class StreamLoggingBehavior<TRequest, TResponse> : IStreamPipelineBehavio
                 "[{Perf-Possible}] The request {X-RequestData} took {TimeTaken} seconds",
                 prefix,
                 typeof(TRequest).Name,
-                timeTaken.Seconds);
+                timeTaken.Seconds
+            );
         }
 
         _logger.LogInformation("[{Prefix}] Handled {X-RequestData}", prefix, typeof(TRequest).Name);

@@ -68,21 +68,9 @@ jobs:
                 exit 1
         fi
 
-      # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
-      # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
-      # https://github.com/orgs/community/discussions/26560
-      ## https://github.com/actions/checkout/issues/439#issuecomment-965968956
-      # By default checkout@v3, will check branch on ref/SHA that triggered in starting workflow, so if inner a job in the workflow we change HEAD of repository by changing code, subsequent jobs don't get these commits and they get ref/SHA that triggered in starting workflow
-    - name: Checkout Repository
-      uses: actions/checkout@v3
-      with:
-        # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
-        # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
-        fetch-depth: 0
-        ref: ${{ github.ref_name }}
-    - run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
+    - name: Call Composite Action checkout
+      uses: ./.github/actions/checkout-code
+      id: checkout-step
 
 #    - name: Call Composite Action deploy-azure-image
 #        uses: ./.github/actions/deploy-azure-image

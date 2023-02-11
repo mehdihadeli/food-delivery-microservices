@@ -121,33 +121,35 @@ public class SharedFixtureWithEfCore<TEntryPoint, TEfCoreDbContext> : SharedFixt
         return await ExecuteScopeAsync(sp => action(scope.ServiceProvider, sp.GetRequiredService<TEfCoreDbContext>()));
     }
 
-    public Task ExecuteEfDbContextAsync(Func<TEfCoreDbContext, Task> action)
-        => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TEfCoreDbContext>()));
+    public Task ExecuteEfDbContextAsync(Func<TEfCoreDbContext, Task> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetRequiredService<TEfCoreDbContext>()));
 
-    public Task ExecuteEfDbContextAsync(Func<TEfCoreDbContext, IMediator, Task> action)
-        => ExecuteScopeAsync(
-            sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<IMediator>()));
+    public Task ExecuteEfDbContextAsync(Func<TEfCoreDbContext, IMediator, Task> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<IMediator>()));
 
-    public Task<T> ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, Task<T>> action)
-        => ExecuteScopeAsync(sp => action(sp.GetRequiredService<TEfCoreDbContext>()));
+    public Task<T> ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, Task<T>> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetRequiredService<TEfCoreDbContext>()));
 
-    public Task<T> ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, IMediator, Task<T>> action)
-        => ExecuteScopeAsync(
-            sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<IMediator>()));
+    public Task<T> ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, IMediator, Task<T>> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<IMediator>()));
 
-    public Task ExecuteEfDbContextAsync(Func<TEfCoreDbContext, ICommandProcessor, Task> action)
-        => ExecuteScopeAsync(sp =>
-            action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<ICommandProcessor>()));
+    public Task ExecuteEfDbContextAsync(Func<TEfCoreDbContext, ICommandProcessor, Task> action) =>
+        ExecuteScopeAsync(
+            sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<ICommandProcessor>())
+        );
 
-    public Task<T> ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, ICommandProcessor, Task<T>> action)
-        => ExecuteScopeAsync(sp =>
-            action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<ICommandProcessor>()));
+    public Task<T> ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, ICommandProcessor, Task<T>> action) =>
+        ExecuteScopeAsync(
+            sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<ICommandProcessor>())
+        );
 
-    public Task ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, IQueryProcessor, Task<T>> action)
-        => ExecuteScopeAsync(sp =>
-            action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<IQueryProcessor>()));
+    public Task ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, IQueryProcessor, Task<T>> action) =>
+        ExecuteScopeAsync(
+            sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<IQueryProcessor>())
+        );
 
-    public async Task<int> InsertEfDbContextAsync<T>(params T[] entities) where T : class
+    public async Task<int> InsertEfDbContextAsync<T>(params T[] entities)
+        where T : class
     {
         return await ExecuteEfDbContextAsync(async db =>
         {
@@ -160,7 +162,8 @@ public class SharedFixtureWithEfCore<TEntryPoint, TEfCoreDbContext> : SharedFixt
         });
     }
 
-    public async Task<int> InsertEfDbContextAsync<TEntity>(TEntity entity) where TEntity : class
+    public async Task<int> InsertEfDbContextAsync<TEntity>(TEntity entity)
+        where TEntity : class
     {
         return await ExecuteEfDbContextAsync(db =>
         {
@@ -186,7 +189,8 @@ public class SharedFixtureWithEfCore<TEntryPoint, TEfCoreDbContext> : SharedFixt
     public async Task<int> InsertEfDbContextAsync<TEntity, TEntity2, TEntity3>(
         TEntity entity,
         TEntity2 entity2,
-        TEntity3 entity3)
+        TEntity3 entity3
+    )
         where TEntity : class
         where TEntity2 : class
         where TEntity3 : class
@@ -205,7 +209,8 @@ public class SharedFixtureWithEfCore<TEntryPoint, TEfCoreDbContext> : SharedFixt
         TEntity entity,
         TEntity2 entity2,
         TEntity3 entity3,
-        TEntity4 entity4)
+        TEntity4 entity4
+    )
         where TEntity : class
         where TEntity2 : class
         where TEntity3 : class
@@ -222,12 +227,14 @@ public class SharedFixtureWithEfCore<TEntryPoint, TEfCoreDbContext> : SharedFixt
         });
     }
 
-    public Task<T?> FindEfDbContextAsync<T>(object id) where T : class
+    public Task<T?> FindEfDbContextAsync<T>(object id)
+        where T : class
     {
         return ExecuteEfDbContextAsync(db => db.Set<T>().FindAsync(id).AsTask());
     }
 
-    public SharedFixtureWithEfCore(IMessageSink messageSink) : base(messageSink)
+    public SharedFixtureWithEfCore(IMessageSink messageSink)
+        : base(messageSink)
     {
         messageSink.OnMessage(new DiagnosticMessage("Constructing SharedFixtureWithEfCore ..."));
     }

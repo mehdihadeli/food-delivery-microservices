@@ -10,9 +10,11 @@ public static class HttpCircuitBreakerPolicies
 {
     public static AsyncCircuitBreakerPolicy<HttpResponseMessage> GetHttpCircuitBreakerPolicy(
         ILogger logger,
-        ICircuitBreakerPolicyOptions circuitBreakerPolicyConfig)
+        ICircuitBreakerPolicyOptions circuitBreakerPolicyConfig
+    )
     {
-        return HttpPolicyBuilders.GetBaseBuilder()
+        return HttpPolicyBuilders
+            .GetBaseBuilder()
             .CircuitBreakerAsync(
                 circuitBreakerPolicyConfig.RetryCount + 1,
                 TimeSpan.FromSeconds(circuitBreakerPolicyConfig.BreakDuration),
@@ -20,19 +22,25 @@ public static class HttpCircuitBreakerPolicies
                 {
                     OnHttpBreak(result, breakDuration, circuitBreakerPolicyConfig.RetryCount, logger);
                 },
-                () => { OnHttpReset(logger); });
+                () =>
+                {
+                    OnHttpReset(logger);
+                }
+            );
     }
 
     private static void OnHttpBreak(
         DelegateResult<HttpResponseMessage> result,
         TimeSpan breakDuration,
         int retryCount,
-        ILogger logger)
+        ILogger logger
+    )
     {
         logger.LogWarning(
             "Service shutdown during {BreakDuration} after {DefaultRetryCount} failed retries",
             breakDuration,
-            retryCount);
+            retryCount
+        );
         throw new BrokenCircuitException("Service inoperative. Please try again later");
     }
 

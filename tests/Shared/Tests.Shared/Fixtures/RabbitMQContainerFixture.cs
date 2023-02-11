@@ -28,10 +28,13 @@ public class RabbitMQContainerFixture : IAsyncLifetime
         _rabbitMqContainerOptions = rabbitmqContainerOptions;
 
         var rabbitmqContainerBuilder = new TestcontainersBuilder<RabbitMqTestcontainer>()
-            .WithMessageBroker(new RabbitMqTestcontainerConfiguration
-            {
-                Username = rabbitmqContainerOptions.UserName, Password = rabbitmqContainerOptions.Password,
-            })
+            .WithMessageBroker(
+                new RabbitMqTestcontainerConfiguration
+                {
+                    Username = rabbitmqContainerOptions.UserName,
+                    Password = rabbitmqContainerOptions.Password,
+                }
+            )
             // set custom host http port for container http port 15672, beside of automatic tcp port will assign for container port 5672 (default port)
             .WithPortBinding(15672, true)
             // we could comment this line, this is default port for testcontainer
@@ -59,7 +62,8 @@ public class RabbitMQContainerFixture : IAsyncLifetime
             $"http://{Container.Hostname}",
             Container.Username,
             Container.Password,
-            ApiPort);
+            ApiPort
+        );
 
         //Creating new exchange after each publish doesn't support by masstransit and it just creates exchanges in init phase but works for queues
         var queues = await managementClient.GetQueuesAsync(cancellationToken);
@@ -80,7 +84,8 @@ public class RabbitMQContainerFixture : IAsyncLifetime
             $"http://{Container.Hostname}",
             Container.Username,
             Container.Password,
-            apiPort);
+            apiPort
+        );
 
         var bd = await managementClient.GetBindingsAsync(cancellationToken);
         var bindings = bd.Where(x => !string.IsNullOrEmpty(x.Source) && !string.IsNullOrEmpty(x.Destination));
@@ -110,7 +115,9 @@ public class RabbitMQContainerFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         await Container.StartAsync();
-        _messageSink.OnMessage(new DiagnosticMessage($"RabbitMq fixture started on Host port {Container.Port} and Api Port {ApiPort}..."));
+        _messageSink.OnMessage(
+            new DiagnosticMessage($"RabbitMq fixture started on Host port {Container.Port} and Api Port {ApiPort}...")
+        );
     }
 
     public async Task DisposeAsync()

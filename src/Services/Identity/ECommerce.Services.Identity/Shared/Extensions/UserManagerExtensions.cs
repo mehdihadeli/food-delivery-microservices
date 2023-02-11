@@ -11,19 +11,18 @@ namespace ECommerce.Services.Identity.Shared.Extensions;
 public static class UserManagerExtensions
 {
     public static async Task<IReadOnlyList<ApplicationUser>> FindAllUserWithRoleAsync(
-        this UserManager<ApplicationUser> userManager)
+        this UserManager<ApplicationUser> userManager
+    )
     {
-        return await userManager.Users
-            .Include(u => u.UserRoles)
-            .ThenInclude(ur => ur.Role)
-            .ToListAsync();
+        return await userManager.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).ToListAsync();
     }
 
     public static async Task<ListResultModel<TResult>> FindAllUsersByPageAsync<TResult>(
         this UserManager<ApplicationUser> userManager,
         IMapper mapper,
         IPageRequest request,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
         where TResult : notnull
     {
         // https://benjii.me/2018/01/expression-projection-magic-entity-framework-core/
@@ -37,12 +36,14 @@ public static class UserManagerExtensions
                 mapper.ConfigurationProvider,
                 request.Page,
                 request.PageSize,
-                cancellationToken: cancellationToken);
+                cancellationToken: cancellationToken
+            );
     }
 
     public static async Task<ApplicationUser?> FindUserWithRoleByIdAsync(
         this UserManager<ApplicationUser> userManager,
-        Guid userId)
+        Guid userId
+    )
     {
         return await userManager.Users
             .Include(u => u.UserRoles)
@@ -54,7 +55,8 @@ public static class UserManagerExtensions
 
     public static async Task<ApplicationUser?> FindUserWithRoleByUserNameAsync(
         this UserManager<ApplicationUser> userManager,
-        string userName)
+        string userName
+    )
     {
         return await userManager.Users
             .Include(u => u.UserRoles)
@@ -66,7 +68,8 @@ public static class UserManagerExtensions
 
     public static async Task<ApplicationUser?> FindUserWithRoleByEmailAsync(
         this UserManager<ApplicationUser> userManager,
-        string email)
+        string email
+    )
     {
         return await userManager.Users
             .Include(u => u.UserRoles)

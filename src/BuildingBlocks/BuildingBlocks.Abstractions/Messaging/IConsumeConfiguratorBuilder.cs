@@ -1,5 +1,3 @@
 namespace BuildingBlocks.Abstractions.Messaging;
 
-public interface IConsumeConfigurationBuilder
-{
-}
+public interface IConsumeConfigurationBuilder { }

@@ -9,4 +9,5 @@ public record UserRegisteredV1(
     string UserName,
     string FirstName,
     string LastName,
-    List<string>? Roles) : IntegrationEvent;
+    List<string>? Roles
+) : IntegrationEvent;

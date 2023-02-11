@@ -6,7 +6,5 @@ public class Tests
 {
     [Fact]
     [CategoryTrait(TestCategory.Unit)]
-    public void Test1()
-    {
-    }
+    public void Test1() { }
 }

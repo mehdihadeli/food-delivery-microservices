@@ -23,14 +23,14 @@ public class GenerateRefreshTokenHandler : ICommandHandler<GenerateRefreshToken,
 
     public async Task<GenerateRefreshTokenResponse> Handle(
         GenerateRefreshToken request,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         Guard.Against.Null(request, nameof(GenerateRefreshToken));
 
-        var refreshToken = await _context.Set<Shared.Models.RefreshToken>()
-            .FirstOrDefaultAsync(
-                rt => rt.UserId == request.UserId && rt.Token == request.Token,
-                cancellationToken);
+        var refreshToken = await _context
+            .Set<Shared.Models.RefreshToken>()
+            .FirstOrDefaultAsync(rt => rt.UserId == request.UserId && rt.Token == request.Token, cancellationToken);
 
         if (refreshToken == null)
         {
@@ -68,24 +68,26 @@ public class GenerateRefreshTokenHandler : ICommandHandler<GenerateRefreshToken,
         // we could also maintain them on the database with changing their revoke date
         await RemoveOldRefreshTokens(request.UserId);
 
-        return new GenerateRefreshTokenResponse(new RefreshTokenDto
-        {
-            Token = refreshToken.Token,
-            CreatedAt = refreshToken.CreatedAt,
-            ExpireAt = refreshToken.ExpiredAt,
-            UserId = refreshToken.UserId,
-            CreatedByIp = refreshToken.CreatedByIp,
-            IsActive = refreshToken.IsActive,
-            IsExpired = refreshToken.IsExpired,
-            IsRevoked = refreshToken.IsRevoked,
-            RevokedAt = refreshToken.RevokedAt
-        });
+        return new GenerateRefreshTokenResponse(
+            new RefreshTokenDto
+            {
+                Token = refreshToken.Token,
+                CreatedAt = refreshToken.CreatedAt,
+                ExpireAt = refreshToken.ExpiredAt,
+                UserId = refreshToken.UserId,
+                CreatedByIp = refreshToken.CreatedByIp,
+                IsActive = refreshToken.IsActive,
+                IsExpired = refreshToken.IsExpired,
+                IsRevoked = refreshToken.IsRevoked,
+                RevokedAt = refreshToken.RevokedAt
+            }
+        );
     }
-
 
     private Task RemoveOldRefreshTokens(Guid userId, long? ttlRefreshToken = null)
     {
-        var refreshTokens = _context.Set<global::ECommerce.Services.Identity.Shared.Models.RefreshToken>()
+        var refreshTokens = _context
+            .Set<global::ECommerce.Services.Identity.Shared.Models.RefreshToken>()
             .Where(rt => rt.UserId == userId);
 
         refreshTokens.ToList().RemoveAll(x => !x.IsRefreshTokenValid(ttlRefreshToken));

@@ -18,8 +18,7 @@ internal class GetUserByIdValidator : AbstractValidator<GetUserById>
 {
     public GetUserByIdValidator()
     {
-        RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("InternalCommandId is required.");
+        RuleFor(x => x.Id).NotEmpty().WithMessage("InternalCommandId is required.");
     }
 }
 

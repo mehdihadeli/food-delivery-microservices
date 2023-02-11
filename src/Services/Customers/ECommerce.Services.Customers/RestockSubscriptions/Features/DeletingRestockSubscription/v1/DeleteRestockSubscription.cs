@@ -14,8 +14,7 @@ internal class DeleteRestockSubscriptionValidator : AbstractValidator<DeleteRest
 {
     public DeleteRestockSubscriptionValidator()
     {
-        RuleFor(x => x.Id)
-            .NotEmpty();
+        RuleFor(x => x.Id).NotEmpty();
     }
 }
 
@@ -26,7 +25,8 @@ internal class DeleteRestockSubscriptionHandler : ICommandHandler<DeleteRestockS
 
     public DeleteRestockSubscriptionHandler(
         CustomersDbContext customersDbContext,
-        ILogger<DeleteRestockSubscriptionHandler> logger)
+        ILogger<DeleteRestockSubscriptionHandler> logger
+    )
     {
         _customersDbContext = customersDbContext;
         _logger = logger;
@@ -36,7 +36,8 @@ internal class DeleteRestockSubscriptionHandler : ICommandHandler<DeleteRestockS
     {
         Guard.Against.Null(command, nameof(command));
 
-        var exists = await _customersDbContext.RestockSubscriptions.IgnoreAutoIncludes()
+        var exists = await _customersDbContext.RestockSubscriptions
+            .IgnoreAutoIncludes()
             .SingleOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
 
         Guard.Against.NotFound(exists, new RestockSubscriptionNotFoundException(command.Id));

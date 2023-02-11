@@ -12,21 +12,24 @@ public class GetRestockSubscriptionByIdEndpoint : IQueryMinimalEndpoint<Guid>
     public string PrefixRoute => RestockSubscriptionsConfigs.RestockSubscriptionsUrl;
     public double Version => 1.0;
 
-
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
-        return builder.MapGet("/{id:guid}", HandleAsync)
+        return builder
+            .MapGet("/{id:guid}", HandleAsync)
             .RequireAuthorization(CustomersConstants.Role.Admin)
             .Produces<GetRestockSubscriptionByIdResponse>(StatusCodes.Status200OK)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
             .WithName("GetRestockSubscriptionById")
-            .WithOpenApi(operation => new(operation)
-            {
-                Description = "Getting RestockSubscription By SubscriptionId.",
-                Summary = "Getting RestockSubscription By SubscriptionId."
-            })
+            .WithOpenApi(
+                operation =>
+                    new(operation)
+                    {
+                        Description = "Getting RestockSubscription By SubscriptionId.",
+                        Summary = "Getting RestockSubscription By SubscriptionId."
+                    }
+            )
             .WithDisplayName("Get RestockSubscription By InternalCommandId.");
     }
 
@@ -35,16 +38,15 @@ public class GetRestockSubscriptionByIdEndpoint : IQueryMinimalEndpoint<Guid>
         Guid id,
         IQueryProcessor queryProcessor,
         IMapper mapper,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
-        using (Serilog.Context.LogContext.PushProperty(
-                   "Endpoint",
-                   nameof(GetRestockSubscriptionBySubscriptionIdEndpoint)))
+        using (
+            Serilog.Context.LogContext.PushProperty("Endpoint", nameof(GetRestockSubscriptionBySubscriptionIdEndpoint))
+        )
         using (Serilog.Context.LogContext.PushProperty("InternalCommandId", id))
         {
-            var result = await queryProcessor.SendAsync(
-                new GetRestockSubscriptionById(id),
-                cancellationToken);
+            var result = await queryProcessor.SendAsync(new GetRestockSubscriptionById(id), cancellationToken);
 
             return Results.Ok(result);
         }

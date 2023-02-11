@@ -18,8 +18,7 @@ using Microsoft.Extensions.Options;
 
 namespace ECommerce.Services.Identity.Identity.Features.Login.v1;
 
-public record Login(string UserNameOrEmail, string Password, bool Remember) :
-    ICommand<LoginResponse>, ITxRequest;
+public record Login(string UserNameOrEmail, string Password, bool Remember) : ICommand<LoginResponse>, ITxRequest;
 
 internal class LoginValidator : AbstractValidator<Login>
 {
@@ -49,7 +48,8 @@ internal class LoginHandler : ICommandHandler<Login, LoginResponse>
         IOptions<JwtOptions> jwtOptions,
         SignInManager<ApplicationUser> signInManager,
         IdentityContext context,
-        ILogger<LoginHandler> logger)
+        ILogger<LoginHandler> logger
+    )
     {
         _userManager = userManager;
         _commandProcessor = commandProcessor;
@@ -65,16 +65,14 @@ internal class LoginHandler : ICommandHandler<Login, LoginResponse>
     {
         Guard.Against.Null(request, nameof(Login));
 
-        var identityUser = await _userManager.FindByNameAsync(request.UserNameOrEmail) ??
-                           await _userManager.FindByEmailAsync(request.UserNameOrEmail);
+        var identityUser =
+            await _userManager.FindByNameAsync(request.UserNameOrEmail)
+            ?? await _userManager.FindByEmailAsync(request.UserNameOrEmail);
 
         Guard.Against.Null(identityUser, new IdentityUserNotFoundException(request.UserNameOrEmail));
 
         // instead of PasswordSignInAsync, we use CheckPasswordSignInAsync because we don't want set cookie, instead we use JWT
-        var signinResult = await _signInManager.CheckPasswordSignInAsync(
-            identityUser,
-            request.Password,
-            false);
+        var signinResult = await _signInManager.CheckPasswordSignInAsync(identityUser, request.Password, false);
 
         if (signinResult.IsNotAllowed)
         {
@@ -97,14 +95,14 @@ internal class LoginHandler : ICommandHandler<Login, LoginResponse>
             throw new PasswordIsInvalidException("Password is invalid.");
         }
 
-        var refreshToken =
-            (await _commandProcessor.SendAsync(new GenerateRefreshToken(identityUser.Id), cancellationToken))
-            .RefreshToken;
+        var refreshToken = (
+            await _commandProcessor.SendAsync(new GenerateRefreshToken(identityUser.Id), cancellationToken)
+        ).RefreshToken;
 
-        var accessToken =
-            await _commandProcessor.SendAsync(
-                new GenerateJwtToken(identityUser, refreshToken.Token),
-                cancellationToken);
+        var accessToken = await _commandProcessor.SendAsync(
+            new GenerateJwtToken(identityUser, refreshToken.Token),
+            cancellationToken
+        );
 
         if (string.IsNullOrWhiteSpace(accessToken.Token))
             throw new AppException("Generate access token failed.");
@@ -113,16 +111,19 @@ internal class LoginHandler : ICommandHandler<Login, LoginResponse>
 
         if (_jwtOptions.CheckRevokedAccessTokens)
         {
-            await _context.Set<AccessToken>().AddAsync(
-                new AccessToken
-                {
-                    UserId = identityUser.Id,
-                    Token = accessToken.Token,
-                    CreatedAt = DateTime.Now,
-                    ExpiredAt = accessToken.ExpireAt,
-                    CreatedByIp = IpUtilities.GetIpAddress()
-                },
-                cancellationToken);
+            await _context
+                .Set<AccessToken>()
+                .AddAsync(
+                    new AccessToken
+                    {
+                        UserId = identityUser.Id,
+                        Token = accessToken.Token,
+                        CreatedAt = DateTime.Now,
+                        ExpiredAt = accessToken.ExpireAt,
+                        CreatedByIp = IpUtilities.GetIpAddress()
+                    },
+                    cancellationToken
+                );
 
             await _context.SaveChangesAsync(cancellationToken);
         }

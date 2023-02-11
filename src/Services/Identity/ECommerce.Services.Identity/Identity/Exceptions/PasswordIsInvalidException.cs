@@ -5,7 +5,6 @@ namespace ECommerce.Services.Identity.Identity.Exceptions;
 
 public class PasswordIsInvalidException : AppException
 {
-    public PasswordIsInvalidException(string message) : base(message, HttpStatusCode.Forbidden)
-    {
-    }
+    public PasswordIsInvalidException(string message)
+        : base(message, HttpStatusCode.Forbidden) { }
 }

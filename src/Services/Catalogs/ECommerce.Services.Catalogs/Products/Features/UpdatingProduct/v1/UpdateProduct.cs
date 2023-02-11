@@ -33,14 +33,14 @@ public record UpdateProduct(
     long CategoryId,
     long SupplierId,
     long BrandId,
-    string? Description = null) : ITxUpdateCommand;
+    string? Description = null
+) : ITxUpdateCommand;
 
 internal class UpdateProductValidator : AbstractValidator<UpdateProduct>
 {
     public UpdateProductValidator()
     {
-        RuleFor(x => x.Id)
-            .NotEmpty();
+        RuleFor(x => x.Id).NotEmpty();
     }
 }
 

@@ -9,5 +9,8 @@ public abstract record InternalCommand : IInternalCommand
 
     public DateTime OccurredOn { get; protected set; } = DateTime.Now;
 
-    public string Type { get { return TypeMapper.GetFullTypeName(GetType()); } }
+    public string Type
+    {
+        get { return TypeMapper.GetFullTypeName(GetType()); }
+    }
 }

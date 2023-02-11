@@ -17,15 +17,19 @@ public static class EfCoreQueryableExtensions
         this IQueryable<T> collection,
         int page = 1,
         int pageSize = 10,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where T : notnull
     {
-        if (page <= 0) page = 1;
+        if (page <= 0)
+            page = 1;
 
-        if (pageSize <= 0) pageSize = 10;
+        if (pageSize <= 0)
+            pageSize = 10;
 
         var isEmpty = await collection.AnyAsync(cancellationToken: cancellationToken) == false;
-        if (isEmpty) return ListResultModel<T>.Empty;
+        if (isEmpty)
+            return ListResultModel<T>.Empty;
 
         var totalItems = await collection.CountAsync(cancellationToken: cancellationToken);
         var totalPages = (int)Math.Ceiling((decimal)totalItems / pageSize);
@@ -39,52 +43,54 @@ public static class EfCoreQueryableExtensions
         IConfigurationProvider configuration,
         int page = 1,
         int pageSize = 10,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TR : notnull
     {
-        if (page <= 0) page = 1;
+        if (page <= 0)
+            page = 1;
 
-        if (pageSize <= 0) pageSize = 10;
+        if (pageSize <= 0)
+            pageSize = 10;
 
         var isEmpty = await collection.AnyAsync(cancellationToken: cancellationToken) == false;
-        if (isEmpty) return ListResultModel<TR>.Empty;
+        if (isEmpty)
+            return ListResultModel<TR>.Empty;
 
         var totalItems = await collection.CountAsync(cancellationToken: cancellationToken);
         var totalPages = (int)Math.Ceiling((decimal)totalItems / pageSize);
-        var data = await collection.Limit(page, pageSize).ProjectTo<TR>(configuration)
+        var data = await collection
+            .Limit(page, pageSize)
+            .ProjectTo<TR>(configuration)
             .ToListAsync(cancellationToken: cancellationToken);
 
         return ListResultModel<TR>.Create(data, totalItems, page, pageSize);
     }
 
-    public static IQueryable<TEntity> ApplyPaging<TEntity>(
-        this IQueryable<TEntity> source,
-        int page,
-        int size)
+    public static IQueryable<TEntity> ApplyPaging<TEntity>(this IQueryable<TEntity> source, int page, int size)
         where TEntity : class
     {
         return source.Skip(page * size).Take(size);
     }
 
-    public static IQueryable<T> Limit<T>(
-        this IQueryable<T> collection,
-        int page = 1,
-        int resultsPerPage = 10)
+    public static IQueryable<T> Limit<T>(this IQueryable<T> collection, int page = 1, int resultsPerPage = 10)
     {
-        if (page <= 0) page = 1;
+        if (page <= 0)
+            page = 1;
 
-        if (resultsPerPage <= 0) resultsPerPage = 10;
+        if (resultsPerPage <= 0)
+            resultsPerPage = 10;
 
         var skip = (page - 1) * resultsPerPage;
-        var data = collection.Skip(skip)
-            .Take(resultsPerPage);
+        var data = collection.Skip(skip).Take(resultsPerPage);
 
         return data;
     }
 
     public static IQueryable<TEntity> ApplyFilter<TEntity>(
         this IQueryable<TEntity> source,
-        IEnumerable<FilterModel>? filters)
+        IEnumerable<FilterModel>? filters
+    )
         where TEntity : class
     {
         if (filters is null)
@@ -103,7 +109,8 @@ public static class EfCoreQueryableExtensions
 
     public static IQueryable<TEntity> ApplyIncludeList<TEntity>(
         this IQueryable<TEntity> source,
-        IEnumerable<string>? navigationPropertiesPath)
+        IEnumerable<string>? navigationPropertiesPath
+    )
         where TEntity : class
     {
         if (navigationPropertiesPath is null)

@@ -6,4 +6,5 @@ public record UserIdentityDto(
     string Email,
     string PhoneNumber,
     string FirstName,
-    string LastName);
+    string LastName
+);

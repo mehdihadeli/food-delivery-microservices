@@ -18,16 +18,15 @@ public class GenerateJwtTokenHandler : ICommandHandler<GenerateJwtToken, Generat
     public GenerateJwtTokenHandler(
         UserManager<ApplicationUser> userManager,
         IJwtService jwtService,
-        ILogger<GenerateJwtTokenHandler> logger)
+        ILogger<GenerateJwtTokenHandler> logger
+    )
     {
         _userManager = userManager;
         _jwtService = jwtService;
         _logger = logger;
     }
 
-    public async Task<GenerateJwtTokenResponse> Handle(
-        GenerateJwtToken request,
-        CancellationToken cancellationToken)
+    public async Task<GenerateJwtTokenResponse> Handle(GenerateJwtToken request, CancellationToken cancellationToken)
     {
         var identityUser = request.User;
 
@@ -44,24 +43,28 @@ public class GenerateJwtTokenHandler : ICommandHandler<GenerateJwtToken, Generat
             request.RefreshToken,
             allClaims.UserClaims.ToImmutableList(),
             allClaims.Roles.ToImmutableList(),
-            allClaims.PermissionClaims.ToImmutableList());
+            allClaims.PermissionClaims.ToImmutableList()
+        );
 
         _logger.LogInformation("access-token generated, \n: {AccessToken}", tokenResult.AccessToken);
 
         return new GenerateJwtTokenResponse(tokenResult.AccessToken, tokenResult.ExpireAt);
     }
 
-    public async Task<(IList<Claim> UserClaims, IList<string> Roles, IList<string> PermissionClaims)>
-        GetClaimsAsync(string userName)
+    public async Task<(IList<Claim> UserClaims, IList<string> Roles, IList<string> PermissionClaims)> GetClaimsAsync(
+        string userName
+    )
     {
         var appUser = await _userManager.FindByNameAsync(userName);
-        var userClaims =
-            (await _userManager.GetClaimsAsync(appUser)).Where(x => x.Type != CustomClaimTypes.Permission).ToList();
+        var userClaims = (await _userManager.GetClaimsAsync(appUser))
+            .Where(x => x.Type != CustomClaimTypes.Permission)
+            .ToList();
         var roles = await _userManager.GetRolesAsync(appUser);
 
         var permissions = (await _userManager.GetClaimsAsync(appUser))
-            .Where(x => x.Type == CustomClaimTypes.Permission)?.Select(x => x
-                .Value).ToList();
+            .Where(x => x.Type == CustomClaimTypes.Permission)
+            ?.Select(x => x.Value)
+            .ToList();
 
         return (UserClaims: userClaims, Roles: roles, PermissionClaims: permissions);
     }

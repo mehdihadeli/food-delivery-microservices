@@ -122,6 +122,8 @@ runs:
             echo "app version is: $LATEST_TAG"
         fi
 
+      # we could create a temporary personal token for push app version in a commit directly with this plugin: https://github.com/peter-murray/workflow-application-token-action
+
       # Save version in the artifacts to use in CD process
     - name: Save Version Name
       if: success()

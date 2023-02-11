@@ -40,30 +40,28 @@ internal class UpdateMongoCustomerReadsModelHandler : ICommandHandler<UpdateMong
     {
         Guard.Against.Null(command, nameof(command));
 
-        var filterDefinition =
-            Builders<CustomerReadModel>.Filter
-                .Eq(x => x.CustomerId, command.CustomerId);
+        var filterDefinition = Builders<CustomerReadModel>.Filter.Eq(x => x.CustomerId, command.CustomerId);
 
-        var updateDefinition =
-            Builders<CustomerReadModel>.Update
-                .Set(x => x.Email, command.Email)
-                .Set(x => x.Country, command.Country)
-                .Set(x => x.City, command.City)
-                .Set(x => x.DetailAddress, command.DetailAddress)
-                .Set(x => x.IdentityId, command.IdentityId)
-                .Set(x => x.CustomerId, command.CustomerId)
-                .Set(x => x.Nationality, command.Nationality)
-                .Set(x => x.FirstName, command.FirstName)
-                .Set(x => x.LastName, command.LastName)
-                .Set(x => x.FullName, command.FullName)
-                .Set(x => x.PhoneNumber, command.PhoneNumber)
-                .Set(x => x.BirthDate, command.BirthDate);
+        var updateDefinition = Builders<CustomerReadModel>.Update
+            .Set(x => x.Email, command.Email)
+            .Set(x => x.Country, command.Country)
+            .Set(x => x.City, command.City)
+            .Set(x => x.DetailAddress, command.DetailAddress)
+            .Set(x => x.IdentityId, command.IdentityId)
+            .Set(x => x.CustomerId, command.CustomerId)
+            .Set(x => x.Nationality, command.Nationality)
+            .Set(x => x.FirstName, command.FirstName)
+            .Set(x => x.LastName, command.LastName)
+            .Set(x => x.FullName, command.FullName)
+            .Set(x => x.PhoneNumber, command.PhoneNumber)
+            .Set(x => x.BirthDate, command.BirthDate);
 
         await _customersReadDbContext.Customers.UpdateOneAsync(
             filterDefinition,
             updateDefinition,
             new UpdateOptions(),
-            cancellationToken);
+            cancellationToken
+        );
 
         return Unit.Value;
     }

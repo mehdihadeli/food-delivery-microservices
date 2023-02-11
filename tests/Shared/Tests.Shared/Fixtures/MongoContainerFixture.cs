@@ -22,18 +22,20 @@ public class MongoContainerFixture : IAsyncLifetime
         _mongoContainerOptions = mongoContainerOptions;
 
         var postgresContainerBuilder = new TestcontainersBuilder<MongoDbTestcontainer>()
-            .WithDatabase(new MongoDbTestcontainerConfiguration
-            {
-                Database = mongoContainerOptions.DatabaseName,
-                Username = mongoContainerOptions.UserName,
-                Password = mongoContainerOptions.Password,
-            })
+            .WithDatabase(
+                new MongoDbTestcontainerConfiguration
+                {
+                    Database = mongoContainerOptions.DatabaseName,
+                    Username = mongoContainerOptions.UserName,
+                    Password = mongoContainerOptions.Password,
+                }
+            )
             .WithName(mongoContainerOptions.Name)
             .WithCleanUp(true)
-            // https://github.com/testcontainers/testcontainers-dotnet/issues/734
-            // testcontainers has a problem with using mongo:latest version for now we use testcontainer default image
-            //.WithImage(mongoContainerOptions.ImageName)
-            ;
+        // https://github.com/testcontainers/testcontainers-dotnet/issues/734
+        // testcontainers has a problem with using mongo:latest version for now we use testcontainer default image
+        //.WithImage(mongoContainerOptions.ImageName)
+        ;
 
         Container = postgresContainerBuilder.Build();
     }
@@ -64,15 +66,19 @@ public class MongoContainerFixture : IAsyncLifetime
         //// Drop database completely in each run or drop only the collections in exisitng database
         //await dbClient.DropDatabaseAsync(Container.Database, cancellationToken);
 
-        var collections = await dbClient.GetDatabase(Container.Database)
+        var collections = await dbClient
+            .GetDatabase(Container.Database)
             .ListCollectionsAsync(cancellationToken: cancellationToken);
 
         foreach (var collection in collections.ToList())
         {
-            await dbClient.GetDatabase(Container.Database).DropCollectionAsync(collection["name"].AsString, cancellationToken);
+            await dbClient
+                .GetDatabase(Container.Database)
+                .DropCollectionAsync(collection["name"].AsString, cancellationToken);
         }
     }
-    private  sealed class MongoContainerOptions
+
+    private sealed class MongoContainerOptions
     {
         public string Name { get; set; } = "mongo_" + Guid.NewGuid();
         public string ImageName { get; set; } = "mongo:latest";

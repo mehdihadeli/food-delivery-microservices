@@ -6,9 +6,8 @@ namespace ECommerce.Services.Orders.Orders.ValueObjects;
 public record OrderId : AggregateId
 {
     // EF
-    protected OrderId(long value) : base(value)
-    {
-    }
+    protected OrderId(long value)
+        : base(value) { }
 
     public static implicit operator long(OrderId id) => id.Value;
 

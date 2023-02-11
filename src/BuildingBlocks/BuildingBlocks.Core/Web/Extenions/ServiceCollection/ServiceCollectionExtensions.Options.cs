@@ -6,39 +6,37 @@ namespace BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 
 public static partial class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddConfigurationOptions<T>(
-        this IServiceCollection services)
+    public static IServiceCollection AddConfigurationOptions<T>(this IServiceCollection services)
         where T : class
     {
         return services.AddConfigurationOptions<T>(typeof(T).Name);
     }
 
-    public static IServiceCollection AddConfigurationOptions<T>(
-        this IServiceCollection services, string key)
+    public static IServiceCollection AddConfigurationOptions<T>(this IServiceCollection services, string key)
         where T : class
     {
-        services.AddOptions<T>()
-            .BindConfiguration(key);
+        services.AddOptions<T>().BindConfiguration(key);
 
         return services.AddSingleton(x => x.GetRequiredService<IOptions<T>>().Value);
     }
 
-    public static IServiceCollection AddValidatedOptions<T>(
-        this IServiceCollection services)
+    public static IServiceCollection AddValidatedOptions<T>(this IServiceCollection services)
         where T : class
     {
         return AddValidatedOptions<T>(services, typeof(T).Name, RequiredConfigurationValidator.Validate);
     }
 
-    public static IServiceCollection AddValidatedOptions<T>(
-        this IServiceCollection services, string key)
+    public static IServiceCollection AddValidatedOptions<T>(this IServiceCollection services, string key)
         where T : class
     {
         return AddValidatedOptions<T>(services, key, RequiredConfigurationValidator.Validate);
     }
 
     public static IServiceCollection AddValidatedOptions<T>(
-        this IServiceCollection services, string key, Func<T, bool> validator)
+        this IServiceCollection services,
+        string key,
+        Func<T, bool> validator
+    )
         where T : class
     {
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options
@@ -47,9 +45,7 @@ public static partial class ServiceCollectionExtensions
         // https://code-maze.com/aspnet-configuration-options-validation/
         // https://dotnetdocs.ir/Post/42/difference-between-ioptions-ioptionssnapshot-and-ioptionsmonitor
         // https://andrewlock.net/adding-validation-to-strongly-typed-configuration-objects-in-dotnet-6/
-        services.AddOptions<T>()
-            .BindConfiguration(key)
-            .Validate(validator);
+        services.AddOptions<T>().BindConfiguration(key).Validate(validator);
 
         // IOptions itself registered as singleton
         return services.AddSingleton(x => x.GetRequiredService<IOptions<T>>().Value);

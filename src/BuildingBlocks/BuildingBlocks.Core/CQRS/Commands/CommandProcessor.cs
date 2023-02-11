@@ -15,9 +15,7 @@ public class CommandProcessor : ICommandProcessor
         _messagePersistenceService = messagePersistenceService;
     }
 
-    public Task<TResult> SendAsync<TResult>(
-        ICommand<TResult> command,
-        CancellationToken cancellationToken = default)
+    public Task<TResult> SendAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
         where TResult : notnull
     {
         return _mediator.Send(command, cancellationToken);
@@ -25,14 +23,16 @@ public class CommandProcessor : ICommandProcessor
 
     public async Task ScheduleAsync(
         IInternalCommand internalCommandCommand,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         await _messagePersistenceService.AddInternalMessageAsync(internalCommandCommand, cancellationToken);
     }
 
     public async Task ScheduleAsync(
         IInternalCommand[] internalCommandCommands,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         foreach (var internalCommandCommand in internalCommandCommands)
         {

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "ecommerce-microservices",
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install && dotnet tool restore"
   },
   "repository": {
     "type": "git",

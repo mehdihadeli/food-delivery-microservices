@@ -12,9 +12,7 @@ public class AggregateStore : IAggregateStore
     private readonly IEventStore _eventStore;
     private readonly IAggregatesDomainEventsRequestStore _aggregatesDomainEventsStore;
 
-    public AggregateStore(
-        IEventStore eventStore,
-        IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore)
+    public AggregateStore(IEventStore eventStore, IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore)
     {
         _eventStore = eventStore;
         _aggregatesDomainEventsStore = aggregatesDomainEventsStore;
@@ -22,7 +20,8 @@ public class AggregateStore : IAggregateStore
 
     public async Task<TAggregate?> GetAsync<TAggregate, TId>(
         TId aggregateId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TAggregate : class, IEventSourcedAggregate<TId>, new()
     {
         Guard.Against.Null(aggregateId, nameof(aggregateId));
@@ -36,7 +35,8 @@ public class AggregateStore : IAggregateStore
             StreamReadPosition.Start,
             defaultAggregateState,
             defaultAggregateState.Fold,
-            cancellationToken);
+            cancellationToken
+        );
 
         return result;
     }
@@ -44,7 +44,8 @@ public class AggregateStore : IAggregateStore
     public async Task<AppendResult> StoreAsync<TAggregate, TId>(
         TAggregate aggregate,
         ExpectedStreamVersion? expectedVersion = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TAggregate : class, IEventSourcedAggregate<TId>, new()
     {
         Guard.Against.Null(aggregate, nameof(aggregate));
@@ -55,15 +56,11 @@ public class AggregateStore : IAggregateStore
 
         var events = aggregate.GetUncommittedDomainEvents();
 
-        var streamEvents = events.Select(x =>
-                x.ToStreamEvent(new StreamEventMetadata(x.EventId.ToString(), x.AggregateSequenceNumber)))
+        var streamEvents = events
+            .Select(x => x.ToStreamEvent(new StreamEventMetadata(x.EventId.ToString(), x.AggregateSequenceNumber)))
             .ToImmutableList();
 
-        var result = await _eventStore.AppendEventsAsync(
-            streamName,
-            streamEvents,
-            version,
-            cancellationToken);
+        var result = await _eventStore.AppendEventsAsync(streamName, streamEvents, version, cancellationToken);
 
         _aggregatesDomainEventsStore.AddEvents(events);
 
@@ -76,13 +73,15 @@ public class AggregateStore : IAggregateStore
 
     public Task<AppendResult> StoreAsync<TAggregate, TId>(
         TAggregate aggregate,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TAggregate : class, IEventSourcedAggregate<TId>, new()
     {
         return StoreAsync<TAggregate, TId>(
             aggregate,
             new ExpectedStreamVersion(aggregate.OriginalVersion),
-            cancellationToken);
+            cancellationToken
+        );
     }
 
     public Task<bool> Exists<TAggregate, TId>(TId aggregateId, CancellationToken cancellationToken = default)

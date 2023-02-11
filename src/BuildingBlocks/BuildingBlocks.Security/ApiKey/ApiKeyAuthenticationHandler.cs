@@ -20,7 +20,9 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthentic
         ILoggerFactory logger,
         UrlEncoder encoder,
         ISystemClock clock,
-        IGetApiKeyQuery getApiKeyQuery) : base(options, logger, encoder, clock)
+        IGetApiKeyQuery getApiKeyQuery
+    )
+        : base(options, logger, encoder, clock)
     {
         _getApiKeyQuery = getApiKeyQuery ?? throw new ArgumentNullException(nameof(getApiKeyQuery));
     }
@@ -30,14 +32,15 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthentic
         StringValues apiKeyQueryValues = "";
         StringValues apiKeyHeaderValues = "";
 
-        if (Request.Headers.TryGetValue(ApiKeyConstants.HeaderName, out apiKeyHeaderValues) == false &&
-            Request.Query.TryGetValue(ApiKeyConstants.HeaderName, out apiKeyQueryValues) == false)
+        if (
+            Request.Headers.TryGetValue(ApiKeyConstants.HeaderName, out apiKeyHeaderValues) == false
+            && Request.Query.TryGetValue(ApiKeyConstants.HeaderName, out apiKeyQueryValues) == false
+        )
             return AuthenticateResult.NoResult();
 
         var providedApiKey = apiKeyHeaderValues.FirstOrDefault() ?? apiKeyQueryValues.FirstOrDefault();
 
-        if (apiKeyHeaderValues.Count == 0 && apiKeyQueryValues.Count == 0 || string.IsNullOrWhiteSpace
-                (providedApiKey))
+        if (apiKeyHeaderValues.Count == 0 && apiKeyQueryValues.Count == 0 || string.IsNullOrWhiteSpace(providedApiKey))
             return AuthenticateResult.NoResult();
 
         var existingApiKey = await _getApiKeyQuery.ExecuteAsync(providedApiKey);

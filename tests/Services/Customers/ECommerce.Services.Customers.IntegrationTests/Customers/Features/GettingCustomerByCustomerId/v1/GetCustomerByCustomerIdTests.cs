@@ -15,10 +15,9 @@ public class GetCustomerByCustomerIdTests : CustomerServiceIntegrationTestBase
 {
     public GetCustomerByCustomerIdTests(
         SharedFixtureWithEfCoreAndMongo<Api.Program, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-        ITestOutputHelper outputHelper)
-        : base(sharedFixture, outputHelper)
-    {
-    }
+        ITestOutputHelper outputHelper
+    )
+        : base(sharedFixture, outputHelper) { }
 
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
@@ -28,17 +27,15 @@ public class GetCustomerByCustomerIdTests : CustomerServiceIntegrationTestBase
         CustomerReadModel fakeCustomer = new FakeCustomerReadModel().Generate();
         await SharedFixture.InsertMongoDbContextAsync(
             nameof(CustomersReadDbContext.Customers).Underscore(),
-            fakeCustomer);
+            fakeCustomer
+        );
 
         // Act
         var query = new GetCustomerByCustomerId(fakeCustomer.CustomerId);
         var customer = (await SharedFixture.SendAsync(query)).Customer;
 
         // Assert
-        customer.Should().BeEquivalentTo(
-            fakeCustomer,
-            options => options
-                .ExcludingMissingMembers());
+        customer.Should().BeEquivalentTo(fakeCustomer, options => options.ExcludingMissingMembers());
     }
 
     [Fact]

@@ -32,19 +32,13 @@ internal class ProductsConfigs : IModuleConfiguration
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        var productsVersionGroup = endpoints
-            .MapApiGroup(Tag)
-            .WithTags(Tag);
+        var productsVersionGroup = endpoints.MapApiGroup(Tag).WithTags(Tag);
 
         // create a new sub group for each version
-        var productsGroupV1 = productsVersionGroup
-            .MapGroup(ProductsPrefixUri)
-            .HasApiVersion(1.0);
+        var productsGroupV1 = productsVersionGroup.MapGroup(ProductsPrefixUri).HasApiVersion(1.0);
 
         // create a new sub group for each version
-        var productsGroupV2 = productsVersionGroup
-            .MapGroup(ProductsPrefixUri)
-            .HasApiVersion(2.0);
+        var productsGroupV2 = productsVersionGroup.MapGroup(ProductsPrefixUri).HasApiVersion(2.0);
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-7.0#route-groups
         // https://github.com/dotnet/aspnet-api-versioning/blob/main/examples/AspNetCore/WebApi/MinimalOpenApiExample/Program.cs

@@ -9,9 +9,7 @@ public class Order : Aggregate<OrderId>
 {
     // EF
     // this constructor is needed when we have a parameter constructor that has some navigation property classes in the parameters and ef will skip it and try to find other constructor, here default constructor (maybe will fix .net 8)
-    private Order()
-    {
-    }
+    private Order() { }
 
     public CustomerInfo Customer { get; private set; } = default!;
     public ProductInfo Product { get; private set; } = default!;
@@ -19,6 +17,6 @@ public class Order : Aggregate<OrderId>
     public static Order Create(CustomerInfo customerInfo, ProductInfo productInfo)
     {
         //TODO: Complete order domain model
-        return new Order {Customer = customerInfo, Product = productInfo};
+        return new Order { Customer = customerInfo, Product = productInfo };
     }
 }

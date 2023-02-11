@@ -23,7 +23,8 @@ public class MassTransitBus : IBus
     public async Task PublishAsync<TMessage>(
         TMessage message,
         IDictionary<string, object?>? headers,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TMessage : class, IMessage
     {
         IDictionary<string, object?> meta = headers ?? new Dictionary<string, object?>();
@@ -39,7 +40,8 @@ public class MassTransitBus : IBus
                     ctx.Headers.Set(header.Key, header.Value);
                 }
             },
-            cancellationToken);
+            cancellationToken
+        );
     }
 
     public async Task PublishAsync<TMessage>(
@@ -47,7 +49,8 @@ public class MassTransitBus : IBus
         IDictionary<string, object?>? headers,
         string? exchangeOrTopic = null,
         string? queue = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TMessage : class, IMessage
     {
         IDictionary<string, object?> meta = headers ?? new Dictionary<string, object?>();
@@ -63,20 +66,24 @@ public class MassTransitBus : IBus
         string endpointAddress = GetEndpointAddress(exchangeOrTopic, queue);
 
         var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(endpointAddress));
-        await sendEndpoint.Send(message, ctx =>
+        await sendEndpoint.Send(
+            message,
+            ctx =>
             {
                 foreach (var header in meta)
                 {
                     ctx.Headers.Set(header.Key, header.Value);
                 }
             },
-            cancellationToken);
+            cancellationToken
+        );
     }
 
     public async Task PublishAsync(
         object message,
         IDictionary<string, object?>? headers,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         IDictionary<string, object?> meta = headers ?? new Dictionary<string, object?>();
         if (message is IMessage data)
@@ -88,14 +95,17 @@ public class MassTransitBus : IBus
             meta = GetMetadata(message, meta);
         }
 
-        await _publishEndpoint.Publish(message, ctx =>
+        await _publishEndpoint.Publish(
+            message,
+            ctx =>
             {
                 foreach (var header in meta)
                 {
                     ctx.Headers.Set(header.Key, header.Value);
                 }
             },
-            cancellationToken);
+            cancellationToken
+        );
     }
 
     public async Task PublishAsync(
@@ -103,7 +113,8 @@ public class MassTransitBus : IBus
         IDictionary<string, object?>? headers,
         string? exchangeOrTopic = null,
         string? queue = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (string.IsNullOrEmpty(queue) && string.IsNullOrEmpty(exchangeOrTopic))
         {
@@ -125,14 +136,17 @@ public class MassTransitBus : IBus
         string endpointAddress = GetEndpointAddress(exchangeOrTopic, queue);
 
         var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(endpointAddress));
-        await sendEndpoint.Send(message, ctx =>
+        await sendEndpoint.Send(
+            message,
+            ctx =>
             {
                 foreach (var header in meta)
                 {
                     ctx.Headers.Set(header.Key, header.Value);
                 }
             },
-            cancellationToken);
+            cancellationToken
+        );
     }
 
     private static string GetEndpointAddress(string? exchangeOrTopic, string? queue)
@@ -146,15 +160,15 @@ public class MassTransitBus : IBus
 
     public void Consume<TMessage>(
         IMessageHandler<TMessage> handler,
-        Action<IConsumeConfigurationBuilder>? consumeBuilder = null)
-        where TMessage : class, IMessage
-    {
-    }
+        Action<IConsumeConfigurationBuilder>? consumeBuilder = null
+    )
+        where TMessage : class, IMessage { }
 
     public Task Consume<TMessage>(
         Abstractions.Messaging.MessageHandler<TMessage> subscribeMethod,
         Action<IConsumeConfigurationBuilder>? consumeBuilder = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TMessage : class, IMessage
     {
         return Task.CompletedTask;
@@ -190,14 +204,16 @@ public class MassTransitBus : IBus
 
     public Task ConsumeAllFromAssemblyOf(
         CancellationToken cancellationToken = default,
-        params Type[] assemblyMarkerTypes)
+        params Type[] assemblyMarkerTypes
+    )
     {
         return Task.CompletedTask;
     }
 
     private static IDictionary<string, object?> GetMetadata<TMessage>(
         TMessage message,
-        IDictionary<string, object?>? headers)
+        IDictionary<string, object?>? headers
+    )
         where TMessage : class, IMessage
     {
         var meta = headers ?? new Dictionary<string, object?>();

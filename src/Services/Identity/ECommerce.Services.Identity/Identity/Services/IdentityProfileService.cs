@@ -15,7 +15,8 @@ public class IdentityProfileService : IProfileService
 
     public IdentityProfileService(
         IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager
+    )
     {
         _claimsFactory = claimsFactory;
         _userManager = userManager;

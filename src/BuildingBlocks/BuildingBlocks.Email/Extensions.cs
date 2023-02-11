@@ -11,7 +11,8 @@ public static class Extensions
         this IServiceCollection services,
         IConfiguration configuration,
         EmailProvider provider = EmailProvider.MimKit,
-        Action<EmailOptions>? configureOptions = null)
+        Action<EmailOptions>? configureOptions = null
+    )
     {
         var config = configuration.BindOptions<EmailOptions>(nameof(EmailOptions));
         configureOptions?.Invoke(config ?? new EmailOptions());
@@ -31,7 +32,9 @@ public static class Extensions
         }
         else
         {
-            services.AddOptions<EmailOptions>().Bind(configuration.GetSection(nameof(EmailOptions)))
+            services
+                .AddOptions<EmailOptions>()
+                .Bind(configuration.GetSection(nameof(EmailOptions)))
                 .ValidateDataAnnotations();
         }
 

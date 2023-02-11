@@ -16,14 +16,13 @@ public static partial class WebApplicationExtensions
         // this middleware should be first middleware
         // request logging just log in information level and above as default
         app.UseSerilogRequestLogging(opts =>
-            {
-                opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest;
+        {
+            opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest;
 
-                // this level wil use for request logging
-                // https://andrewlock.net/using-serilog-aspnetcore-in-asp-net-core-3-excluding-health-check-endpoints-from-serilog-request-logging/#customising-the-log-level-used-for-serilog-request-logs
-                opts.GetLevel = LogEnricher.GetLogLevel;
-            }
-        );
+            // this level wil use for request logging
+            // https://andrewlock.net/using-serilog-aspnetcore-in-asp-net-core-3-excluding-health-check-endpoints-from-serilog-request-logging/#customising-the-log-level-used-for-serilog-request-logs
+            opts.GetLevel = LogEnricher.GetLogLevel;
+        });
 
         // orders for middlewares is important and problemDetails middleware should be placed on top
         app.UseProblemDetails();

@@ -15,7 +15,8 @@ public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
 
     public RequestValidationBehavior(
         IServiceProvider serviceProvider,
-        ILogger<RequestValidationBehavior<TRequest, TResponse>> logger)
+        ILogger<RequestValidationBehavior<TRequest, TResponse>> logger
+    )
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -24,7 +25,8 @@ public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         _validator = _serviceProvider.GetService<IValidator<TRequest>>()!;
         if (_validator is null)
@@ -34,12 +36,14 @@ public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
             "[{Prefix}] Handle request={X-RequestData} and response={X-ResponseData}",
             nameof(RequestValidationBehavior<TRequest, TResponse>),
             typeof(TRequest).Name,
-            typeof(TResponse).Name);
+            typeof(TResponse).Name
+        );
 
         _logger.LogDebug(
             "Handling {FullName} with content {Request}",
             typeof(TRequest).FullName,
-            JsonSerializer.Serialize(request));
+            JsonSerializer.Serialize(request)
+        );
 
         await _validator.HandleValidationAsync(request, cancellationToken);
 
@@ -60,7 +64,8 @@ public class StreamRequestValidationBehavior<TRequest, TResponse> : IStreamPipel
 
     public StreamRequestValidationBehavior(
         IServiceProvider serviceProvider,
-        ILogger<StreamRequestValidationBehavior<TRequest, TResponse>> logger)
+        ILogger<StreamRequestValidationBehavior<TRequest, TResponse>> logger
+    )
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -69,7 +74,8 @@ public class StreamRequestValidationBehavior<TRequest, TResponse> : IStreamPipel
     public IAsyncEnumerable<TResponse> Handle(
         TRequest request,
         StreamHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         _validator = _serviceProvider.GetService<IValidator<TRequest>>()!;
         if (_validator is null)
@@ -79,12 +85,14 @@ public class StreamRequestValidationBehavior<TRequest, TResponse> : IStreamPipel
             "[{Prefix}] Handle request={X-RequestData} and response={X-ResponseData}",
             nameof(StreamRequestValidationBehavior<TRequest, TResponse>),
             typeof(TRequest).Name,
-            typeof(TResponse).Name);
+            typeof(TResponse).Name
+        );
 
         _logger.LogDebug(
             "Handling {FullName} with content {Request}",
             typeof(TRequest).FullName,
-            JsonSerializer.Serialize(request));
+            JsonSerializer.Serialize(request)
+        );
 
         _validator.HandleValidation(request);
 

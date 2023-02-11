@@ -20,7 +20,8 @@ internal class RestockSubscriptionDeletedHandler : IDomainEventHandler<RestockSu
     public RestockSubscriptionDeletedHandler(
         ICommandProcessor commandProcessor,
         IMapper mapper,
-        CustomersDbContext customersDbContext)
+        CustomersDbContext customersDbContext
+    )
     {
         _commandProcessor = commandProcessor;
         _mapper = mapper;
@@ -38,6 +39,7 @@ internal class RestockSubscriptionDeletedHandler : IDomainEventHandler<RestockSu
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         await _commandProcessor.SendAsync(
             new UpdateMongoRestockSubscriptionReadModel(notification.RestockSubscription, true),
-            cancellationToken);
+            cancellationToken
+        );
     }
 }

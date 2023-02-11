@@ -19,7 +19,8 @@ internal class ApplicationUserConfiguration : IEntityTypeConfiguration<Applicati
 
         builder.Property(x => x.CreatedAt).HasDefaultValueSql(EfConstants.DateAlgorithm);
 
-        builder.Property(x => x.UserState)
+        builder
+            .Property(x => x.UserState)
             .HasDefaultValue(UserState.Active)
             .HasConversion(x => x.ToString(), x => (UserState)Enum.Parse(typeof(UserState), x));
 
@@ -28,9 +29,6 @@ internal class ApplicationUserConfiguration : IEntityTypeConfiguration<Applicati
 
         // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model#add-navigation-properties
         // Each User can have many entries in the UserRole join table
-        builder.HasMany(e => e.UserRoles)
-            .WithOne(e => e.User)
-            .HasForeignKey(ur => ur.UserId)
-            .IsRequired();
+        builder.HasMany(e => e.UserRoles).WithOne(e => e.User).HasForeignKey(ur => ur.UserId).IsRequired();
     }
 }

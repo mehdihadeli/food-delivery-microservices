@@ -29,9 +29,7 @@ public class Product : Aggregate<ProductId>
 
     // EF
     // this constructor is needed when we have a parameter constructor that has some navigation property classes in the parameters and ef will skip it and try to find other constructor, here default constructor (maybe will fix .net 8)
-    public Product()
-    {
-    }
+    public Product() { }
 
     public Name Name { get; private set; } = default!;
     public string? Description { get; private set; }
@@ -62,12 +60,13 @@ public class Product : Aggregate<ProductId>
         CategoryId categoryId,
         SupplierId supplierId,
         BrandId brandId,
-        IList<ProductImage>? images = null)
+        IList<ProductImage>? images = null
+    )
     {
         Guard.Against.Null(id, new ProductDomainException("Product id can not be null"));
         Guard.Against.Null(stock, new ProductDomainException("Product stock can not be null"));
 
-        var product = new Product {Id = id, Stock = stock};
+        var product = new Product { Id = id, Stock = stock };
 
         product.ChangeName(name);
         product.ChangeSize(size);
@@ -157,12 +156,14 @@ public class Product : Aggregate<ProductId>
     /// <returns>int: Returns the number actually removed from stock. </returns>
     public int DebitStock(int quantity)
     {
-        if (quantity < 0) quantity *= -1;
+        if (quantity < 0)
+            quantity *= -1;
 
         if (HasStock(quantity) == false)
         {
             throw new InsufficientStockException(
-                $"Empty stock, product item '{Name}' with quantity '{quantity}' is not available.");
+                $"Empty stock, product item '{Name}' with quantity '{quantity}' is not available."
+            );
         }
 
         int removed = Math.Min(quantity, Stock.Available);
@@ -190,7 +191,8 @@ public class Product : Aggregate<ProductId>
         if (Stock.Available + quantity > Stock.MaxStockThreshold)
         {
             throw new MaxStockThresholdReachedException(
-                $"Max stock threshold has been reached. Max stock threshold is {Stock.MaxStockThreshold}");
+                $"Max stock threshold has been reached. Max stock threshold is {Stock.MaxStockThreshold}"
+            );
         }
 
         Stock = Stock.Of(Stock.Available + quantity, Stock.RestockThreshold, Stock.MaxStockThreshold);

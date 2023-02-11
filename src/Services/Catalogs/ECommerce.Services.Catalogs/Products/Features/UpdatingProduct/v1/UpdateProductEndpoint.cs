@@ -10,7 +10,8 @@ public static class UpdateProductEndpoint
 {
     internal static RouteHandlerBuilder MapUpdateProductEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapPost("/{id}", UpdateProducts)
+        return endpoints
+            .MapPost("/{id}", UpdateProducts)
             .Produces(StatusCodes.Status204NoContent)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
@@ -24,7 +25,8 @@ public static class UpdateProductEndpoint
         long id,
         UpdateProductRequest request,
         ICommandProcessor commandProcessor,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         Guard.Against.Null(request, nameof(request));
         var command = new UpdateProduct(
@@ -41,7 +43,8 @@ public static class UpdateProductEndpoint
             request.CategoryId,
             request.SupplierId,
             request.BrandId,
-            request.Description);
+            request.Description
+        );
 
         using (Serilog.Context.LogContext.PushProperty("Endpoint", nameof(UpdateProductEndpoint)))
         using (Serilog.Context.LogContext.PushProperty("ProductId", command.Id))

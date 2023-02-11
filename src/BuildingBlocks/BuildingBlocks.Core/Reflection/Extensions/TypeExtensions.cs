@@ -14,8 +14,7 @@ public static class TypeExtensions
     private static readonly ConcurrentDictionary<Type, string> _typeCacheKeys = new();
     private static readonly ConcurrentDictionary<Type, string> _prettyPrintCache = new();
 
-    private const BindingFlags PublicInstanceMembersFlag =
-        BindingFlags.Public | BindingFlags.Instance;
+    private const BindingFlags PublicInstanceMembersFlag = BindingFlags.Public | BindingFlags.Instance;
 
     private const BindingFlags AllInstanceMembersFlag =
         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
@@ -37,14 +36,16 @@ public static class TypeExtensions
         string methodName,
         Type[] genericTypes,
         Type? returnType = null,
-        params object[] parameters)
+        params object[] parameters
+    )
     {
         var method = GetGenericMethod(
             type,
             methodName,
             genericTypes,
             parameters.Select(y => y.GetType()).ToArray(),
-            returnType);
+            returnType
+        );
 
         if (method == null)
         {
@@ -61,16 +62,18 @@ public static class TypeExtensions
         string name,
         Type[] genericArgTypes,
         Type[] argTypes,
-        Type? returnType = null)
+        Type? returnType = null
+    )
     {
-        MethodInfo? res = (from m in t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
-                where m.Name == name &&
-                      m.GetGenericArguments().Length == genericArgTypes.Length &&
-                      m.GetParameters().Select(pi => pi.ParameterType)
-                          .All(d => argTypes.Any(a => a.IsAssignableTo(d))) &&
-                      (m.ReturnType == returnType || returnType == null)
-                select m)
-            .FirstOrDefault();
+        MethodInfo? res = (
+            from m in t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+            where
+                m.Name == name
+                && m.GetGenericArguments().Length == genericArgTypes.Length
+                && m.GetParameters().Select(pi => pi.ParameterType).All(d => argTypes.Any(a => a.IsAssignableTo(d)))
+                && (m.ReturnType == returnType || returnType == null)
+            select m
+        ).FirstOrDefault();
 
         return res;
     }
@@ -90,7 +93,8 @@ public static class TypeExtensions
         string methodName,
         Type[] genericTypes,
         Type? returnType = null,
-        params object[] parameters)
+        params object[] parameters
+    )
     {
         dynamic? awaitable = InvokeGenericMethod(type, methodName, genericTypes, returnType, parameters);
 
@@ -104,16 +108,13 @@ public static class TypeExtensions
     /// <param name="methodName"></param>
     /// <param name="parameters"></param>
     /// <returns></returns>
-    public static dynamic InvokeMethod(
-        this Type type,
-        string methodName,
-        params object[] parameters)
+    public static dynamic InvokeMethod(this Type type, string methodName, params object[] parameters)
     {
-        var method = type
-            .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
+        var method = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
             .Where(x => x.Name == methodName)
-            .FirstOrDefault(x =>
-                x.GetParameters().Select(p => p.ParameterType).All(parameters.Select(p => p.GetType()).Contains));
+            .FirstOrDefault(
+                x => x.GetParameters().Select(p => p.ParameterType).All(parameters.Select(p => p.GetType()).Contains)
+            );
 
         if (method is null)
             return null!;
@@ -128,10 +129,7 @@ public static class TypeExtensions
     /// <param name="methodName"></param>
     /// <param name="parameters"></param>
     /// <returns></returns>
-    public static Task<dynamic> InvokeMethodAsync(
-        this Type type,
-        string methodName,
-        params object[] parameters)
+    public static Task<dynamic> InvokeMethodAsync(this Type type, string methodName, params object[] parameters)
     {
         dynamic awaitable = InvokeMethod(type, methodName, parameters);
 
@@ -159,7 +157,8 @@ public static class TypeExtensions
             AssTypes.AddRange(item.GetTypes());
         }
 
-        var query = from type in AssTypes
+        var query =
+            from type in AssTypes
             where type.IsSealed && !type.IsGenericType && !type.IsNested
             from method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
             where method.IsDefined(typeof(ExtensionAttribute), false)
@@ -170,9 +169,7 @@ public static class TypeExtensions
 
     public static MethodInfo GetExtensionMethod(this Type t, string methodeName)
     {
-        var mi = from methode in t.GetExtensionMethods()
-            where methode.Name == methodeName
-            select methode;
+        var mi = from methode in t.GetExtensionMethods() where methode.Name == methodeName select methode;
         if (!mi.Any())
             return null;
         else
@@ -189,16 +186,19 @@ public static class TypeExtensions
         var type = assembly
             .GetTypes()
             .Where(t => t.FullName == messageSerializedObject.FullTypeName)
-            .ToList().FirstOrDefault();
+            .ToList()
+            .FirstOrDefault();
         return type;
     }
 
     private static string PrettyPrintRecursive(Type type, int depth)
     {
-        if (depth > 3) return type.Name;
+        if (depth > 3)
+            return type.Name;
 
         var nameParts = type.Name.Split('`');
-        if (nameParts.Length == 1) return nameParts[0];
+        if (nameParts.Length == 1)
+            return nameParts[0];
 
         var genericArguments = type.GetTypeInfo().GetGenericArguments();
         return !type.IsConstructedGenericType
@@ -208,7 +208,8 @@ public static class TypeExtensions
 
     public static IEnumerable<Type> GetAllInterfacesImplementingOpenGenericInterface(
         this Type type,
-        Type openGenericType)
+        Type openGenericType
+    )
     {
         var interfaces = type.GetInterfaces();
         return interfaces.Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == openGenericType);
@@ -217,16 +218,19 @@ public static class TypeExtensions
     // https://stackoverflow.com/questions/42245011/get-all-implementations-types-of-a-generic-interface
     public static IEnumerable<Type> GetAllTypesImplementingOpenGenericInterface(
         this Type openGenericType,
-        params Assembly[] assemblies)
+        params Assembly[] assemblies
+    )
     {
         var inputAssemblies = assemblies.Any() ? assemblies : AppDomain.CurrentDomain.GetAssemblies();
-        return inputAssemblies.SelectMany(assembly =>
-            GetAllTypesImplementingOpenGenericInterface(openGenericType, assembly));
+        return inputAssemblies.SelectMany(
+            assembly => GetAllTypesImplementingOpenGenericInterface(openGenericType, assembly)
+        );
     }
 
     public static IEnumerable<Type> GetAllTypesImplementingOpenGenericInterface(
         this Type openGenericType,
-        Assembly assembly)
+        Assembly assembly
+    )
     {
         try
         {
@@ -241,21 +245,24 @@ public static class TypeExtensions
 
     public static IEnumerable<Type> GetAllTypesImplementingOpenGenericInterface(
         this Type openGenericType,
-        IEnumerable<Type> types)
+        IEnumerable<Type> types
+    )
     {
         return from type in types
-            from interfaceType in type.GetInterfaces()
-            where
-                interfaceType.IsGenericType &&
-                openGenericType.IsAssignableFrom(interfaceType.GetGenericTypeDefinition()) &&
-                type.IsClass && !type.IsAbstract
-            select type;
+        from interfaceType in type.GetInterfaces()
+        where
+            interfaceType.IsGenericType
+            && openGenericType.IsAssignableFrom(interfaceType.GetGenericTypeDefinition())
+            && type.IsClass
+            && !type.IsAbstract
+        select type;
     }
 
     // https://stackoverflow.com/questions/26733/getting-all-types-that-implement-an-interface
     public static IEnumerable<Type> GetAllTypesImplementingInterface(
         this Type interfaceType,
-        params Assembly[] assemblies)
+        params Assembly[] assemblies
+    )
     {
         var inputAssemblies = assemblies.Any() ? assemblies : AppDomain.CurrentDomain.GetAssemblies();
         return inputAssemblies.SelectMany(assembly => GetAllTypesImplementingInterface(interfaceType, assembly));
@@ -263,9 +270,11 @@ public static class TypeExtensions
 
     private static IEnumerable<Type> GetAllTypesImplementingInterface(this Type interfaceType, Assembly assembly)
     {
-        return assembly.GetTypes().Where(type =>
-            interfaceType.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract &&
-            type.IsClass);
+        return assembly
+            .GetTypes()
+            .Where(
+                type => interfaceType.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract && type.IsClass
+            );
     }
 
     public static PropertyInfo[] FindPropertiesWithAttribute(this Type type, Type attribute)
@@ -337,8 +346,7 @@ public static class TypeExtensions
     {
         foreach (var intType in type.GetInterfaces())
         {
-            if (intType.IsGenericType
-                && intType.GetGenericTypeDefinition() == typeof(IList<>))
+            if (intType.IsGenericType && intType.GetGenericTypeDefinition() == typeof(IList<>))
             {
                 return true;
             }
@@ -431,7 +439,8 @@ public static class TypeExtensions
         return type.GetTypeInfo().IsDefined(attributeType, inherit: true);
     }
 
-    public static bool HasAttribute<T>(this Type type, Func<T, bool> predicate) where T : Attribute
+    public static bool HasAttribute<T>(this Type type, Func<T, bool> predicate)
+        where T : Attribute
     {
         return type.GetTypeInfo().GetCustomAttributes<T>(inherit: true).Any(predicate);
     }
@@ -457,9 +466,7 @@ public static class TypeExtensions
         {
             if (interfaceType.IsGenericType)
             {
-                var typeDefinitionTypeInfo = interfaceType
-                    .GetGenericTypeDefinition()
-                    .GetTypeInfo();
+                var typeDefinitionTypeInfo = interfaceType.GetGenericTypeDefinition().GetTypeInfo();
 
                 if (typeDefinitionTypeInfo.Equals(genericTypeInfo))
                 {
@@ -470,9 +477,7 @@ public static class TypeExtensions
 
         if (typeInfo.IsGenericType)
         {
-            var typeDefinitionTypeInfo = typeInfo
-                .GetGenericTypeDefinition()
-                .GetTypeInfo();
+            var typeDefinitionTypeInfo = typeInfo.GetGenericTypeDefinition().GetTypeInfo();
 
             if (typeDefinitionTypeInfo.Equals(genericTypeInfo))
             {
@@ -489,7 +494,6 @@ public static class TypeExtensions
 
         return baseTypeInfo.IsAssignableToGenericTypeDefinition(genericTypeInfo);
     }
-
 
     private static IEnumerable<Type> GetImplementedInterfacesToMap(TypeInfo typeInfo)
     {
@@ -514,18 +518,18 @@ public static class TypeExtensions
         {
             var currentTypeInfo = current.GetTypeInfo();
 
-            if (currentTypeInfo.IsGenericType && currentTypeInfo.ContainsGenericParameters
-                                              && GenericParametersMatch(genericTypeParameters,
-                                                  currentTypeInfo.GenericTypeArguments))
+            if (
+                currentTypeInfo.IsGenericType
+                && currentTypeInfo.ContainsGenericParameters
+                && GenericParametersMatch(genericTypeParameters, currentTypeInfo.GenericTypeArguments)
+            )
             {
                 yield return currentTypeInfo.GetGenericTypeDefinition();
             }
         }
     }
 
-    private static bool GenericParametersMatch(
-        IReadOnlyList<Type> parameters,
-        IReadOnlyList<Type> interfaceArguments)
+    private static bool GenericParametersMatch(IReadOnlyList<Type> parameters, IReadOnlyList<Type> interfaceArguments)
     {
         if (parameters.Count != interfaceArguments.Count)
         {
@@ -573,7 +577,8 @@ public static class TypeExtensions
     /// </summary>
     private static bool IsPrimitive(this Type type)
     {
-        if (type == typeof(string)) return true;
+        if (type == typeof(string))
+            return true;
         return type.IsValueType || type.IsPrimitive;
     }
 
@@ -584,8 +589,7 @@ public static class TypeExtensions
         var typeInfo = type.GetTypeInfo();
 
         return !typeInfo.IsValueType
-               || (typeInfo.IsGenericType
-                   && typeInfo.GetGenericTypeDefinition() == typeof(Nullable<>));
+            || (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(Nullable<>));
     }
 
     public static Type UnwrapEnumType(this Type type)
@@ -601,13 +605,12 @@ public static class TypeExtensions
         return isNullable ? MakeNullable(underlyingEnumType) : underlyingEnumType;
     }
 
-    public static Type MakeNullable(this Type type, bool nullable = true)
-        => type.IsNullableType() == nullable
+    public static Type MakeNullable(this Type type, bool nullable = true) =>
+        type.IsNullableType() == nullable
             ? type
             : nullable
                 ? typeof(Nullable<>).MakeGenericType(type)
                 : type.UnwrapNullableType();
-
 
     /// <summary>
     /// Helper method use to differentiate behavior between command/query/event handlers.
@@ -618,7 +621,8 @@ public static class TypeExtensions
         this Type[] openMessageInterfaces,
         IServiceCollection services,
         IEnumerable<Assembly> assembliesToScan,
-        bool addIfAlreadyExists)
+        bool addIfAlreadyExists
+    )
     {
         foreach (var openInterface in openMessageInterfaces)
         {
@@ -628,7 +632,8 @@ public static class TypeExtensions
             foreach (var type in assembliesToScan.SelectMany(a => a.DefinedTypes))
             {
                 IEnumerable<Type> interfaceTypes = type.FindInterfacesThatClose(openInterface).ToArray();
-                if (!interfaceTypes.Any()) continue;
+                if (!interfaceTypes.Any())
+                    continue;
 
                 if (type.IsConcrete())
                 {
@@ -651,9 +656,7 @@ public static class TypeExtensions
 
             foreach (var @interface in interfaces.Distinct())
             {
-                var matches = concretions
-                    .Where(t => t.CanBeCastTo(@interface))
-                    .ToList();
+                var matches = concretions.Where(t => t.CanBeCastTo(@interface)).ToList();
 
                 if (addIfAlreadyExists)
                 {
@@ -679,7 +682,8 @@ public static class TypeExtensions
 
     private static void Fill<T>(this IList<T> list, T value)
     {
-        if (list.Contains(value)) return;
+        if (list.Contains(value))
+            return;
         list.Add(value);
     }
 
@@ -697,9 +701,9 @@ public static class TypeExtensions
         }
 
         return givenType == genericType
-               || givenType.MapsToGenericTypeDefinition(genericType)
-               || givenType.HasInterfaceThatMapsToGenericTypeDefinition(genericType)
-               || givenType.BaseType.IsAssignableToGenericType(genericType);
+            || givenType.MapsToGenericTypeDefinition(genericType)
+            || givenType.HasInterfaceThatMapsToGenericTypeDefinition(genericType)
+            || givenType.BaseType.IsAssignableToGenericType(genericType);
     }
 
     private static bool HasInterfaceThatMapsToGenericTypeDefinition(this Type givenType, Type genericType)
@@ -713,19 +717,18 @@ public static class TypeExtensions
     private static bool MapsToGenericTypeDefinition(this Type givenType, Type genericType)
     {
         return genericType.IsGenericTypeDefinition
-               && givenType.IsGenericType
-               && givenType.GetGenericTypeDefinition() == genericType;
+            && givenType.IsGenericType
+            && givenType.GetGenericTypeDefinition() == genericType;
     }
 
-    public static bool IsEvent(this Type type)
-        => type.IsAssignableTo(typeof(IEvent));
+    public static bool IsEvent(this Type type) => type.IsAssignableTo(typeof(IEvent));
 
     private static bool IsRecord(this Type objectType)
     {
-        return objectType.GetMethod("<Clone>$") != null ||
-               ((TypeInfo)objectType)
-               .DeclaredProperties.FirstOrDefault(x => x.Name == "EqualityContract")?
-               .GetMethod?.GetCustomAttribute(typeof(CompilerGeneratedAttribute)) != null;
+        return objectType.GetMethod("<Clone>$") != null
+            || ((TypeInfo)objectType).DeclaredProperties
+                .FirstOrDefault(x => x.Name == "EqualityContract")
+                ?.GetMethod?.GetCustomAttribute(typeof(CompilerGeneratedAttribute)) != null;
     }
 
     private static bool IsMatchingWithInterface(Type handlerType, Type handlerInterface)
@@ -753,7 +756,8 @@ public static class TypeExtensions
     private static void AddConcretionsThatCouldBeClosed(
         Type @interface,
         List<Type> concretions,
-        IServiceCollection services)
+        IServiceCollection services
+    )
     {
         foreach (var type in concretions.Where(x => x.IsOpenGeneric() && x.CouldCloseTo(@interface)))
         {
@@ -772,36 +776,45 @@ public static class TypeExtensions
 
     public static bool CanBeCastTo(this Type pluggedType, Type pluginType)
     {
-        if (pluggedType == null) return false;
+        if (pluggedType == null)
+            return false;
 
-        if (pluggedType == pluginType) return true;
+        if (pluggedType == pluginType)
+            return true;
 
         return pluginType.GetTypeInfo().IsAssignableFrom(pluggedType.GetTypeInfo());
     }
 
     public static IEnumerable<Type> FindInterfacesThatClose(this Type pluggedType, Type templateType)
     {
-        if (!pluggedType.IsConcrete()) yield break;
+        if (!pluggedType.IsConcrete())
+            yield break;
 
         if (templateType.GetTypeInfo().IsInterface)
         {
             foreach (
-                var interfaceType in
-                pluggedType.GetTypeInfo().ImplementedInterfaces
-                    .Where(type =>
-                        type.GetTypeInfo().IsGenericType && (type.GetGenericTypeDefinition() == templateType)))
+                var interfaceType in pluggedType
+                    .GetTypeInfo()
+                    .ImplementedInterfaces.Where(
+                        type => type.GetTypeInfo().IsGenericType && (type.GetGenericTypeDefinition() == templateType)
+                    )
+            )
             {
                 yield return interfaceType;
             }
         }
-        else if (pluggedType.GetTypeInfo().BaseType.GetTypeInfo().IsGenericType &&
-                 (pluggedType.GetTypeInfo().BaseType.GetGenericTypeDefinition() == templateType))
+        else if (
+            pluggedType.GetTypeInfo().BaseType.GetTypeInfo().IsGenericType
+            && (pluggedType.GetTypeInfo().BaseType.GetGenericTypeDefinition() == templateType)
+        )
         {
             yield return pluggedType.GetTypeInfo().BaseType;
         }
 
-        if (pluggedType == typeof(object)) yield break;
-        if (pluggedType.GetTypeInfo().BaseType == typeof(object)) yield break;
+        if (pluggedType == typeof(object))
+            yield break;
+        if (pluggedType.GetTypeInfo().BaseType == typeof(object))
+            yield break;
 
         foreach (var interfaceType in FindInterfacesThatClose(pluggedType.GetTypeInfo().BaseType, templateType))
         {
@@ -831,7 +844,8 @@ public static class TypeExtensions
 
     public static string GetModuleName(this Type type)
     {
-        if (type?.Namespace is null) return string.Empty;
+        if (type?.Namespace is null)
+            return string.Empty;
         var moduleName = type.Assembly.GetName().Name;
         return type.Namespace.StartsWith(moduleName!, StringComparison.Ordinal)
             ? type.Namespace.Split(".")[2].ToLowerInvariant()
@@ -852,25 +866,30 @@ public static class TypeExtensions
                 {
                     return t.Name;
                 }
-            });
+            }
+        );
     }
 
     public static bool HasAggregateApplyMethod<TDomainEvent>(this Type type)
     {
-        return type
-            .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-            .Any(mi =>
-                mi.Name == "Apply" && mi.GetParameters().Length == 1 &&
-                typeof(TDomainEvent).GetTypeInfo().IsAssignableFrom(mi.GetParameters()[0].ParameterType));
+        return type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            .Any(
+                mi =>
+                    mi.Name == "Apply"
+                    && mi.GetParameters().Length == 1
+                    && typeof(TDomainEvent).GetTypeInfo().IsAssignableFrom(mi.GetParameters()[0].ParameterType)
+            );
     }
 
     public static bool HasAggregateApplyMethod(this Type type, Type eventType)
     {
-        return type
-            .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-            .Any(mi =>
-                mi.Name == "Apply" && mi.GetParameters().Length == 1 &&
-                eventType.GetTypeInfo().IsAssignableFrom(mi.GetParameters()[0].ParameterType));
+        return type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            .Any(
+                mi =>
+                    mi.Name == "Apply"
+                    && mi.GetParameters().Length == 1
+                    && eventType.GetTypeInfo().IsAssignableFrom(mi.GetParameters()[0].ParameterType)
+            );
     }
 
     public static IReadOnlyDictionary<Type, Action<TDomainEvent>> GetAggregateApplyMethods<TDomainEvent>(this Type type)
@@ -878,26 +897,26 @@ public static class TypeExtensions
     {
         var aggregateEventType = typeof(TDomainEvent);
 
-        return type
-            .GetTypeInfo()
+        return type.GetTypeInfo()
             .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
             .Where(mi =>
             {
-                if (!string.Equals(mi.Name, "Apply", StringComparison.Ordinal) &&
-                    !mi.Name.EndsWith(".Apply", StringComparison.Ordinal))
+                if (
+                    !string.Equals(mi.Name, "Apply", StringComparison.Ordinal)
+                    && !mi.Name.EndsWith(".Apply", StringComparison.Ordinal)
+                )
                 {
                     return false;
                 }
 
                 var parameters = mi.GetParameters();
-                return
-                    parameters.Length == 1 &&
-                    aggregateEventType.GetTypeInfo().IsAssignableFrom(parameters[0].ParameterType);
+                return parameters.Length == 1
+                    && aggregateEventType.GetTypeInfo().IsAssignableFrom(parameters[0].ParameterType);
             })
             .ToDictionary(
                 mi => mi.GetParameters()[0].ParameterType,
-                mi => type.CompileMethodInvocation<Action<TDomainEvent>>(mi.Name,
-                    mi.GetParameters()[0].ParameterType));
+                mi => type.CompileMethodInvocation<Action<TDomainEvent>>(mi.Name, mi.GetParameters()[0].ParameterType)
+            );
     }
 
     /// <summary>
@@ -907,17 +926,20 @@ public static class TypeExtensions
     public static TResult CompileMethodInvocation<TResult>(
         this Type type,
         string methodName,
-        params Type[] methodSignature)
+        params Type[] methodSignature
+    )
     {
         var typeInfo = type.GetTypeInfo();
         var methods = typeInfo
             .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             .Where(m => m.Name == methodName);
 
-        var methodInfo = methodSignature == null || !methodSignature.Any()
-            ? methods.SingleOrDefault()
-            : methods.SingleOrDefault(m =>
-                m.GetParameters().Select(mp => mp.ParameterType).SequenceEqual(methodSignature));
+        var methodInfo =
+            methodSignature == null || !methodSignature.Any()
+                ? methods.SingleOrDefault()
+                : methods.SingleOrDefault(
+                    m => m.GetParameters().Select(mp => mp.ParameterType).SequenceEqual(methodSignature)
+                );
 
         if (methodInfo == null)
         {

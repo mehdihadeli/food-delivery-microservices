@@ -20,11 +20,14 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         ILogger<CachingBehavior<TRequest, TResponse>> logger,
         IEasyCachingProviderFactory cachingProviderFactory,
         IOptions<CacheOptions> cacheOptions,
-        IEnumerable<ICacheRequest<TRequest, TResponse>> cachePolicies)
+        IEnumerable<ICacheRequest<TRequest, TResponse>> cachePolicies
+    )
     {
         _logger = Guard.Against.Null(logger);
         Guard.Against.Null(cacheOptions.Value);
-        _cacheProvider = Guard.Against.Null(cachingProviderFactory).GetCachingProvider(cacheOptions.Value.DefaultCacheType);
+        _cacheProvider = Guard.Against
+            .Null(cachingProviderFactory)
+            .GetCachingProvider(cacheOptions.Value.DefaultCacheType);
 
         // cachePolicies inject like `FluentValidation` approach as a nested or seperated cache class for commands ,queries
         _cachePolicies = cachePolicies;
@@ -33,7 +36,8 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var cacheRequest = _cachePolicies.FirstOrDefault();
         if (cacheRequest == null)
@@ -50,7 +54,8 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
             _logger.LogDebug(
                 "Response retrieved {TRequest} from cache. CacheKey: {CacheKey}",
                 typeof(TRequest).FullName,
-                cacheKey);
+                cacheKey
+            );
             return cachedResponse.Value;
         }
 
@@ -60,12 +65,14 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
             cacheKey,
             response,
             cacheRequest.AbsoluteExpirationRelativeToNow,
-            cancellationToken);
+            cancellationToken
+        );
 
         _logger.LogDebug(
             "Caching response for {TRequest} with cache key: {CacheKey}",
             typeof(TRequest).FullName,
-            cacheKey);
+            cacheKey
+        );
 
         return response;
     }
@@ -83,11 +90,14 @@ public class StreamCachingBehavior<TRequest, TResponse> : IStreamPipelineBehavio
         ILogger<StreamCachingBehavior<TRequest, TResponse>> logger,
         IEasyCachingProviderFactory cachingProviderFactory,
         IOptions<CacheOptions> cacheOptions,
-        IEnumerable<ICacheRequest<TRequest, TResponse>> cachePolicies)
+        IEnumerable<ICacheRequest<TRequest, TResponse>> cachePolicies
+    )
     {
         _logger = Guard.Against.Null(logger);
         Guard.Against.Null(cacheOptions.Value);
-        _cacheProvider = Guard.Against.Null(cachingProviderFactory).GetCachingProvider(cacheOptions.Value.DefaultCacheType);
+        _cacheProvider = Guard.Against
+            .Null(cachingProviderFactory)
+            .GetCachingProvider(cacheOptions.Value.DefaultCacheType);
 
         // cachePolicies inject like `FluentValidation` approach as a nested or seperated cache class for commands ,queries
         _cachePolicies = cachePolicies;
@@ -96,7 +106,8 @@ public class StreamCachingBehavior<TRequest, TResponse> : IStreamPipelineBehavio
     public IAsyncEnumerable<TResponse> Handle(
         TRequest request,
         StreamHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var cacheRequest = _cachePolicies.FirstOrDefault();
         if (cacheRequest == null)
@@ -112,22 +123,23 @@ public class StreamCachingBehavior<TRequest, TResponse> : IStreamPipelineBehavio
             _logger.LogDebug(
                 "Response retrieved {TRequest} from cache. CacheKey: {CacheKey}",
                 typeof(TRequest).FullName,
-                cacheKey);
+                cacheKey
+            );
             return next();
         }
 
         var response = next();
 
-        _cacheProvider.SetAsync(
-            cacheKey,
-            response,
-            cacheRequest.AbsoluteExpirationRelativeToNow,
-            cancellationToken).GetAwaiter().GetResult();
+        _cacheProvider
+            .SetAsync(cacheKey, response, cacheRequest.AbsoluteExpirationRelativeToNow, cancellationToken)
+            .GetAwaiter()
+            .GetResult();
 
         _logger.LogDebug(
             "Caching response for {TRequest} with cache key: {CacheKey}",
             typeof(TRequest).FullName,
-            cacheKey);
+            cacheKey
+        );
 
         return response;
     }

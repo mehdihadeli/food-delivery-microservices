@@ -18,26 +18,28 @@ public class IdentityServiceMock : WireMockServer
 {
     private IdentityApiClientOptions IdentityApiClientOptions { get; init; } = default!;
 
-    private IdentityServiceMock(WireMockServerSettings settings) : base(settings)
+    private IdentityServiceMock(WireMockServerSettings settings)
+        : base(settings)
     {
         //https://github.com/WireMock-Net/WireMock.Net/wiki/Request-Matching
         Given(Request.Create().WithPath("/").UsingGet()) // we should put / in the beginning of the endpoint
-            .RespondWith(
-                Response.Create()
-                    .WithStatusCode(200)
-                    .WithBody("Identity Service!")
-            );
+            .RespondWith(Response.Create().WithStatusCode(200).WithBody("Identity Service!"));
     }
 
     public static IdentityServiceMock Start(IdentityApiClientOptions identityApiClientOptions, bool ssl = false)
     {
         // new WireMockServer() is equivalent to call WireMockServer.Start()
-        var mock = new IdentityServiceMock(new WireMockServerSettings
+        var mock = new IdentityServiceMock(
+            new WireMockServerSettings
+            {
+                UseSSL = ssl,
+                // we could use our option url here, but I use random port (Urls = new string[] {} also set a fix port 5000 we should not use this if we want a random port)
+                // Urls = new string[] {identityApiClientOptions.BaseApiAddress}
+            }
+        )
         {
-            UseSSL = ssl,
-            // we could use our option url here, but I use random port (Urls = new string[] {} also set a fix port 5000 we should not use this if we want a random port)
-            // Urls = new string[] {identityApiClientOptions.BaseApiAddress}
-        }) {IdentityApiClientOptions = identityApiClientOptions};
+            IdentityApiClientOptions = identityApiClientOptions
+        };
 
         return mock;
     }
@@ -46,19 +48,16 @@ public class IdentityServiceMock : WireMockServer
     {
         var fakeIdentityUser = new FakeUserIdentityDto().Generate(1).First();
         if (!string.IsNullOrWhiteSpace(email))
-            fakeIdentityUser = fakeIdentityUser with {Email = email};
+            fakeIdentityUser = fakeIdentityUser with { Email = email };
 
         var response = new GetUserByEmailResponse(fakeIdentityUser);
 
         //https://github.com/WireMock-Net/WireMock.Net/wiki/Request-Matching
         // we should put / in the beginning of the endpoint
-        var endpointPath =
-            $"/{IdentityApiClientOptions.UsersEndpoint}/by-email/{fakeIdentityUser.Email}";
+        var endpointPath = $"/{IdentityApiClientOptions.UsersEndpoint}/by-email/{fakeIdentityUser.Email}";
 
         Given(Request.Create().UsingGet().WithPath(endpointPath))
-            .RespondWith(Response.Create()
-                .WithBodyAsJson(response)
-                .WithStatusCode(HttpStatusCode.OK));
+            .RespondWith(Response.Create().WithBodyAsJson(response).WithStatusCode(HttpStatusCode.OK));
 
         return (response, endpointPath);
     }
@@ -72,16 +71,15 @@ public class IdentityServiceMock : WireMockServer
                 userRegisteredV1.Email,
                 userRegisteredV1.PhoneNumber,
                 userRegisteredV1.FirstName,
-                userRegisteredV1.LastName));
+                userRegisteredV1.LastName
+            )
+        );
 
         //https://github.com/WireMock-Net/WireMock.Net/wiki/Request-Matching
-        var endpointPath =
-            $"/{IdentityApiClientOptions.UsersEndpoint}/by-email/{userRegisteredV1.Email}"; // we should put / in the beginning of the endpoint
+        var endpointPath = $"/{IdentityApiClientOptions.UsersEndpoint}/by-email/{userRegisteredV1.Email}"; // we should put / in the beginning of the endpoint
 
         Given(Request.Create().UsingGet().WithPath(endpointPath))
-            .RespondWith(Response.Create()
-                .WithBodyAsJson(response)
-                .WithStatusCode(HttpStatusCode.OK));
+            .RespondWith(Response.Create().WithBodyAsJson(response).WithStatusCode(HttpStatusCode.OK));
 
         return (response, endpointPath);
     }

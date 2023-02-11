@@ -29,14 +29,22 @@ public class SharedModulesConfiguration : ISharedModulesConfiguration
 
     public IEndpointRouteBuilder MapSharedModuleEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/", (HttpContext context) =>
-        {
-            var requestId = context.Request.Headers.TryGetValue("X-Request-InternalCommandId", out var requestIdHeader)
-                ? requestIdHeader.FirstOrDefault()
-                : string.Empty;
+        endpoints
+            .MapGet(
+                "/",
+                (HttpContext context) =>
+                {
+                    var requestId = context.Request.Headers.TryGetValue(
+                        "X-Request-InternalCommandId",
+                        out var requestIdHeader
+                    )
+                        ? requestIdHeader.FirstOrDefault()
+                        : string.Empty;
 
-            return $"Identity Service Apis, RequestId: {requestId}";
-        }).ExcludeFromDescription();
+                    return $"Identity Service Apis, RequestId: {requestId}";
+                }
+            )
+            .ExcludeFromDescription();
 
         return endpoints;
     }

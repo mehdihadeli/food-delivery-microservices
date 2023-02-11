@@ -10,28 +10,32 @@ namespace ECommerce.Services.Catalogs.Products;
 
 public class ProductEventMapper : IEventMapper
 {
-    public ProductEventMapper()
-    {
-
-    }
+    public ProductEventMapper() { }
 
     public IIntegrationEvent? MapToIntegrationEvent(IDomainEvent domainEvent)
     {
         return domainEvent switch
         {
-            ProductCreated e =>
-                new Services.Shared.Catalogs.Products.Events.v1.Integration.ProductCreatedV1(
+            ProductCreated e
+                => new Services.Shared.Catalogs.Products.Events.v1.Integration.ProductCreatedV1(
                     e.Product.Id,
                     e.Product.Name,
                     e.Product.Category.Id,
                     e.Product.Category.Name,
-                    e.Product.Stock.Available),
-            ProductStockDebited e => new
-                Services.Shared.Catalogs.Products.Events.v1.Integration.ProductStockDebitedV1(
-                    e.ProductId, e.NewStock.Available, e.DebitedQuantity),
-            ProductStockReplenished e => new
-                Services.Shared.Catalogs.Products.Events.v1.Integration.ProductStockReplenishedV1(
-                    e.ProductId, e.NewStock.Available, e.ReplenishedQuantity),
+                    e.Product.Stock.Available
+                ),
+            ProductStockDebited e
+                => new Services.Shared.Catalogs.Products.Events.v1.Integration.ProductStockDebitedV1(
+                    e.ProductId,
+                    e.NewStock.Available,
+                    e.DebitedQuantity
+                ),
+            ProductStockReplenished e
+                => new Services.Shared.Catalogs.Products.Events.v1.Integration.ProductStockReplenishedV1(
+                    e.ProductId,
+                    e.NewStock.Available,
+                    e.ReplenishedQuantity
+                ),
             _ => null
         };
     }
@@ -51,7 +55,8 @@ public class ProductEventMapper : IEventMapper
     }
 
     public IReadOnlyList<IDomainNotificationEvent?> MapToDomainNotificationEvents(
-        IReadOnlyList<IDomainEvent> domainEvents)
+        IReadOnlyList<IDomainEvent> domainEvents
+    )
     {
         return domainEvents.Select(MapToDomainNotificationEvent).ToList().AsReadOnly();
     }

@@ -17,7 +17,8 @@ public class InMemoryEventStore : IEventStore
         string streamId,
         StreamReadPosition? fromVersion = null,
         int maxCount = int.MaxValue,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var result = FindStream(streamId).GetEvents(fromVersion ?? StreamReadPosition.Start, maxCount);
 
@@ -27,7 +28,8 @@ public class InMemoryEventStore : IEventStore
     public Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         return GetStreamEventsAsync(streamId, fromVersion, int.MaxValue, cancellationToken);
     }
@@ -35,7 +37,8 @@ public class InMemoryEventStore : IEventStore
     public Task<AppendResult> AppendEventAsync(
         string streamId,
         IStreamEvent @event,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         return AppendEventsAsync(streamId, new[] { @event }, ExpectedStreamVersion.NoStream, cancellationToken);
     }
@@ -44,7 +47,8 @@ public class InMemoryEventStore : IEventStore
         string streamId,
         IStreamEvent @event,
         ExpectedStreamVersion expectedRevision,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         return AppendEventsAsync(streamId, new[] { @event }, expectedRevision, cancellationToken);
     }
@@ -53,7 +57,8 @@ public class InMemoryEventStore : IEventStore
         string streamId,
         IReadOnlyCollection<IStreamEvent> events,
         ExpectedStreamVersion expectedRevision,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (!_storage.TryGetValue(streamId, out var existing))
         {
@@ -67,9 +72,7 @@ public class InMemoryEventStore : IEventStore
 
         _global.AddRange(inMemoryEvents);
 
-        return Task.FromResult(
-            new AppendResult(_global.Count - 1, existing.Version)
-        );
+        return Task.FromResult(new AppendResult(_global.Count - 1, existing.Version));
     }
 
     public Task<TAggregate?> AggregateStreamAsync<TAggregate, TId>(
@@ -77,7 +80,8 @@ public class InMemoryEventStore : IEventStore
         StreamReadPosition fromVersion,
         TAggregate defaultAggregateState,
         Action<object> fold,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TAggregate : class, IEventSourcedAggregate<TId>, new()
     {
         // var streamEvents = (await GetStreamEventsAsync(streamId, fromVersion, int.MaxValue, cancellationToken)).Select(x => x.Data);
@@ -99,7 +103,8 @@ public class InMemoryEventStore : IEventStore
         string streamId,
         TAggregate defaultAggregateState,
         Action<object> fold,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TAggregate : class, IEventSourcedAggregate<TId>, new()
     {
         return AggregateStreamAsync<TAggregate, TId>(
@@ -107,7 +112,8 @@ public class InMemoryEventStore : IEventStore
             StreamReadPosition.Start,
             defaultAggregateState,
             fold,
-            cancellationToken);
+            cancellationToken
+        );
     }
 
     public Task CommitAsync(CancellationToken cancellationToken = default)

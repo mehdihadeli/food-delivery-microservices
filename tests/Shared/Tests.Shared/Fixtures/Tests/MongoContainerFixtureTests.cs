@@ -23,15 +23,17 @@ public class MongoContainerFixtureTests : IAsyncLifetime
     public async Task reset_database()
     {
         MongoClient dbClient = new MongoClient(_fixture.Container.ConnectionString);
-        await dbClient.GetDatabase(_fixture.Container.Database).CreateCollectionAsync(nameof(TestDocument).Underscore());
-        var testDoc = dbClient.GetDatabase(_fixture.Container.Database)
+        await dbClient
+            .GetDatabase(_fixture.Container.Database)
+            .CreateCollectionAsync(nameof(TestDocument).Underscore());
+        var testDoc = dbClient
+            .GetDatabase(_fixture.Container.Database)
             .GetCollection<TestDocument>(nameof(TestDocument).Underscore());
-        await testDoc.InsertOneAsync(new TestDocument() {Name = "test data"});
+        await testDoc.InsertOneAsync(new TestDocument() { Name = "test data" });
 
         await _fixture.ResetDbAsync();
 
-        var collections = await dbClient.GetDatabase(_fixture.Container.Database)
-            .ListCollectionsAsync();
+        var collections = await dbClient.GetDatabase(_fixture.Container.Database).ListCollectionsAsync();
 
         collections.ToList().Should().BeEmpty();
     }

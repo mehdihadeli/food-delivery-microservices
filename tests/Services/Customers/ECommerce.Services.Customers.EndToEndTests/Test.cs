@@ -6,7 +6,5 @@ public class Test
 {
     [Fact]
     [CategoryTrait(TestCategory.EndToEnd)]
-    public void EndToEndTest1()
-    {
-    }
+    public void EndToEndTest1() { }
 }

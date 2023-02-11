@@ -2,7 +2,6 @@ using Xunit.Sdk;
 
 namespace Tests.Shared.XunitCategories;
 
-
 /// <summary>
 /// Could filter by `dotnet test --filter "Category=Bug"` and `dotnet test --filter "Bug=201"` in running tests in command line
 /// </summary>

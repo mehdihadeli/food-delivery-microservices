@@ -12,21 +12,20 @@ public static class LogoutEndpoint
 {
     internal static RouteHandlerBuilder MapLogoutEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapPost("/logout", Logout)
+        return endpoints
+            .MapPost("/logout", Logout)
             .Produces(StatusCodes.Status200OK)
             .RequireAuthorization()
             .WithName("logout")
-            .WithOpenApi(operation => new(operation)
-            {
-                Summary = "Logout User", Description = "Logout User"
-            })
+            .WithOpenApi(operation => new(operation) { Summary = "Logout User", Description = "Logout User" })
             .WithDisplayName("Logout User.");
     }
 
     private static async Task<IResult> Logout(
         HttpContext httpContext,
         IEasyCachingProviderFactory cachingProviderFactory,
-        IOptions<JwtOptions> jwtOptions)
+        IOptions<JwtOptions> jwtOptions
+    )
     {
         var cacheProvider = cachingProviderFactory.GetCachingProvider(nameof(CacheProviderType.InMemory));
 
@@ -42,7 +41,8 @@ public static class LogoutEndpoint
             await cacheProvider.SetAsync(
                 $"{userName}_{token}_revoked_token",
                 token,
-                TimeSpan.FromSeconds(jwtOptions.Value.TokenLifeTimeSecond));
+                TimeSpan.FromSeconds(jwtOptions.Value.TokenLifeTimeSecond)
+            );
         }
 
         return Results.Ok();

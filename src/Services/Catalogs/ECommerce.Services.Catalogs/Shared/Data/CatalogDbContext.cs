@@ -12,9 +12,8 @@ public class CatalogDbContext : EfDbContextBase, ICatalogDbContext
 {
     public const string DefaultSchema = "catalog";
 
-    public CatalogDbContext(DbContextOptions<CatalogDbContext> options) : base(options)
-    {
-    }
+    public CatalogDbContext(DbContextOptions<CatalogDbContext> options)
+        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

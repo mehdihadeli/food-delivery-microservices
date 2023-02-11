@@ -74,28 +74,34 @@ public static class TypeMapper
     {
         Guard.Against.Null(type);
 
-        return TypeNameMap.GetOrAdd(type, _ =>
-        {
-            var eventTypeName = fullName ? type.FullName! : type.Name;
+        return TypeNameMap.GetOrAdd(
+            type,
+            _ =>
+            {
+                var eventTypeName = fullName ? type.FullName! : type.Name;
 
-            TypeMap.GetOrAdd(eventTypeName, type);
+                TypeMap.GetOrAdd(eventTypeName, type);
 
-            return eventTypeName;
-        });
+                return eventTypeName;
+            }
+        );
     }
 
     private static Type ToType(string typeName)
     {
         Guard.Against.NullOrWhiteSpace(typeName, nameof(typeName));
 
-        return TypeMap.GetOrAdd(typeName, _ =>
-        {
-            var type = ReflectionUtilities.GetFirstMatchingTypeFromCurrentDomainAssemblies(typeName);
+        return TypeMap.GetOrAdd(
+            typeName,
+            _ =>
+            {
+                var type = ReflectionUtilities.GetFirstMatchingTypeFromCurrentDomainAssemblies(typeName);
 
-            if (type == null)
-                throw new System.Exception($"Type map for '{typeName}' wasn't found!");
+                if (type == null)
+                    throw new System.Exception($"Type map for '{typeName}' wasn't found!");
 
-            return type;
-        });
+                return type;
+            }
+        );
     }
 }

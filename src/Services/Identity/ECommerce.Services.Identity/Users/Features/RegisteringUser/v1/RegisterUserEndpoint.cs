@@ -8,7 +8,8 @@ public static class RegisterUserEndpoint
 {
     internal static RouteHandlerBuilder MapRegisterNewUserEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapPost("/", RegisterUser)
+        return endpoints
+            .MapPost("/", RegisterUser)
             .AllowAnonymous()
             .Produces<RegisterUserResponse>(StatusCodes.Status201Created)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
@@ -21,7 +22,8 @@ public static class RegisterUserEndpoint
     private static async Task<IResult> RegisterUser(
         RegisterUserRequest request,
         ICommandProcessor commandProcessor,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var command = new RegisterUser(
             request.FirstName,
@@ -30,7 +32,8 @@ public static class RegisterUserEndpoint
             request.Email,
             request.Password,
             request.ConfirmPassword,
-            request.Roles?.ToList());
+            request.Roles?.ToList()
+        );
 
         var result = await commandProcessor.SendAsync(command, cancellationToken);
 

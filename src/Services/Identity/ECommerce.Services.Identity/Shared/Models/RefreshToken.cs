@@ -29,10 +29,11 @@ public class RefreshToken
     public bool IsRefreshTokenValid(double? ttlRefreshToken = null)
     {
         // Token already expired or revoked, then return false
-        if (!IsActive) return false;
+        if (!IsActive)
+            return false;
 
-        if (ttlRefreshToken is not null &&
-            CreatedAt.AddDays((long)ttlRefreshToken) <= DateTime.Now) return false;
+        if (ttlRefreshToken is not null && CreatedAt.AddDays((long)ttlRefreshToken) <= DateTime.Now)
+            return false;
 
         return true;
     }

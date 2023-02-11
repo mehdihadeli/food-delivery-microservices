@@ -20,11 +20,11 @@ public class GetCustomersValidator : AbstractValidator<GetCustomers>
     {
         CascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => x.Page)
-            .GreaterThanOrEqualTo(1).WithMessage("Page should at least greater than or equal to 1.");
+        RuleFor(x => x.Page).GreaterThanOrEqualTo(1).WithMessage("Page should at least greater than or equal to 1.");
 
         RuleFor(x => x.PageSize)
-            .GreaterThanOrEqualTo(1).WithMessage("PageSize should at least greater than or equal to 1.");
+            .GreaterThanOrEqualTo(1)
+            .WithMessage("PageSize should at least greater than or equal to 1.");
     }
 }
 
@@ -41,14 +41,16 @@ public class GetCustomersHandler : IQueryHandler<GetCustomers, GetCustomersRespo
 
     public async Task<GetCustomersResponse> Handle(GetCustomers request, CancellationToken cancellationToken)
     {
-        var customer = await _customersReadDbContext.Customers.AsQueryable()
+        var customer = await _customersReadDbContext.Customers
+            .AsQueryable()
             .OrderByDescending(x => x.City)
             .ApplyFilter(request.Filters)
             .ApplyPagingAsync<CustomerReadModel, CustomerReadDto>(
                 _mapper.ConfigurationProvider,
                 request.Page,
                 request.PageSize,
-                cancellationToken: cancellationToken);
+                cancellationToken: cancellationToken
+            );
 
         return new GetCustomersResponse(customer);
     }

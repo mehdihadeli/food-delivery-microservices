@@ -19,9 +19,8 @@ public record AggregateId<T> : Identity<T>
 public record AggregateId : AggregateId<long>
 {
     // EF
-    protected AggregateId(long value) : base(value)
-    {
-    }
+    protected AggregateId(long value)
+        : base(value) { }
 
     // validations should be placed here instead of constructor
     public static new AggregateId CreateAggregateId(long value) => new(Guard.Against.NegativeOrZero(value));

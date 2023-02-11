@@ -25,6 +25,7 @@ internal class RestockNotificationProcessedHandler : IDomainEventHandler<Restock
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         await _commandProcessor.SendAsync(
             new UpdateMongoRestockSubscriptionReadModel(notification.RestockSubscription, false),
-            cancellationToken);
+            cancellationToken
+        );
     }
 }

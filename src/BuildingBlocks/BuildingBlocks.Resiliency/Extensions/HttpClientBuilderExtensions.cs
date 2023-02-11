@@ -4,11 +4,10 @@ public static partial class HttpClientBuilderExtensions
 {
     public static IHttpClientBuilder AddCustomPolicyHandlers(
         this IHttpClientBuilder httpClientBuilder,
-        Func<IHttpClientBuilder, IHttpClientBuilder>? builder = null)
+        Func<IHttpClientBuilder, IHttpClientBuilder>? builder = null
+    )
     {
-        var result = httpClientBuilder
-            .AddRetryPolicyHandler()
-            .AddCircuitBreakerHandler();
+        var result = httpClientBuilder.AddRetryPolicyHandler().AddCircuitBreakerHandler();
 
         if (builder is { })
             result = builder.Invoke(result);

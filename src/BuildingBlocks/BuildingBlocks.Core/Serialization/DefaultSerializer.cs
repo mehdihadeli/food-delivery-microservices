@@ -29,10 +29,9 @@ public class DefaultSerializer : ISerializer
         return JsonConvert.DeserializeObject(payload, type, CreateSerializerSettings(camelCase));
     }
 
-
     protected static JsonSerializerSettings CreateSerializerSettings(bool camelCase = true, bool indented = false)
     {
-        var settings = new JsonSerializerSettings {ContractResolver = new ContractResolverWithPrivate()};
+        var settings = new JsonSerializerSettings { ContractResolver = new ContractResolverWithPrivate() };
 
         if (indented)
         {

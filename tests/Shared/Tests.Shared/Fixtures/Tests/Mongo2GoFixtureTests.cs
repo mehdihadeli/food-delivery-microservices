@@ -21,8 +21,8 @@ public class Mongo2GoFixtureTests : IAsyncLifetime
     [CategoryTrait(TestCategory.Unit)]
     public async Task reset_database()
     {
-       await _fixture.ResetDbAsync();
-       _fixture.MongoDbRunner.State.Should().Be(State.Running);
+        await _fixture.ResetDbAsync();
+        _fixture.MongoDbRunner.State.Should().Be(State.Running);
     }
 
     public async Task InitializeAsync()

@@ -21,8 +21,9 @@ internal static partial class WebApplicationBuilderExtensions
     {
         if (configuration.GetValue<bool>("PostgresOptions.UseInMemory"))
         {
-            services.AddDbContext<OrdersDbContext>(options =>
-                options.UseInMemoryDatabase("ECommerce.Services.Customers"));
+            services.AddDbContext<OrdersDbContext>(
+                options => options.UseInMemoryDatabase("ECommerce.Services.Customers")
+            );
 
             services.AddScoped<IDbFacadeResolver>(provider => provider.GetService<OrdersDbContext>()!);
         }

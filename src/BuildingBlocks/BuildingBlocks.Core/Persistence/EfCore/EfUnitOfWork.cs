@@ -20,7 +20,8 @@ public class EfUnitOfWork<TDbContext> : IEfUnitOfWork<TDbContext>
         TDbContext context,
         IDomainEventsAccessor domainEventsAccessor,
         IDomainEventPublisher domainEventPublisher,
-        ILogger<EfUnitOfWork<TDbContext>> logger)
+        ILogger<EfUnitOfWork<TDbContext>> logger
+    )
     {
         _context = context;
         _domainEventsAccessor = domainEventsAccessor;
@@ -36,9 +37,7 @@ public class EfUnitOfWork<TDbContext> : IEfUnitOfWork<TDbContext>
         return _context.Set<TEntity>();
     }
 
-    public Task BeginTransactionAsync(
-        IsolationLevel isolationLevel,
-        CancellationToken cancellationToken = default)
+    public Task BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default)
     {
         return _context.BeginTransactionAsync(isolationLevel, cancellationToken);
     }

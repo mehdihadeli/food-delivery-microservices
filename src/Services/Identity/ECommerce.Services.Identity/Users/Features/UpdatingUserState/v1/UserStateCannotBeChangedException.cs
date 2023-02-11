@@ -14,7 +14,8 @@ internal class UserStateCannotBeChangedException : AppException
     public UserStateCannotBeChangedException(UserState state, Guid userId)
         : base(
             $"User state cannot be changed to: '{state.ToName()}' for user with ID: '{userId}'.",
-            HttpStatusCode.InternalServerError)
+            HttpStatusCode.InternalServerError
+        )
     {
         State = state;
         UserId = userId;

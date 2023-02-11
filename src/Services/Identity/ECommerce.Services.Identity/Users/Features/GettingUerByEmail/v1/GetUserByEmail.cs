@@ -20,10 +20,7 @@ internal class GetUserByIdValidator : AbstractValidator<GetUserByEmail>
     {
         CascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => x.Email)
-            .NotEmpty()
-            .EmailAddress()
-            .WithMessage("Email address is not valid");
+        RuleFor(x => x.Email).NotEmpty().EmailAddress().WithMessage("Email address is not valid");
     }
 }
 

@@ -1,5 +1,3 @@
 namespace ECommerce.Services.Catalogs;
 
-public class CatalogRoot
-{
-}
+public class CatalogRoot { }

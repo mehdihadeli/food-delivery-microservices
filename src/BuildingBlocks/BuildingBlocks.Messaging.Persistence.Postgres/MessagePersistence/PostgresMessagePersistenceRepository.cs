@@ -41,8 +41,9 @@ public class PostgresMessagePersistenceRepository : IMessagePersistenceRepositor
     {
         // tacked entity here by EF
         var message = await _persistenceDbContext.StoreMessages.FirstOrDefaultAsync(
-                          x => x.Id == messageId,
-                          cancellationToken);
+            x => x.Id == messageId,
+            cancellationToken
+        );
         if (message is not null)
         {
             message.ChangeState(status);
@@ -60,11 +61,9 @@ public class PostgresMessagePersistenceRepository : IMessagePersistenceRepositor
         CancellationToken cancellationToken = default
     )
     {
-        return (await _persistenceDbContext.StoreMessages
-                    .Where(predicate)
-                    .AsNoTracking()
-                    .ToListAsync(cancellationToken)
-               ).AsReadOnly();
+        return (
+            await _persistenceDbContext.StoreMessages.Where(predicate).AsNoTracking().ToListAsync(cancellationToken)
+        ).AsReadOnly();
     }
 
     public async Task<StoreMessage?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -83,7 +82,8 @@ public class PostgresMessagePersistenceRepository : IMessagePersistenceRepositor
 
     public async Task CleanupMessages()
     {
-        if (!await _persistenceDbContext.StoreMessages.AnyAsync()) return;
+        if (!await _persistenceDbContext.StoreMessages.AnyAsync())
+            return;
 
         _persistenceDbContext.StoreMessages.RemoveRange(_persistenceDbContext.StoreMessages);
 

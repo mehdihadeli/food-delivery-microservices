@@ -19,7 +19,9 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
         ILoggerFactory logger,
         UrlEncoder encoder,
         ISystemClock clock,
-        MockAuthUser mockAuthUser) : base(options, logger, encoder, clock)
+        MockAuthUser mockAuthUser
+    )
+        : base(options, logger, encoder, clock)
     {
         _mockAuthUser = mockAuthUser;
     }

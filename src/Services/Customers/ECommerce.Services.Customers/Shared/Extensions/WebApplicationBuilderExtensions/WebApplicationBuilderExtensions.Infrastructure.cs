@@ -42,9 +42,10 @@ public static partial class WebApplicationBuilderExtensions
         builder.Services.AddCustomAuthorization(
             rolePolicies: new List<RolePolicy>
             {
-                new(CustomersConstants.Role.Admin, new List<string> {CustomersConstants.Role.Admin}),
-                new(CustomersConstants.Role.User, new List<string> {CustomersConstants.Role.User})
-            });
+                new(CustomersConstants.Role.Admin, new List<string> { CustomersConstants.Role.Admin }),
+                new(CustomersConstants.Role.User, new List<string> { CustomersConstants.Role.User })
+            }
+        );
 
         // https://www.michaco.net/blog/EnvironmentVariablesAndConfigurationInASPNETCoreApps#environment-variables-and-configuration
         // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#non-prefixed-environment-variables
@@ -60,37 +61,43 @@ public static partial class WebApplicationBuilderExtensions
                 var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>();
                 var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
                 var mongoOptions = builder.Configuration.BindOptions<MongoOptions>();
-                var identityApiClientOptions =
-                    builder.Configuration.BindOptions<IdentityApiClientOptions>("IdentityApiClientOptions");
+                var identityApiClientOptions = builder.Configuration.BindOptions<IdentityApiClientOptions>(
+                    "IdentityApiClientOptions"
+                );
                 var catalogsApiClientOptions = builder.Configuration.BindOptions<CatalogsApiClientOptions>();
 
                 healthChecksBuilder
                     .AddNpgSql(
                         postgresOptions.ConnectionString,
                         name: "CustomersService-Postgres-Check",
-                        tags: new[] {"postgres", "database", "infra", "customers-service"})
+                        tags: new[] { "postgres", "database", "infra", "customers-service" }
+                    )
                     .AddRabbitMQ(
                         rabbitMqOptions.ConnectionString,
                         name: "CustomersService-RabbitMQ-Check",
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] {"rabbitmq", "bus", "infra", "customers-service"})
+                        tags: new[] { "rabbitmq", "bus", "infra", "customers-service" }
+                    )
                     .AddMongoDb(
                         mongoOptions.ConnectionString,
                         mongoDatabaseName: mongoOptions.DatabaseName,
                         "CustomersService-Mongo-Check",
-                        tags: new[] {"mongodb", "database", "infra", "customers-service"})
+                        tags: new[] { "mongodb", "database", "infra", "customers-service" }
+                    )
                     .AddUrlGroup(
-                        new List<Uri> {new($"{catalogsApiClientOptions.BaseApiAddress}/healthz")},
+                        new List<Uri> { new($"{catalogsApiClientOptions.BaseApiAddress}/healthz") },
                         name: "Catalogs-Downstream-API-Check",
                         failureStatus: HealthStatus.Unhealthy,
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] {"uris", "downstream-services", "customers-service"})
+                        tags: new[] { "uris", "downstream-services", "customers-service" }
+                    )
                     .AddUrlGroup(
-                        new List<Uri> {new($"{identityApiClientOptions.BaseApiAddress}/healthz")},
+                        new List<Uri> { new($"{identityApiClientOptions.BaseApiAddress}/healthz") },
                         name: "Identity-Downstream-API-Check",
                         failureStatus: HealthStatus.Unhealthy,
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] {"uris", "downstream-services", "customers-service"});
+                        tags: new[] { "uris", "downstream-services", "customers-service" }
+                    );
             });
         }
 
@@ -107,12 +114,19 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomSwagger(typeof(CustomersRoot).Assembly);
         builder.Services.AddHttpContextAccessor();
 
-        builder.Services.AddCqrs(pipelines: new[]
-        {
-            typeof(RequestValidationBehavior<,>), typeof(StreamRequestValidationBehavior<,>),
-            typeof(StreamLoggingBehavior<,>), typeof(StreamCachingBehavior<,>), typeof(LoggingBehavior<,>),
-            typeof(CachingBehavior<,>), typeof(InvalidateCachingBehavior<,>), typeof(EfTxBehavior<,>)
-        });
+        builder.Services.AddCqrs(
+            pipelines: new[]
+            {
+                typeof(RequestValidationBehavior<,>),
+                typeof(StreamRequestValidationBehavior<,>),
+                typeof(StreamLoggingBehavior<,>),
+                typeof(StreamCachingBehavior<,>),
+                typeof(LoggingBehavior<,>),
+                typeof(CachingBehavior<,>),
+                typeof(InvalidateCachingBehavior<,>),
+                typeof(EfTxBehavior<,>)
+            }
+        );
 
         builder.Services.AddPostgresMessagePersistence(builder.Configuration);
 
@@ -128,7 +142,8 @@ public static partial class WebApplicationBuilderExtensions
                 cfg.AddCustomerPublishers();
                 cfg.AddRestockSubscriptionPublishers();
             },
-            autoConfigEndpoints: false);
+            autoConfigEndpoints: false
+        );
 
         builder.Services.AddCustomValidators(Assembly.GetExecutingAssembly());
 

@@ -7,6 +7,6 @@ public class CustomEntityNameFormatter : IEntityNameFormatter
 {
     public string FormatEntityName<T>()
     {
-       return typeof(T).Name.Underscore();
+        return typeof(T).Name.Underscore();
     }
 }

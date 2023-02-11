@@ -15,7 +15,8 @@ public class CreateCustomerEndpoint : ICommandMinimalEndpoint<CreateCustomerRequ
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
-        return builder.MapPost("/", HandleAsync)
+        return builder
+            .MapPost("/", HandleAsync)
             .AllowAnonymous()
             .Produces<CreateCustomerResponse>(StatusCodes.Status201Created)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
@@ -29,7 +30,8 @@ public class CreateCustomerEndpoint : ICommandMinimalEndpoint<CreateCustomerRequ
         CreateCustomerRequest request,
         ICommandProcessor commandProcessor,
         IMapper mapper,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         Guard.Against.Null(request, nameof(request));
 

@@ -6,9 +6,11 @@ public class OnlyCustomersAuthorizationHandler : AuthorizationHandler<OnlyCustom
 {
     protected override Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
-        OnlyCustomersRequirement requirement)
+        OnlyCustomersRequirement requirement
+    )
     {
-        if (context.User.IsInRole(Roles.Customer)) context.Succeed(requirement);
+        if (context.User.IsInRole(Roles.Customer))
+            context.Succeed(requirement);
 
         return Task.CompletedTask;
     }

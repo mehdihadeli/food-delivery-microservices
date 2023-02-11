@@ -25,11 +25,11 @@ internal class GetRestockSubscriptionsValidator : AbstractValidator<GetRestockSu
     {
         CascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => x.Page)
-            .GreaterThanOrEqualTo(1).WithMessage("Page should at least greater than or equal to 1.");
+        RuleFor(x => x.Page).GreaterThanOrEqualTo(1).WithMessage("Page should at least greater than or equal to 1.");
 
         RuleFor(x => x.PageSize)
-            .GreaterThanOrEqualTo(1).WithMessage("PageSize should at least greater than or equal to 1.");
+            .GreaterThanOrEqualTo(1)
+            .WithMessage("PageSize should at least greater than or equal to 1.");
     }
 }
 
@@ -46,23 +46,27 @@ public class GeRestockSubscriptionsHandler : IQueryHandler<GetRestockSubscriptio
 
     public async Task<GetRestockSubscriptionsResponse> Handle(
         GetRestockSubscriptions query,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
-        var filtering = _customersReadDbContext.RestockSubscriptions.AsQueryable()
+        var filtering = _customersReadDbContext.RestockSubscriptions
+            .AsQueryable()
             .ApplyFilter(query.Filters)
             .Where(x => x.IsDeleted == false)
             .Where(e => query.Emails.Any() == false || query.Emails.Contains(e.Email))
-            .Where(x => (query.From == null && query.To == null) || (query.From == null && x.Created <= query.To) ||
-                        (query.To == null && x.Created >= query.From) ||
-                        (x.Created >= query.From && x.Created <= query.To))
+            .Where(
+                x =>
+                    (query.From == null && query.To == null)
+                    || (query.From == null && x.Created <= query.To)
+                    || (query.To == null && x.Created >= query.From)
+                    || (x.Created >= query.From && x.Created <= query.To)
+            )
             .OrderByDescending(x => x.Created);
 
-        var restockSubscriptions =
-            await filtering.ApplyPagingAsync<RestockSubscriptionReadModel, RestockSubscriptionDto>(
-                _mapper.ConfigurationProvider,
-                query.Page,
-                query.PageSize,
-                cancellationToken: cancellationToken);
+        var restockSubscriptions = await filtering.ApplyPagingAsync<
+            RestockSubscriptionReadModel,
+            RestockSubscriptionDto
+        >(_mapper.ConfigurationProvider, query.Page, query.PageSize, cancellationToken: cancellationToken);
 
         return new GetRestockSubscriptionsResponse(restockSubscriptions);
     }

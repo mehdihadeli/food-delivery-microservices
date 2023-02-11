@@ -12,8 +12,7 @@ public class ApiVersionOperationFilter : IOperationFilter
         var actionMetadata = context.ApiDescription.ActionDescriptor.EndpointMetadata;
         operation.Parameters ??= new List<OpenApiParameter>();
 
-        var apiVersionMetadata = actionMetadata
-            .Any(metadataItem => metadataItem is ApiVersionMetadata);
+        var apiVersionMetadata = actionMetadata.Any(metadataItem => metadataItem is ApiVersionMetadata);
         if (apiVersionMetadata)
         {
             // operation.Parameters.Add(new OpenApiParameter

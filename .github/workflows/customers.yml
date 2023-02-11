@@ -143,11 +143,14 @@ jobs:
         if: success()
         run: |
           echo "pre-check is successful."
-          echo "branch is: ${{ github.ref_name }}"
           echo workspace is: ${{ github.workspace }}
           echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
           echo "is push event? ${{ github.event_name == 'push' }}"
           echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
+          echo "pull_request.head.ref is: ${{ github.event.pull_request.head.ref }}"
+          echo "github.ref_name is: ${{ github.ref_name }}"
+          echo "github.ref is: ${{ github.ref }}"
+          echo "github.head_ref is: ${{ github.head_ref }}"
           echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
 
       # https://www.codewrecks.com/post/github/choose-environment-from-branch/

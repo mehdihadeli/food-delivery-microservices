@@ -35,11 +35,14 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
     public Action<IApplicationBuilder>? TestConfigureApp { get; set; }
 
     public ILogger Logger => Services.GetRequiredService<ILogger<CustomWebApplicationFactory<TEntryPoint>>>();
+
     public void ClearOutputHelper() => _outputHelper = null;
+
     public void SetOutputHelper(ITestOutputHelper value) => _outputHelper = value;
 
     public CustomWebApplicationFactory<TEntryPoint> WithConfigureAppConfigurations(
-        Action<HostBuilderContext, IConfigurationBuilder> builder)
+        Action<HostBuilderContext, IConfigurationBuilder> builder
+    )
     {
         _configureAppConfigurations += builder;
 
@@ -74,23 +77,27 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
         builder.UseEnvironment("test");
 
         // UseSerilog on WebHostBuilder is absolute so we should use IHostBuilder
-        builder.UseSerilog((ctx, loggerConfiguration) =>
-        {
-            //https://github.com/trbenning/serilog-sinks-xunit
-            if (_outputHelper is { })
+        builder.UseSerilog(
+            (ctx, loggerConfiguration) =>
             {
-                loggerConfiguration.WriteTo.TestOutput(
-                    _outputHelper,
-                    LogEventLevel.Information,
-                    "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}");
+                //https://github.com/trbenning/serilog-sinks-xunit
+                if (_outputHelper is { })
+                {
+                    loggerConfiguration.WriteTo.TestOutput(
+                        _outputHelper,
+                        LogEventLevel.Information,
+                        "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}"
+                    );
+                }
             }
-        });
+        );
 
         builder.ConfigureServices(services =>
         {
             services.AddScoped<TextWriter>(_ => new StringWriter());
-            services.AddScoped<TextReader>(sp =>
-                new StringReader(sp.GetRequiredService<TextWriter>().ToString() ?? ""));
+            services.AddScoped<TextReader>(
+                sp => new StringReader(sp.GetRequiredService<TextWriter>().ToString() ?? "")
+            );
 
             // services.RemoveAll(typeof(IHostedService));
 
@@ -109,11 +116,13 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
             // add authentication using a fake jwt bearer - we can use SetAdminUser method to set authenticate user to existing HttContextAccessor
             // https://github.com/webmotions/fake-authentication-jwtbearer
             // https://github.com/webmotions/fake-authentication-jwtbearer/issues/14
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-            }).AddFakeJwtBearer();
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddFakeJwtBearer();
         });
 
         builder.ConfigureWebHost(wb =>
@@ -131,37 +140,41 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
             _customWebHostBuilder?.Invoke(wb);
         });
 
-        builder.UseDefaultServiceProvider((env, c) =>
-        {
-            // Handling Captive Dependency Problem
-            // https://ankitvijay.net/2020/03/17/net-core-and-di-beware-of-captive-dependency/
-            // https://blog.ploeh.dk/2014/06/02/captive-dependency/
-            if (env.HostingEnvironment.IsTest() || env.HostingEnvironment.IsDevelopment())
-                c.ValidateScopes = true;
-        });
+        builder.UseDefaultServiceProvider(
+            (env, c) =>
+            {
+                // Handling Captive Dependency Problem
+                // https://ankitvijay.net/2020/03/17/net-core-and-di-beware-of-captive-dependency/
+                // https://blog.ploeh.dk/2014/06/02/captive-dependency/
+                if (env.HostingEnvironment.IsTest() || env.HostingEnvironment.IsDevelopment())
+                    c.ValidateScopes = true;
+            }
+        );
 
         // //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/
         // //https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration-providers#json-configuration-provider
-        builder.ConfigureAppConfiguration((hostingContext, configurationBuilder) =>
-        {
-            // configurationBuilder.Sources.Clear();
-            // IHostEnvironment env = hostingContext.HostingEnvironment;
-            //
-            // configurationBuilder
-            //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            //     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
-            //     .AddJsonFile("integrationappsettings.json", true, true);
-            //
-            // var integrationConfig = configurationBuilder.Build();
-            //
-            // configurationBuilder.AddConfiguration(integrationConfig);
+        builder.ConfigureAppConfiguration(
+            (hostingContext, configurationBuilder) =>
+            {
+                // configurationBuilder.Sources.Clear();
+                // IHostEnvironment env = hostingContext.HostingEnvironment;
+                //
+                // configurationBuilder
+                //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                //     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
+                //     .AddJsonFile("integrationappsettings.json", true, true);
+                //
+                // var integrationConfig = configurationBuilder.Build();
+                //
+                // configurationBuilder.AddConfiguration(integrationConfig);
 
-            //// add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
-            //// https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
-            // configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?> {});
+                //// add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
+                //// https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
+                // configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?> {});
 
-            _configureAppConfigurations?.Invoke(hostingContext, configurationBuilder);
-        });
+                _configureAppConfigurations?.Invoke(hostingContext, configurationBuilder);
+            }
+        );
 
         _customHostBuilder?.Invoke(builder);
 
@@ -172,11 +185,13 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
     {
         var httpContextAccessorMock = Substitute.For<IHttpContextAccessor>();
         using var scope = serviceProvider.CreateScope();
-        httpContextAccessorMock.HttpContext = new DefaultHttpContext {RequestServices = scope.ServiceProvider,};
+        httpContextAccessorMock.HttpContext = new DefaultHttpContext { RequestServices = scope.ServiceProvider, };
 
         httpContextAccessorMock.HttpContext.Request.Host = new HostString("localhost", 5000);
         httpContextAccessorMock.HttpContext.Request.Scheme = "http";
-        var res = httpContextAccessorMock.HttpContext.AuthenticateAsync(Constants.AuthConstants.Scheme).GetAwaiter()
+        var res = httpContextAccessorMock.HttpContext
+            .AuthenticateAsync(Constants.AuthConstants.Scheme)
+            .GetAwaiter()
             .GetResult();
         httpContextAccessorMock.HttpContext.User = res.Ticket?.Principal!;
         return httpContextAccessorMock;

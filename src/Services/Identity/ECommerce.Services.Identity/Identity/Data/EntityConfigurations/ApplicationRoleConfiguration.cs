@@ -10,9 +10,6 @@ internal class ApplicationRoleConfiguration : IEntityTypeConfiguration<Applicati
     {
         // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model#add-navigation-properties
         // Each Role can have many entries in the UserRole join table
-        builder.HasMany(e => e.UserRoles)
-            .WithOne(e => e.Role)
-            .HasForeignKey(ur => ur.RoleId)
-            .IsRequired();
+        builder.HasMany(e => e.UserRoles).WithOne(e => e.Role).HasForeignKey(ur => ur.RoleId).IsRequired();
     }
 }

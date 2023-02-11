@@ -40,6 +40,9 @@ runs:
     # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
     # https://github.com/semantic-release/semantic-release/issues/2704
     # https://github.com/semantic-release/semantic-release/issues/2703
+    # 'reference already exists' error when pushing tag: https://semantic-release.gitbook.io/semantic-release/support/troubleshooting#reference-already-exists-error-when-pushing-tag
+    # https://github.com/cycjimmy/semantic-release-action
+    # cycjimmy internally uses exported semantic release module here: https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L256
     - name: Semantic Release Publish
       id: semantic
       shell: bash

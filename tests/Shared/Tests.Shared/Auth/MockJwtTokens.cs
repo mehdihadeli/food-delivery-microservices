@@ -24,6 +24,8 @@ public static class MockJwtTokens
 
     public static string GenerateJwtToken(IEnumerable<Claim> claims)
     {
-        return TokenHandler.WriteToken(new JwtSecurityToken(Issuer, null, claims, null, DateTime.UtcNow.AddMinutes(20), SigningCredentials));
+        return TokenHandler.WriteToken(
+            new JwtSecurityToken(Issuer, null, claims, null, DateTime.UtcNow.AddMinutes(20), SigningCredentials)
+        );
     }
 }

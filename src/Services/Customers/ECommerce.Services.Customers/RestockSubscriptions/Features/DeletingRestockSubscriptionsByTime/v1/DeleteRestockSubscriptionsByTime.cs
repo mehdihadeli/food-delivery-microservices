@@ -21,7 +21,8 @@ internal class DeleteRestockSubscriptionsByTimeHandler : ICommandHandler<DeleteR
         CustomersDbContext customersDbContext,
         IDomainEventPublisher domainEventPublisher,
         ICommandProcessor commandProcessor,
-        ILogger<DeleteRestockSubscriptionsByTimeHandler> logger)
+        ILogger<DeleteRestockSubscriptionsByTimeHandler> logger
+    )
     {
         _customersDbContext = customersDbContext;
         _domainEventPublisher = domainEventPublisher;
@@ -34,10 +35,13 @@ internal class DeleteRestockSubscriptionsByTimeHandler : ICommandHandler<DeleteR
         Guard.Against.Null(command, nameof(command));
 
         var exists = await _customersDbContext.RestockSubscriptions
-            .Where(x => (command.From == null && command.To == null) ||
-                        (command.From == null && x.Created <= command.To) ||
-                        (command.To == null && x.Created >= command.From) ||
-                        (x.Created >= command.From && x.Created <= command.To))
+            .Where(
+                x =>
+                    (command.From == null && command.To == null)
+                    || (command.From == null && x.Created <= command.To)
+                    || (command.To == null && x.Created >= command.From)
+                    || (x.Created >= command.From && x.Created <= command.To)
+            )
             .ToListAsync(cancellationToken: cancellationToken);
 
         if (exists.Any() == false)
@@ -62,7 +66,8 @@ internal class DeleteRestockSubscriptionsByTimeHandler : ICommandHandler<DeleteR
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         await _commandProcessor.SendAsync(
             new UpdateMongoRestockSubscriptionsReadModelByTime(command.From, command.To, IsDeleted: true),
-            cancellationToken);
+            cancellationToken
+        );
 
         return Unit.Value;
     }

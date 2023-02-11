@@ -14,10 +14,9 @@ public class GetCustomersTests : CustomerServiceIntegrationTestBase
 {
     public GetCustomersTests(
         SharedFixtureWithEfCoreAndMongo<Api.Program, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-        ITestOutputHelper outputHelper)
-        : base(sharedFixture, outputHelper)
-    {
-    }
+        ITestOutputHelper outputHelper
+    )
+        : base(sharedFixture, outputHelper) { }
 
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
@@ -28,7 +27,8 @@ public class GetCustomersTests : CustomerServiceIntegrationTestBase
         var fakeCustomers = new FakeCustomerReadModel().Generate(3);
         await SharedFixture.InsertMongoDbContextAsync(
             nameof(CustomersReadDbContext.Customers).Underscore(),
-            fakeCustomers.ToArray());
+            fakeCustomers.ToArray()
+        );
 
         // Act
         var query = new GetCustomers();
@@ -51,10 +51,11 @@ public class GetCustomersTests : CustomerServiceIntegrationTestBase
         var fakeCustomers = new FakeCustomerReadModel().Generate(3);
         await SharedFixture.InsertMongoDbContextAsync(
             nameof(CustomersReadDbContext.Customers).Underscore(),
-            fakeCustomers.ToArray());
+            fakeCustomers.ToArray()
+        );
 
         // Act
-        var query = new GetCustomers() {Page = 1, PageSize = 2};
+        var query = new GetCustomers() { Page = 1, PageSize = 2 };
         var listResult = (await SharedFixture.SendAsync(query)).Customers;
 
         // Assert

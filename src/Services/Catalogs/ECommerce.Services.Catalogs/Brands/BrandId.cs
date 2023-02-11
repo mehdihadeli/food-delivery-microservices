@@ -6,9 +6,8 @@ namespace ECommerce.Services.Catalogs.Brands;
 public record BrandId : AggregateId
 {
     // EF
-    private BrandId(long value) : base(value)
-    {
-    }
+    private BrandId(long value)
+        : base(value) { }
 
     public static implicit operator long(BrandId id) => id.Value;
 

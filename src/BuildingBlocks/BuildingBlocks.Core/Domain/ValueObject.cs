@@ -44,9 +44,7 @@ public abstract class ValueObject : IEquatable<ValueObject>
 
     public override int GetHashCode()
     {
-        return GetEqualityComponents()
-            .Select(x => x != null ? x.GetHashCode() : 0)
-            .Aggregate((x, y) => x ^ y);
+        return GetEqualityComponents().Select(x => x != null ? x.GetHashCode() : 0).Aggregate((x, y) => x ^ y);
     }
 
     public static bool operator ==(ValueObject left, ValueObject right)
@@ -60,6 +58,5 @@ public abstract class ValueObject : IEquatable<ValueObject>
         return left.Equals(right);
     }
 
-    public static bool operator !=(ValueObject left, ValueObject right)
-        => !(left == right);
+    public static bool operator !=(ValueObject left, ValueObject right) => !(left == right);
 }

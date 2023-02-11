@@ -97,7 +97,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-
       - name: Application Version
         id: app-version-step
         shell: bash
@@ -137,6 +136,8 @@ jobs:
           # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
           add-paths: |
             *.Packages.props
+
+#      # we could create a temporary personal token for push app version in a commit directly with this plugin: https://github.com/peter-murray/workflow-application-token-action
 
 #      # https://github.com/semantic-release/semantic-release/discussions/2557
 #      # https://github.com/semantic-release/github/issues/175

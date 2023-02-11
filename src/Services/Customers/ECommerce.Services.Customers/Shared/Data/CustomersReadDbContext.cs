@@ -9,7 +9,8 @@ namespace ECommerce.Services.Customers.Shared.Data;
 
 public class CustomersReadDbContext : MongoDbContext
 {
-    public CustomersReadDbContext(IOptions<MongoOptions> options) : base(options.Value)
+    public CustomersReadDbContext(IOptions<MongoOptions> options)
+        : base(options.Value)
     {
         RestockSubscriptions = GetCollection<RestockSubscriptionReadModel>(nameof(RestockSubscriptions).Underscore());
         Customers = GetCollection<CustomerReadModel>(nameof(Customers).Underscore());

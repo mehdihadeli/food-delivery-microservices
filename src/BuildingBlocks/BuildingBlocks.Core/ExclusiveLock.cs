@@ -21,9 +21,7 @@ public class ExclusiveLock : IExclusiveLock
         var theLock = _lockDictionary.GetOrAdd(obj, o => new object());
         var semaphore = _semaphoreDictionary.GetOrAdd(theLock, o => new SemaphoreSlim(1, 1));
 
-        return semaphore
-            .WaitAsync(token)
-            .ContinueWith(t => theLock, token);
+        return semaphore.WaitAsync(token).ContinueWith(t => theLock, token);
     }
 
     public Task ReleaseAsync(object obj)

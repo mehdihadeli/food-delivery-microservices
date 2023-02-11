@@ -22,7 +22,8 @@ public static class Extensions
     public static WebApplicationBuilder AddCustomHealthCheck(
         this WebApplicationBuilder builder,
         Action<IHealthChecksBuilder>? healthChecksBuilder = null,
-        string sectionName = nameof(HealthOptions))
+        string sectionName = nameof(HealthOptions)
+    )
     {
         var healthOptions = builder.Configuration.BindOptions<HealthOptions>(sectionName);
         if (!healthOptions.Enabled)
@@ -30,21 +31,21 @@ public static class Extensions
             return builder;
         }
 
-        var healCheckBuilder =
-            builder.Services.AddHealthChecks()
-                .ForwardToPrometheus();
+        var healCheckBuilder = builder.Services.AddHealthChecks().ForwardToPrometheus();
 
         healthChecksBuilder?.Invoke(healCheckBuilder);
 
-        builder.Services.AddHealthChecksUI(setup =>
-        {
-            setup.SetEvaluationTimeInSeconds(60); // time in seconds between check
-            setup.AddHealthCheckEndpoint("All Checks", "/healthz");
-            setup.AddHealthCheckEndpoint("Infra", "/health/infra");
-            setup.AddHealthCheckEndpoint("Bus", "/health/bus");
-            setup.AddHealthCheckEndpoint("Database", "/health/database");
-            setup.AddHealthCheckEndpoint("Downstream Services", "/health/downstream-services");
-        }).AddInMemoryStorage();
+        builder.Services
+            .AddHealthChecksUI(setup =>
+            {
+                setup.SetEvaluationTimeInSeconds(60); // time in seconds between check
+                setup.AddHealthCheckEndpoint("All Checks", "/healthz");
+                setup.AddHealthCheckEndpoint("Infra", "/health/infra");
+                setup.AddHealthCheckEndpoint("Bus", "/health/bus");
+                setup.AddHealthCheckEndpoint("Database", "/health/database");
+                setup.AddHealthCheckEndpoint("Downstream Services", "/health/downstream-services");
+            })
+            .AddInMemoryStorage();
 
         return builder;
     }
@@ -72,7 +73,8 @@ public static class Extensions
                         [HealthStatus.Degraded] = StatusCodes.Status500InternalServerError,
                         [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable,
                     },
-                })
+                }
+            )
             .UseHealthChecks(
                 "/health/infra",
                 new HealthCheckOptions
@@ -80,7 +82,8 @@ public static class Extensions
                     Predicate = check => check.Tags.Contains("infra"),
                     AllowCachingResponses = false,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-                })
+                }
+            )
             .UseHealthChecks(
                 "/health/bus",
                 new HealthCheckOptions
@@ -88,7 +91,8 @@ public static class Extensions
                     Predicate = check => check.Tags.Contains("bus"),
                     AllowCachingResponses = false,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-                })
+                }
+            )
             .UseHealthChecks(
                 "/health/database",
                 new HealthCheckOptions
@@ -96,7 +100,8 @@ public static class Extensions
                     Predicate = check => check.Tags.Contains("database"),
                     AllowCachingResponses = false,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-                })
+                }
+            )
             .UseHealthChecks(
                 "/health/downstream-services",
                 new HealthCheckOptions
@@ -104,13 +109,17 @@ public static class Extensions
                     Predicate = check => check.Tags.Contains("downstream-services"),
                     AllowCachingResponses = false,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-                })
+                }
+            )
             .UseHealthChecks(
                 "/health/ready",
                 new HealthCheckOptions
                 {
-                    Predicate = _ => true, AllowCachingResponses = false, ResponseWriter = WriteResponseAsync,
-                })
+                    Predicate = _ => true,
+                    AllowCachingResponses = false,
+                    ResponseWriter = WriteResponseAsync,
+                }
+            )
             .UseHealthChecksUI(setup =>
             {
                 setup.ApiPath = "/healthcheck";
@@ -124,7 +133,7 @@ public static class Extensions
     {
         context.Response.ContentType = "application/json; charset=utf-8";
 
-        var options = new JsonWriterOptions {Indented = true};
+        var options = new JsonWriterOptions { Indented = true };
 
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream, options))

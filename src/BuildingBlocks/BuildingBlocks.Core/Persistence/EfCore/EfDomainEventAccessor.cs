@@ -10,7 +10,8 @@ public class EfDomainEventAccessor : IDomainEventsAccessor
 
     public EfDomainEventAccessor(
         IDomainEventContext domainEventContext,
-        IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore)
+        IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore
+    )
     {
         _domainEventContext = domainEventContext;
         _aggregatesDomainEventsStore = aggregatesDomainEventsStore;

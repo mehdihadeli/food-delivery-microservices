@@ -9,17 +9,18 @@ public class EntityIdValurConverter<TEntityId, TId> : ValueConverter<TEntityId, 
     where TEntityId : EntityId<TId>
 {
     public EntityIdValurConverter(ConverterMappingHints mappingHints = null!)
-        : base(id => id.Value, value => Create(value), mappingHints)
-    {
-    }
+        : base(id => id.Value, value => Create(value), mappingHints) { }
 
     // instantiate EntityId and pass id to its protected or private constructor
     private static TEntityId Create(TId id) =>
-        (Activator.CreateInstance(
-            typeof(TEntityId),
-            BindingFlags.Instance | BindingFlags.NonPublic,
-            null,
-            new object?[] {id},
-            null,
-            null) as TEntityId)!;
+        (
+            Activator.CreateInstance(
+                typeof(TEntityId),
+                BindingFlags.Instance | BindingFlags.NonPublic,
+                null,
+                new object?[] { id },
+                null,
+                null
+            ) as TEntityId
+        )!;
 }

@@ -6,5 +6,6 @@ public interface IDomainNotificationEventPublisher
 
     Task PublishAsync(
         IDomainNotificationEvent[] domainNotificationEvents,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

@@ -39,27 +39,18 @@ jobs:
       - name: Job Info
         run: |
           echo "job name is: $GITHUB_JOB"
-          echo "branch name is: ${{ github.ref_name }}"
+          echo workspace is: ${{ github.workspace }}
+          echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
+          echo "is push event? ${{ github.event_name == 'push' }}"
+          echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
+          echo "pull_request.head.ref is: ${{ github.event.pull_request.head.ref }}"
+          echo "github.ref_name is: ${{ github.ref_name }}"
+          echo "github.ref is: ${{ github.ref }}"
+          echo "github.head_ref is: ${{ github.head_ref }}"
 
-        # https://github.com/cycjimmy/semantic-release-action/issues/6
-        # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
-        # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
-        # https://github.com/semantic-release/semantic-release/issues/1208
-        # https://github.com/orgs/community/discussions/26560
-        # https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L92
-        ## https://github.com/actions/checkout/issues/439#issuecomment-965968956
-        # get latest remote change because sematic-release in `verifyConditions` event checks local branch has latest remote branch changes, for preventing: The local branch `something` is behind the remote one, therefore a new version won't be published.
-        # By default checkout@v3, will check branch on ref/SHA that triggered in starting workflow, so if inner a job in the workflow we change HEAD of repository by changing code, subsequent jobs don't get these commits and they get ref/SHA that triggered in starting workflow
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-        with:
-          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
-          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
-          fetch-depth: 0
-          ref: ${{ github.ref_name }}
-      - run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
+      - name: Call Composite Action checkout
+        uses: ./.github/actions/checkout-code
+        id: checkout-step
 
       - name: Setup Node.js
         uses: actions/setup-node@v2

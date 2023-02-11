@@ -19,9 +19,7 @@ public class RestockSubscription : Aggregate<RestockSubscriptionId>, IHaveSoftDe
 {
     // EF
     // this constructor is needed when we have a parameter constructor that has some navigation property classes in the parameters and ef will skip it and try to find other constructor, here default constructor (maybe will fix .net 8)
-    public RestockSubscription()
-    {
-    }
+    public RestockSubscription() { }
 
     public CustomerId CustomerId { get; private set; } = default!;
     public Email Email { get; private set; } = default!;
@@ -33,17 +31,21 @@ public class RestockSubscription : Aggregate<RestockSubscriptionId>, IHaveSoftDe
         RestockSubscriptionId id,
         CustomerId customerId,
         ProductInformation productInformation,
-        Email email)
+        Email email
+    )
     {
         Guard.Against.Null(id, new RestockSubscriptionDomainException("InternalCommandId cannot be null"));
         Guard.Against.Null(customerId, new RestockSubscriptionDomainException("CustomerId cannot be null"));
         Guard.Against.Null(
             productInformation,
-            new RestockSubscriptionDomainException("ProductInformation cannot be null"));
+            new RestockSubscriptionDomainException("ProductInformation cannot be null")
+        );
 
         var restockSubscription = new RestockSubscription
         {
-            Id = id, CustomerId = customerId, ProductInformation = productInformation
+            Id = id,
+            CustomerId = customerId,
+            ProductInformation = productInformation
         };
 
         restockSubscription.ChangeEmail(email);

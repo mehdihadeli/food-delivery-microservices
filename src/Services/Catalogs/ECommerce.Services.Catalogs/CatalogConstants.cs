@@ -10,4 +10,3 @@ public static class CatalogConstants
         public const string User = "user";
     }
 }
-

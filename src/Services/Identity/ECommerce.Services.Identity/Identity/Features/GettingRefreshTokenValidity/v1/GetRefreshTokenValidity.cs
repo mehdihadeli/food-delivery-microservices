@@ -17,11 +17,12 @@ public class GetRefreshTokenValidityQueryHandler : IQueryHandler<GetRefreshToken
 
     public async Task<bool> Handle(GetRefreshTokenValidity request, CancellationToken cancellationToken)
     {
-        var refreshToken = await _context.Set<Shared.Models.RefreshToken>()
+        var refreshToken = await _context
+            .Set<Shared.Models.RefreshToken>()
             .FirstOrDefaultAsync(
-                rt => rt.UserId == request.UserId &&
-                      rt.Token == request.RefreshToken,
-                cancellationToken);
+                rt => rt.UserId == request.UserId && rt.Token == request.RefreshToken,
+                cancellationToken
+            );
 
         if (refreshToken == null)
         {

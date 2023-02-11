@@ -24,7 +24,8 @@ public class MessagePersistenceBackgroundService : BackgroundService
         IOptions<MessagePersistenceOptions> options,
         IServiceProvider serviceProvider,
         IHostApplicationLifetime lifetime,
-        IMachineInstanceInfo machineInstanceInfo)
+        IMachineInstanceInfo machineInstanceInfo
+    )
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
@@ -43,7 +44,8 @@ public class MessagePersistenceBackgroundService : BackgroundService
         _logger.LogInformation(
             "MessagePersistence Background Service is starting on client '{@ClientId}' and group '{@ClientGroup}'",
             _machineInstanceInfo.ClientId,
-            _machineInstanceInfo.ClientGroup);
+            _machineInstanceInfo.ClientGroup
+        );
 
         await ProcessAsync(stoppingToken);
     }
@@ -53,7 +55,8 @@ public class MessagePersistenceBackgroundService : BackgroundService
         _logger.LogInformation(
             "MessagePersistence Background Service is stopping on client '{@ClientId}' and group '{@ClientGroup}'",
             _machineInstanceInfo.ClientId,
-            _machineInstanceInfo.ClientGroup);
+            _machineInstanceInfo.ClientGroup
+        );
 
         return base.StopAsync(cancellationToken);
     }

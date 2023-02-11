@@ -11,5 +11,3 @@ public record GetRestockSubscriptionsByEmailsRequest(IList<string> Emails)
     //     return ValueTask.FromResult<GetRestockSubscriptionsByEmailsRequest?>(request);
     // }
 }
-
-

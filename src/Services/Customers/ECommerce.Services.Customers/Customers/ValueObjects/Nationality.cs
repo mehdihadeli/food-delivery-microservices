@@ -6,15 +6,7 @@ namespace ECommerce.Services.Customers.Customers.ValueObjects;
 // https://learn.microsoft.com/en-us/ef/core/modeling/constructors
 public record Nationality
 {
-    private static readonly HashSet<string> _allowedNationality = new()
-    {
-        "IR",
-        "DE",
-        "FR",
-        "ES",
-        "GB",
-        "US"
-    };
+    private static readonly HashSet<string> _allowedNationality = new() { "IR", "DE", "FR", "ES", "GB", "US" };
 
     // EF
     public Nationality(string value)

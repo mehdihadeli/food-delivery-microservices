@@ -31,7 +31,8 @@ public sealed class FakeCustomer : Faker<Customer>
                 Email.Of(f.Internet.Email(firstName, lastName)),
                 PhoneNumber.Of(f.Phone.PhoneNumber("(+##)##########")),
                 CustomerName.Of(firstName, lastName),
-                Guid.NewGuid());
+                Guid.NewGuid()
+            );
         });
     }
 }

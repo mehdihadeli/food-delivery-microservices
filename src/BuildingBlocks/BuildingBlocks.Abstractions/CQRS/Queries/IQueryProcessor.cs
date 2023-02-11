@@ -7,6 +7,7 @@ public interface IQueryProcessor
 
     IAsyncEnumerable<TResponse> SendAsync<TResponse>(
         IStreamQuery<TResponse> query,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
         where TResponse : notnull;
 }

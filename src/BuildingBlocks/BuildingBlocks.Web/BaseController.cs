@@ -16,8 +16,7 @@ public abstract class BaseController : Controller
     private ICommandProcessor _commandProcessor;
     private IQueryProcessor _queryProcessor;
 
-    protected IMediator Mediator =>
-        _mediator ??= HttpContext.RequestServices.GetService<IMediator>()!;
+    protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>()!;
 
     protected IQueryProcessor? QueryProcessor =>
         _queryProcessor ??= HttpContext.RequestServices.GetService<IQueryProcessor>()!;

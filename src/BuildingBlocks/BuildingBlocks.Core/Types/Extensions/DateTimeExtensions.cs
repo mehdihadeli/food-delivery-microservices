@@ -10,8 +10,8 @@ public static class DateTimeExtensions
         return (long)unixTime;
     }
 
-    public static DateTime ToDateTime(this long? unixTime)
-        => Epoch.AddSeconds(unixTime ?? ToUnixTimeSecond(DateTime.Now)).ToLocalTime();
+    public static DateTime ToDateTime(this long? unixTime) =>
+        Epoch.AddSeconds(unixTime ?? ToUnixTimeSecond(DateTime.Now)).ToLocalTime();
 
     public static long ToUnixTimeMilliseconds(this DateTime dateTime)
     {

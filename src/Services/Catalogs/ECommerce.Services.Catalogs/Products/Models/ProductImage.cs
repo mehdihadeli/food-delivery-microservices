@@ -24,5 +24,6 @@ public class ProductImage : Entity<EntityId>
     public ProductId ProductId { get; private set; }
 
     public void SetIsMain(bool isMain) => IsMain = isMain;
+
     public void SetImageUrl(string url) => ImageUrl = url;
 }

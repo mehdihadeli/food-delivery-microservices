@@ -16,7 +16,8 @@ public record CreateMongoRestockSubscriptionReadModels(
     string Email,
     DateTime Created,
     bool Processed,
-    DateTime? ProcessedTime = null) : InternalCommand
+    DateTime? ProcessedTime = null
+) : InternalCommand
 {
     public bool IsDeleted { get; init; } = false;
 }
@@ -34,7 +35,8 @@ internal class CreateRestockSubscriptionReadModelHandler : ICommandHandler<Creat
 
     public async Task<Unit> Handle(
         CreateMongoRestockSubscriptionReadModels command,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         Guard.Against.Null(command, nameof(command));
 

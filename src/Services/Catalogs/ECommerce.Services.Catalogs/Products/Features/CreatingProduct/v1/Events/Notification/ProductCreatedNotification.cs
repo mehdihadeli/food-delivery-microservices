@@ -4,8 +4,8 @@ using ECommerce.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Do
 
 namespace ECommerce.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Notification;
 
-public record ProductCreatedNotification
-    (ProductCreated DomainEvent) : BuildingBlocks.Core.CQRS.Events.Internal.DomainNotificationEventWrapper<ProductCreated>(DomainEvent)
+public record ProductCreatedNotification(ProductCreated DomainEvent)
+    : BuildingBlocks.Core.CQRS.Events.Internal.DomainNotificationEventWrapper<ProductCreated>(DomainEvent)
 {
     public long Id => DomainEvent.Product.Id;
     public string Name => DomainEvent.Product.Name;

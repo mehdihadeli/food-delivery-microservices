@@ -10,29 +10,37 @@ using ECommerce.Services.Customers.Api.Extensions.ApplicationBuilderExtensions;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Spectre.Console;
 
-AnsiConsole.Write(new FigletText("Customers Service").Centered().Color(Color.FromInt32(new Faker().Random.Int(1, 255))));
+AnsiConsole.Write(
+    new FigletText("Customers Service").Centered().Color(Color.FromInt32(new Faker().Random.Int(1, 255)))
+);
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
 // https://benfoster.io/blog/mvc-to-minimal-apis-aspnet-6/
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseDefaultServiceProvider((context, options) =>
-{
-    // Handling Captive Dependency Problem
-    // https://ankitvijay.net/2020/03/17/net-core-and-di-beware-of-captive-dependency/
-    // https://levelup.gitconnected.com/top-misconceptions-about-dependency-injection-in-asp-net-core-c6a7afd14eb4
-    // https://blog.ploeh.dk/2014/06/02/captive-dependency/
-    // https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/
-    // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/web-host?view=aspnetcore-7.0&viewFallbackFrom=aspnetcore-2.2#scope-validation
-    options.ValidateScopes = context.HostingEnvironment.IsDevelopment() || context.HostingEnvironment.IsTest() ||
-                             context.HostingEnvironment.IsStaging();
+builder.Host.UseDefaultServiceProvider(
+    (context, options) =>
+    {
+        // Handling Captive Dependency Problem
+        // https://ankitvijay.net/2020/03/17/net-core-and-di-beware-of-captive-dependency/
+        // https://levelup.gitconnected.com/top-misconceptions-about-dependency-injection-in-asp-net-core-c6a7afd14eb4
+        // https://blog.ploeh.dk/2014/06/02/captive-dependency/
+        // https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/
+        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/web-host?view=aspnetcore-7.0&viewFallbackFrom=aspnetcore-2.2#scope-validation
+        options.ValidateScopes =
+            context.HostingEnvironment.IsDevelopment()
+            || context.HostingEnvironment.IsTest()
+            || context.HostingEnvironment.IsStaging();
 
-    // Issue with masstransit #85
-    // options.ValidateOnBuild = true;
-});
+        // Issue with masstransit #85
+        // options.ValidateOnBuild = true;
+    }
+);
 
-builder.Services.AddControllers(options =>
-        options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer())))
+builder.Services
+    .AddControllers(
+        options => options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()))
+    )
     .AddNewtonsoftJson(options =>
     {
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -77,7 +85,13 @@ app.MapModulesEndpoints();
 // map registered minimal endpoints
 app.MapMinimalEndpoints();
 
-app.MapGet("/test", context => { return Task.FromResult("test"); });
+app.MapGet(
+    "/test",
+    context =>
+    {
+        return Task.FromResult("test");
+    }
+);
 
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("docker"))
 {
@@ -87,10 +101,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("docker"))
 
 await app.RunAsync();
 
-
 namespace ECommerce.Services.Customers.Api
 {
-    public partial class Program
-    {
-    }
+    public partial class Program { }
 }

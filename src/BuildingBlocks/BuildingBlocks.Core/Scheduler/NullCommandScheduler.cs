@@ -29,7 +29,8 @@ public class NullCommandScheduler : ICommandScheduler
         IInternalCommand command,
         string name,
         string cronExpression,
-        string? description = null)
+        string? description = null
+    )
     {
         return Task.CompletedTask;
     }

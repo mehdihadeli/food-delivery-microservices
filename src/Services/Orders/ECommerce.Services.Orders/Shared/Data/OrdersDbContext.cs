@@ -9,9 +9,8 @@ public class OrdersDbContext : EfDbContextBase, IOrdersDbContext
 {
     public const string DefaultSchema = "order";
 
-    public OrdersDbContext(DbContextOptions<OrdersDbContext> options) : base(options)
-    {
-    }
+    public OrdersDbContext(DbContextOptions<OrdersDbContext> options)
+        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

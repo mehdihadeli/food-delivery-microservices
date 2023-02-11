@@ -4,7 +4,6 @@ namespace ECommerce.Services.Identity.Identity.Features.VerifyingEmail.v1.Except
 
 public class EmailAlreadyVerifiedException : ConflictException
 {
-    public EmailAlreadyVerifiedException(string email) : base($"User with email {email} already verified.")
-    {
-    }
+    public EmailAlreadyVerifiedException(string email)
+        : base($"User with email {email} already verified.") { }
 }

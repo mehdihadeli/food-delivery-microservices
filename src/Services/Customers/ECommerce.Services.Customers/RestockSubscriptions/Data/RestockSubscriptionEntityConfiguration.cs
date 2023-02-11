@@ -23,9 +23,7 @@ public class RestockSubscriptionEntityConfiguration : IEntityTypeConfiguration<R
 
         builder.Property(c => c.CustomerId);
 
-        builder.HasOne<Customer>()
-            .WithMany()
-            .HasForeignKey(x => x.CustomerId);
+        builder.HasOne<Customer>().WithMany().HasForeignKey(x => x.CustomerId);
 
         builder.OwnsOne(x => x.ProductInformation);
 
@@ -34,9 +32,9 @@ public class RestockSubscriptionEntityConfiguration : IEntityTypeConfiguration<R
             a =>
             {
                 // configuration just for  changing column name in db (instead of email_value)
-                a.Property(p => p.Value)
-                    .HasColumnName(nameof(RestockSubscription.Email).Underscore());
-            });
+                a.Property(p => p.Value).HasColumnName(nameof(RestockSubscription.Email).Underscore());
+            }
+        );
 
         builder.Property(x => x.Created).HasDefaultValueSql(EfConstants.DateAlgorithm);
     }

@@ -9,7 +9,8 @@ public static class UpdateUserStateEndpoint
 {
     internal static RouteHandlerBuilder MapUpdateUserStateEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapPut("/{userId:guid}/state", UpdateUserState)
+        return endpoints
+            .MapPut("/{userId:guid}/state", UpdateUserState)
             .AllowAnonymous()
             .Produces<RegisterUserResponse>(StatusCodes.Status204NoContent)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
@@ -23,7 +24,8 @@ public static class UpdateUserStateEndpoint
         Guid userId,
         UpdateUserStateRequest request,
         ICommandProcessor commandProcessor,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var command = new UpdateUserState(userId, request.UserState);
 

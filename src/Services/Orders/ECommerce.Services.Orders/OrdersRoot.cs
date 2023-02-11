@@ -1,5 +1,3 @@
 namespace ECommerce.Services.Orders;
 
-public class OrdersRoot
-{
-}
+public class OrdersRoot { }

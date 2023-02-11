@@ -24,19 +24,13 @@ internal class UsersConfigs : IModuleConfiguration
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        var usersVersionGroup = endpoints
-            .MapApiGroup(Tag)
-            .WithTags(Tag);
+        var usersVersionGroup = endpoints.MapApiGroup(Tag).WithTags(Tag);
 
         // create a new sub group for each version
-        var usersGroupV1 = usersVersionGroup
-            .MapGroup(UsersPrefixUri)
-            .HasApiVersion(1.0);
+        var usersGroupV1 = usersVersionGroup.MapGroup(UsersPrefixUri).HasApiVersion(1.0);
 
         // create a new sub group for each version
-        var usersGroupV2 = usersVersionGroup
-            .MapGroup(UsersPrefixUri)
-            .HasApiVersion(2.0);
+        var usersGroupV2 = usersVersionGroup.MapGroup(UsersPrefixUri).HasApiVersion(2.0);
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-7.0#route-groups
         // https://github.com/dotnet/aspnet-api-versioning/blob/main/examples/AspNetCore/WebApi/MinimalOpenApiExample/Program.cs

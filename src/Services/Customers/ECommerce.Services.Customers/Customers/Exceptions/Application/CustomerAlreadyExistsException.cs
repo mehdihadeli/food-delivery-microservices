@@ -8,9 +8,8 @@ public class CustomerAlreadyExistsException : AppException
     public long? CustomerId { get; }
     public Guid? IdentityId { get; }
 
-    public CustomerAlreadyExistsException(string message) : base(message, HttpStatusCode.Conflict)
-    {
-    }
+    public CustomerAlreadyExistsException(string message)
+        : base(message, HttpStatusCode.Conflict) { }
 
     public CustomerAlreadyExistsException(Guid identityId)
         : base($"Customer with IdentityId: '{identityId}' already exists.", HttpStatusCode.Conflict)

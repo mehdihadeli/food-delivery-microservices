@@ -1,5 +1,3 @@
 namespace ECommerce.Services.Customers;
 
-public class CustomersRoot
-{
-}
+public class CustomersRoot { }

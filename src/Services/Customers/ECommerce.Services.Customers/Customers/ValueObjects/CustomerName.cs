@@ -7,9 +7,7 @@ namespace ECommerce.Services.Customers.Customers.ValueObjects;
 public class CustomerName : ValueObject
 {
     // EF
-    private CustomerName()
-    {
-    }
+    private CustomerName() { }
 
     public string FirstName { get; private set; } = default!;
     public string LastName { get; private set; } = default!;
@@ -27,7 +25,7 @@ public class CustomerName : ValueObject
             throw new InvalidNameException(lastName);
         }
 
-        return new CustomerName {FirstName = firstName, LastName = lastName};
+        return new CustomerName { FirstName = firstName, LastName = lastName };
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

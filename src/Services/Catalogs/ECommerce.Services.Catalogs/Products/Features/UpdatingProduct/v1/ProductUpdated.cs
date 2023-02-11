@@ -24,8 +24,10 @@ public class ProductUpdatedHandler : IDomainEventHandler<ProductUpdated>
     {
         Guard.Against.Null(notification, nameof(notification));
 
-        var existed = await _dbContext.ProductsView
-            .FirstOrDefaultAsync(x => x.ProductId == notification.Product.Id, cancellationToken);
+        var existed = await _dbContext.ProductsView.FirstOrDefaultAsync(
+            x => x.ProductId == notification.Product.Id,
+            cancellationToken
+        );
 
         if (existed is not null)
         {

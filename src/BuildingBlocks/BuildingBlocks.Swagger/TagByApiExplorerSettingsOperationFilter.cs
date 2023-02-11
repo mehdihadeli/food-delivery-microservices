@@ -11,17 +11,20 @@ public class TagByApiExplorerSettingsOperationFilter : IOperationFilter
     {
         if (context.ApiDescription.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
         {
-            var apiExplorerSettings = controllerActionDescriptor
-                .ControllerTypeInfo.GetCustomAttributes(typeof(ApiExplorerSettingsAttribute), true)
-                .Cast<ApiExplorerSettingsAttribute>().FirstOrDefault();
+            var apiExplorerSettings = controllerActionDescriptor.ControllerTypeInfo
+                .GetCustomAttributes(typeof(ApiExplorerSettingsAttribute), true)
+                .Cast<ApiExplorerSettingsAttribute>()
+                .FirstOrDefault();
             if (apiExplorerSettings != null && !string.IsNullOrWhiteSpace(apiExplorerSettings.GroupName))
             {
-                operation.Tags = new List<OpenApiTag> {new() {Name = apiExplorerSettings.GroupName}};
+                operation.Tags = new List<OpenApiTag> { new() { Name = apiExplorerSettings.GroupName } };
             }
-            if (controllerActionDescriptor.EndpointMetadata.FirstOrDefault(x => x is ApiExplorerSettingsAttribute) is
-                ApiExplorerSettingsAttribute apiExplorerSettingsEndpoint)
+            if (
+                controllerActionDescriptor.EndpointMetadata.FirstOrDefault(x => x is ApiExplorerSettingsAttribute)
+                is ApiExplorerSettingsAttribute apiExplorerSettingsEndpoint
+            )
             {
-                operation.Tags = new List<OpenApiTag> {new() {Name = apiExplorerSettingsEndpoint.GroupName}};
+                operation.Tags = new List<OpenApiTag> { new() { Name = apiExplorerSettingsEndpoint.GroupName } };
             }
         }
     }

@@ -12,9 +12,7 @@ public class EnumSchemaFilter : ISchemaFilter
         if (context.Type.IsEnum)
         {
             model.Enum.Clear();
-            Enum.GetNames(context.Type)
-                .ToList()
-                .ForEach(n => model.Enum.Add(new OpenApiString(n)));
+            Enum.GetNames(context.Type).ToList().ForEach(n => model.Enum.Add(new OpenApiString(n)));
         }
     }
 }

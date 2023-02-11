@@ -13,7 +13,8 @@ public class MessagePersistenceDbContext : DbContext
 
     public DbSet<StoreMessage> StoreMessages => Set<StoreMessage>();
 
-    public MessagePersistenceDbContext(DbContextOptions<MessagePersistenceDbContext> options) : base(options)
+    public MessagePersistenceDbContext(DbContextOptions<MessagePersistenceDbContext> options)
+        : base(options)
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }

@@ -6,8 +6,7 @@ public class InMemoryStream
 {
     private readonly List<StreamEventData> _events = new();
 
-    public InMemoryStream(string name)
-        => StreamName = name;
+    public InMemoryStream(string name) => StreamName = name;
 
     public int Version { get; private set; } = -1;
 
@@ -15,8 +14,10 @@ public class InMemoryStream
 
     public void CheckVersion(ExpectedStreamVersion expectedVersion)
     {
-        if ((expectedVersion.Value == ExpectedStreamVersion.NoStream.Value && _events.Any() == false) ||
-            expectedVersion.Value == ExpectedStreamVersion.Any.Value)
+        if (
+            (expectedVersion.Value == ExpectedStreamVersion.NoStream.Value && _events.Any() == false)
+            || expectedVersion.Value == ExpectedStreamVersion.Any.Value
+        )
             return;
         if (expectedVersion.Value != Version)
             throw new System.Exception($"Wrong stream version. Expected {expectedVersion.Value}, actual {Version}");
@@ -25,7 +26,8 @@ public class InMemoryStream
     public void AppendEvents(
         ExpectedStreamVersion expectedVersion,
         int globalAllPosition,
-        IReadOnlyCollection<StreamEventData> events)
+        IReadOnlyCollection<StreamEventData> events
+    )
     {
         CheckVersion(expectedVersion);
 
@@ -44,10 +46,10 @@ public class InMemoryStream
 
     public IEnumerable<StreamEventData> GetEvents(StreamReadPosition from, int count)
     {
-        var selected = _events
-            .SkipWhile(x => x.GlobalEventPosition < from.Value);
+        var selected = _events.SkipWhile(x => x.GlobalEventPosition < from.Value);
 
-        if (count > 0) selected = selected.Take(count);
+        if (count > 0)
+            selected = selected.Take(count);
 
         return selected;
     }

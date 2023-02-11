@@ -13,9 +13,9 @@ public class CreateRestockSubscriptionTests : CustomerServiceIntegrationTestBase
 {
     public CreateRestockSubscriptionTests(
         SharedFixtureWithEfCoreAndMongo<Api.Program, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-        ITestOutputHelper outputHelper) : base(sharedFixture, outputHelper)
-    {
-    }
+        ITestOutputHelper outputHelper
+    )
+        : base(sharedFixture, outputHelper) { }
 
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
@@ -26,8 +26,11 @@ public class CreateRestockSubscriptionTests : CustomerServiceIntegrationTestBase
         var fakeCustomer = new FakeCustomer().Generate();
         await SharedFixture.InsertEfDbContextAsync(fakeCustomer);
 
-        var command =
-            new CreateRestockSubscription(fakeCustomer.Id, fakeProduct.Id, fakeCustomer.Email.Value ?? string.Empty);
+        var command = new CreateRestockSubscription(
+            fakeCustomer.Id,
+            fakeProduct.Id,
+            fakeCustomer.Email.Value ?? string.Empty
+        );
 
         // Act
         var createdCustomerSubscriptionResponse = await SharedFixture.SendAsync(command);
@@ -36,8 +39,12 @@ public class CreateRestockSubscriptionTests : CustomerServiceIntegrationTestBase
         createdCustomerSubscriptionResponse.RestockSubscriptionId.Should().BeGreaterThan(0);
         createdCustomerSubscriptionResponse.RestockSubscriptionId.Should().Be(command.Id);
 
-        var createdRestockSubscription = await SharedFixture.ExecuteEfDbContextAsync(async db =>
-            await db.RestockSubscriptions.SingleOrDefaultAsync(x => x.Id == createdCustomerSubscriptionResponse.RestockSubscriptionId));
+        var createdRestockSubscription = await SharedFixture.ExecuteEfDbContextAsync(
+            async db =>
+                await db.RestockSubscriptions.SingleOrDefaultAsync(
+                    x => x.Id == createdCustomerSubscriptionResponse.RestockSubscriptionId
+                )
+        );
 
         createdRestockSubscription.Should().NotBeNull();
         createdRestockSubscription!.Email.Value.Should().Be(command.Email);

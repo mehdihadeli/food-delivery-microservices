@@ -14,7 +14,8 @@ public interface IJwtService
         string? refreshToken = null,
         IReadOnlyList<Claim>? usersClaims = null,
         IReadOnlyList<string>? rolesClaims = null,
-        IReadOnlyList<string>? permissionsClaims = null);
+        IReadOnlyList<string>? permissionsClaims = null
+    );
 
     ClaimsPrincipal? GetPrincipalFromToken(string token);
 }

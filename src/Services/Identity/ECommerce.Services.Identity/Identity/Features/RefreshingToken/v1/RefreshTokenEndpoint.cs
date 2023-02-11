@@ -8,7 +8,8 @@ public static class RefreshTokenEndpoint
 {
     internal static RouteHandlerBuilder MapRefreshTokenEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapPost("/refresh-token", RefreshToken)
+        return endpoints
+            .MapPost("/refresh-token", RefreshToken)
             .RequireAuthorization()
             .Produces<RefreshTokenResponse>()
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
@@ -21,7 +22,8 @@ public static class RefreshTokenEndpoint
     private static async Task<IResult> RefreshToken(
         RefreshTokenRequest request,
         ICommandProcessor commandProcessor,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var command = new RefreshToken(request.AccessToken, request.RefreshToken);
 

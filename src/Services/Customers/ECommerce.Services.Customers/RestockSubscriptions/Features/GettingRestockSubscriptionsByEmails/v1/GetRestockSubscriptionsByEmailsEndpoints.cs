@@ -9,9 +9,10 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionsByEmails.v1;
 
-public class GetRestockSubscriptionsByEmailsEndpoints : EndpointBaseSync
-    .WithRequest<GetRestockSubscriptionsByEmailsRequest?>
-    .WithActionResult<IAsyncEnumerable<RestockSubscriptionDto>>
+public class GetRestockSubscriptionsByEmailsEndpoints
+    : EndpointBaseSync.WithRequest<GetRestockSubscriptionsByEmailsRequest?>.WithActionResult<
+        IAsyncEnumerable<RestockSubscriptionDto>
+    >
 {
     private readonly IQueryProcessor _queryProcessor;
 
@@ -28,14 +29,17 @@ public class GetRestockSubscriptionsByEmailsEndpoints : EndpointBaseSync
         Summary = "Get Restock Subscriptions by emails.",
         Description = "Get Restock Subscriptions by emails.",
         OperationId = "GetRestockSubscriptionsByEmails",
-        Tags = new[] {RestockSubscriptionsConfigs.Tag})]
+        Tags = new[] { RestockSubscriptionsConfigs.Tag }
+    )]
     [ApiVersion(1.0)]
     [HttpGet(
         $"{RestockSubscriptionsConfigs.RestockSubscriptionsUrl}/by-emails",
-        Name = "GetRestockSubscriptionsByEmails")]
+        Name = "GetRestockSubscriptionsByEmails"
+    )]
     [Authorize(Roles = CustomersConstants.Role.Admin)]
     public override ActionResult<IAsyncEnumerable<RestockSubscriptionDto>> Handle(
-        [FromQuery] GetRestockSubscriptionsByEmailsRequest? request)
+        [FromQuery] GetRestockSubscriptionsByEmailsRequest? request
+    )
     {
         Guard.Against.Null(request, nameof(request));
 

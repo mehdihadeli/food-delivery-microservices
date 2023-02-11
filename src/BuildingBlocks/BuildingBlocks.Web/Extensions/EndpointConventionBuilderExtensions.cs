@@ -7,10 +7,7 @@ namespace BuildingBlocks.Web.Extensions;
 
 public static class EndpointConventionBuilderExtensions
 {
-    public static RouteHandlerBuilder Produces(
-        this RouteHandlerBuilder builder,
-        int statusCode,
-        string description)
+    public static RouteHandlerBuilder Produces(this RouteHandlerBuilder builder, int statusCode, string description)
     {
         builder.WithOpenApi(operation =>
         {
@@ -30,7 +27,8 @@ public static class EndpointConventionBuilderExtensions
     public static RouteHandlerBuilder Produces<TResponse>(
         this RouteHandlerBuilder builder,
         int statusCode,
-        string description)
+        string description
+    )
     {
         builder.WithOpenApi(operation =>
         {

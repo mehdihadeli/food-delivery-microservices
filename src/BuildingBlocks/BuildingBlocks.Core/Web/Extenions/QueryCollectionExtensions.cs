@@ -9,9 +9,7 @@ namespace BuildingBlocks.Core.Web.Extenions;
 // https://khalidabuhakmeh.com/read-and-convert-querycollection-values-in-aspnet
 public static class QueryCollectionExtensions
 {
-    public static IEnumerable<T> All<T>(
-        this IQueryCollection collection,
-        string key)
+    public static IEnumerable<T> All<T>(this IQueryCollection collection, string key)
     {
         List<T> values = new List<T>();
         if (collection.TryGetValue(key, out var results))
@@ -38,7 +36,8 @@ public static class QueryCollectionExtensions
         this IQueryCollection collection,
         string key,
         T @default = default,
-        ParameterPick option = ParameterPick.First)
+        ParameterPick option = ParameterPick.First
+    )
     {
         var values = All<T>(collection, key);
         var value = @default;
@@ -56,10 +55,7 @@ public static class QueryCollectionExtensions
         return value ?? @default;
     }
 
-    public static T GetCollection<T>(
-        this IQueryCollection collection,
-        string key,
-        T @default = default)
+    public static T GetCollection<T>(this IQueryCollection collection, string key, T @default = default)
         where T : IEnumerable
     {
         var type = typeof(T).GetGenericArguments()[0];

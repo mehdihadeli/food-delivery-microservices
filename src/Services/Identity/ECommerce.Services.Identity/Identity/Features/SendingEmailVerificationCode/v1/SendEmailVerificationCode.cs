@@ -25,7 +25,8 @@ internal class SendEmailVerificationCodeCommandHandler : ICommandHandler<SendEma
         UserManager<ApplicationUser> userManager,
         IdentityContext context,
         IEmailSender emailSender,
-        ILogger<SendEmailVerificationCodeCommandHandler> logger)
+        ILogger<SendEmailVerificationCodeCommandHandler> logger
+    )
     {
         _userManager = userManager;
         _context = context;
@@ -47,14 +48,15 @@ internal class SendEmailVerificationCodeCommandHandler : ICommandHandler<SendEma
             throw new ConflictException("Email is already confirmed.");
         }
 
-        bool isExists = await _context.Set<EmailVerificationCode>()
-            .AnyAsync(
-                evc => evc.Email == request.Email && evc.SentAt.AddMinutes(5) > DateTime.Now, cancellationToken);
+        bool isExists = await _context
+            .Set<EmailVerificationCode>()
+            .AnyAsync(evc => evc.Email == request.Email && evc.SentAt.AddMinutes(5) > DateTime.Now, cancellationToken);
 
         if (isExists)
         {
             throw new BadRequestException(
-                "You already have an active code. Please wait! You may receive the code in your email. If not, please try again after sometimes.");
+                "You already have an active code. Please wait! You may receive the code in your email. If not, please try again after sometimes."
+            );
         }
 
         int randomNumber = RandomNumberGenerator.GetInt32(0, 1000000);

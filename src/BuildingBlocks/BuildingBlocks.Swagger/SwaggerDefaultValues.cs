@@ -54,10 +54,12 @@ public class SwaggerDefaultValues : IOperationFilter
                 parameter.Description = description.ModelMetadata?.Description;
             }
 
-            if (parameter.Schema.Default == null &&
-                description.DefaultValue != null &&
-                description.DefaultValue is not DBNull &&
-                description.ModelMetadata is ModelMetadata modelMetadata)
+            if (
+                parameter.Schema.Default == null
+                && description.DefaultValue != null
+                && description.DefaultValue is not DBNull
+                && description.ModelMetadata is ModelMetadata modelMetadata
+            )
             {
                 // REF: https://github.com/Microsoft/aspnet-api-versioning/issues/429#issuecomment-605402330
                 var json = JsonSerializer.Serialize(description.DefaultValue, modelMetadata.ModelType);

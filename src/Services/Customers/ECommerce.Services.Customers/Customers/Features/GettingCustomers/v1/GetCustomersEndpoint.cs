@@ -9,9 +9,8 @@ namespace ECommerce.Services.Customers.Customers.Features.GettingCustomers.v1;
 
 // https://www.youtube.com/watch?v=SDu0MA6TmuM
 // https://github.com/ardalis/ApiEndpoints
-public class GetCustomersEndpoint : EndpointBaseAsync
-    .WithRequest<GetCustomersRequest?>
-    .WithActionResult<GetCustomersResponse>
+public class GetCustomersEndpoint
+    : EndpointBaseAsync.WithRequest<GetCustomersRequest?>.WithActionResult<GetCustomersResponse>
 {
     private readonly IQueryProcessor _queryProcessor;
 
@@ -24,19 +23,22 @@ public class GetCustomersEndpoint : EndpointBaseAsync
     [SwaggerResponse(
         StatusCodes.Status200OK,
         "Customers response retrieved successfully (Success).",
-        typeof(GetCustomersResponse))]
+        typeof(GetCustomersResponse)
+    )]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized", typeof(StatusCodeProblemDetails))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid input (Bad Request)", typeof(StatusCodeProblemDetails))]
     [SwaggerOperation(
         Summary = "Getting All Customers",
         Description = "Getting All Customers",
         OperationId = "GetCustomers",
-        Tags = new[] {CustomersConfigs.Tag})]
+        Tags = new[] { CustomersConfigs.Tag }
+    )]
     [HttpGet(CustomersConfigs.CustomersPrefixUri, Name = "GetCustomers")]
     [ApiVersion(1.0)]
     public override async Task<ActionResult<GetCustomersResponse>> HandleAsync(
         [FromQuery] GetCustomersRequest? request,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         Guard.Against.Null(request, nameof(request));
 
@@ -53,7 +55,8 @@ public class GetCustomersEndpoint : EndpointBaseAsync
                     Sorts = request.Sorts,
                     PageSize = request.PageSize
                 },
-                cancellationToken);
+                cancellationToken
+            );
 
             return Ok(result);
         }

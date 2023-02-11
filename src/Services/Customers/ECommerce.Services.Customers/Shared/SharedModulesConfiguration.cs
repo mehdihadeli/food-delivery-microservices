@@ -8,6 +8,7 @@ namespace ECommerce.Services.Customers.Shared;
 public class SharedModulesConfiguration : ISharedModulesConfiguration
 {
     public const string CustomerModulePrefixUri = "api/v{version:apiVersion}/customers";
+
     public WebApplicationBuilder AddSharedModuleServices(WebApplicationBuilder builder)
     {
         builder.AddInfrastructure();
@@ -31,14 +32,22 @@ public class SharedModulesConfiguration : ISharedModulesConfiguration
 
     public IEndpointRouteBuilder MapSharedModuleEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/", (HttpContext context) =>
-        {
-            var requestId = context.Request.Headers.TryGetValue("X-Request-InternalCommandId", out var requestIdHeader)
-                ? requestIdHeader.FirstOrDefault()
-                : string.Empty;
+        endpoints
+            .MapGet(
+                "/",
+                (HttpContext context) =>
+                {
+                    var requestId = context.Request.Headers.TryGetValue(
+                        "X-Request-InternalCommandId",
+                        out var requestIdHeader
+                    )
+                        ? requestIdHeader.FirstOrDefault()
+                        : string.Empty;
 
-            return $"Customers Service Apis, RequestId: {requestId}";
-        }).ExcludeFromDescription();
+                    return $"Customers Service Apis, RequestId: {requestId}";
+                }
+            )
+            .ExcludeFromDescription();
 
         return endpoints;
     }

@@ -18,13 +18,12 @@ internal class RevokeRefreshTokenHandler : ICommandHandler<RevokeRefreshToken>
         _context = context;
     }
 
-    public async Task<Unit> Handle(
-        RevokeRefreshToken request,
-        CancellationToken cancellationToken)
+    public async Task<Unit> Handle(RevokeRefreshToken request, CancellationToken cancellationToken)
     {
         Guard.Against.Null(request, nameof(RevokeRefreshToken));
 
-        var refreshToken = await _context.Set<global::ECommerce.Services.Identity.Shared.Models.RefreshToken>()
+        var refreshToken = await _context
+            .Set<global::ECommerce.Services.Identity.Shared.Models.RefreshToken>()
             .FirstOrDefaultAsync(x => x.Token == request.RefreshToken, cancellationToken: cancellationToken);
 
         if (refreshToken == null)

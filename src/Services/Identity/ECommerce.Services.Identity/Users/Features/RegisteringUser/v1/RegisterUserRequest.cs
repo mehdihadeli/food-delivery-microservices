@@ -6,7 +6,8 @@ public record RegisterUserRequest(
     string UserName,
     string Email,
     string Password,
-    string ConfirmPassword)
+    string ConfirmPassword
+)
 {
     public IEnumerable<string> Roles { get; init; } = new List<string> { IdentityConstants.Role.User };
 }

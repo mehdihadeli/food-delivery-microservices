@@ -6,9 +6,6 @@ namespace ECommerce.Services.Identity.Identity.Exceptions;
 
 public class RefreshTokenNotFoundException : AppException
 {
-    public RefreshTokenNotFoundException(RefreshToken? refreshToken) : base(
-        "Refresh token not found.",
-        HttpStatusCode.NotFound)
-    {
-    }
+    public RefreshTokenNotFoundException(RefreshToken? refreshToken)
+        : base("Refresh token not found.", HttpStatusCode.NotFound) { }
 }

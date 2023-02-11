@@ -1,0 +1,58 @@
+# https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
+# https://doug.sh/posts/using-composite-actions-with-github-actions/
+# https://wallis.dev/blog/composite-github-actions
+
+name: "Back Merge branches"
+description: "Back Merge branches"
+
+# Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+inputs:
+  # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
+  token:
+    description: A Github PAT
+    default: ${{ github.token }}
+  source-branch:
+    description: Source branch
+    required: true
+
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
+runs:
+  using: "composite"
+
+  steps:
+      - name: Call Composite Action checkout
+        uses: ./.github/actions/checkout-code
+        id: checkout-step
+
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
+      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md#keep-a-branch-up-to-date-with-another
+      - name: Merge Branches
+        shell: bash
+        run: |
+          if [ ${{ inputs.source-branch }} = 'main' ]; then
+              echo "back-merge main branch to develop protected branch through pull-request"
+              git checkout develop
+              git fetch origin main:main
+              git reset --hard main
+          elif [ ${{ inputs.source-branch }} = 'develop' ]; then
+              ./back-merge.sh  ${{ github.ref_name }}
+              echo "back-merge develop branch to all features"
+          elif [ ${{ inputs.source-branch }} = 'beta' ]; then
+          echo "back-merge for beta branch"
+              echo "...."
+          elif [ ${{ inputs.source-branch }} = 'preview' ]; then
+              echo "back-merge for preview branch"
+              echo "...."
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          delete-branch: true
+          token: ${{ inputs.token }}
+          author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          commit-message: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
+          title: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
+          branch: back-merge-${{ inputs.source-branch }}

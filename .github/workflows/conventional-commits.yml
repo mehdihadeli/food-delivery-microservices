@@ -21,45 +21,44 @@ concurrency:
 
 jobs:
 
-  auto-labeling:
-     runs-on: ubuntu-latest
-     permissions:
-        # Setting up permissions in the workflow to limit the scope of what it can do. Optional!
-        contents: read
-        pull-requests: write
-        statuses: write
-        checks: write
-     steps:
-       - uses: fuxingloh/multi-labeler@v1
-         name: conventional-commits-pull-request-labeler
-         if: success()
-         with:
-           github-token: ${{secrets.GITHUB_TOKEN}} # optional, default to '${{ github.token }}'
-           config-path: .github/multi-labeler.yml # optional, default to '.github/labeler.yml'
-
-      #      - uses: release-drafter/release-drafter@v5
-      #        name: release-drafter auto labeler
-      #        with:
-      #          config-name: release-drafter.yml
-      #          disable-releaser: true # only run auto-labeler for PRs
-      #        env:
-      #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
   conventional-commits:
     runs-on: ubuntu-latest
-    needs: auto-labeling
     steps:
-      - name: check-pull-request-conventional-commits
+      - name: Check Pull Request Title Conventional Commits
         uses: amannn/action-semantic-pull-request@v5
+        if: always()
+        id: check-pull-request-title-conventional-commits
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Comments the error message from the above lint_pr_title action
+      - if: ${{ always() && steps.check-pull-request-title-conventional-commits.outputs.error_message != null}}
+        name: Comment on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-title-lint-error
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          message: |
+            We require all PRs to follow [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/).
+            More details 👇🏼
+            ```
+             ${{ steps.check-pull-request-title-conventional-commits.outputs.error_message}}
+            ```
+        # deletes the error comment if the title is correct
+      - if: ${{ steps.check-pull-request-title-conventional-commits.outputs.error_message == null }}
+        name: delete the comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-title-lint-error
+          delete: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs
         # https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow
       - name: check-conventional-commits-labels
         uses: docker://agilepathway/pull-request-label-checker:latest
-        if: success()
+        if: always()
         with:
           any_of : feature,bug,enhancement,deprecated,security,documentation,build,ci/cd,chore,performance,formatting,dependencies
           repo_token: ${{ secrets.GITHUB_TOKEN }}
+

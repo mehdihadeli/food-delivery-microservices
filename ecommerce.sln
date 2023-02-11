@@ -115,6 +115,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution_items", "solution_
 		set-output-next-version.sh = set-output-next-version.sh
 		commitlint.config.js = commitlint.config.js
 		package.json = package.json
+		CONTRIBUTION.md = CONTRIBUTION.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployments", "deployments", "{82164318-DB62-4A9E-8599-16931835EA2C}"
@@ -179,6 +180,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\identity.yml = .github\workflows\identity.yml
 		.github\workflows\customers.yml = .github\workflows\customers.yml
 		.github\workflows\app-version.yml = .github\workflows\app-version.yml
+		.github\workflows\first-interaction.yml = .github\workflows\first-interaction.yml
+		.github\workflows\labeler.yml = .github\workflows\labeler.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{22F07A80-31B8-4196-8DCD-CB6E3F888BEA}"

@@ -309,9 +309,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "formatting", "formatting", 
 		.github\actions\formatting\action.yml = .github\actions\formatting\action.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "checkout", "checkout", "{72AEC7D5-E3CE-47DA-AB8A-CBF9BD5984E3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "checkout-code", "checkout-code", "{72AEC7D5-E3CE-47DA-AB8A-CBF9BD5984E3}"
 	ProjectSection(SolutionItems) = preProject
-		.github\actions\checkout\action.yml = .github\actions\checkout\action.yml
+		.github\actions\checkout-code\action.yml = .github\actions\checkout-code\action.yml
 	EndProjectSection
 EndProject
 

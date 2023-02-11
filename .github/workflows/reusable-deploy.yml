@@ -69,7 +69,7 @@ jobs:
         fi
 
     - name: Call Composite Action checkout
-      uses: ./.github/actions/checkout
+      uses: ./.github/actions/checkout-code
       id: checkout-step
 
 #    - name: Call Composite Action deploy-azure-image

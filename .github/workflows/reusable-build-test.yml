@@ -75,7 +75,7 @@ jobs:
           echo "tests-path is: ${{ inputs.tests-path }}"
 
       - name: Call Composite Action checkout
-        uses: ./.github/actions/checkout
+        uses: ./.github/actions/checkout-code
         id: checkout-step
 
       - name: Call Composite Action formatting

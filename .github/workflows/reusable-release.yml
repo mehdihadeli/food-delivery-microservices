@@ -49,7 +49,7 @@ jobs:
           echo "github.head_ref is: ${{ github.head_ref }}"
 
       - name: Call Composite Action checkout
-        uses: ./.github/actions/checkout
+        uses: ./.github/actions/checkout-code
         id: checkout-step
 
       - name: Setup Node.js

@@ -87,7 +87,7 @@ jobs:
           fi
 
       - name: Call Composite Action checkout
-        uses: ./.github/actions/checkout
+        uses: ./.github/actions/checkout-code
         id: checkout-step
 
       # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
@@ -144,7 +144,7 @@ jobs:
           fi
 
       - name: Call Composite Action checkout
-        uses: ./.github/actions/checkout
+        uses: ./.github/actions/checkout-code
         id: checkout-step
 
       # https://stackoverflow.com/questions/69839851/github-actions-copy-git-user-name-and-user-email-from-last-commit

@@ -53,6 +53,7 @@ tasks:
     # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-run#options
     command: |
       cd src/Services/Catalogs/ECommerce.Services.Catalogs.Api
+      # hot reload doesn't work correctly with --no-build and --no-restore and after each change will restart the app with hot reload app should not be restarted
       dotnet watch run -lp Catalogs.Api.Http
 
   - name: Run Identity in Watch Mode
@@ -69,6 +70,7 @@ tasks:
       gp sync-await build-bundle  # wait for the above 'init' to finish
     command: |
       cd src/Services/Customers/ECommerce.Services.Customers.Api
+      # hot reload doesn't work correctly with --no-build and --no-restore and after each change will restart the app with hot reload app should not be restarted
       dotnet watch run -lp Customers.Api.Http
 
 # https://www.gitpod.io/docs/configure/projects/prebuilds#github-specific-configuration

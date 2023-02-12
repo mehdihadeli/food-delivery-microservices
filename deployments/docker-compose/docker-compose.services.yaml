@@ -16,6 +16,9 @@ services:
     build:
       args:
         Version: "1"
+      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+      # we can use a .dockerignore file to exclude some files or directories from build context
+      # https://docs.docker.com/build/building/context/
       context: ../../
       dockerfile: src/Services/Catalogs/Dockerfile
     container_name: ecommerce-catalogs
@@ -32,6 +35,9 @@ services:
     build:
       args:
         Version: "1"
+      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+      # we can use a .dockerignore file to exclude some files or directories from build context
+      # https://docs.docker.com/build/building/context/
       context: ../../
       dockerfile: src/Services/Identity/Dockerfile
     container_name: ecommerce-identity
@@ -46,6 +52,9 @@ services:
     build:
       args:
         Version: "1"
+      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+      # we can use a .dockerignore file to exclude some files or directories from build context
+      # https://docs.docker.com/build/building/context/
       context: ../../
       dockerfile: src/Services/Customers/Dockerfile
     container_name: ecommerce-customers

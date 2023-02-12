@@ -28,8 +28,7 @@
       "workingDirectory": "$(ProjectDir)",
       "hotReloadEnabled": true,
       "hotReloadProfile": "aspnetcore",
-      "commandLineArgs": "watch -lp Identity.Api.Http",
-      "launchBrowser": true,
+      "commandLineArgs": "watch run -lp Identity.Api.Http",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

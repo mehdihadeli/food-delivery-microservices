@@ -28,8 +28,8 @@
       "executablePath": "dotnet",
       "workingDirectory": "$(ProjectDir)",
       "hotReloadEnabled": true,
-      "hotReloadProfile": "aspnetcore",
-      "commandLineArgs": "watch -lp Catalogs.Api.Http",
+      "hotReloadProfile" : "aspnetcore",
+      "commandLineArgs": "watch run -lp Catalogs.Api.Http",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

@@ -25,12 +25,10 @@ vscode:
 
 # https://www.gitpod.io/docs/configure/workspaces/tasks#execution-order
 tasks:
-  - name: Restore & Build
+  - name: Restore dotnet tool & Certs
     init: |
       dotnet dev-certs https
       dotnet tool restore
-      dotnet restore
-      dotnet build
       gp sync-done build-bundle
 
   # each task creates a new terminal window
@@ -55,7 +53,7 @@ tasks:
     # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-run#options
     command: |
       cd src/Services/Catalogs/ECommerce.Services.Catalogs.Api
-      dotnet run --launch-profile "Catalogs.Api.Watch"
+      dotnet watch run -lp Catalogs.Api.Http
 
   - name: Run Identity in Watch Mode
     init: |
@@ -63,7 +61,7 @@ tasks:
       gp sync-await build-bundle  # wait for the above 'init' to finish
     command: |
       cd src/Services/Identity/ECommerce.Services.Identity.Api
-      dotnet run --launch-profile "Identity.Api.Watch"
+      dotnet watch run -lp Identity.Api.Http
 
   - name: Run Customers in Watch Mode
     init: |
@@ -71,7 +69,7 @@ tasks:
       gp sync-await build-bundle  # wait for the above 'init' to finish
     command: |
       cd src/Services/Customers/ECommerce.Services.Customers.Api
-      dotnet run --launch-profile "Customers.Api.Watch"
+      dotnet watch run -lp Customers.Api.Http
 
 # https://www.gitpod.io/docs/configure/projects/prebuilds#github-specific-configuration
 github:

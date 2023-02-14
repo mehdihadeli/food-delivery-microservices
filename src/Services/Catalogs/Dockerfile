@@ -69,5 +69,7 @@ EXPOSE 80
 ENV ASPNETCORE_URLS http://*:80
 ENV ASPNETCORE_ENVIRONMENT docker
 
+RUN ls
+
 #https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
 ENTRYPOINT ["dotnet", "ECommerce.Services.Catalogs.Api.dll"]

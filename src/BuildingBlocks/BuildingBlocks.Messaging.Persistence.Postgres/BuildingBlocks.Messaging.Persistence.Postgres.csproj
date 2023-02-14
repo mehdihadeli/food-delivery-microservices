@@ -1,14 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
-    <ProjectReference Include="..\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj"/>
+    <ProjectReference Include="..\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj"/>
   </ItemGroup>
 
   <PropertyGroup>
@@ -16,7 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations" />
+    <Folder Include="Migrations"/>
+  </ItemGroup>
+
+  <!--Set CopyToPublishDirectory to never for prevent copy and conflict with application api appsettings.json, always application appsettings.json should copy to the publish directory-->
+  <ItemGroup>
+    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never"/>
   </ItemGroup>
 
 </Project>

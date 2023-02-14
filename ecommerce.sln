@@ -127,7 +127,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker-compose", "docker-co
 		deployments\docker-compose\docker-compose.infrastructure.yaml = deployments\docker-compose\docker-compose.infrastructure.yaml
 		deployments\docker-compose\docker-compose.override.yaml = deployments\docker-compose\docker-compose.override.yaml
 		deployments\docker-compose\docker-compose.services.yaml = deployments\docker-compose\docker-compose.services.yaml
-		deployments\docker-compose\docker-compose.services-development.yaml = deployments\docker-compose\docker-compose.services-development.yaml
 		deployments\docker-compose\docker-compose.yaml = deployments\docker-compose\docker-compose.yaml
 		deployments\docker-compose\otel-collector-config.yaml = deployments\docker-compose\otel-collector-config.yaml
 	EndProjectSection

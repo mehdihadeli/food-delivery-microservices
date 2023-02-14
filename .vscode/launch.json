@@ -1,0 +1,229 @@
+{
+  "configurations": [
+    //https://jasonwatmore.com/post/2021/06/24/vs-code-net-debug-a-net-web-app-in-visual-studio-code
+    //https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+    //https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
+    //https://www.youtube.com/watch?v=k0hpant9wXo
+    {
+      "name": "launch: catalogs service",
+      "type": "coreclr",
+      "request": "launch",
+      //https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#launchsettingsjson-support
+      "launchSettingsProfile": "Catalogs.Api.Http",
+      "preLaunchTask": "build: catalogs service",
+      "internalConsoleOptions": "openOnSessionStart",
+      "launchBrowser": {
+        "enabled": true,
+        "args": "${auto-detect-url}",
+        "windows": {
+          "command": "cmd.exe",
+          "args": "/C start ${auto-detect-url}"
+        },
+        "osx": {
+          "command": "open"
+        },
+        "linux": {
+          "command": "xdg-open"
+        }
+      },
+      "program": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/bin/Debug/net7.0/ECommerce.Services.Catalogs.Api.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api",
+      "console": "externalTerminal",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      }
+    },
+    //https://github.com/Trottero/dotnet-watch-attach
+    //https://github.com/murugaratham/vscode-dotnet-watch
+    {
+      "type": "dotnetwatchattach",
+      "request": "launch",
+      "name": "watch: catalogs service",
+      "args": { // Args to pass to coreclr attach
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "task": "watch: catalogs service", // Label of watch task in tasks.json
+      "program": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/bin/Debug/net7.0/ECommerce.Services.Catalogs.Api.dll"
+    },
+    //https://code.visualstudio.com/docs/containers/debug-common
+    {
+      "name": "launch docker: catalogs-dev in docker",
+      "type": "docker",
+      "preLaunchTask": "docker-run: catalogs-dev",
+      "request": "launch",
+      "removeContainerAfterDebug": false,
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
+      }
+    },
+    {
+      "name": "launch docker: catalogs-release in docker",
+      "type": "docker",
+      "preLaunchTask": "docker-run catalogs-release",
+      "request": "launch",
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
+      }
+    },
+    {
+      "name": "launch: customers service",
+      "type": "coreclr",
+      "request": "launch",
+      //https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#launchsettingsjson-support
+      "launchSettingsProfile": "Customers.Api.Http",
+      "internalConsoleOptions": "openOnSessionStart",
+      "launchBrowser": {
+        "enabled": true,
+        "args": "${auto-detect-url}",
+        "windows": {
+          "command": "cmd.exe",
+          "args": "/C start ${auto-detect-url}"
+        },
+        "osx": {
+          "command": "open"
+        },
+        "linux": {
+          "command": "xdg-open"
+        }
+      },
+      "preLaunchTask": "build: customers service",
+      "program": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/bin/Debug/net7.0/ECommerce.Services.Customers.Api.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api",
+      "console": "externalTerminal",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    //https://github.com/Trottero/dotnet-watch-attach
+    //https://github.com/murugaratham/vscode-dotnet-watch
+    {
+      "type": "dotnetwatchattach",
+      "request": "launch",
+      "name": "watch: customers service",
+      "args": { // Args to pass to coreclr attach
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "task": "watch: customers service", // Label of watch task in tasks.json
+      "program": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/bin/Debug/net7.0/ECommerce.Services.Customers.Api.dll"
+    },
+    //https://code.visualstudio.com/docs/containers/debug-common
+    {
+      "name": "launch docker: customers-dev in docker",
+      "type": "docker",
+      "preLaunchTask": "docker-run: customers-dev",
+      "request": "launch",
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj"
+      }
+    },
+    //https://code.visualstudio.com/docs/containers/debug-common
+    {
+      "name": "launch docker: customers-release in docker",
+      "type": "docker",
+      "preLaunchTask": "docker-run: customers-release",
+      "request": "launch",
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj"
+      }
+    },
+    {
+      "name": "launch: identity service",
+      "type": "coreclr",
+      "request": "launch",
+      //https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#launchsettingsjson-support
+      "launchSettingsProfile": "Identity.Api.Http",
+      "preLaunchTask": "build identity service",
+      "internalConsoleOptions": "openOnSessionStart",
+      "launchBrowser": {
+        "enabled": true,
+        "args": "${auto-detect-url}",
+        "windows": {
+          "command": "cmd.exe",
+          "args": "/C start ${auto-detect-url}"
+        },
+        "osx": {
+          "command": "open"
+        },
+        "linux": {
+          "command": "xdg-open"
+        }
+      },
+      "program": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/bin/Debug/net7.0/ECommerce.Services.Identity.Api.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Services/Services/ECommerce.Services.Services.Api",
+      "console": "externalTerminal",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      }
+    },
+    //https://github.com/Trottero/dotnet-watch-attach
+    //https://github.com/murugaratham/vscode-dotnet-watch
+    {
+      "type": "dotnetwatchattach",
+      "request": "launch",
+      "name": "watch: identity service",
+      "args": { // Args to pass to coreclr attach
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "task": "watch: identity service", // Label of watch task in tasks.json
+      "program": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/bin/Debug/net7.0/ECommerce.Services.Identity.Api.dll"
+    },
+    //https://code.visualstudio.com/docs/containers/debug-common
+    {
+      "name": "launch docker: identity-dev in docker",
+      "type": "docker",
+      "preLaunchTask": "docker-run: identity-dev",
+      "request": "launch",
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj"
+      }
+    },
+    //https://code.visualstudio.com/docs/containers/debug-common
+    {
+      "name": "launch docker: identity-release in docker",
+      "type": "docker",
+      "preLaunchTask": "docker-run: identity-release",
+      "request": "launch",
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj"
+      }
+    },
+    {
+      "name": "attach: .net core",
+      "type": "coreclr",
+      "request": "attach"
+    },
+    {
+      "name": "attach docker: .net core",
+      "type": "docker",
+      "request": "attach",
+      "platform": "netCore",
+      "sourceFileMap": {
+        "/": "${workspaceFolder}"
+      }
+    }
+  ]
+}

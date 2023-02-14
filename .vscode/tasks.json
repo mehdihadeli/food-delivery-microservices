@@ -1,0 +1,651 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  // https://code.visualstudio.com/docs/editor/tasks
+  // https://code.visualstudio.com/docs/editor/tasks-appendix
+  //https://jasonwatmore.com/post/2021/06/24/vs-code-net-debug-a-net-web-app-in-visual-studio-code
+  //https://github.com/thehaseebahmed/vscode-dotnet-docker-debug
+  //https://www.youtube.com/watch?v=k0hpant9wXo
+  "tasks": [
+    {
+      "label": "build: catalogs service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://stackoverflow.com/questions/59830506/how-to-setup-an-auto-watch-run-for-net-core-3-1-projects-using-visual-studio-co
+    //https://jasonwatmore.com/post/2021/06/24/vs-code-net-debug-a-net-web-app-in-visual-studio-code
+    {
+      "label": "watch: catalogs service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/"
+      },
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://code.visualstudio.com/docs/containers/reference
+    //https://code.visualstudio.com/docs/containers/reference#_build-task-reference
+    //https://code.visualstudio.com/docs/containers/reference#_net-dockerbuild
+    //https://github.com/thehaseebahmed/vscode-dotnet-docker-debug
+    //https://www.freecodecamp.org/news/how-to-debug-dockerized-net-core-apps-in-vs-code/
+    //'docker-build' is custom task type produced by vscode docker extension
+    {
+      "label": "docker-build: catalogs-dev",
+      "type": "docker-build",
+      "dependsOn": [
+        "build: catalogs service"
+      ],
+      "platform": "netCore",
+      //https://code.visualstudio.com/docs/containers/reference#_dockerbuild-object-properties
+      "dockerBuild": {
+        "dockerfile": "${workspaceFolder}/src/Services/Catalogs/Dockerfile",
+        "context": "${workspaceFolder}",
+        "tag": "catalogs:dev",
+        //https://docs.docker.com/engine/reference/commandline/build/#options
+        //"customOptions": "--no-cache",
+        "pull": true
+      },
+      //https://code.visualstudio.com/docs/containers/reference#_netcore-object-properties-dockerbuild-task
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
+      }
+    },
+    {
+      "label": "docker-build: catalogs-release",
+      "type": "docker-build",
+      "dependsOn": [
+        "build: catalogs service"
+      ],
+      "platform": "netCore",
+      //https://code.visualstudio.com/docs/containers/reference#_dockerbuild-object-properties
+      "dockerBuild": {
+        "dockerfile": "${workspaceFolder}/src/Services/Catalogs/Dockerfile",
+        "context": "${workspaceFolder}",
+        "tag": "catalogs:latest",
+        //https://docs.docker.com/engine/reference/commandline/build/#options
+        //"customOptions": "--no-cache",
+        "pull": true
+      },
+      //https://code.visualstudio.com/docs/containers/reference#_netcore-object-properties-dockerbuild-task
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
+      }
+    },
+    //https://www.freecodecamp.org/news/how-to-debug-dockerized-net-core-apps-in-vs-code/
+    //https://code.visualstudio.com/docs/containers/reference#_docker-run-task
+    //https://code.visualstudio.com/docs/containers/reference#_net-dockerrun
+    //https://code.visualstudio.com/docs/containers/reference#_run-task-reference
+    //docker container run --detach --tty --name "catalogs-dev"
+    {
+      "label": "docker-run: catalogs-dev",
+      "type": "docker-run",
+      "platform": "netCore",
+      "dependsOn": [
+        "docker-build: catalogs-dev"
+      ],
+      //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
+      "dockerRun": {
+        //https://docs.docker.com/engine/reference/commandline/network_create/#connect-containers
+        // if network doen't exists, start infrastructure docker-compose for creating this network or create this network manually
+        // `ecommerce` network is uses by our 'infrastructure docker-compose' so our container should be in the same network for connecting to infrastructure containers host name (resolving this host name to container ip automaticcly), if not exists should be created be created
+        "network": "ecommerce",
+        "ports": [
+          {
+            "containerPort": 80,
+            "hostPort": 4000,
+            "protocol": "tcp"
+          }
+        ],
+        //The command to run upon starting the container.
+        "command": "",
+        //https://docs.docker.com/engine/reference/commandline/run/#options
+        //Any extra parameters to add before the image argument.
+        "customOptions": "-it ",
+        "remove": true,
+        "containerName": "catalogs-dev"
+        //Default Image: The tag from a dependent docker-build task (if one exists) or derived from the base name of the root workspace folder.
+        //"image": "catalogs:dev",
+        //https://code.visualstudio.com/docs/containers/reference#_net-dockerrun
+        // Default volumes: Adds the following volumes as required: the local application folder, the source folder, the debugger folder, the NuGet package folder, and NuGet fallback folder.
+      },
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj",
+        "enableDebugging": true
+      }
+    },
+    {
+      "label": "docker-run: catalogs-release",
+      "type": "docker-run",
+      "platform": "netCore",
+      "dependsOn": [
+        "docker-build: catalogs-release"
+      ],
+      //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
+      "dockerRun": {
+        //https://docs.docker.com/engine/reference/commandline/network_create/#connect-containers
+        // if network doen't exists, start infrastructure docker-compose for creating this network or create this network manually
+        // `ecommerce` network is uses by our 'infrastructure docker-compose' so our container should be in the same network for connecting to infrastructure containers host name (resolving this host name to container ip automaticcly), if not exists should be created be created
+        "network": "ecommerce",
+        "ports": [
+          {
+            "containerPort": 80,
+            "hostPort": 4000,
+            "protocol": "tcp"
+          }
+        ],
+        "command": "",
+        "remove": true,
+        //https://docs.docker.com/engine/reference/commandline/run/#options
+        //Any extra parameters to add before the image argument.
+        "customOptions": "-it",
+        "containerName": "catalogs-release",
+        //Default Image: The tag from a dependent docker-build task (if one exists) or derived from the base name of the root workspace folder.
+        //"image": "catalogs:latest",
+        //https://code.visualstudio.com/docs/containers/reference#_net-dockerrun
+        // Default volumes: Adds the following volumes as required: the local application folder, the source folder, the debugger folder, the NuGet package folder, and NuGet fallback folder.
+      },
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj",
+        "enableDebugging": true
+      }
+    },
+    {
+      "label": "unit test: catalogs service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/tests/Services/Catalogs/ECommerce.Services.Catalogs.UnitTests/ECommerce.Services.Catalogs.UnitTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "integrtion test: catalogs service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.IntegrationTests/ECommerce.Services.Catalogs.IntegrationTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "end-to-end test: catalogs service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.EndToEndTests/ECommerce.Services.Catalogs.EndToEndTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "build: customers service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://stackoverflow.com/questions/59830506/how-to-setup-an-auto-watch-run-for-net-core-3-1-projects-using-visual-studio-co
+    //https://jasonwatmore.com/post/2021/06/24/vs-code-net-debug-a-net-web-app-in-visual-studio-code
+    {
+      "label": "watch: customers service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/"
+      },
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://code.visualstudio.com/docs/containers/reference
+    //https://code.visualstudio.com/docs/containers/reference#_build-task-reference
+    //https://code.visualstudio.com/docs/containers/reference#_net-dockerbuild
+    //https://github.com/thehaseebahmed/vscode-dotnet-docker-debug
+    //https://www.freecodecamp.org/news/how-to-debug-dockerized-net-core-apps-in-vs-code/
+    // custom task type produced by vscode docker extenion
+    {
+      "label": "docker-build: customers-dev",
+      "type": "docker-build",
+      "platform": "netCore",
+      "dependsOn": [
+        "build: customers service"
+      ],
+      //https://code.visualstudio.com/docs/containers/reference#_dockerbuild-object-properties
+      "dockerBuild": {
+        "dockerfile": "${workspaceFolder}/src/Services/Customers/Dockerfile",
+        "context": "${workspaceFolder}",
+        "tag": "customers:dev",
+        "target": "base",
+        "pull": true
+      },
+      //https://code.visualstudio.com/docs/containers/reference#_netcore-object-properties-dockerbuild-task
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj"
+      }
+    },
+    {
+      "label": "docker-build: customers-release",
+      "type": "docker-build",
+      "platform": "netCore",
+      "dependsOn": [
+        "build: customers service"
+      ],
+      //https://code.visualstudio.com/docs/containers/reference#_dockerbuild-object-properties
+      "dockerBuild": {
+        "dockerfile": "${workspaceFolder}/src/Services/Customers/Dockerfile",
+        "context": "${workspaceFolder}",
+        "tag": "customers:latest",
+        "target": "base",
+        "pull": true
+      },
+      //https://code.visualstudio.com/docs/containers/reference#_netcore-object-properties-dockerbuild-task
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj"
+      }
+    },
+    //https://www.freecodecamp.org/news/how-to-debug-dockerized-net-core-apps-in-vs-code/
+    //https://code.visualstudio.com/docs/containers/reference#_docker-run-task
+    //https://code.visualstudio.com/docs/containers/reference#_net-dockerrun
+    //https://code.visualstudio.com/docs/containers/reference#_run-task-reference
+    {
+      "label": "docker-run: customers-dev",
+      "type": "docker-run",
+      "platform": "netCore",
+      "dependsOn": [
+        "docker-build: customers-dev"
+      ],
+      //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
+      "dockerRun": {
+        "containerName": "customers-dev",
+        //Default image: The tag from a dependent docker-build task (if one exists) or derived from the base name of the root workspace folder.
+        //"image": "customers:dev"
+      },
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj",
+        "enableDebugging": true
+      }
+    },
+    {
+      "label": "docker-run: customers-release",
+      "type": "docker-run",
+      "platform": "netCore",
+      "dependsOn": [
+        "docker-build: customers-release"
+      ],
+      //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
+      "dockerRun": {
+        "containerName": "customers-release",
+        //Default: The tag from a dependent docker-build task (if one exists) or derived from the base name of the root workspace folder.
+        "image": "customers:latest"
+      },
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj",
+        "enableDebugging": true
+      }
+    },
+    {
+      "label": "unit test: customers service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/tests/Services/Customers/ECommerce.Services.Customers.UnitTests/ECommerce.Services.Customers.UnitTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "integrtion test: customers service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.IntegrationTests/ECommerce.Services.Customers.IntegrationTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "end-to-end test: customers service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.EndToEndTests/ECommerce.Services.Customers.EndToEndTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "build: identity service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://stackoverflow.com/questions/59830506/how-to-setup-an-auto-watch-run-for-net-core-3-1-projects-using-visual-studio-co
+    //https://jasonwatmore.com/post/2021/06/24/vs-code-net-debug-a-net-web-app-in-visual-studio-code
+    {
+      "label": "watch: identity service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/"
+      },
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://code.visualstudio.com/docs/containers/reference
+    //https://code.visualstudio.com/docs/containers/reference#_build-task-reference
+    //https://code.visualstudio.com/docs/containers/reference#_net-dockerbuild
+    //https://github.com/thehaseebahmed/vscode-dotnet-docker-debug
+    //https://www.freecodecamp.org/news/how-to-debug-dockerized-net-core-apps-in-vs-code/
+    // custom task type produced by vscode docker extenion
+    {
+      "label": "docker-build: identity-dev",
+      "type": "docker-build",
+      "platform": "netCore",
+      //https://code.visualstudio.com/docs/containers/reference#_dockerbuild-object-properties
+      "dockerBuild": {
+        "dockerfile": "${workspaceFolder}/src/Services/Identity/Dockerfile",
+        "context": "${workspaceFolder}",
+        "tag": "identity:dev",
+        "target": "base",
+        "pull": true
+      },
+      //https://code.visualstudio.com/docs/containers/reference#_netcore-object-properties-dockerbuild-task
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj"
+      }
+    },
+    {
+      "label": "docker-build: identity-release",
+      "type": "docker-build",
+      "platform": "netCore",
+      //https://code.visualstudio.com/docs/containers/reference#_dockerbuild-object-properties
+      "dockerBuild": {
+        "dockerfile": "${workspaceFolder}/src/Services/Identity/Dockerfile",
+        "context": "${workspaceFolder}",
+        "tag": "identity:latest",
+        "target": "base",
+        "pull": true
+      },
+      //https://code.visualstudio.com/docs/containers/reference#_netcore-object-properties-dockerbuild-task
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj"
+      }
+    },
+    //https://www.freecodecamp.org/news/how-to-debug-dockerized-net-core-apps-in-vs-code/
+    //https://code.visualstudio.com/docs/containers/reference#_docker-run-task
+    //https://code.visualstudio.com/docs/containers/reference#_net-dockerrun
+    //https://code.visualstudio.com/docs/containers/reference#_run-task-reference
+    {
+      "label": "docker-run: identity-dev",
+      "type": "docker-run",
+      "platform": "netCore",
+      "dependsOn": [
+        "docker-build: identity-dev"
+      ],
+      //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
+      "dockerRun": {
+        "containerName": "identity-dev",
+        //Default image: The tag from a dependent docker-build task (if one exists) or derived from the base name of the root workspace folder.
+      },
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj",
+        "enableDebugging": true
+      }
+    },
+    {
+      "label": "docker-run: identity-release",
+      "type": "docker-run",
+      "platform": "netCore",
+      "dependsOn": [
+        "docker-build: identity-release"
+      ],
+      //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
+      "dockerRun": {
+        "containerName": "identity-release",
+        //Default image: The tag from a dependent docker-build task (if one exists) or derived from the base name of the root workspace folder.
+      },
+      "netCore": {
+        "appProject": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj",
+        "enableDebugging": true
+      }
+    },
+    {
+      "label": "unit test: identity service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/tests/Services/Identity/ECommerce.Services.Identity.UnitTests/ECommerce.Services.Identity.UnitTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "integrtion test: identity service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.IntegrationTests/ECommerce.Services.Identity.IntegrationTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "end-to-end test: identity service",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.EndToEndTests/ECommerce.Services.Identity.EndToEndTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://code.visualstudio.com/docs/containers/reference#_docker-compose-task
+    {
+      "label": "docker-compose up: infrastructures",
+      "type": "docker-compose",
+      //https://code.visualstudio.com/docs/containers/reference#_dockercompose-object-properties
+      "dockerCompose": {
+        "up": {
+          "detached": true,
+          "build": true
+        },
+        "files": [
+          "${workspaceFolder}/deployments/docker-compose/docker-compose.infrastructure.yaml"
+        ]
+      }
+    },
+    //https://code.visualstudio.com/docs/containers/reference#_docker-compose-task
+    {
+      "label": "docker-compose down: infrastructures",
+      "type": "docker-compose",
+      //https://code.visualstudio.com/docs/containers/reference#_dockercompose-object-properties
+      "dockerCompose": {
+        "down": {},
+        "files": [
+          "${workspaceFolder}/deployments/docker-compose/docker-compose.infrastructure.yaml"
+        ]
+      }
+    },
+    //https://code.visualstudio.com/docs/containers/reference#_docker-compose-task
+    {
+      "label": "docker-compose up: services",
+      "type": "docker-compose",
+      "dependsOn": [
+        "docker-compose up: infrastructures"
+      ],
+      //https://code.visualstudio.com/docs/containers/reference#_dockercompose-object-properties
+      "dockerCompose": {
+        "up": {
+          "detached": true,
+          "build": true
+        },
+        "files": [
+          "${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml"
+        ]
+      }
+    },
+    //https://code.visualstudio.com/docs/containers/reference#_docker-compose-task
+    {
+      "label": "docker-compose down: services",
+      "type": "docker-compose",
+      //https://code.visualstudio.com/docs/containers/reference#_dockercompose-object-properties
+      "dockerCompose": {
+        "down": {},
+        "files": [
+          "${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml"
+        ]
+      }
+    },
+    {
+      "type": "npm",
+      "script": "prepare",
+      "problemMatcher": [],
+      "label": "npm: prepare",
+      "detail": "husky install && dotnet tool restore"
+    },
+    {
+      "type": "npm",
+      "script": "install",
+      "group": "clean",
+      "problemMatcher": [],
+      "label": "npm: install dependencies",
+      "detail": "install dependencies from package"
+    }
+  ]
+}

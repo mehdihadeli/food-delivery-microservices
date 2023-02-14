@@ -24,13 +24,12 @@
       }
     },
     "Catalogs.Api.Watch": {
-      "commandName": "Project",
+      "commandName": "Executable",
       "executablePath": "dotnet",
-      "workingDirectory": "$(ProjectDir)",
       "hotReloadEnabled": true,
       "hotReloadProfile" : "aspnetcore",
-      "commandLineArgs": "watch run -lp Catalogs.Api.Http",
-      "launchBrowser": true,
+      "workingDirectory": "$(ProjectDir)",
+      "commandLineArgs": "watch -lp Catalogs.Api.Http",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

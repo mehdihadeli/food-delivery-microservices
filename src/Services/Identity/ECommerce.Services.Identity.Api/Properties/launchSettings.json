@@ -23,12 +23,12 @@
       }
     },
     "Identity.Api.Watch": {
-      "commandName": "Project",
+      "commandName": "Executable",
       "executablePath": "dotnet",
       "workingDirectory": "$(ProjectDir)",
       "hotReloadEnabled": true,
       "hotReloadProfile": "aspnetcore",
-      "commandLineArgs": "watch run -lp Identity.Api.Http",
+      "commandLineArgs": "watch -lp Identity.Api.Http",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

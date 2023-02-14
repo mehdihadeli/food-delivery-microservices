@@ -1,15 +1,15 @@
-version: '3.7'
+version: '3.8'
 services:
   gateway:
-    build:
-      context: ../../
-      dockerfile: src/ApiGateway/Dockerfile
-    container_name: ecommerce-gateway
-    # restart: unless-stopped
-    ports:
-      - ${GATEWAY_PORT}:80
-    networks:
-      - ecommerce
+     build:
+       context: ../../
+       dockerfile: src/ApiGateway/Dockerfile
+     container_name: ecommerce-gateway
+     # restart: unless-stopped
+     ports:
+       - ${GATEWAY_PORT}:80
+     networks:
+       - ecommerce
 
   catalogs:
     image: catalogs:${TAG}
@@ -19,6 +19,8 @@ services:
       # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
       # we can use a .dockerignore file to exclude some files or directories from build context
       # https://docs.docker.com/build/building/context/
+      # https://docs.docker.com/engine/reference/commandline/build/
+      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
       context: ../../
       dockerfile: src/Services/Catalogs/Dockerfile
     container_name: ecommerce-catalogs
@@ -31,42 +33,52 @@ services:
       - ecommerce
 
   identity:
-    image: identity:${TAG}
-    build:
-      args:
-        Version: "1"
-      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
-      # we can use a .dockerignore file to exclude some files or directories from build context
-      # https://docs.docker.com/build/building/context/
-      context: ../../
-      dockerfile: src/Services/Identity/Dockerfile
-    container_name: ecommerce-identity
-    # restart: unless-stopped
-    ports:
-      - ${IDENTITY_SVC_PORT}:80
-    networks:
-      - ecommerce
+     image: identity:${TAG}
+     build:
+       args:
+         Version: "1"
+       # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+       # we can use a .dockerignore file to exclude some files or directories from build context
+       # https://docs.docker.com/build/building/context/
+       # https://docs.docker.com/engine/reference/commandline/build/
+       # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
+       context: ../../
+       dockerfile: src/Services/Identity/Dockerfile
+     container_name: ecommerce-identity
+     # restart: unless-stopped
+     ports:
+       - ${IDENTITY_SVC_PORT}:80
+     networks:
+       - ecommerce
 
   customers:
-    image: customers:${TAG}
-    build:
-      args:
-        Version: "1"
-      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
-      # we can use a .dockerignore file to exclude some files or directories from build context
-      # https://docs.docker.com/build/building/context/
-      context: ../../
-      dockerfile: src/Services/Customers/Dockerfile
-    container_name: ecommerce-customers
-    # restart: unless-stopped
-    ports:
-      - ${CUSTOMERS_SVC_PORT}:80
-    networks:
-      - ecommerce
+     image: customers:${TAG}
+     build:
+       args:
+         Version: "1"
+       # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+       # we can use a .dockerignore file to exclude some files or directories from build context
+       # https://docs.docker.com/build/building/context/
+       # https://docs.docker.com/engine/reference/commandline/build/
+       # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
+       context: ../../
+       dockerfile: src/Services/Customers/Dockerfile
+     container_name: ecommerce-customers
+     # restart: unless-stopped
+     ports:
+       - ${CUSTOMERS_SVC_PORT}:80
+     networks:
+       - ecommerce
 
 # https://docs.docker.com/compose/networking/
+# https://docs.docker.com/engine/reference/commandline/network_create/
+# https://docs.docker.com/compose/compose-file/#networks-top-level-element
 # https://stackoverflow.com/questions/38088279/communication-between-multiple-docker-compose-projects
+# We could use also a predefined network and connect to that predefined network with specifying the 'name' of existing network and set 'external' attribute to true
+# When we run docker-compose up, Docker Compose will check if the 'ecommerce' network already exists. If it does not exist, it will create the 'ecommerce' network. If it exists, it will use the existing 'ecommerce' network. problem is that if we do a docker-compose down this network will delete and other docker-compose that use same network will fail because network deleted so its better we use `external` keyword for using a predefined network
 networks:
   ecommerce:
-    name: ecommerce-network
+    name: ecommerce
+    driver: bridge
+    # we can use the network that will create by infrastructure docker-compose file and we use that network here by specifying existing network 'name' and set 'external' attribute to 'true' (because we want to use a network outside of our docker-compose) or we can create a `ecommerce` network manually by `docker network create -d bridge ecommerce` and use this network as external network for all docker-compose files
     external: true

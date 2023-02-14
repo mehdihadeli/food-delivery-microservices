@@ -24,7 +24,7 @@
       }
     },
     "Customers.Api.Watch": {
-      "commandName": "Project",
+      "commandName": "Executable",
       "executablePath": "dotnet",
       "workingDirectory": "$(ProjectDir)",
       "hotReloadEnabled": true,

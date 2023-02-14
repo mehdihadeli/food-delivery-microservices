@@ -56,7 +56,7 @@ tasks:
 #    command: |
 #      cd src/Services/Catalogs/ECommerce.Services.Catalogs.Api
 #      # hot reload doesn't work correctly with --no-build and --no-restore and after each change will restart the app with hot reload app should not be restarted
-#      dotnet watch run -lp Catalogs.Api.Http
+#      dotnet watch -lp Catalogs.Api.Http
 #
 #  - name: Run Identity in Watch Mode
 #    init: |
@@ -64,7 +64,7 @@ tasks:
 #      gp sync-await build-bundle  # wait for the above 'init' to finish
 #    command: |
 #      cd src/Services/Identity/ECommerce.Services.Identity.Api
-#      dotnet watch run -lp Identity.Api.Http
+#      dotnet watch -lp Identity.Api.Http
 #
 #  - name: Run Customers in Watch Mode
 #    init: |
@@ -73,7 +73,7 @@ tasks:
 #    command: |
 #      cd src/Services/Customers/ECommerce.Services.Customers.Api
 #      # hot reload doesn't work correctly with --no-build and --no-restore and after each change will restart the app with hot reload app should not be restarted
-#      dotnet watch run -lp Customers.Api.Http
+#      dotnet watch -lp Customers.Api.Http
 
 # https://www.gitpod.io/docs/configure/projects/prebuilds#github-specific-configuration
 github:

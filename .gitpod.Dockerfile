@@ -6,6 +6,8 @@
 # this is a docker file and we can use any commands that allowed in a docker file
 FROM gitpod/workspace-dotnet:latest
 
+RUN mkdir $HOME/.vsdbg -p
+
 # Install custom tools, runtime, etc.
 RUN brew install fzf
 RUN sudo apt-get install tree

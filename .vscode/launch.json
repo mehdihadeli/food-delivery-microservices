@@ -50,21 +50,25 @@
       "task": "watch: catalogs service", // Label of watch task in tasks.json
       "program": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/bin/Debug/net7.0/ECommerce.Services.Catalogs.Api.dll"
     },
+    //https://github.com/microsoft/vscode-docker/blob/aa14007a4c294255fa8abe167849b394cd6e10b1/src/debugging/netcore/NetCoreDebugHelper.ts#L107
     //https://code.visualstudio.com/docs/containers/debug-common
     {
       "name": "launch docker: catalogs-dev in docker",
       "type": "docker",
-      "preLaunchTask": "docker-run: catalogs-dev",
+      "preLaunchTask": "docker-run-debugging: catalogs-dev",
       "request": "launch",
-      "removeContainerAfterDebug": false,
+      //set the removeContainerAfterDebug property to false to keep the container up after debuging else it will delete
+      "removeContainerAfterDebug": true,
       "netCore": {
         "appProject": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
       }
     },
     {
-      "name": "launch docker: catalogs-release in docker",
+      "name": "launch docker-debugging: catalogs-release in docker",
       "type": "docker",
-      "preLaunchTask": "docker-run catalogs-release",
+      "preLaunchTask": "docker-run-debugging: catalogs-release",
+      //set the removeContainerAfterDebug property to false to keep the container up after debuging else it will delete
+      "removeContainerAfterDebug": true,
       "request": "launch",
       "netCore": {
         "appProject": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
@@ -121,9 +125,9 @@
     },
     //https://code.visualstudio.com/docs/containers/debug-common
     {
-      "name": "launch docker: customers-dev in docker",
+      "name": "launch docker-debugging: customers-dev in docker",
       "type": "docker",
-      "preLaunchTask": "docker-run: customers-dev",
+      "preLaunchTask": "docker-run-debugging: customers-dev",
       "request": "launch",
       "netCore": {
         "appProject": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj"
@@ -131,9 +135,9 @@
     },
     //https://code.visualstudio.com/docs/containers/debug-common
     {
-      "name": "launch docker: customers-release in docker",
+      "name": "launch docker-debugging: customers-release in docker",
       "type": "docker",
-      "preLaunchTask": "docker-run: customers-release",
+      "preLaunchTask": "docker-run-debugging: customers-release",
       "request": "launch",
       "netCore": {
         "appProject": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj"
@@ -193,9 +197,9 @@
     },
     //https://code.visualstudio.com/docs/containers/debug-common
     {
-      "name": "launch docker: identity-dev in docker",
+      "name": "launch docker-debugging: identity-dev in docker",
       "type": "docker",
-      "preLaunchTask": "docker-run: identity-dev",
+      "preLaunchTask": "docker-run-debugging: identity-dev",
       "request": "launch",
       "netCore": {
         "appProject": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj"
@@ -203,9 +207,9 @@
     },
     //https://code.visualstudio.com/docs/containers/debug-common
     {
-      "name": "launch docker: identity-release in docker",
+      "name": "launch docker-debugging: identity-release in docker",
       "type": "docker",
-      "preLaunchTask": "docker-run: identity-release",
+      "preLaunchTask": "docker-run-debugging: identity-release",
       "request": "launch",
       "netCore": {
         "appProject": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj"

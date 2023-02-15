@@ -1,3 +1,6 @@
+
+#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
+
 FROM mcr.microsoft.com/dotnet/sdk:latest as builder
 
 WORKDIR /src
@@ -37,10 +40,5 @@ COPY ./src/Services/Identity/ECommerce.Services.Identity/  ./Services/Identity/E
 COPY ./src/Services/Shared/  ./Services/Shared/
 
 WORKDIR /src/Services/Identity/ECommerce.Services.Identity.Api/
-
-#https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
-#https://swimburger.net/blog/dotnet/how-to-get-aspdotnet-core-server-urls
-#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
-#https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments
 
 RUN dotnet watch run  ECommerce.Services.Identity.Api.csproj --launch-profile Identity.Api.LiveRecompilation

@@ -1,7 +1,16 @@
+FROM mcr.microsoft.com/dotnet/aspnet:latest AS base
+WORKDIR /app
+#https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
+#https://swimburger.net/blog/dotnet/how-to-get-aspdotnet-core-server-urls
+#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilat
+#https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments
+EXPOSE 80
+ENV ASPNETCORE_URLS http://*:80
+ENV ASPNETCORE_ENVIRONMENT docker
+RUN ls
+
 FROM mcr.microsoft.com/dotnet/sdk:latest as builder
-
 WORKDIR /src
-
 # path are related to build context, here for us build context is root folder
 # https://docs.docker.com/build/building/context/
 COPY ./.editorconfig ./
@@ -55,19 +64,10 @@ WORKDIR /src/Services/Catalogs/ECommerce.Services.Catalogs.Api/
 RUN ls
 RUN dotnet publish -c Release --no-build --no-restore -o out
 
-FROM mcr.microsoft.com/dotnet/aspnet:latest
+FROM base AS final
 # Setup working directory for the project
 WORKDIR /app
 COPY --from=builder /src/Services/Catalogs/ECommerce.Services.Catalogs.Api/out  .
-
-#https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
-#https://swimburger.net/blog/dotnet/how-to-get-aspdotnet-core-server-urls
-#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilat
-#https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments
-
-EXPOSE 80
-ENV ASPNETCORE_URLS http://*:80
-ENV ASPNETCORE_ENVIRONMENT docker
 
 RUN ls
 

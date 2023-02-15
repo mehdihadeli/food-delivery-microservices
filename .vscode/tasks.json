@@ -50,14 +50,17 @@
         "panel": "new"
       }
     },
+    //'docker-build' is custom task type produced by vscode docker extension
     //https://code.visualstudio.com/docs/containers/reference
     //https://code.visualstudio.com/docs/containers/reference#_build-task-reference
     //https://code.visualstudio.com/docs/containers/reference#_net-dockerbuild
     //https://github.com/thehaseebahmed/vscode-dotnet-docker-debug
     //https://www.freecodecamp.org/news/how-to-debug-dockerized-net-core-apps-in-vs-code/
-    //'docker-build' is custom task type produced by vscode docker extension
+    //https://github.com/microsoft/vscode-docker/issues/3831
+    //https://github.com/microsoft/vscode-docker/blob/aa14007a4c294255fa8abe167849b394cd6e10b1/src/debugging/netcore/NetCoreDebugHelper.ts#L107
+    // this task only build target stage here `base` stage without any entrypoint for running container and other stages will skip and after running containerin in the launch settings, debugger will run inner container with `docker exec -i catalogs-dev /remote_debugger/vsdbg` and `vsdbg` command. our container app/ working directory mapped to local ECommerce.Services.Catalogs.Api folder and will launch project with appProject path configuration on our launch settings setting
     {
-      "label": "docker-build: catalogs-dev",
+      "label": "docker-build-debugging: catalogs-dev",
       "type": "docker-build",
       "dependsOn": [
         "build: catalogs service"
@@ -67,6 +70,9 @@
       "dockerBuild": {
         "dockerfile": "${workspaceFolder}/src/Services/Catalogs/Dockerfile",
         "context": "${workspaceFolder}",
+        //https://stackoverflow.com/questions/51253987/building-a-multi-stage-dockerfile-with-target-flag-builds-all-stages-instead-o
+        //https://docs.docker.com/engine/reference/commandline/build/#target
+        "target": "base",
         "tag": "catalogs:dev",
         //https://docs.docker.com/engine/reference/commandline/build/#options
         //"customOptions": "--no-cache",
@@ -78,7 +84,7 @@
       }
     },
     {
-      "label": "docker-build: catalogs-release",
+      "label": "docker-build-debugging: catalogs-release",
       "type": "docker-build",
       "dependsOn": [
         "build: catalogs service"
@@ -88,6 +94,9 @@
       "dockerBuild": {
         "dockerfile": "${workspaceFolder}/src/Services/Catalogs/Dockerfile",
         "context": "${workspaceFolder}",
+        //https://stackoverflow.com/questions/51253987/building-a-multi-stage-dockerfile-with-target-flag-builds-all-stages-instead-o
+        //https://docs.docker.com/engine/reference/commandline/build/#target
+        "target": "base",
         "tag": "catalogs:latest",
         //https://docs.docker.com/engine/reference/commandline/build/#options
         //"customOptions": "--no-cache",
@@ -102,13 +111,15 @@
     //https://code.visualstudio.com/docs/containers/reference#_docker-run-task
     //https://code.visualstudio.com/docs/containers/reference#_net-dockerrun
     //https://code.visualstudio.com/docs/containers/reference#_run-task-reference
+    //https://github.com/microsoft/vscode-docker/blob/aa14007a4c294255fa8abe167849b394cd6e10b1/src/debugging/netcore/NetCoreDebugHelper.ts#L107
+    //https://github.com/microsoft/vscode-docker/issues/3831
     //docker container run --detach --tty --name "catalogs-dev"
     {
-      "label": "docker-run: catalogs-dev",
+      "label": "docker-run-debugging: catalogs-dev",
       "type": "docker-run",
       "platform": "netCore",
       "dependsOn": [
-        "docker-build: catalogs-dev"
+        "docker-build-debugging: catalogs-dev"
       ],
       //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
       "dockerRun": {
@@ -116,6 +127,9 @@
         // if network doen't exists, start infrastructure docker-compose for creating this network or create this network manually
         // `ecommerce` network is uses by our 'infrastructure docker-compose' so our container should be in the same network for connecting to infrastructure containers host name (resolving this host name to container ip automaticcly), if not exists should be created be created
         "network": "ecommerce",
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "docker"
+        },
         "ports": [
           {
             "containerPort": 80,
@@ -127,7 +141,7 @@
         "command": "",
         //https://docs.docker.com/engine/reference/commandline/run/#options
         //Any extra parameters to add before the image argument.
-        "customOptions": "-it ",
+        "customOptions": "-it",
         "remove": true,
         "containerName": "catalogs-dev"
         //Default Image: The tag from a dependent docker-build task (if one exists) or derived from the base name of the root workspace folder.
@@ -141,11 +155,11 @@
       }
     },
     {
-      "label": "docker-run: catalogs-release",
+      "label": "docker-run-debugging: catalogs-release",
       "type": "docker-run",
       "platform": "netCore",
       "dependsOn": [
-        "docker-build: catalogs-release"
+        "docker-build-debugging: catalogs-release"
       ],
       //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
       "dockerRun": {
@@ -153,6 +167,9 @@
         // if network doen't exists, start infrastructure docker-compose for creating this network or create this network manually
         // `ecommerce` network is uses by our 'infrastructure docker-compose' so our container should be in the same network for connecting to infrastructure containers host name (resolving this host name to container ip automaticcly), if not exists should be created be created
         "network": "ecommerce",
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "docker"
+        },
         "ports": [
           {
             "containerPort": 80,
@@ -275,7 +292,7 @@
     //https://www.freecodecamp.org/news/how-to-debug-dockerized-net-core-apps-in-vs-code/
     // custom task type produced by vscode docker extenion
     {
-      "label": "docker-build: customers-dev",
+      "label": "docker-build-debugging: customers-dev",
       "type": "docker-build",
       "platform": "netCore",
       "dependsOn": [
@@ -286,7 +303,11 @@
         "dockerfile": "${workspaceFolder}/src/Services/Customers/Dockerfile",
         "context": "${workspaceFolder}",
         "tag": "customers:dev",
+        //https://stackoverflow.com/questions/51253987/building-a-multi-stage-dockerfile-with-target-flag-builds-all-stages-instead-o
+        //https://docs.docker.com/engine/reference/commandline/build/#target
         "target": "base",
+        //https://docs.docker.com/engine/reference/commandline/build/#options
+        //"customOptions": "--no-cache",
         "pull": true
       },
       //https://code.visualstudio.com/docs/containers/reference#_netcore-object-properties-dockerbuild-task
@@ -295,7 +316,7 @@
       }
     },
     {
-      "label": "docker-build: customers-release",
+      "label": "docker-build-debugging: customers-release",
       "type": "docker-build",
       "platform": "netCore",
       "dependsOn": [
@@ -306,7 +327,11 @@
         "dockerfile": "${workspaceFolder}/src/Services/Customers/Dockerfile",
         "context": "${workspaceFolder}",
         "tag": "customers:latest",
+        //https://stackoverflow.com/questions/51253987/building-a-multi-stage-dockerfile-with-target-flag-builds-all-stages-instead-o
+        //https://docs.docker.com/engine/reference/commandline/build/#target
         "target": "base",
+        //https://docs.docker.com/engine/reference/commandline/build/#options
+        //"customOptions": "--no-cache",
         "pull": true
       },
       //https://code.visualstudio.com/docs/containers/reference#_netcore-object-properties-dockerbuild-task
@@ -319,17 +344,29 @@
     //https://code.visualstudio.com/docs/containers/reference#_net-dockerrun
     //https://code.visualstudio.com/docs/containers/reference#_run-task-reference
     {
-      "label": "docker-run: customers-dev",
+      "label": "docker-run-debugging: customers-dev",
       "type": "docker-run",
       "platform": "netCore",
       "dependsOn": [
-        "docker-build: customers-dev"
+        "docker-build-debugging: customers-dev"
       ],
       //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
       "dockerRun": {
         "containerName": "customers-dev",
-        //Default image: The tag from a dependent docker-build task (if one exists) or derived from the base name of the root workspace folder.
-        //"image": "customers:dev"
+        "network": "ecommerce",
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "docker"
+        },
+        "ports": [
+          {
+            "containerPort": 80,
+            "hostPort": 8000,
+            "protocol": "tcp"
+          }
+        ],
+        //https://docs.docker.com/engine/reference/commandline/run/#options
+        "customOptions": "-it",
+        "remove": true
       },
       "netCore": {
         "appProject": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj",
@@ -337,17 +374,29 @@
       }
     },
     {
-      "label": "docker-run: customers-release",
+      "label": "docker-run-debugging: customers-release",
       "type": "docker-run",
       "platform": "netCore",
       "dependsOn": [
-        "docker-build: customers-release"
+        "docker-build-debugging: customers-release"
       ],
       //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
       "dockerRun": {
         "containerName": "customers-release",
-        //Default: The tag from a dependent docker-build task (if one exists) or derived from the base name of the root workspace folder.
-        "image": "customers:latest"
+        "network": "ecommerce",
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "docker"
+        },
+        "ports": [
+          {
+            "containerPort": 80,
+            "hostPort": 8000,
+            "protocol": "tcp"
+          }
+        ],
+        //https://docs.docker.com/engine/reference/commandline/run/#options
+        "customOptions": "-it",
+        "remove": true
       },
       "netCore": {
         "appProject": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj",
@@ -453,7 +502,7 @@
     //https://www.freecodecamp.org/news/how-to-debug-dockerized-net-core-apps-in-vs-code/
     // custom task type produced by vscode docker extenion
     {
-      "label": "docker-build: identity-dev",
+      "label": "docker-build-debugging: identity-dev",
       "type": "docker-build",
       "platform": "netCore",
       //https://code.visualstudio.com/docs/containers/reference#_dockerbuild-object-properties
@@ -461,6 +510,8 @@
         "dockerfile": "${workspaceFolder}/src/Services/Identity/Dockerfile",
         "context": "${workspaceFolder}",
         "tag": "identity:dev",
+        //https://stackoverflow.com/questions/51253987/building-a-multi-stage-dockerfile-with-target-flag-builds-all-stages-instead-o
+        //https://docs.docker.com/engine/reference/commandline/build/#target
         "target": "base",
         "pull": true
       },
@@ -470,7 +521,7 @@
       }
     },
     {
-      "label": "docker-build: identity-release",
+      "label": "docker-build-debugging: identity-release",
       "type": "docker-build",
       "platform": "netCore",
       //https://code.visualstudio.com/docs/containers/reference#_dockerbuild-object-properties
@@ -478,6 +529,8 @@
         "dockerfile": "${workspaceFolder}/src/Services/Identity/Dockerfile",
         "context": "${workspaceFolder}",
         "tag": "identity:latest",
+        //https://stackoverflow.com/questions/51253987/building-a-multi-stage-dockerfile-with-target-flag-builds-all-stages-instead-o
+        //https://docs.docker.com/engine/reference/commandline/build/#target
         "target": "base",
         "pull": true
       },
@@ -491,16 +544,32 @@
     //https://code.visualstudio.com/docs/containers/reference#_net-dockerrun
     //https://code.visualstudio.com/docs/containers/reference#_run-task-reference
     {
-      "label": "docker-run: identity-dev",
+      "label": "docker-run-debugging: identity-dev",
       "type": "docker-run",
       "platform": "netCore",
       "dependsOn": [
-        "docker-build: identity-dev"
+        "docker-build-debugging: identity-dev"
       ],
       //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
       "dockerRun": {
         "containerName": "identity-dev",
-        //Default image: The tag from a dependent docker-build task (if one exists) or derived from the base name of the root workspace folder.
+        "network": "ecommerce",
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "docker"
+        },
+        "ports": [
+          {
+            "containerPort": 80,
+            "hostPort": 7000,
+            "protocol": "tcp"
+          }
+        ],
+        //The command to run upon starting the container.
+        "command": "",
+        //https://docs.docker.com/engine/reference/commandline/run/#options
+        //Any extra parameters to add before the image argument.
+        "customOptions": "-it",
+        "remove": true,
       },
       "netCore": {
         "appProject": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj",
@@ -508,16 +577,32 @@
       }
     },
     {
-      "label": "docker-run: identity-release",
+      "label": "docker-run-debugging: identity-release",
       "type": "docker-run",
       "platform": "netCore",
       "dependsOn": [
-        "docker-build: identity-release"
+        "docker-build-debugging: identity-release"
       ],
       //https://code.visualstudio.com/docs/containers/reference#_dockerrun-object-properties
       "dockerRun": {
         "containerName": "identity-release",
-        //Default image: The tag from a dependent docker-build task (if one exists) or derived from the base name of the root workspace folder.
+        "network": "ecommerce",
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "docker"
+        },
+        "ports": [
+          {
+            "containerPort": 80,
+            "hostPort": 7000,
+            "protocol": "tcp"
+          }
+        ],
+        //The command to run upon starting the container.
+        "command": "",
+        //https://docs.docker.com/engine/reference/commandline/run/#options
+        //Any extra parameters to add before the image argument.
+        "customOptions": "-it",
+        "remove": true,
       },
       "netCore": {
         "appProject": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj",

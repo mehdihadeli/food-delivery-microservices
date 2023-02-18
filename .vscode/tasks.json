@@ -660,62 +660,75 @@
         "panel": "new"
       }
     },
-    //https://code.visualstudio.com/docs/containers/reference#_docker-compose-task
     {
-      "label": "docker-compose up: infrastructures",
-      "type": "docker-compose",
-      //https://code.visualstudio.com/docs/containers/reference#_dockercompose-object-properties
-      "dockerCompose": {
-        "up": {
-          "detached": true,
-          "build": true
-        },
-        "files": [
-          "${workspaceFolder}/deployments/docker-compose/docker-compose.infrastructure.yaml"
-        ]
-      }
+      "label": "docker-compose: build infrastructures",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f docker-compose.infrastructure.yaml build",
+    },
+    {
+      "label": "docker-compose: up infrastructures",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f docker-compose.infrastructure.yaml up -d",
     },
     //https://code.visualstudio.com/docs/containers/reference#_docker-compose-task
     {
-      "label": "docker-compose down: infrastructures",
-      "type": "docker-compose",
-      //https://code.visualstudio.com/docs/containers/reference#_dockercompose-object-properties
-      "dockerCompose": {
-        "down": {},
-        "files": [
-          "${workspaceFolder}/deployments/docker-compose/docker-compose.infrastructure.yaml"
-        ]
-      }
+      "label": "docker-compose: down infrastructures",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f docker-compose.infrastructure.yaml down -d",
     },
-    //https://code.visualstudio.com/docs/containers/reference#_docker-compose-task
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
     {
-      "label": "docker-compose up: services",
-      "type": "docker-compose",
+      "label": "docker-compose: prod build services",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml build",
+    },
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.htmlk
+    {
+      "label": "docker-compose: prod up services",
       "dependsOn": [
-        "docker-compose up: infrastructures"
+        "docker-compose: up infrastructures"
       ],
-      //https://code.visualstudio.com/docs/containers/reference#_dockercompose-object-properties
-      "dockerCompose": {
-        "up": {
-          "detached": true,
-          "build": true
-        },
-        "files": [
-          "${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml"
-        ]
-      }
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f  docker-compose.services.yaml -f docker-compose.override.yaml up -d",
     },
-    //https://code.visualstudio.com/docs/containers/reference#_docker-compose-task
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
     {
-      "label": "docker-compose down: services",
-      "type": "docker-compose",
-      //https://code.visualstudio.com/docs/containers/reference#_dockercompose-object-properties
-      "dockerCompose": {
-        "down": {},
-        "files": [
-          "${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml"
-        ]
-      }
+      "label": "docker-compose: prod down services",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml down -d",
+    },
+    {
+      "label": "docker-compose: dev build services",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml -f docker-compose.services.dev.yaml build",
+    },
+    {
+      "label": "docker-compose: dev up services",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml -f docker-compose.services.dev.yaml up -d",
+    },
+    {
+      "label": "docker-compose: dev down services",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml -f docker-compose.services.dev.yaml down -d",
     },
     {
       "type": "npm",
@@ -727,7 +740,6 @@
     {
       "type": "npm",
       "script": "install",
-      "group": "clean",
       "problemMatcher": [],
       "label": "npm: install dependencies",
       "detail": "install dependencies from package"

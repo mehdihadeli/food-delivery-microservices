@@ -13,6 +13,10 @@ services:
       - ${GATEWAY_PORT}:80
     networks:
       - ecommerce
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    env_file:
+      - ./.env
 
   catalogs:
     image: catalogs:${TAG}
@@ -31,6 +35,11 @@ services:
       - mongo
     networks:
       - ecommerce
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    env_file:
+      - ./.env
+      - ../../.docker-envs/catalogs.env
 
   identity:
     image: identity:${TAG}
@@ -48,6 +57,11 @@ services:
       - rabbitmq
     networks:
       - ecommerce
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    env_file:
+      - ./.env
+      - ../../.docker-envs/identity.env
 
   customers:
     image: customers:${TAG}
@@ -66,8 +80,13 @@ services:
       - mongo
     networks:
       - ecommerce
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    env_file:
+      - ./.env
+      - ../../.docker-envs/customers.env
 
-      #######################################################
+    #######################################################
     #  rabbitmq
     #######################################################
   rabbitmq:
@@ -105,7 +124,7 @@ services:
     container_name: postgres
     restart: on-failure
     ports:
-      - '5432:5432'
+      - "5432:5432"
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -142,9 +161,9 @@ services:
     networks:
       - ecommerce
 
-#   #######################################################
-#   #  Redis
-#   #######################################################
+  #   #######################################################
+  #   #  Redis
+  #   #######################################################
 
   # redis:
   #   image: redis
@@ -157,10 +176,9 @@ services:
   #   volumes:
   #     - redis:/data
 
-
-   #######################################################
-   #  Portainer
-   #######################################################
+  #######################################################
+  #  Portainer
+  #######################################################
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -176,9 +194,9 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   #  elasticsearch
-   #######################################################
+    #######################################################
+    #  elasticsearch
+    #######################################################
   elasticsearch:
     container_name: elastic_search
     restart: on-failure
@@ -201,9 +219,9 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   #  kibana
-   #######################################################
+    #######################################################
+    #  kibana
+    #######################################################
   kibana:
     image: docker.elastic.co/kibana/kibana:latest
     container_name: kibana
@@ -228,9 +246,9 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   #  zipkin
-   #######################################################
+    #######################################################
+    #  zipkin
+    #######################################################
   zipkin:
     image: openzipkin/zipkin:latest
     restart: on-failure
@@ -240,20 +258,20 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   #  otel-collector
-   #######################################################
+    #######################################################
+    #  otel-collector
+    #######################################################
   otel-collector:
     image: otel/opentelemetry-collector-contrib-dev:latest
     command: ["--config=/etc/otel-collector-config.yaml", ""]
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
-      - "1888:1888"   # pprof extension
-      - "8888:8888"   # Prometheus metrics exposed by the collector
-      - "8889:8889"   # Prometheus exporter metrics
+      - "1888:1888" # pprof extension
+      - "8888:8888" # Prometheus metrics exposed by the collector
+      - "8889:8889" # Prometheus exporter metrics
       - "13133:13133" # health_check extension
-      - "4317:4317"   # OTLP gRPC receiver
+      - "4317:4317" # OTLP gRPC receiver
       - "55679:55679" # zpages extension
     depends_on:
       - jaeger
@@ -261,9 +279,9 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   # prometheus
-   #######################################################
+    #######################################################
+    # prometheus
+    #######################################################
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -278,27 +296,27 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   # node_exporter
-   #######################################################
+    #######################################################
+    # node_exporter
+    #######################################################
   node_exporter:
     container_name: node_exporter
     restart: on-failure
     image: prom/node-exporter
     ports:
-      - '9101:9100'
+      - "9101:9100"
     networks:
       - ecommerce
 
-   #######################################################
-   # grafana
-   #######################################################
+    #######################################################
+    # grafana
+    #######################################################
   grafana:
     container_name: grafana
     restart: on-failure
     image: grafana/grafana
     ports:
-      - '3000:3000'
+      - "3000:3000"
     networks:
       - ecommerce
 

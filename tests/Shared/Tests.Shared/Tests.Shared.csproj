@@ -14,13 +14,13 @@
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" />
+    <PackageReference Include="Mongo2Go" />
     <PackageReference Include="WireMock.Net" />
     <PackageReference Include="Hypothesist" />
     <PackageReference Include="Hypothesist.MassTransit" />
     <PackageReference Include="MassTransit" />
     <PackageReference Include="Verify.Xunit" />
     <PackageReference Include="XunitContext" />
-    <PackageReference Include="Mongo2Go" />
     <PackageReference Include="Respawn" />
     <PackageReference Include="Squadron.Mongo" />
     <PackageReference Include="Testcontainers" />

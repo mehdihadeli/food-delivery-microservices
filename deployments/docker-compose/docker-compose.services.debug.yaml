@@ -1,0 +1,89 @@
+# https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+# https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+# https://docs.docker.com/compose/extends/
+# if you have both 'docker-compose.services.yaml' and 'docker-compose.services.debug.yml' in the same directory, the latter will override the former. If you have multiple override files, you can specify them in order subsequently
+
+# To build and debug the app on debug machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml -f docker-compose.services.debug.yml build
+# To start and debug the app on debug machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml -f docker-compose.services.debug.yaml up -d
+
+version: "3.8"
+services:
+  gateway:
+    image: gateway-debug:${TAG}
+    build:
+      target: final
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # how to install vsdb: https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    volumes:
+      - ../../src:/src
+      - ${VSDBG_FOLDER}:/vsdbg
+      - ${HOME}/.nuget/packages:/root/.nuget/packages
+      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
+    container_name: ecommerce-gateway-debug
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+    # https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+    # https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+    # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage inner container because we want to run container app with debugger launcher
+    entrypoint: bash
+
+  catalogs:
+    image: catalogs-debug:${TAG}
+    build:
+      target: final
+    volumes:
+      - ../../src:/src
+      - ${VSDBG_FOLDER}:/vsdbg
+      - ${HOME}/.nuget/packages:/root/.nuget/packages
+      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
+    container_name: ecommerce-catalogs-debug
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+    # https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+    # https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+    # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage inner container because we want to run container app with debugger launcher
+    entrypoint: bash
+
+  identity:
+    image: identity-debug:${TAG}
+    build:
+      target: final
+    volumes:
+      - ../../src:/src
+      - ${VSDBG_FOLDER}:/vsdbg
+      - ${HOME}/.nuget/packages:/root/.nuget/packages
+      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
+    container_name: ecommerce-identity-debug
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+    # https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+    # https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+    # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage inner container because we want to run container app with debugger launcher
+    entrypoint: bash
+
+  customers:
+    image: customers-debug:${TAG}
+    build:
+      target: final
+    volumes:
+      - ../../src:/src
+      - ${VSDBG_FOLDER}:/vsdbg
+      - ${HOME}/.nuget/packages:/root/.nuget/packages
+      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
+    container_name: ecommerce-customers-debug
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+    # https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+    # https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+    # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage inner container because we want to run container app with debugger launcher
+    entrypoint: bash

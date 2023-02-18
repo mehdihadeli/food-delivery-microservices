@@ -1,3 +1,6 @@
+# Using the base image of the Dockerfile for debugging can be more efficient because you don't need to build the entire application from scratch. Instead, you can reuse the already-built layers and add debugging tools and configurations as needed. This can save time and resources, especially if your application is large or complex.
+# On the other hand, doing a full build for debugging can ensure that the debugging environment is identical to the production environment. This can help catch issues that may not surface in a modified version of the image, and provide a more accurate representation of the production environment. However, this approach can be slower and require more resources.
+
 FROM mcr.microsoft.com/dotnet/aspnet:latest AS base
 WORKDIR /app
 #https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
@@ -7,10 +10,8 @@ WORKDIR /app
 EXPOSE 80
 ENV ASPNETCORE_URLS http://*:80
 ENV ASPNETCORE_ENVIRONMENT docker
-RUN ls
 
 FROM mcr.microsoft.com/dotnet/sdk:latest as builder
-
 WORKDIR /src
 
 # path are related to build context, here for us build context is root folder
@@ -45,8 +46,6 @@ COPY ./src/Services/Identity/ECommerce.Services.Identity/ECommerce.Services.Iden
 COPY ./src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj ./Services/Identity/ECommerce.Services.Identity.Api/
 COPY ./src/Services/Shared/ECommerce.Services.Shared/ECommerce.Services.Shared.csproj ./Services/Shared/ECommerce.Services.Shared/
 
-RUN ls
-
 # restore nuget packages
 RUN dotnet restore ./Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
 
@@ -56,14 +55,14 @@ COPY ./src/Services/Identity/ECommerce.Services.Identity.Api/  ./Services/Identi
 COPY ./src/Services/Identity/ECommerce.Services.Identity/  ./Services/Identity/ECommerce.Services.Identity/
 COPY ./src/Services/Shared/  ./Services/Shared/
 
-# Build project with Release configuration
-# and no restore, as we did it already
-RUN dotnet build -c Release --no-restore  ./Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
-
 WORKDIR /src/Services/Identity/ECommerce.Services.Identity.Api/
-# Publish project to output folder
-# and no build, as we did it already
-RUN ls
+
+# Build project with Release configuration and no restore, as we did it already
+RUN dotnet build -c Release --no-restore
+
+# Publish project to output folder and no build and restore, as we did it already
+# https://stackoverflow.com/questions/5457095/release-generating-pdb-files-why
+# pdbs also generate for release mode (pdb-only) so vsdb can use it for debugging for debug mode its default is (full)
 RUN dotnet publish -c Release --no-build --no-restore   -o out
 
 FROM base AS final
@@ -71,4 +70,9 @@ FROM base AS final
 WORKDIR /app
 COPY --from=builder /src/Services/Identity/ECommerce.Services.Identity.Api/out  .
 
-ENTRYPOINT ["dotnet", "ECommerce.Services.Identity.Api.dll"]
+# for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage because we want to run container app with debugger launcher
+#https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+#https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+
+#https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
+ENTRYPOINT ["dotnet", "ECommerce.Services.Customers.Api.dll"]

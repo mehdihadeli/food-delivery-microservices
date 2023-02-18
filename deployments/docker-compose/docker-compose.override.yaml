@@ -1,4 +1,8 @@
-version: '3.8'
+# https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+# https://docs.docker.com/compose/extends/
+# Overrid 'docker-compose.services.yaml' or 'docker-compose.yaml' configs here
+
+version: "3.8"
 services:
   catalogs:
     environment:

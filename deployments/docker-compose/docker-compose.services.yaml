@@ -1,15 +1,35 @@
-version: '3.8'
+# # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+# https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+# https://docs.docker.com/compose/extends/
+# if you have both 'docker-compose.services.yaml' and 'docker-compose.services.dev.yml' in the same directory, the latter will override the former. If you have multiple override files, you can specify them in order subsequently
+
+# To build and debug the app on prod machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml build
+# To start and debug the app on prod machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml up -d
+
+version: "3.8"
 services:
   gateway:
-     build:
-       context: ../../
-       dockerfile: src/ApiGateway/Dockerfile
-     container_name: ecommerce-gateway
-     # restart: unless-stopped
-     ports:
-       - ${GATEWAY_PORT}:80
-     networks:
-       - ecommerce
+    image: gateway:${TAG}
+    build:
+      context: ../../
+      dockerfile: src/ApiGateway/Dockerfile
+    container_name: ecommerce-gateway
+    # restart: unless-stopped
+    ports:
+      - ${GATEWAY_PORT}:80
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    env_file:
+      - ./.env
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # caching nugets on containers if exists on the machine
+    volumes:
+      - ${HOME}/.nuget/packages:/root/.nuget/packages
+      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
+    networks:
+      - ecommerce
 
   catalogs:
     image: catalogs:${TAG}
@@ -27,48 +47,82 @@ services:
     # restart: unless-stopped
     ports:
       - ${CATALOGS_SVC_PORT}:80
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
     env_file:
+      - ./.env
       - ../../.docker-envs/catalogs.env
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # caching nugets on containers if exists on the machine
+    volumes:
+      - ${HOME}/.nuget/packages:/root/.nuget/packages
+      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
     networks:
       - ecommerce
 
   identity:
-     image: identity:${TAG}
-     build:
-       args:
-         Version: "1"
-       # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
-       # we can use a .dockerignore file to exclude some files or directories from build context
-       # https://docs.docker.com/build/building/context/
-       # https://docs.docker.com/engine/reference/commandline/build/
-       # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
-       context: ../../
-       dockerfile: src/Services/Identity/Dockerfile
-     container_name: ecommerce-identity
-     # restart: unless-stopped
-     ports:
-       - ${IDENTITY_SVC_PORT}:80
-     networks:
-       - ecommerce
+    image: identity:${TAG}
+    build:
+      args:
+        Version: "1"
+      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+      # we can use a .dockerignore file to exclude some files or directories from build context
+      # https://docs.docker.com/build/building/context/
+      # https://docs.docker.com/engine/reference/commandline/build/
+      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
+      context: ../../
+      dockerfile: src/Services/Identity/Dockerfile
+    container_name: ecommerce-identity
+    # restart: unless-stopped
+    ports:
+      - ${IDENTITY_SVC_PORT}:80
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    env_file:
+      - ./.env
+      - ../../.docker-envs/identity.env
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # caching nugets on containers if exists on the machine
+    volumes:
+      - ${HOME}/.nuget/packages:/root/.nuget/packages
+      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
+    networks:
+      - ecommerce
 
   customers:
-     image: customers:${TAG}
-     build:
-       args:
-         Version: "1"
-       # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
-       # we can use a .dockerignore file to exclude some files or directories from build context
-       # https://docs.docker.com/build/building/context/
-       # https://docs.docker.com/engine/reference/commandline/build/
-       # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
-       context: ../../
-       dockerfile: src/Services/Customers/Dockerfile
-     container_name: ecommerce-customers
-     # restart: unless-stopped
-     ports:
-       - ${CUSTOMERS_SVC_PORT}:80
-     networks:
-       - ecommerce
+    image: customers:${TAG}
+    build:
+      args:
+        Version: "1"
+      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+      # we can use a .dockerignore file to exclude some files or directories from build context
+      # https://docs.docker.com/build/building/context/
+      # https://docs.docker.com/engine/reference/commandline/build/
+      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
+      context: ../../
+      dockerfile: src/Services/Customers/Dockerfile
+    container_name: ecommerce-customers
+    # restart: unless-stopped
+    ports:
+      - ${CUSTOMERS_SVC_PORT}:80
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    env_file:
+      - ./.env
+      - ../../.docker-envs/customers.env
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # caching nugets on containers if exists on the machine
+    volumes:
+      - ${HOME}/.nuget/packages:/root/.nuget/packages
+      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
+    networks:
+      - ecommerce
 
 # https://docs.docker.com/compose/networking/
 # https://docs.docker.com/engine/reference/commandline/network_create/

@@ -9,7 +9,7 @@
 version: "3.8"
 services:
   gateway:
-    image: gateway:${TAG}
+    image: ${GATEWAY_IMAGE}
     build:
       context: ../../
       dockerfile: src/ApiGateway/Dockerfile
@@ -21,18 +21,11 @@ services:
     # https://docs.docker.com/compose/environment-variables/env-file/
     env_file:
       - ./.env
-    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
-    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
-    # caching nugets on containers if exists on the machine
-    volumes:
-      - ${HOME}/.nuget/packages:/root/.nuget/packages
-      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
     networks:
       - ecommerce
 
   catalogs:
-    image: catalogs:${TAG}
+    image: ${CATALOGS_IMAGE}
     build:
       args:
         Version: "1"
@@ -52,18 +45,11 @@ services:
     env_file:
       - ./.env
       - ../../.docker-envs/catalogs.env
-    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
-    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
-    # caching nugets on containers if exists on the machine
-    volumes:
-      - ${HOME}/.nuget/packages:/root/.nuget/packages
-      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
     networks:
       - ecommerce
 
   identity:
-    image: identity:${TAG}
+    image: ${IDENTITY_IMAGE}
     build:
       args:
         Version: "1"
@@ -83,18 +69,11 @@ services:
     env_file:
       - ./.env
       - ../../.docker-envs/identity.env
-    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
-    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
-    # caching nugets on containers if exists on the machine
-    volumes:
-      - ${HOME}/.nuget/packages:/root/.nuget/packages
-      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
     networks:
       - ecommerce
 
   customers:
-    image: customers:${TAG}
+    image: ${CUSTOMERS_IMAGE}
     build:
       args:
         Version: "1"
@@ -114,13 +93,6 @@ services:
     env_file:
       - ./.env
       - ../../.docker-envs/customers.env
-    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
-    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
-    # caching nugets on containers if exists on the machine
-    volumes:
-      - ${HOME}/.nuget/packages:/root/.nuget/packages
-      - ${HOME}/.nuget/packages:/home/appuser/.nuget/packages
     networks:
       - ecommerce
 

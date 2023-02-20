@@ -9,13 +9,14 @@
 version: "3.8"
 services:
   gateway:
-    image: gateway-debug:${TAG}
     build:
       target: final
     # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
     # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
     # how to install vsdb: https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
     # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # this mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # if we use `base` image directly for running our mapped debug dll (not published dll, with publish dll depdendent assmblies are there also) it deosn't have all dependet assmblies and in this layer or stage we don't have nugets so we can get nugets that mapped from host machine with volume in `docker run` or `docker-compose up` and pass it to --additionalProbingPath in lunching program
     volumes:
       - ../../src:/src
       - ${VSDBG_FOLDER}:/vsdbg
@@ -32,9 +33,10 @@ services:
     entrypoint: bash
 
   catalogs:
-    image: catalogs-debug:${TAG}
     build:
       target: final
+    # this mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # if we use `base` image directly for running our mapped debug dll (not published dll, with publish dll depdendent assmblies are there also) it deosn't have all dependet assmblies and in this layer or stage we don't have nugets so we can get nugets that mapped from host machine with volume in `docker run` or `docker-compose up` and pass it to --additionalProbingPath in lunching program
     volumes:
       - ../../src:/src
       - ${VSDBG_FOLDER}:/vsdbg
@@ -51,9 +53,10 @@ services:
     entrypoint: bash
 
   identity:
-    image: identity-debug:${TAG}
     build:
       target: final
+    # this mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # if we use `base` image directly for running our mapped debug dll (not published dll, with publish dll depdendent assmblies are there also) it deosn't have all dependet assmblies and in this layer or stage we don't have nugets so we can get nugets that mapped from host machine with volume in `docker run` or `docker-compose up` and pass it to --additionalProbingPath in lunching program
     volumes:
       - ../../src:/src
       - ${VSDBG_FOLDER}:/vsdbg
@@ -70,9 +73,10 @@ services:
     entrypoint: bash
 
   customers:
-    image: customers-debug:${TAG}
     build:
       target: final
+    # this mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # if we use `base` image directly for running our mapped debug dll (not published dll, with publish dll depdendent assmblies are there also) it deosn't have all dependet assmblies and in this layer or stage we don't have nugets so we can get nugets that mapped from host machine with volume in `docker run` or `docker-compose up` and pass it to --additionalProbingPath in lunching program
     volumes:
       - ../../src:/src
       - ${VSDBG_FOLDER}:/vsdbg

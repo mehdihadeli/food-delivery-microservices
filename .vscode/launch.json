@@ -5,13 +5,12 @@
     //https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
     //https://www.youtube.com/watch?v=k0hpant9wXo
     {
-      "name": "launch: catalogs service",
+      "name": "Launch: Catalogs Service",
       "type": "coreclr",
       "request": "launch",
       //https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#launchsettingsjson-support
       "launchSettingsProfile": "Catalogs.Api.Http",
-      "preLaunchTask": "build: catalogs service",
-      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build: catalogs",
       "launchBrowser": {
         "enabled": true,
         "args": "${auto-detect-url}",
@@ -26,53 +25,148 @@
           "command": "xdg-open"
         }
       },
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
       "program": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/bin/Debug/net7.0/ECommerce.Services.Catalogs.Api.dll",
       "args": [],
+      // should be set expelcitly for root of our api project
       "cwd": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api",
       "console": "externalTerminal",
       "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
       "serverReadyAction": {
         "action": "openExternally",
         "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
     },
     //https://github.com/Trottero/dotnet-watch-attach
-    //https://github.com/murugaratham/vscode-dotnet-watch
+    //https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch
     {
       "type": "dotnetwatchattach",
       "request": "launch",
-      "name": "watch: catalogs service",
-      "args": { // Args to pass to coreclr attach
-        "env": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
-        }
+      "name": "Watch: Catalogs Service",
+      "task": "watch: catalogs", // Label of watch task in tasks.json
+      // just the name of exe file not `full path` this exe name will use to attach to exe name process, and program should be `exe` file because processes to attach are `exe` when we use `attach` request type 
+      // here we attach to existing running exe project, that already is run by watch command
+      "program": "ECommerce.Services.Catalogs.Api.exe"
+    },
+    //https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
+    //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    //https://github.com/microsoft/vscode-docker/issues/3597
+    //https://github.com/microsoft/vscode-docker/issues/3831
+    //https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes
+    // here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `catalogs-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
+    // for see data inner container `docker exec -it catalogs-debug bash`
+    {
+      "name": "Docker Launch: Catalogs Service",
+      "type": "coreclr",
+      "request": "launch",
+      "console": "externalTerminal",
+      "preLaunchTask": "docker-run-debug: catalogs",
+      "postDebugTask": "docker-remove-debug: catalogs",
+      // connecting debugger to docker container with using vsdbg inner container and ssh to our local source code
+      // it will run `exec -i <container name> /vsdbg/vsdbg ` inner container after that coreclr will launch our app with program attribute on container
+      "pipeTransport": {
+        "pipeArgs": [
+          "exec",
+          "-i",
+          "catalogs-debug"
+        ],
+        "pipeProgram": "docker",
+        "quoteArgs": false,
+        "debuggerPath": "/vsdbg/vsdbg"
       },
-      "task": "watch: catalogs service", // Label of watch task in tasks.json
-      "program": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/bin/Debug/net7.0/ECommerce.Services.Catalogs.Api.dll"
+      //our container with base stage and without entrypoint is run on `app/` working directory
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set `bin` directory and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "program": "/app/ECommerce.Services.Catalogs.Api.dll",
+      "justMyCode": false,
+      //To debug programs built on computers other than the Visual Studio Code computer (the dll and its pdbs are on the container), Visual Studio Code needs to be hold how to map file paths (SourceMap attribute), actually it maps path inner container pdbs to local path. This rule tells the debugger to change any `file paths` in `container pdbs` from `source` in SourceMap (`container pdb path`) to `target` in SourceMap (our `local code`) and replace it with the `local code` path. paths in the containers pdbs built and get from path during `dotnet build` in dockerfile.
+      //https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#configuring-ssh-attach-with-launchjson
+      //https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#building-and-deploying-the-application-and-pdbs
+      "sourceFileMap": {
+        "/": "${workspaceRoot}"
+      },
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
+      //https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet#options-for-running-an-application
+      //https://github.com/microsoft/vscode-docker/issues/3597
+      //https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
+      "args": "--additionalProbingPath /root/nuget/packages --additionalProbingPath ~/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages",
     },
-    //https://github.com/microsoft/vscode-docker/blob/aa14007a4c294255fa8abe167849b394cd6e10b1/src/debugging/netcore/NetCoreDebugHelper.ts#L107
-    //https://code.visualstudio.com/docs/containers/debug-common
+    //https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
+    //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    //https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes
+    //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
+    //for see data inner container `docker exec -it docker-remote-debugging bash`
     {
-      "name": "launch docker: catalogs-dev in docker",
-      "type": "docker",
-      "preLaunchTask": "docker-run-debugging: catalogs-dev",
+      "name": "Docker Launch Base: Catalogs Service",
+      "type": "coreclr",
       "request": "launch",
-      //set the removeContainerAfterDebug property to false to keep the container up after debuging else it will delete
-      "removeContainerAfterDebug": true,
-      "netCore": {
-        "appProject": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
-      }
+      "preLaunchTask": "docker-run-base: catalogs",
+      "postDebugTask": "docker-remove-base: catalogs",
+      // connecting debugger to docker container with using vsdbg inner container and ssh to our local source code
+      // it will run `exec -i <container name> /vsdbg/vsdbg ` inner container
+      "pipeTransport": {
+        "pipeArgs": [
+          "exec",
+          "-i",
+          "catalogs-base"
+        ],
+        "pipeCwd": "${workspaceFolder}",
+        "pipeProgram": "docker",
+        "quoteArgs": false,
+        "debuggerPath": "/vsdbg/vsdbg"
+      },
+      //our container with base stage and without entrypoint is run on `app/` working directory
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set `bin` directory and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "program": "bin/Debug/net7.0/ECommerce.Services.Catalogs.Api.dll",
+      //change working dicrectory inner container and inner /app working directory
+      "cwd": "src/Services/Catalogs/ECommerce.Services.Catalogs.Api",
+      "justMyCode": false,
+      //To debug programs built on computers other than the Visual Studio Code computer (the dll and its pdbs are on the container), Visual Studio Code needs to be hold how to map file paths (SourceMap attribute), actually it maps path inner container pdbs to local path. This rule tells the debugger to change any `file paths` in `container pdbs` from `source` in SourceMap (`container pdb path`) to `target` in SourceMap (our `local code`) and replace it with the `local code` path. paths in the containers pdbs built and get from path during `dotnet build` in dockerfile.
+      //https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#configuring-ssh-attach-with-launchjson
+      //https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#building-and-deploying-the-application-and-pdbs
+      "sourceFileMap": {
+        "/app": "${workspaceRoot}"
+      },
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
+      //https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet#options-for-running-an-application
+      //https://github.com/microsoft/vscode-docker/issues/3597
+      //https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
+      "args": "--additionalProbingPath /root/nuget/packages --additionalProbingPath ~/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages",
     },
+    //https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+    //https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes
     {
-      "name": "launch docker-debugging: catalogs-release in docker",
-      "type": "docker",
-      "preLaunchTask": "docker-run-debugging: catalogs-release",
-      //set the removeContainerAfterDebug property to false to keep the container up after debuging else it will delete
-      "removeContainerAfterDebug": true,
-      "request": "launch",
-      "netCore": {
-        "appProject": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
-      }
+      "name": "Docker Attach: Catalogs Service",
+      "type": "coreclr",
+      // will attach to process inner `docker-run-running-app` through `pipeTransport` for debugging
+      "request": "attach",
+      // connecting `vsdbg debugger` to `docker container` with using vsdbg inner container and ssh to our `local source code`
+      // `pipeTransport` will run `exec -i <container name> /vsdbg/vsdbg ` inner container
+      "pipeTransport": {
+        "pipeArgs": [
+          "exec",
+          "-i",
+          "catalogs-dev"
+        ],
+        "pipeProgram": "docker",
+        "quoteArgs": false,
+        "debuggerPath": "/vsdbg/vsdbg"
+      },
+      "justMyCode": false,
+      //To debug programs built on computers other than the Visual Studio Code computer (the dll and its pdbs are on the container), Visual Studio Code needs to be hold how to map file paths (SourceMap attribute), actually it maps path inner container pdbs to local path. This rule tells the debugger to change any `file paths` in `container pdbs` from `source` in SourceMap (`container pdb path`) to `target` in SourceMap (our `local code`) and replace it with the `local code` path. paths in the containers pdbs built and get from path during `dotnet build` in dockerfile.
+      //https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#configuring-ssh-attach-with-launchjson
+      //https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#building-and-deploying-the-application-and-pdbs
+      "sourceFileMap": {
+        "/": "${workspaceRoot}"
+      },
     },
     {
       "name": "launch: customers service",

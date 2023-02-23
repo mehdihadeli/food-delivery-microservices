@@ -66,8 +66,7 @@ COPY ./src/Services/Shared/ECommerce.Services.Shared/ECommerce.Services.Shared.c
 # https://pythonspeed.com/articles/docker-cache-pip-downloads/
 # When we have a chnage in a layer that layer and all subsequent layer will rebuild again
 # when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `ECommerce.Services.Identity.Api.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache 
-RUN --mount=type=cache,id=identity_nuget,target=/root/.nuget/packages \
-    dotnet restore ./Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
+RUN dotnet restore ./Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
@@ -77,15 +76,13 @@ COPY ./src/Services/Shared/  ./Services/Shared/
 
 WORKDIR /src/Services/Identity/ECommerce.Services.Identity.Api/
 
-RUN --mount=type=cache,id=identity_nuget,target=/root/.nuget/packages\
-    dotnet build -c Release --no-restore 
+RUN dotnet build -c Release --no-restore 
 
 FROM build AS publish
 # Publish project to output folder and no build and restore, as we did it already
 # https://stackoverflow.com/questions/5457095/release-generating-pdb-files-why
 # pdbs also generate for release mode (pdbonly) so vsdb can use it for debugging for debug mode its default is (full)
-RUN --mount=type=cache,id=identity_nuget,target=/root/.nuget/packages\
-    dotnet publish -c Release --no-build --no-restore -o /app/publish
+RUN dotnet publish -c Release --no-build --no-restore -o /app/publish
 
 FROM base AS final
 # Setup working directory for the project

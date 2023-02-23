@@ -32,11 +32,11 @@ COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
-COPY ./src/Services/Customers/Directory.Build.props ./Services/Customers/
+COPY ./src/Services/Orders/Directory.Build.props ./Services/Orders/
 
+# TODO: Using wildcard to copy all files in the directory.
 # https://docs.docker.com/build/cache/#order-your-layers
 # with any changes in csproj files all downstream layer will rebuil, so dotnet restore will execute again
-# TODO: Using wildcard to copy all files in the directory.
 COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
 COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
 COPY ./src/BuildingBlocks/BuildingBlocks.Caching/BuildingBlocks.Caching.csproj ./BuildingBlocks/BuildingBlocks.Caching/
@@ -54,8 +54,8 @@ COPY ./src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj ./Buildin
 COPY ./src/BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/BuildingBlocks.Messaging.Persistence.Postgres.csproj ./BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/
 COPY ./src/BuildingBlocks/BuildingBlocks.OpenTelemetry/BuildingBlocks.OpenTelemetry.csproj ./BuildingBlocks/BuildingBlocks.OpenTelemetry/
 
-COPY ./src/Services/Customers/ECommerce.Services.Customers/ECommerce.Services.Customers.csproj ./Services/Customers/ECommerce.Services.Customers/
-COPY ./src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj ./Services/Customers/ECommerce.Services.Customers.Api/
+COPY ./src/Services/Orders/ECommerce.Services.Orders/ECommerce.Services.Orders.csproj ./Services/Orders/ECommerce.Services.Orders/
+COPY ./src/Services/Orders/ECommerce.Services.Orders.Api/ECommerce.Services.Orders.Api.csproj ./Services/Orders/ECommerce.Services.Orders.Api/
 COPY ./src/Services/Shared/ECommerce.Services.Shared/ECommerce.Services.Shared.csproj ./Services/Shared/ECommerce.Services.Shared/
 
 # https://docs.docker.com/build/cache/
@@ -65,24 +65,27 @@ COPY ./src/Services/Shared/ECommerce.Services.Shared/ECommerce.Services.Shared.c
 # https://stackoverflow.com/questions/69464184/using-docker-buildkit-mount-type-cache-for-caching-nuget-packages-for-net-5-d
 # https://pythonspeed.com/articles/docker-cache-pip-downloads/
 # When we have a chnage in a layer that layer and all subsequent layer will rebuild again
-# when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `ECommerce.Services.Customers.Api.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache 
-RUN dotnet restore ./Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
+# when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `ECommerce.Services.Orders.Api.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache 
+RUN --mount=type=cache,id=orders_nuget,target=/root/.nuget/packages \
+    dotnet restore ./Services/Orders/ECommerce.Services.Orders.Api/ECommerce.Services.Orders.Api.csproj
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
-COPY ./src/Services/Customers/ECommerce.Services.Customers.Api/  ./Services/Customers/ECommerce.Services.Customers.Api/
-COPY ./src/Services/Customers/ECommerce.Services.Customers/  ./Services/Customers/ECommerce.Services.Customers/
+COPY ./src/Services/Orders/ECommerce.Services.Orders.Api/  ./Services/Orders/ECommerce.Services.Orders.Api/
+COPY ./src/Services/Orders/ECommerce.Services.Orders/  ./Services/Orders/ECommerce.Services.Orders/
 COPY ./src/Services/Shared/  ./Services/Shared/
 
-WORKDIR /src/Services/Customers/ECommerce.Services.Customers.Api/
+WORKDIR /src/Services/Orders/ECommerce.Services.Orders.Api/
 
-RUN dotnet build -c Release --no-restore 
+RUN --mount=type=cache,id=orders_nuget,target=/root/.nuget/packages\
+    dotnet build -c Release --no-restore 
 
 FROM build AS publish
 # Publish project to output folder and no build and restore, as we did it already
 # https://stackoverflow.com/questions/5457095/release-generating-pdb-files-why
 # pdbs also generate for release mode (pdbonly) so vsdb can use it for debugging for debug mode its default is (full)
-RUN dotnet publish -c Release --no-build --no-restore -o /app/publish
+RUN --mount=type=cache,id=orders_nuget,target=/root/.nuget/packages\
+    dotnet publish -c Release --no-build --no-restore -o /app/publish
 
 FROM base AS final
 # Setup working directory for the project
@@ -96,4 +99,4 @@ COPY --from=publish /app/publish  .
 #https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
 # when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in to `bin` or `app project` folder, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly`
 # in this layer we don't have nugets so we can use mounted volume in `docker run` or `docker-compose up` for this entrypoint when docker container will be run for the `host` with --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly, for example dotnet <application.dll> --additionalProbingPath /root/nuget/packages --additionalProbingPath ~/.nuget/packages 
-ENTRYPOINT ["dotnet", "ECommerce.Services.Customers.Api.dll"]
+ENTRYPOINT ["dotnet", "ECommerce.Services.Orders.Api.dll"]

@@ -8,7 +8,8 @@ WORKDIR /app
 #https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilat
 #https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments
 EXPOSE 80
-ENV ASPNETCORE_URLS http://*:80
+EXPOSE 443
+ENV ASPNETCORE_URLS http://*:80  https://*:443 
 ENV ASPNETCORE_ENVIRONMENT docker
 
 # # https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
@@ -32,6 +33,8 @@ COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
 COPY ./src/Services/Catalogs/Directory.Build.props ./Services/Catalogs/
 
+# https://docs.docker.com/build/cache/#order-your-layers
+# with any changes in csproj files all downstream layer will rebuil, so dotnet restore will execute again
 # TODO: Using wildcard to copy all files in the directory.
 COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
 COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
@@ -55,9 +58,13 @@ COPY ./src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.
 COPY ./src/Services/Shared/ECommerce.Services.Shared/ECommerce.Services.Shared.csproj ./Services/Shared/ECommerce.Services.Shared/
 
 # https://docs.docker.com/build/cache/
+# https://docs.docker.com/build/cache/#order-your-layers
+# https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#run---mounttypecache
 # https://github.com/dotnet/dotnet-docker/issues/3353
 # https://stackoverflow.com/questions/69464184/using-docker-buildkit-mount-type-cache-for-caching-nuget-packages-for-net-5-d
-# Run the restore and cache the packages on the host for faster subsequent builds.
+# https://pythonspeed.com/articles/docker-cache-pip-downloads/
+# When we have a chnage in a layer that layer and all subsequent layer will rebuild again
+# when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `ECommerce.Services.Catalogs.Api.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache 
 RUN --mount=type=cache,id=catalogs_nuget,target=/root/.nuget/packages \
     dotnet restore ./Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
 
@@ -70,7 +77,7 @@ COPY ./src/Services/Shared/  ./Services/Shared/
 WORKDIR /src/Services/Catalogs/ECommerce.Services.Catalogs.Api/
 
 RUN --mount=type=cache,id=catalogs_nuget,target=/root/.nuget/packages\
-    dotnet build -c Release --no-restore
+    dotnet build -c Release --no-restore 
 
 FROM build AS publish
 # Publish project to output folder and no build and restore, as we did it already

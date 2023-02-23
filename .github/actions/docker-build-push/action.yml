@@ -65,6 +65,7 @@ runs:
     # https://docs.docker.com/engine/reference/commandline/build/
     # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
     # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
     - name: docker build
       shell: bash
       if: success()
@@ -79,6 +80,7 @@ runs:
         username: ${{ inputs.registry-username }}
         password: ${{ inputs.registry-password }}
 
+      # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
     - name: docker publish
       shell: bash
       if: success()

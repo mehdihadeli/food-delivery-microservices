@@ -8,91 +8,77 @@
 
 version: "3.8"
 services:
-  gateway:
-    image: ${GATEWAY_IMAGE}
-    build:
-      context: ../../
-      dockerfile: src/ApiGateway/Dockerfile
-    container_name: ecommerce-gateway
-    # restart: unless-stopped
-    ports:
-      - ${GATEWAY_PORT}:80
-    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
-    # https://docs.docker.com/compose/environment-variables/env-file/
-    env_file:
-      - ./.env
-    networks:
-      - ecommerce
+  # gateway:
+  # # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-servicemage
+  # # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+  # image: ${REGISTRY}/${PROJECT_NAME}/gateway-service:${TAG}
+  # container_name: gateway-{TAG}
+  # # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+  # restart: on-failure
+  # ports:
+  #   - ${GATEWAY_PORT}:80
+  # # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+  # # https://docs.docker.com/compose/environment-variables/env-file/
+  # environment:
+  #   - ASPNETCORE_ENVIRONMENT=docker
+  # networks:
+  #   - ecommerce
 
   catalogs:
-    image: ${CATALOGS_IMAGE}
-    build:
-      args:
-        Version: "1"
-      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
-      # we can use a .dockerignore file to exclude some files or directories from build context
-      # https://docs.docker.com/build/building/context/
-      # https://docs.docker.com/engine/reference/commandline/build/
-      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
-      context: ../../
-      dockerfile: src/Services/Catalogs/Dockerfile
-    container_name: ecommerce-catalogs
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+    image: ${REGISTRY}/${PROJECT_NAME}/catalogs-service:${TAG}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
+    container_name: catalogs-{TAG}
     # restart: unless-stopped
     ports:
       - ${CATALOGS_SVC_PORT}:80
     # https://docs.docker.com/compose/environment-variables/set-environment-variables/
     # https://docs.docker.com/compose/environment-variables/env-file/
+    # .env file will resolved implicitly
     env_file:
-      - ./.env
-      - ../../.docker-envs/catalogs.env
+      - ./catalogs.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
     networks:
       - ecommerce
 
   identity:
-    image: ${IDENTITY_IMAGE}
-    build:
-      args:
-        Version: "1"
-      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
-      # we can use a .dockerignore file to exclude some files or directories from build context
-      # https://docs.docker.com/build/building/context/
-      # https://docs.docker.com/engine/reference/commandline/build/
-      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
-      context: ../../
-      dockerfile: src/Services/Identity/Dockerfile
-    container_name: ecommerce-identity
-    # restart: unless-stopped
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+    image: ${REGISTRY}/${PROJECT_NAME}/identity-service:${TAG}
+    container_name: identity-{TAG}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
     ports:
       - ${IDENTITY_SVC_PORT}:80
     # https://docs.docker.com/compose/environment-variables/set-environment-variables/
     # https://docs.docker.com/compose/environment-variables/env-file/
+    # .env file will resolved implicitly
     env_file:
-      - ./.env
-      - ../../.docker-envs/identity.env
+      - ./identity.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
     networks:
       - ecommerce
 
   customers:
-    image: ${CUSTOMERS_IMAGE}
-    build:
-      args:
-        Version: "1"
-      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
-      # we can use a .dockerignore file to exclude some files or directories from build context
-      # https://docs.docker.com/build/building/context/
-      # https://docs.docker.com/engine/reference/commandline/build/
-      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
-      context: ../../
-      dockerfile: src/Services/Customers/Dockerfile
-    container_name: ecommerce-customers
-    # restart: unless-stopped
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+    image: ${REGISTRY}/${PROJECT_NAME}/customers-service:${TAG}
+    container_name: customers-{TAG}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
     ports:
       - ${CUSTOMERS_SVC_PORT}:80
     # https://docs.docker.com/compose/environment-variables/set-environment-variables/
     # https://docs.docker.com/compose/environment-variables/env-file/
+    # .env file will resolved implicitly
     env_file:
-      - ./.env
-      - ../../.docker-envs/customers.env
+      - ./customers.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
     networks:
       - ecommerce
 

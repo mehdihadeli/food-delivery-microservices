@@ -8,8 +8,18 @@ WORKDIR /app
 #https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilat
 #https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments
 EXPOSE 80
-ENV ASPNETCORE_URLS http://*:80
+EXPOSE 443
+ENV ASPNETCORE_URLS http://*:80  https://*:443 
 ENV ASPNETCORE_ENVIRONMENT docker
+
+# # https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+# # https://baeldung.com/ops/root-user-password-docker-container
+# # https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+# # https://medium.com/redbubble/running-a-docker-container-as-a-non-root-user-7d2e00f8ee15
+# # Creates a non-root user with an explicit UID and adds permission to access the /app folder
+# # if we don't define a user container will use root user
+# RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+# USER appuser
 
 FROM mcr.microsoft.com/dotnet/sdk:latest as build
 WORKDIR /src
@@ -24,6 +34,8 @@ COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
 COPY ./src/Services/Customers/Directory.Build.props ./Services/Customers/
 
+# https://docs.docker.com/build/cache/#order-your-layers
+# with any changes in csproj files all downstream layer will rebuil, so dotnet restore will execute again
 # TODO: Using wildcard to copy all files in the directory.
 COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
 COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
@@ -46,8 +58,16 @@ COPY ./src/Services/Customers/ECommerce.Services.Customers/ECommerce.Services.Cu
 COPY ./src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj ./Services/Customers/ECommerce.Services.Customers.Api/
 COPY ./src/Services/Shared/ECommerce.Services.Shared/ECommerce.Services.Shared.csproj ./Services/Shared/ECommerce.Services.Shared/
 
-# restore nuget packages
-RUN dotnet restore ./Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
+# https://docs.docker.com/build/cache/
+# https://docs.docker.com/build/cache/#order-your-layers
+# https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#run---mounttypecache
+# https://github.com/dotnet/dotnet-docker/issues/3353
+# https://stackoverflow.com/questions/69464184/using-docker-buildkit-mount-type-cache-for-caching-nuget-packages-for-net-5-d
+# https://pythonspeed.com/articles/docker-cache-pip-downloads/
+# When we have a chnage in a layer that layer and all subsequent layer will rebuild again
+# when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `ECommerce.Services.Customers.Api.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache 
+RUN --mount=type=cache,id=customers_nuget,target=/root/.nuget/packages \
+    dotnet restore ./Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
@@ -57,14 +77,15 @@ COPY ./src/Services/Shared/  ./Services/Shared/
 
 WORKDIR /src/Services/Customers/ECommerce.Services.Customers.Api/
 
-# Build project with Release configuration and no restore, as we did it already
-RUN dotnet build -c Release --no-restore /app/build
+RUN --mount=type=cache,id=customers_nuget,target=/root/.nuget/packages\
+    dotnet build -c Release --no-restore 
 
 FROM build AS publish
 # Publish project to output folder and no build and restore, as we did it already
 # https://stackoverflow.com/questions/5457095/release-generating-pdb-files-why
 # pdbs also generate for release mode (pdbonly) so vsdb can use it for debugging for debug mode its default is (full)
-RUN dotnet publish -c Release --no-build --no-restore -o /app/publish
+RUN --mount=type=cache,id=customers_nuget,target=/root/.nuget/packages\
+    dotnet publish -c Release --no-build --no-restore -o /app/publish
 
 FROM base AS final
 # Setup working directory for the project
@@ -74,8 +95,6 @@ COPY --from=publish /app/publish  .
 # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage because we want to run container app with debugger launcher
 #https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
 #https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
-
-RUN ls
 
 #https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
 # when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in to `bin` or `app project` folder, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly`

@@ -4,6 +4,9 @@
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?&style=flat-square)](https://github.com/semantic-release/semantic-release)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?&style=flat-square)](http://commitizen.github.io/cz-cli/)
 
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/https://github.com/mehdihadeli/ecommerce-microservices)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://mehdihadeli-humble-space-couscous-5x5pqwwjx5c7664.github.dev)
+
 > `ECommerece Microservices` is a fictional ecommerce sample, built with .Net Core and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
 
 💡 This application is not business oriented and my focus is mostly on technical part, I just want to implement a sample with using different technologies, software architecture design, principles and all the thing we need for creating a microservices app.
@@ -24,7 +27,7 @@ Thanks a bunch for supporting me!
 - [Features](#features)
 - [Plan](#plan)
 - [Setup](#setup)
-  - [Development Envionment](#development-envionment)
+  - [Conventional Commit](#conventional-commit)
   - [Formatting](#formatting)
   - [Analizers](#analizers)
 - [Technologies - Libraries](#technologies---libraries)
@@ -97,14 +100,6 @@ Thanks a bunch for supporting me!
 - ✔️ **[`MassTransit`](https://github.com/MassTransit/MassTransit)** - Distributed Application Framework for .NET
 
 ## Setup
-
-### Development Envionment
-
-#### Gitpod
-
-Start to develop with a pre config environment contains all needed infrastructures in the Gitpod:
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/https://github.com/mehdihadeli/ecommerce-microservices)
 
 ### Conventional Commit
 

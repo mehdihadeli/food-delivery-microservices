@@ -12,51 +12,25 @@ EXPOSE 443
 ENV ASPNETCORE_URLS http://*:80  https://*:443 
 ENV ASPNETCORE_ENVIRONMENT docker
 
-# # https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-# # https://baeldung.com/ops/root-user-password-docker-container
-# # https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-# # https://medium.com/redbubble/running-a-docker-container-as-a-non-root-user-7d2e00f8ee15
-# # Creates a non-root user with an explicit UID and adds permission to access the /app folder
-# # if we don't define a user container will use root user
-# RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
-# USER appuser
-
-FROM mcr.microsoft.com/dotnet/sdk:latest as build
+FROM mcr.microsoft.com/dotnet/sdk:latest AS build
+# Setup working directory for the project
 WORKDIR /src
-
-# path are related to build context, here for us build context is root folder
-# https://docs.docker.com/build/building/context/
-COPY ./.editorconfig ./
 
 COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
-COPY ./src/Services/Identity/Directory.Build.props ./Services/Identity/
 
-# TODO: Using wildcard to copy all files in the directory.
 # https://docs.docker.com/build/cache/#order-your-layers
 # with any changes in csproj files all downstream layer will rebuil, so dotnet restore will execute again
 COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
 COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
-COPY ./src/BuildingBlocks/BuildingBlocks.Caching/BuildingBlocks.Caching.csproj ./BuildingBlocks/BuildingBlocks.Caching/
-COPY ./src/BuildingBlocks/BuildingBlocks.Email/BuildingBlocks.Email.csproj ./BuildingBlocks/BuildingBlocks.Email/
-COPY ./src/BuildingBlocks/BuildingBlocks.Integration.MassTransit/BuildingBlocks.Integration.MassTransit.csproj ./BuildingBlocks/BuildingBlocks.Integration.MassTransit/
 COPY ./src/BuildingBlocks/BuildingBlocks.Logging/BuildingBlocks.Logging.csproj ./BuildingBlocks/BuildingBlocks.Logging/
-COPY ./src/BuildingBlocks/BuildingBlocks.HealthCheck/BuildingBlocks.HealthCheck.csproj ./BuildingBlocks/BuildingBlocks.HealthCheck/
-COPY ./src/BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/BuildingBlocks.Persistence.EfCore.Postgres.csproj ./BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/
-COPY ./src/BuildingBlocks/BuildingBlocks.Persistence.Mongo/BuildingBlocks.Persistence.Mongo.csproj ./BuildingBlocks/BuildingBlocks.Persistence.Mongo/
-COPY ./src/BuildingBlocks/BuildingBlocks.Resiliency/BuildingBlocks.Resiliency.csproj ./BuildingBlocks/BuildingBlocks.Resiliency/
-COPY ./src/BuildingBlocks/BuildingBlocks.Security/BuildingBlocks.Security.csproj ./BuildingBlocks/BuildingBlocks.Security/
-COPY ./src/BuildingBlocks/BuildingBlocks.Swagger/BuildingBlocks.Swagger.csproj ./BuildingBlocks/BuildingBlocks.Swagger/
-COPY ./src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj ./BuildingBlocks/BuildingBlocks.Validation/
-COPY ./src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj ./BuildingBlocks/BuildingBlocks.Web/
-COPY ./src/BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/BuildingBlocks.Messaging.Persistence.Postgres.csproj ./BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/
-COPY ./src/BuildingBlocks/BuildingBlocks.OpenTelemetry/BuildingBlocks.OpenTelemetry.csproj ./BuildingBlocks/BuildingBlocks.OpenTelemetry/
 
-COPY ./src/Services/Identity/ECommerce.Services.Identity/ECommerce.Services.Identity.csproj ./Services/Identity/ECommerce.Services.Identity/
-COPY ./src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj ./Services/Identity/ECommerce.Services.Identity.Api/
-COPY ./src/Services/Shared/ECommerce.Services.Shared/ECommerce.Services.Shared.csproj ./Services/Shared/ECommerce.Services.Shared/
+# https://docs.docker.com/build/cache/#order-your-layers
+# with any changes in csproj files all downstream layer will rebuil, so dotnet restore will execute again
+COPY ./src/ApiGateway/Directory.Build.props ./ApiGateway/
+COPY ./src/ApiGateway/ECommerce.ApiGateway/ECommerce.ApiGateway.csproj ./ApiGateway/ECommerce.ApiGateway/
 
 # https://docs.docker.com/build/cache/
 # https://docs.docker.com/build/cache/#order-your-layers
@@ -65,26 +39,24 @@ COPY ./src/Services/Shared/ECommerce.Services.Shared/ECommerce.Services.Shared.c
 # https://stackoverflow.com/questions/69464184/using-docker-buildkit-mount-type-cache-for-caching-nuget-packages-for-net-5-d
 # https://pythonspeed.com/articles/docker-cache-pip-downloads/
 # When we have a chnage in a layer that layer and all subsequent layer will rebuild again
-# when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `ECommerce.Services.Identity.Api.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache 
-RUN --mount=type=cache,id=identity_nuget,target=/root/.nuget/packages \
-    dotnet restore ./Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj
+# when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `ECommerce.ApiGateway.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache 
+RUN --mount=type=cache,id=gateway_nuget,target=/root/.nuget/packages \
+    dotnet restore ./ApiGateway/ECommerce.ApiGateway/ECommerce.ApiGateway.csproj
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
-COPY ./src/Services/Identity/ECommerce.Services.Identity.Api/  ./Services/Identity/ECommerce.Services.Identity.Api/
-COPY ./src/Services/Identity/ECommerce.Services.Identity/  ./Services/Identity/ECommerce.Services.Identity/
-COPY ./src/Services/Shared/  ./Services/Shared/
+COPY ./src/ApiGateway/ECommerce.ApiGateway/  ./ApiGateway/ECommerce.ApiGateway/
 
-WORKDIR /src/Services/Identity/ECommerce.Services.Identity.Api/
+WORKDIR /src/ApiGateway/ECommerce.ApiGateway/
 
-RUN --mount=type=cache,id=identity_nuget,target=/root/.nuget/packages\
+RUN --mount=type=cache,id=gateway_nuget,target=/root/.nuget/packages\
     dotnet build -c Release --no-restore 
 
 FROM build AS publish
 # Publish project to output folder and no build and restore, as we did it already
 # https://stackoverflow.com/questions/5457095/release-generating-pdb-files-why
 # pdbs also generate for release mode (pdbonly) so vsdb can use it for debugging for debug mode its default is (full)
-RUN --mount=type=cache,id=identity_nuget,target=/root/.nuget/packages\
+RUN --mount=type=cache,id=gateway_nuget,target=/root/.nuget/packages\
     dotnet publish -c Release --no-build --no-restore -o /app/publish
 
 FROM base AS final
@@ -99,4 +71,4 @@ COPY --from=publish /app/publish  .
 #https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
 # when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in to `bin` or `app project` folder, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly`
 # in this layer we don't have nugets so we can use mounted volume in `docker run` or `docker-compose up` for this entrypoint when docker container will be run for the `host` with --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly, for example dotnet <application.dll> --additionalProbingPath /root/nuget/packages --additionalProbingPath ~/.nuget/packages 
-ENTRYPOINT ["dotnet", "ECommerce.Services.Identity.Api.dll"]
+ENTRYPOINT ["dotnet", "ECommerce.ApiGateway.dll"]

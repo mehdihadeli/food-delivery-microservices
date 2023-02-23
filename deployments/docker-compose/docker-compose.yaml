@@ -3,29 +3,24 @@
 version: "3.8"
 
 services:
-  gateway:
-    build:
-      context: ../../
-      dockerfile: src/ApiGateway/Dockerfile
-    container_name: ecommerce-gateway
-    restart: on-failure
-    ports:
-      - ${GATEWAY_PORT}:80
-    networks:
-      - ecommerce
-    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
-    # https://docs.docker.com/compose/environment-variables/env-file/
-    env_file:
-      - ./.env
+  # gateway:
+  # image: ${REGISTRY}/${PROJECT_NAME}/gateway-service:${TAG}
+  # container_name: gateway-${TAG}
+  ## https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+  # restart: on-failure
+  # ports:
+  #   - ${GATEWAY_PORT}:80
+  # networks:
+  #   - ecommerce
+  # # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+  # # https://docs.docker.com/compose/environment-variables/env-file/
+  # environment:
+  #   - ASPNETCORE_ENVIRONMENT=docker
 
   catalogs:
-    image: catalogs:${TAG}
-    build:
-      args:
-        Version: "1"
-      context: ../../
-      dockerfile: src/Services/Catalogs/Dockerfile
-    container_name: ecommerce-catalogs
+    image: ${REGISTRY}/${PROJECT_NAME}/catalogs-service:${TAG}
+    container_name: catalogs-${TAG}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
     restart: on-failure
     ports:
       - ${CATALOGS_SVC_PORT}:80
@@ -37,18 +32,16 @@ services:
       - ecommerce
     # https://docs.docker.com/compose/environment-variables/set-environment-variables/
     # https://docs.docker.com/compose/environment-variables/env-file/
+    # .env file will resolved implicitly
     env_file:
-      - ./.env
-      - ../../.docker-envs/catalogs.env
+      - ./catalogs.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
 
   identity:
-    image: identity:${TAG}
-    build:
-      args:
-        Version: "1"
-      context: ../../
-      dockerfile: src/Services/Identity/Dockerfile
-    container_name: ecommerce-identity
+    image: ${REGISTRY}/${PROJECT_NAME}/identity-service:${TAG}
+    container_name: identity-${TAG}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
     restart: on-failure
     ports:
       - ${IDENTITY_SVC_PORT}:80
@@ -59,18 +52,16 @@ services:
       - ecommerce
     # https://docs.docker.com/compose/environment-variables/set-environment-variables/
     # https://docs.docker.com/compose/environment-variables/env-file/
+    # .env file will resolved implicitly
     env_file:
-      - ./.env
-      - ../../.docker-envs/identity.env
+      - ./identity.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
 
   customers:
-    image: customers:${TAG}
-    build:
-      args:
-        Version: "1"
-      context: ../../
-      dockerfile: src/Services/Customers/Dockerfile
-    container_name: ecommerce-customers
+    image: ${REGISTRY}/${PROJECT_NAME}/customers-service:${TAG}
+    container_name: customers-${TAG}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
     restart: on-failure
     ports:
       - ${CUSTOMERS_SVC_PORT}:80
@@ -82,9 +73,11 @@ services:
       - ecommerce
     # https://docs.docker.com/compose/environment-variables/set-environment-variables/
     # https://docs.docker.com/compose/environment-variables/env-file/
+    # .env file will resolved implicitly
     env_file:
-      - ./.env
-      - ../../.docker-envs/customers.env
+      - ./customers.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
 
     #######################################################
     #  rabbitmq

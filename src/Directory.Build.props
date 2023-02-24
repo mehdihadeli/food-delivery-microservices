@@ -20,14 +20,18 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
+  <!-- full is default for debug mode -->
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>full</DebugType>
     <DefineConstants>DEBUG;TRACE;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
+  <!-- https://stackoverflow.com/questions/5457095/release-generating-pdb-files-why -->
+  <!-- pdb-only is default for release mode -->
+  <!-- the <DefineConstants> element is used to specify a list of preprocessor symbols to define for the project. These symbols can be used in the code to conditionally compile certain sections of code like 'if(DEBUG){}' or 'if(TRACE){}' in code -->
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>true</Optimize>
-    <DebugType>embedded</DebugType>
+    <DebugType>pdbonly</DebugType>
     <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 

@@ -9,7 +9,7 @@ WORKDIR /app
 #https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments
 EXPOSE 80
 EXPOSE 443
-ENV ASPNETCORE_URLS http://*:80;https://*:443 
+ENV ASPNETCORE_URLS http://*:80;https://*:443  
 ENV ASPNETCORE_ENVIRONMENT docker
 
 # # https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
@@ -65,7 +65,8 @@ COPY ./src/Services/Shared/ECommerce.Services.Shared/ECommerce.Services.Shared.c
 # https://pythonspeed.com/articles/docker-cache-pip-downloads/
 # When we have a chnage in a layer that layer and all subsequent layer will rebuild again
 # when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `ECommerce.Services.Catalogs.Api.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache 
-RUN dotnet restore ./Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
+RUN --mount=type=cache,id=catalogs_nuget,target=/root/.nuget/packages \
+    dotnet restore ./Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
@@ -75,13 +76,15 @@ COPY ./src/Services/Shared/  ./Services/Shared/
 
 WORKDIR /src/Services/Catalogs/ECommerce.Services.Catalogs.Api/
 
-RUN dotnet build -c Release --no-restore 
+RUN --mount=type=cache,id=catalogs_nuget,target=/root/.nuget/packages\
+    dotnet build -c Release --no-restore 
 
 FROM build AS publish
 # Publish project to output folder and no build and restore, as we did it already
 # https://stackoverflow.com/questions/5457095/release-generating-pdb-files-why
 # pdbs also generate for release mode (pdbonly) so vsdb can use it for debugging for debug mode its default is (full)
-RUN dotnet publish -c Release --no-build --no-restore -o /app/publish
+RUN --mount=type=cache,id=catalogs_nuget,target=/root/.nuget/packages\
+    dotnet publish -c Release --no-build --no-restore -o /app/publish
 
 FROM base AS final
 # Setup working directory for the project

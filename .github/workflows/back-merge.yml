@@ -34,11 +34,6 @@ on:
         - warning
         - debug
 
-# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
-  cancel-in-progress: true
-
 jobs:
 
   pre-check:
@@ -58,11 +53,13 @@ jobs:
           echo "pre-check is successful."
           echo workspace is: ${{ github.workspace }}
           echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
-          echo "is workflow_run event? ${{ github.event_name == 'workflow_run' }}"
           echo "is push event? ${{ github.event_name == 'push' }}"
           echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
-          echo branch is: ${{ github.ref_name }}
-          echo workflow_run head_branch is: ${{ github.event.workflow_run.head_branch }}
+          echo "pull_request.head.ref is: ${{ github.event.pull_request.head.ref }}"
+          echo "github.ref_name is: ${{ github.ref_name }}"
+          echo "github.ref is: ${{ github.ref }}"
+          echo "github.head_ref is: ${{ github.head_ref }}"
+          echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
 
   back-merge:
     runs-on: ubuntu-latest
@@ -90,36 +87,11 @@ jobs:
         uses: ./.github/actions/checkout-code
         id: checkout-step
 
-      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
-      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md#keep-a-branch-up-to-date-with-another
-      - name: Merge Branches
-        shell: bash
-        run: |
-          if [ $BRANCH = 'main' ]; then
-              echo "back-merge main branch to develop protected branch through pull-request"
-              git checkout develop
-              git fetch origin main:main
-              git reset --hard main
-          elif [ $BRANCH = 'develop' ]; then
-              ./back-merge.sh  ${{ github.ref_name }}
-              echo "back-merge develop branch to all features"
-          elif [ $BRANCH = 'beta' ]; then
-          echo "back-merge for beta branch"
-              echo "...."
-          elif [ $BRANCH = 'preview' ]; then
-              echo "back-merge for preview branch"
-              echo "...."
-          fi
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
+      - name: Call Composite Action back-merge
+        uses: ./.github/actions/back-merge
+        id: back-merge-step
         with:
-          delete-branch: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-          commit-message: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
-          title: "chore(release): 🔧 preparations for next release with a back-merge [skip ci]"
-          branch: back-merge-${{ env.BRANCH }}
+          source-branch: ${{ env.BRANCH }}
 
   back-merge-pr-closed:
     runs-on: ubuntu-latest

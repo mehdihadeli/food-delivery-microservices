@@ -4,18 +4,15 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <EnablePackageVersionOverride>true</EnablePackageVersionOverride>
   </PropertyGroup>
-  
   <PropertyGroup>
     <Version>1.2.4-dev.4</Version>
     <ApplicationVersion>1.2.4-dev.4</ApplicationVersion>
     <InformationalVersion>1.2.4-dev.4</InformationalVersion>
   </PropertyGroup>
-
-  <PropertyGroup>  
-  	<IsPublishable>false</IsPublishable>
+  <PropertyGroup>
+    <IsPublishable>false</IsPublishable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-  
   <ItemGroup>
     <PackageVersion Include="AutoBogus" Version="2.13.1" />
     <PackageVersion Include="AutoBogus.NSubstitute" Version="2.13.1" />
@@ -48,7 +45,7 @@
     <PackageVersion Include="Thinkcode.RabbitMQ.OpenAPI" Version="1.0.8" />
     <PackageVersion Include="EasyNetQ.Management.Client" Version="1.4.2" />
     <PackageVersion Include="coverlet.msbuild" Version="3.2.0" />
-	<PackageVersion Include="xunit" Version="2.4.2" />
+    <PackageVersion Include="xunit" Version="2.4.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageVersion Include="AnyOf" Version="0.3.0" />
   </ItemGroup>

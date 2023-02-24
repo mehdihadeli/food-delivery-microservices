@@ -1,0 +1,1148 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  //https://code.visualstudio.com/docs/editor/tasks
+  //https://code.visualstudio.com/docs/editor/tasks-appendix
+  //https://jasonwatmore.com/post/2021/06/24/vs-code-net-debug-a-net-web-app-in-visual-studio-code
+  //https://github.com/thehaseebahmed/vscode-dotnet-docker-debug
+  //https://www.youtube.com/watch?v=k0hpant9wXo
+  "tasks": [
+    {
+      "label": "build: catalogs",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://stackoverflow.com/questions/59830506/how-to-setup-an-auto-watch-run-for-net-core-3-1-projects-using-visual-studio-co
+    //https://jasonwatmore.com/post/2021/06/24/vs-code-net-debug-a-net-web-app-in-visual-studio-code
+    //https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch
+    {
+      "label": "watch: catalogs",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "watch",
+        "--project",
+        "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api/ECommerce.Services.Catalogs.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.Api"
+      },
+      "linux": {
+        "options": {
+          "env": {
+            // The FileSystemWatcher used by default wasnt working for me on linux, so I switched to the polling watcher.
+            "DOTNET_USE_POLLING_FILE_WATCHER": "true"
+          }
+        }
+      },
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": {
+        "kind": "build"
+      },
+    },
+    //https://github.com/microsoft/vscode-docker/issues/3831
+    //https://docs.docker.com/engine/reference/commandline/build/#target
+    // this task only build target stage here `final`, and we will change the entrypoint in 'ducker run' (we change entrypoint only in debug mode) with --entrypoint because we don't want our contaoner runs we will run our cotainer in debug mode with launching app from docker container remotly
+    {
+      "label": "docker-build: catalogs",
+      "command": "docker build --target final -f ${workspaceFolder}/src/Services/Catalogs/dev.Dockerfile --tag catalogs:dev ${workspaceFolder}", //--no-cache
+      "type": "shell",
+      "dependsOn": [
+        "build: catalogs"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-build-base: catalogs",
+      "command": "docker build --target base -f ${workspaceFolder}/src/Services/Catalogs/dev.Dockerfile --tag catalogs:base ${workspaceFolder}",
+      "type": "shell",
+      "dependsOn": [
+        "build: catalogs"
+      ],
+      "problemMatcher": []
+    },
+    // for see data inner container `docker exec -it catalogs-debug`
+    {
+      "label": "docker-run-debug: catalogs",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+      //https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
+      //https://devopscube.com/keep-docker-container-running/
+      //https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+      //https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `catalogs-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      "command": "docker run -it --rm -d --publish '4000:80' --publish-all --name catalogs-debug --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/home/appuser/.nuget/packages,readonly catalogs:dev",
+      "dependsOn": [
+        "docker-build: catalogs"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    // for see data inner container `docker exec -it catalogs-dev bash`
+    {
+      "label": "docker-run: catalogs",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      "command": "docker run -it --rm --publish '4000:80' --publish-all --network=ecommerce --name catalogs-dev --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg catalogs:dev",
+      "dependsOn": [
+        "docker-build: catalogs"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-run-base: catalogs",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
+      "command": "docker run -it --rm -d --publish '4000:80' --publish-all --network=ecommerce --name catalogs-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/home/appuser/.nuget/packages,readonly catalogs:base",
+      "dependsOn": [
+        "docker-build-base: catalogs"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-remove-base: catalogs",
+      "command": "docker container rm catalogs-base --force",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-remove-debug: catalogs",
+      "command": "docker container rm catalogs-debug --force",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "unit test: catalogs",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/tests/Services/Catalogs/ECommerce.Services.Catalogs.UnitTests/ECommerce.Services.Catalogs.UnitTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "integrtion test: catalogs",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.IntegrationTests/ECommerce.Services.Catalogs.IntegrationTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "end-to-end test: catalogs",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Catalogs/ECommerce.Services.Catalogs.EndToEndTests/ECommerce.Services.Catalogs.EndToEndTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "build: customers",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://stackoverflow.com/questions/59830506/how-to-setup-an-auto-watch-run-for-net-core-3-1-projects-using-visual-studio-co
+    //https://jasonwatmore.com/post/2021/06/24/vs-code-net-debug-a-net-web-app-in-visual-studio-code
+    //https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch
+    {
+      "label": "watch: customers",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "watch",
+        "--project",
+        "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api/ECommerce.Services.Customers.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.Api"
+      },
+      "linux": {
+        "options": {
+          "env": {
+            // The FileSystemWatcher used by default wasnt working for me on linux, so I switched to the polling watcher.
+            "DOTNET_USE_POLLING_FILE_WATCHER": "true"
+          }
+        }
+      },
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": {
+        "kind": "build"
+      },
+    },
+    //https://github.com/microsoft/vscode-docker/issues/3831
+    //https://docs.docker.com/engine/reference/commandline/build/#target
+    // this task only build target stage here `final`, and we will change the entrypoint in 'ducker run' (we change entrypoint only in debug mode) with --entrypoint because we don't want our contaoner runs we will run our cotainer in debug mode with launching app from docker container remotly
+    {
+      "label": "docker-build: customers",
+      "command": "docker build --target final -f ${workspaceFolder}/src/Services/Customers/dev.Dockerfile --tag customers:dev ${workspaceFolder}", //--no-cache
+      "type": "shell",
+      "dependsOn": [
+        "build: customers"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-build-base: customers",
+      "command": "docker build --target base -f ${workspaceFolder}/src/Services/Customers/dev.Dockerfile --tag customers:base ${workspaceFolder}",
+      "type": "shell",
+      "dependsOn": [
+        "build: customers"
+      ],
+      "problemMatcher": []
+    },
+    // for see data inner container `docker exec -it customers-debug`
+    {
+      "label": "docker-run-debug: customers",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+      //https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
+      //https://devopscube.com/keep-docker-container-running/
+      //https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+      //https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `customers-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      "command": "docker run -it --rm -d --publish '8000:80' --publish-all --name customers-debug --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/home/appuser/.nuget/packages,readonly customers:dev",
+      "dependsOn": [
+        "docker-build: customers"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    // for see data inner container `docker exec -it customers-dev bash`
+    {
+      "label": "docker-run: customers",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      "command": "docker run -it --rm --publish '8000:80' --publish-all --network=ecommerce --name customers-dev --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg customers:dev",
+      "dependsOn": [
+        "docker-build: customers"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-run-base: customers",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
+      "command": "docker run -it --rm -d --publish '8000:80' --publish-all --network=ecommerce --name customers-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/home/appuser/.nuget/packages,readonly customers:base",
+      "dependsOn": [
+        "docker-build-base: customers"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-remove-base: customers",
+      "command": "docker container rm customers-base --force",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-remove-debug: customers",
+      "command": "docker container rm customers-debug --force",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "unit test: customers",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/tests/Services/Customers/ECommerce.Services.Customers.UnitTests/ECommerce.Services.Customers.UnitTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "integrtion test: customers",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.IntegrationTests/ECommerce.Services.Customers.IntegrationTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "end-to-end test: customers",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Customers/ECommerce.Services.Customers.EndToEndTests/ECommerce.Services.Customers.EndToEndTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "build: identity",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://stackoverflow.com/questions/59830506/how-to-setup-an-auto-watch-run-for-net-core-3-1-projects-using-visual-studio-co
+    //https://jasonwatmore.com/post/2021/06/24/vs-code-net-debug-a-net-web-app-in-visual-studio-code
+    //https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch
+    {
+      "label": "watch: identity",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "watch",
+        "--project",
+        "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api/ECommerce.Services.Identity.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api"
+      },
+      "linux": {
+        "options": {
+          "env": {
+            // The FileSystemWatcher used by default wasnt working for me on linux, so I switched to the polling watcher.
+            "DOTNET_USE_POLLING_FILE_WATCHER": "true"
+          }
+        }
+      },
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": {
+        "kind": "build"
+      },
+    },
+    //https://github.com/microsoft/vscode-docker/issues/3831
+    //https://docs.docker.com/engine/reference/commandline/build/#target
+    // this task only build target stage here `final`, and we will change the entrypoint in 'ducker run' (we change entrypoint only in debug mode) with --entrypoint because we don't want our contaoner runs we will run our cotainer in debug mode with launching app from docker container remotly
+    {
+      "label": "docker-build: identity",
+      "command": "docker build --target final -f ${workspaceFolder}/src/Services/Identity/dev.Dockerfile --tag identity:dev ${workspaceFolder}", //--no-cache
+      "type": "shell",
+      "dependsOn": [
+        "build: identity"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-build-base: identity",
+      "command": "docker build --target base -f ${workspaceFolder}/src/Services/Identity/dev.Dockerfile --tag identity:base ${workspaceFolder}",
+      "type": "shell",
+      "dependsOn": [
+        "build: identity"
+      ],
+      "problemMatcher": []
+    },
+    // for see data inner container `docker exec -it identity-debug`
+    {
+      "label": "docker-run-debug: identity",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+      //https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
+      //https://devopscube.com/keep-docker-container-running/
+      //https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+      //https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      "command": "docker run -it --rm -d --publish '7000:80' --publish-all --name identity-debug --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/home/appuser/.nuget/packages,readonly identity:dev",
+      "dependsOn": [
+        "docker-build: identity"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    // for see data inner container `docker exec -it identity-dev bash`
+    {
+      "label": "docker-run: identity",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      "command": "docker run -it --rm --publish '7000:80' --publish-all --network=ecommerce --name identity-dev --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg identity:dev",
+      "dependsOn": [
+        "docker-build: identity"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-run-base: identity",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
+      "command": "docker run -it --rm -d --publish '7000:80' --publish-all --network=ecommerce --name identity-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/home/appuser/.nuget/packages,readonly identity:base",
+      "dependsOn": [
+        "docker-build-base: identity"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-remove-base: identity",
+      "command": "docker container rm identity-base --force",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-remove-debug: identity",
+      "command": "docker container rm identity-debug --force",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "unit test: identity",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/tests/Services/Identity/ECommerce.Services.Identity.UnitTests/ECommerce.Services.Identity.UnitTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "integrtion test: identity",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.IntegrationTests/ECommerce.Services.Identity.IntegrationTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "end-to-end test: identity",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.EndToEndTests/ECommerce.Services.Identity.EndToEndTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "build: orders",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/Services/Orders/ECommerce.Services.Orders.Api/ECommerce.Services.Orders.Api.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://stackoverflow.com/questions/59830506/how-to-setup-an-auto-watch-run-for-net-core-3-1-projects-using-visual-studio-co
+    //https://jasonwatmore.com/post/2021/06/24/vs-code-net-debug-a-net-web-app-in-visual-studio-code
+    //https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch
+    {
+      "label": "watch: orders",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "watch",
+        "--project",
+        "${workspaceFolder}/src/Services/Orders/ECommerce.Services.Orders.Api/ECommerce.Services.Orders.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/src/Services/Orders/ECommerce.Services.Orders.Api"
+      },
+      "linux": {
+        "options": {
+          "env": {
+            // The FileSystemWatcher used by default wasnt working for me on linux, so I switched to the polling watcher.
+            "DOTNET_USE_POLLING_FILE_WATCHER": "true"
+          }
+        }
+      },
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": {
+        "kind": "build"
+      },
+    },
+    //https://github.com/microsoft/vscode-docker/issues/3831
+    //https://docs.docker.com/engine/reference/commandline/build/#target
+    // this task only build target stage here `final`, and we will change the entrypoint in 'ducker run' (we change entrypoint only in debug mode) with --entrypoint because we don't want our contaoner runs we will run our cotainer in debug mode with launching app from docker container remotly
+    {
+      "label": "docker-build: orders",
+      "command": "docker build --target final -f ${workspaceFolder}/src/Services/Orders/dev.Dockerfile --tag orders:dev ${workspaceFolder}", //--no-cache
+      "type": "shell",
+      "dependsOn": [
+        "build: orders"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-build-base: orders",
+      "command": "docker build --target base -f ${workspaceFolder}/src/Services/Orders/dev.Dockerfile --tag orders:base ${workspaceFolder}",
+      "type": "shell",
+      "dependsOn": [
+        "build: orders"
+      ],
+      "problemMatcher": []
+    },
+    // for see data inner container `docker exec -it orders-debug`
+    {
+      "label": "docker-run-debug: orders",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+      //https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
+      //https://devopscube.com/keep-docker-container-running/
+      //https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+      //https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `orders-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      "command": "docker run -it --rm -d --publish '9000:80' --publish-all --name orders-debug --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/home/appuser/.nuget/packages,readonly orders:dev",
+      "dependsOn": [
+        "docker-build: orders"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    // for see data inner container `docker exec -it orders-dev bash`
+    {
+      "label": "docker-run: orders",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      "command": "docker run -it --rm --publish '9000:80' --publish-all --network=ecommerce --name orders-dev --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg orders:dev",
+      "dependsOn": [
+        "docker-build: orders"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-run-base: orders",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
+      "command": "docker run -it --rm -d --publish '9000:80' --publish-all --network=ecommerce --name orders-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/home/appuser/.nuget/packages,readonly orders:base",
+      "dependsOn": [
+        "docker-build-base: orders"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-remove-base: orders",
+      "command": "docker container rm orders-base --force",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-remove-debug: orders",
+      "command": "docker container rm orders-debug --force",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "unit test: orders",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/tests/Services/Orders/ECommerce.Services.Orders.UnitTests/ECommerce.Services.Orders.UnitTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "integrtion test: orders",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Orders/ECommerce.Services.Orders.IntegrationTests/ECommerce.Services.Orders.IntegrationTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "end-to-end test: orders",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Services/Orders/ECommerce.Services.Orders.EndToEndTests/ECommerce.Services.Orders.EndToEndTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "build: gateway",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/ApiGateway/ECommerce.ApiGateway/ECommerce.ApiGateway.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://stackoverflow.com/questions/59830506/how-to-setup-an-auto-watch-run-for-net-core-3-1-projects-using-visual-studio-co
+    //https://jasonwatmore.com/post/2021/06/24/vs-code-net-debug-a-net-web-app-in-visual-studio-code
+    //https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch
+    {
+      "label": "watch: gateway",
+      "command": "dotnet",
+      "type": "process",
+      //when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in `cwd`, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly` based on `api project`
+      "args": [
+        "watch",
+        "--project",
+        "${workspaceFolder}/src/ApiGateway/ECommerce.ApiGateway/ECommerce.ApiGateway.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/src/ApiGateway/ECommerce.ApiGateway"
+      },
+      "linux": {
+        "options": {
+          "env": {
+            // The FileSystemWatcher used by default wasnt working for me on linux, so I switched to the polling watcher.
+            "DOTNET_USE_POLLING_FILE_WATCHER": "true"
+          }
+        }
+      },
+      "problemMatcher": "$msCompile",
+      //https://code.visualstudio.com/docs/editor/tasks-appendix
+      //https://code.visualstudio.com/docs/editor/tasks#_custom-tasks
+      "group": {
+        "kind": "build"
+      },
+    },
+    //https://github.com/microsoft/vscode-docker/issues/3831
+    //https://docs.docker.com/engine/reference/commandline/build/#target
+    // this task only build target stage here `final`, and we will change the entrypoint in 'ducker run' (we change entrypoint only in debug mode) with --entrypoint because we don't want our contaoner runs we will run our cotainer in debug mode with launching app from docker container remotly
+    {
+      "label": "docker-build: gateway",
+      "command": "docker build --target final -f ${workspaceFolder}/src/ApiGateway/dev.Dockerfile --tag gateway:dev ${workspaceFolder}", //--no-cache
+      "type": "shell",
+      "dependsOn": [
+        "build: gateway"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-build-base: gateway",
+      "command": "docker build --target base -f ${workspaceFolder}/src/ApiGateway/dev.Dockerfile --tag gateway:base ${workspaceFolder}",
+      "type": "shell",
+      "dependsOn": [
+        "build: gateway"
+      ],
+      "problemMatcher": []
+    },
+    // for see data inner container `docker exec -it gateway-debug`
+    {
+      "label": "docker-run-debug: gateway",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+      //https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
+      //https://devopscube.com/keep-docker-container-running/
+      //https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+      //https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `gateway-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      "command": "docker run -it --rm -d --publish '3000:80' --publish-all --name gateway-debug --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/home/appuser/.nuget/packages,readonly gateway:dev",
+      "dependsOn": [
+        "docker-build: gateway"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    // for see data inner container `docker exec -it gateway-dev bash`
+    {
+      "label": "docker-run: gateway",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      "command": "docker run -it --rm --publish '3000:80' --publish-all --network=ecommerce --name gateway-dev --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg gateway:dev",
+      "dependsOn": [
+        "docker-build: gateway"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-run-base: gateway",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
+      "command": "docker run -it --rm -d --publish '3000:80' --publish-all --network=ecommerce --name gateway-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${env:USERPROFILE}\\vsdbg,dst=/vsdbg --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/home/appuser/.nuget/packages,readonly gateway:base",
+      "dependsOn": [
+        "docker-build-base: gateway"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-remove-base: gateway",
+      "command": "docker container rm gateway-base --force",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-remove-debug: gateway",
+      "command": "docker container rm gateway-debug --force",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-compose-build: infrastructures",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.infrastructure.yaml build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://docs.docker.com/engine/reference/commandline/compose_up/
+    //https://docs.docker.com/engine/reference/commandline/compose_start/
+    {
+      "label": "docker-compose-up: infrastructures",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.infrastructure.yaml up -d",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://code.visualstudio.com/docs/containers/reference#_docker-compose-task
+    //https://docs.docker.com/engine/reference/commandline/compose_down/
+    //https://docs.docker.com/engine/reference/commandline/compose_stop/
+    {
+      "label": "docker-compose-down: infrastructures",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.infrastructure.yaml down",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    {
+      "label": "docker-compose-build: debug services",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.debug.yaml build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.htmlk
+    //https://docs.docker.com/engine/reference/commandline/compose_up/
+    //https://docs.docker.com/engine/reference/commandline/compose_start/
+    {
+      "label": "docker-compose-up: debug services",
+      "dependsOn": [
+        "docker-compose: up infrastructures"
+      ],
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      // to remove containers we use `docker-compose down`
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.debug.yaml up -d",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    //https://docs.docker.com/engine/reference/commandline/compose_down/
+    //https://docs.docker.com/engine/reference/commandline/compose_stop/
+    {
+      "label": "docker-compose-down: debug services",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.debug.yaml down",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    {
+      "label": "docker-compose-build: dev services",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.dev.yaml build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.htmlk
+    //https://docs.docker.com/engine/reference/commandline/compose_up/
+    //https://docs.docker.com/engine/reference/commandline/compose_start/
+    {
+      "label": "docker-compose-up: dev services",
+      "dependsOn": [
+        "docker-compose: up infrastructures"
+      ],
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      // to remove containers we use `docker-compose down`
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.dev.yaml up",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    //https://docs.docker.com/engine/reference/commandline/compose_down/
+    //https://docs.docker.com/engine/reference/commandline/compose_stop/
+    {
+      "label": "docker-compose-down: dev services",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.dev.yaml down",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://docs.docker.com/engine/reference/commandline/compose_up/
+    //https://docs.docker.com/engine/reference/commandline/compose_start/
+    {
+      "label": "docker-compose-up: prod services",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      // to remove containers we use `docker-compose down`
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml up",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    //https://docs.docker.com/engine/reference/commandline/compose_down/
+    //https://docs.docker.com/engine/reference/commandline/compose_stop/
+    {
+      "label": "docker-compose-down: prod services",
+      "type": "shell",
+      // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+      // https://docs.docker.com/compose/extends/
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml down",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "prepare",
+      "problemMatcher": [],
+      "label": "npm: prepare",
+      "detail": "husky install && dotnet tool restore"
+    },
+    {
+      "type": "npm",
+      "script": "install",
+      "problemMatcher": [],
+      "label": "npm: install dependencies",
+      "detail": "install dependencies from package"
+    }
+  ]
+}

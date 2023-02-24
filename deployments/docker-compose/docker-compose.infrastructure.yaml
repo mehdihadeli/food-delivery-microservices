@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-    #######################################################
-    #  rabbitmq
-    #######################################################
+  #######################################################
+  #  rabbitmq
+  #######################################################
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
@@ -23,11 +23,12 @@ services:
     image: mongo
     container_name: mongo
     restart: on-failure
+    # https://docs.docker.com/compose/environment-variables/env-file/#parameter-expansion
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS:-admin}
     ports:
-      - ${MONGO_PORT}:${MONGO_PORT}
+      - ${MONGO_PORT:-27017}:${MONGO_PORT:-27017}
     networks:
       - ecommerce
 
@@ -39,10 +40,11 @@ services:
     container_name: postgres
     restart: on-failure
     ports:
-      - '5432:5432'
+      - "5432:5432"
+    #https://docs.docker.com/compose/environment-variables/env-file/#parameter-expansion
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     networks:
       - ecommerce
 
@@ -80,9 +82,9 @@ services:
     networks:
       - ecommerce
 
-#   #######################################################
-#   #  Redis
-#   #######################################################
+  #   #######################################################
+  #   #  Redis
+  #   #######################################################
 
   # redis:
   #   image: redis
@@ -93,9 +95,9 @@ services:
   #   ports:
   #     - 6379:6379
 
-   #######################################################
-   #  Portainer
-   #######################################################
+  #######################################################
+  #  Portainer
+  #######################################################
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -111,9 +113,9 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   #  elasticsearch
-   #######################################################
+    #######################################################
+    #  elasticsearch
+    #######################################################
   elasticsearch:
     container_name: elastic_search
     restart: on-failure
@@ -136,9 +138,9 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   #  kibana
-   #######################################################
+    #######################################################
+    #  kibana
+    #######################################################
   kibana:
     image: kibana:8.5.2
     container_name: kibana
@@ -163,9 +165,9 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   #  zipkin
-   #######################################################
+    #######################################################
+    #  zipkin
+    #######################################################
   zipkin:
     image: openzipkin/zipkin:latest
     restart: on-failure
@@ -175,20 +177,20 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   #  otel-collector
-   #######################################################
+    #######################################################
+    #  otel-collector
+    #######################################################
   otel-collector:
     image: otel/opentelemetry-collector-contrib-dev:latest
     command: ["--config=/etc/otel-collector-config.yaml", ""]
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
-      - "1888:1888"   # pprof extension
-      - "8888:8888"   # Prometheus metrics exposed by the collector
-      - "8889:8889"   # Prometheus exporter metrics
+      - "1888:1888" # pprof extension
+      - "8888:8888" # Prometheus metrics exposed by the collector
+      - "8889:8889" # Prometheus exporter metrics
       - "13133:13133" # health_check extension
-      - "4317:4317"   # OTLP gRPC receiver
+      - "4317:4317" # OTLP gRPC receiver
       - "55679:55679" # zpages extension
     depends_on:
       - jaeger
@@ -196,9 +198,9 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   # prometheus
-   #######################################################
+    #######################################################
+    # prometheus
+    #######################################################
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -213,27 +215,27 @@ services:
     networks:
       - ecommerce
 
-   #######################################################
-   # node_exporter
-   #######################################################
+    #######################################################
+    # node_exporter
+    #######################################################
   node_exporter:
     container_name: node_exporter
     restart: on-failure
     image: prom/node-exporter
     ports:
-      - '9101:9100'
+      - "9101:9100"
     networks:
       - ecommerce
 
-   #######################################################
-   # grafana
-   #######################################################
+    #######################################################
+    # grafana
+    #######################################################
   grafana:
     container_name: grafana
     restart: on-failure
     image: grafana/grafana
     ports:
-      - '3000:3000'
+      - "3000:3000"
     networks:
       - ecommerce
 
@@ -252,9 +254,16 @@ services:
     networks:
       - ecommerce
 
+# https://docs.docker.com/compose/networking/
+# https://docs.docker.com/engine/reference/commandline/network_create/
+# https://docs.docker.com/compose/compose-file/#networks-top-level-element
+# https://stackoverflow.com/questions/38088279/communication-between-multiple-docker-compose-projects
+# We could use also a predefined network and connect to that predefined network with specifying the 'name' of existing network and set 'external' attribute to true
+# When we run docker-compose up, Docker Compose will check if the 'ecommerce' network already exists. If it does not exist, it will create the 'ecommerce' network. If it exists, it will use the existing 'ecommerce' network. problem is that if we do a docker-compose down this network will delete and other docker-compose that use same network will fail because network deleted so its better we use `external` keyword for using a predefined network
 networks:
   ecommerce:
     name: ecommerce
+    driver: bridge
 
 volumes:
   eventstore-volume-data:

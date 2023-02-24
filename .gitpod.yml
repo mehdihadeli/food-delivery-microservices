@@ -10,28 +10,93 @@ image:
 
 vscode:
   extensions:
-    - ms-azuretools.vscode-docker
     - muhammad-sammy.csharp
+    - editorconfig.editorconfig
+    - vivaxy.vscode-conventional-commits
+    - humao.rest-client
+    - ms-azuretools.vscode-docker
+    - donjayamanne.githistory
+    - pkief.material-icon-theme
+    - emmanuelbeziat.vscode-great-icons
+    - fernandoescolar.vscode-solution-explorer
+    - tabnine.tabnine-vscode
+    - ms-vscode.vs-keybindings
+    - Trottero.dotnetwatchattach
+    - streetsidesoftware.code-spell-checker
+
 
 # https://www.gitpod.io/docs/configure/workspaces/tasks#execution-order
-
 tasks:
+  - name: Restore and Build dotnet & dotnet tool
+    init: |
+      gp sync-await docker-bundle # wait for the bellow 'init' to finish
+      dotnet restore
+      dotnet tool restore
+      dotnet build
+      gp sync-done build-bundle
+
+  # each task creates a new terminal window
+  # https://www.gitpod.io/docs/configure/workspaces/tasks#wait-for-commands-to-complete
   - name: Init Docker-Compose
     # https://www.gitpod.io/docs/configure/projects/prebuilds
-    # We load docker on pre-build for increasing speed 
+    # We load docker on pre-build for increasing speed
     init: |
-      docker-compose pull
-      docker-compose  -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d
+      docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml pull
+      # https://www.gitpod.io/docs/configure/workspaces/tasks#wait-for-commands-to-complete
+      # https://github.com/gitpod-io/openvscode-server/discussions/373
+      gp sync-done docker-bundle
+    command: |
+      docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d
 
-  - name: Restore & Build
-    init: |
-      dotnet dev-certs https
-      dotnet restore
-      dotnet build
+#  - name: Run Catalogs in Watch Mode
+#    # https://www.gitpod.io/docs/configure/workspaces/tasks#wait-for-commands-to-complete
+#    # https://github.com/gitpod-io/openvscode-server/discussions/373
+#    init: |
+#      gp sync-await docker-bundle # wait for the above 'init' to finish
+#      gp sync-await build-bundle  # wait for the above 'init' to finish
+#    # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-run#options
+#    command: |
+#      cd src/Services/Catalogs/ECommerce.Services.Catalogs.Api
+#      # hot reload doesn't work correctly with --no-build and --no-restore and after each change will restart the app with hot reload app should not be restarted
+#      dotnet watch -lp Catalogs.Api.Http
+#
+#  - name: Run Identity in Watch Mode
+#    init: |
+#      gp sync-await docker-bundle # wait for the above 'init' to finish
+#      gp sync-await build-bundle  # wait for the above 'init' to finish
+#    command: |
+#      cd src/Services/Identity/ECommerce.Services.Identity.Api
+#      dotnet watch -lp Identity.Api.Http
+#
+#  - name: Run Customers in Watch Mode
+#    init: |
+#      gp sync-await docker-bundle # wait for the above 'init' to finish
+#      gp sync-await build-bundle  # wait for the above 'init' to finish
+#    command: |
+#      cd src/Services/Customers/ECommerce.Services.Customers.Api
+#      # hot reload doesn't work correctly with --no-build and --no-restore and after each change will restart the app with hot reload app should not be restarted
+#      dotnet watch -lp Customers.Api.Http
+
+# https://www.gitpod.io/docs/configure/projects/prebuilds#github-specific-configuration
+github:
+  prebuilds:
+    # enable for the default branch (defaults to true)
+    master: true
+    # enable for all branches in this repo (defaults to false)
+    branches: true
+    # enable for pull requests coming from this repo (defaults to true)
+    pullRequests: true
+    # enable for pull requests coming from forks (defaults to false)
+    pullRequestsFromForks: false
+    # add a check to pull requests (defaults to true)
+    addCheck: true
+    # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
+    addComment: false
+    # add a "Review in Gitpod" button to the pull request's description (defaults to false)
+    addBadge: false
 
 #https://www.gitpod.io/docs/configure/workspaces/ports#exposing-ports
 #https://github.com/gitpod-io/gitpod/issues/1867
 ports:
-  - port: 2000-9000
+  - port: 1000-9000
     onOpen: ignore
-    visibility: private

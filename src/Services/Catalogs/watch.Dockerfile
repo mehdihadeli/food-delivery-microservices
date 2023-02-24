@@ -1,3 +1,5 @@
+#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
+
 FROM mcr.microsoft.com/dotnet/sdk:latest as builder
 
 WORKDIR /src
@@ -8,7 +10,7 @@ COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
-COPY ./src/Services/Customers/Directory.Build.props ./Services/Customers/
+COPY ./src/Services/Catalogs/Directory.Build.props ./Services/Catalogs/
 
 # TODO: Using wildcard to copy all files in the directory.
 COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
@@ -32,15 +34,10 @@ RUN ls
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
-COPY ./src/Services/Customers/ECommerce.Services.Customers.Api/  ./Services/Customers/ECommerce.Services.Customers.Api/
-COPY ./src/Services/Customers/ECommerce.Services.Customers/  ./Services/Customers/ECommerce.Services.Customers/
+COPY ./src/Services/Catalogs/ECommerce.Services.Catalogs.Api/  ./Services/Catalogs/ECommerce.Services.Catalogs.Api/
+COPY ./src/Services/Catalogs/ECommerce.Services.Catalogs/  ./Services/Catalogs/ECommerce.Services.Catalogs/
 COPY ./src/Services/Shared/  ./Services/Shared/
 
-WORKDIR /src/Services/Customers/ECommerce.Services.Customers.Api/
+WORKDIR /src/Services/Catalogs/ECommerce.Services.Catalogs.Api/
 
-#https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
-#https://swimburger.net/blog/dotnet/how-to-get-aspdotnet-core-server-urls
-#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
-#https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments
-
-RUN dotnet watch run  ECommerce.Services.Customers.Api.csproj --launch-profile Customers.Api.LiveRecompilation
+RUN dotnet watch run  ECommerce.Services.Catalogs.Api.csproj --launch-profile Catalogs.Api.LiveRecompilation

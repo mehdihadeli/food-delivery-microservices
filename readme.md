@@ -4,6 +4,9 @@
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?&style=flat-square)](https://github.com/semantic-release/semantic-release)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?&style=flat-square)](http://commitizen.github.io/cz-cli/)
 
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/https://github.com/mehdihadeli/ecommerce-microservices)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://mehdihadeli-humble-space-couscous-5x5pqwwjx5c7664.github.dev)
+
 > `ECommerece Microservices` is a fictional ecommerce sample, built with .Net Core and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
 
 💡 This application is not business oriented and my focus is mostly on technical part, I just want to implement a sample with using different technologies, software architecture design, principles and all the thing we need for creating a microservices app.
@@ -14,6 +17,7 @@
 🎯 This Application ported to `modular monolith` approach in [ecommerce-modular-monolith](https://github.com/mehdihadeli/ecommerce-modular-monolith) repository, we can choose best fit architecture for our projects based on production needs.
 
 # ⭐ Support
+
 If you like feel free to ⭐ this repository, It helps out :)
 
 Thanks a bunch for supporting me!
@@ -23,7 +27,8 @@ Thanks a bunch for supporting me!
 - [Features](#features)
 - [Plan](#plan)
 - [Setup](#setup)
-  - [Development Envionment](#development-envionment)
+  - [Dev Certificate](#dev-certificate)
+  - [Conventional Commit](#conventional-commit)
   - [Formatting](#formatting)
   - [Analizers](#analizers)
 - [Technologies - Libraries](#technologies---libraries)
@@ -42,6 +47,7 @@ Thanks a bunch for supporting me!
 - [License](#license)
 
 ## Features
+
 - ✅ Using `Vertical Slice Architecture` as a high level architecture
 - ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit
 - ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
@@ -59,17 +65,18 @@ Thanks a bunch for supporting me!
 - 🚧 Using `OpenTelemetry` for collection `Metrics` and `Distributed Tracing`
 
 ## Plan
+
 > This project is in progress, New features will be added over time.
 
-| Feature          | Architecture Pattern                  | Status | CI-CD                                                                                                                                                                                                                                                  |
-|------------------|---------------------------------------| ------ |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| API Gateway      | Microsoft YARP Reverse Proxy          | Completed ✔️ | -                                                                                                                                                                                                                                                      |
-| Identity Service | Data Centeric Architecture (CRUD)     | Completed ✔️ | [![Identity-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml)           |
-| Customer Service | Domain Driven Design                  | Completed ✔️ | [![Customers-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/customers.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/customers.yml) |
-| Catalog Service  | Domain Driven Design                  |Completed ✔️ | [![Catalogs-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs.yml)           |
-| Order Service    | Event Sourccing, Domain Driven Design | In Progress 👷‍| -                                                                                                                                                                                                                                                      |                                                                                                                                                                                                                                              |
-| Shipping Service | Domain Driven Design                  | Not Started 🚩 | -                                                                                                                                                                                                                                                      |
-| Payment Service  | Event Sourccing, Domain Driven Design | Not Started 🚩 | -                                                                                                                                                                                                                                                      |
+| Feature          | Architecture Pattern                  | Status         | Url                                           | CI-CD                                                                                                                                                                                                                                                  |
+| ---------------- | ------------------------------------- | -------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| API Gateway      | Microsoft YARP Reverse Proxy          | Completed ✔️   | https://localhost:3010; http://localhost:3000 | -                                                                                                                                                                                                                                                      |
+| Identity Service | Data Centeric Architecture (CRUD)     | Completed ✔️   | https://localhost:7001; http://localhost:7000 | [![Identity-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml)           |
+| Customer Service | Domain Driven Design                  | Completed ✔️   | https://localhost:8001; http://localhost:8000 | [![Customers-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/customers.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/customers.yml) |
+| Catalog Service  | Domain Driven Design                  | Completed ✔️   | https://localhost:4001; http://localhost:4000 | [![Catalogs-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs.yml)           |
+| Order Service    | Event Sourccing, Domain Driven Design | In Progress👷  | https://localhost:9001; http://localhost:9000 | -                                                                                                                                                                                                                                                      |
+| Shipping Service | Domain Driven Design                  | Not Started 🚩 | -                                             | -                                                                                                                                                                                                                                                      |
+| Payment Service  | Event Sourccing, Domain Driven Design | Not Started 🚩 | -                                             | -                                                                                                                                                                                                                                                      |
 
 ## Technologies - Libraries
 
@@ -95,78 +102,88 @@ Thanks a bunch for supporting me!
 
 ## Setup
 
-### Development Envionment
-
-#### Gitpod
-Start to develop with a pre config environment contains all needed infrastructures in the Gitpod:
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/https://github.com/mehdihadeli/ecommerce-microservices)
+### Dev Certificate
 
 ### Conventional Commit
+
 In this app I use [Conventional Commit](https://www.conventionalcommits.org/en/) and for enforcing its rule I use [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) and [typicode/husky](https://github.com/typicode/husky) with a pre-commit hook. For read more about its setup see [commitlint docs](https://github.com/conventional-changelog/commitlint#getting-started) and [this article](https://betterprogramming.pub/how-to-lint-commit-messages-with-husky-and-commitlint-b51d20a5e514) and [this article](https://www.code4it.dev/blog/conventional-commit-with-githooks).
 
 Here I configured a husky hook for conventional commits:
 
 1. Install NPM:
+
 ```bash
 npm init
 ```
 
 2. Install Husky:
+
 ```bash
 npm install husky --save-dev
 ```
+
 3. Add `prepare` command for installing and activating `husky hooks` in the package.json file:
+
 ```bash
 npm pkg set scripts.prepare="husky install"
 ```
 
 4. Install CommitLint:
+
 ```bash
 npm install --save-dev @commitlint/config-conventional @commitlint/cli
 ```
 
 5. Create the `commitlint.config.js` file with this content:
+
 ```js
 module.exports = { extends: '@commitlint/config-conventional']};
 ```
 
 6. Create the Husky folder:
+
 ```bash
 mkdir .husky
 ```
 
 7. Link Husky and CommitLint:
+
 ```bash
 npx husky add .husky/commit-msg 'npx --no -- commitlint --edit ${1}'
 ```
 
 8. Activate and installing all husky hooks with this command:
+
 ```bash
 npm run prepare
 ```
 
 ### Formatting
+
 For formatting I use [belav/csharpier](https://github.com/belav/csharpier) but you can also use `dotnet format`, you can integrate it with your [prefered IDE](https://csharpier.com/docs/Editors).
 
 Here I configured a husky hook for formatting:
 
 1. Install NPM:
+
 ```bash
 npm init
 ```
 
 2. Install Husky:
+
 ```bash
 npm install husky --save-dev
 ```
 
 2. Install Husky:
+
 ```bash
 npm install husky --save-dev
 ```
 
 3. Install manifest file with `dotnet new tool-manifest` because it doesn't exist at first time and then install our required packages as dependency with [dotnet tool install](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-install), that will add to [dotnet-tools.json](.config/dotnet-tools.json) file in a `.config` directory:
+
 ```bash
 dotnet new tool-manifest
 
@@ -175,16 +192,19 @@ dotnet tool install dotnet-format
 ```
 
 4. Add `prepare` command for installing and activating `husky hooks` and `restoring` our installed [dotnet tools](.config/dotnet-tools.json) in the previous step to the [package.json](package.json) file:
+
 ```bash
 npm pkg set scripts.prepare="husky install && dotnet tool restore"
 ```
 
 5. Create the Husky folder:
+
 ```bash
 mkdir .husky
 ```
 
 6. Link Husky and formatting tools:
+
 ```bash
 npx husky add .husky/pre-commit "dotnet format"
 
@@ -193,12 +213,15 @@ npx husky add .husky/pre-commit "dotnet csharpier ."
 ```
 
 7. Activate and installing all husky hooks with this command:
+
 ```bash
 npm run prepare
 ```
 
 ### Analizers
+
 For roslyn analizers I use serveral analyzers and config the in `.editorconfig` file:
+
 - [StyleCop/StyleCop](https://github.com/StyleCop/StyleCop)
 - [JosefPihrt/Roslynator](https://github.com/JosefPihrt/Roslynator)
 - [meziantou/Meziantou.Analyzer](https://github.com/meziantou/Meziantou.Analyzer)
@@ -209,20 +232,20 @@ For roslyn analizers I use serveral analyzers and config the in `.editorconfig` 
 `ECommerce Microservices` is a simple online ecommerce api sample that has the basic business scenario for online purchasing with some dedicated services. There are six possible `Bounded context` or `Service` for above business:
 
 - `Identity Service`: the Identity Service uses to authenticate and authorize users through a token. Also, this service is responsible for creating users and their corresponding roles and permission with using [.Net Core Identity](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity) and Jwt authentication and authorization. I will add also [Identity Server](https://github.com/DuendeSoftware/IdentityServer) in future for this service. Each of `Administrator`, `Customer` and `Supplier` are a `User`, actually a `IdentityUser`. To be a User, User Registration is required. Each User is assigned one or more User Role.
-Each User Role has set of Permissions. A Permission defines whether User can invoke a particular action or not.
+  Each User Role has set of Permissions. A Permission defines whether User can invoke a particular action or not.
 
 - `Catalog Service`: The Catalog Service presents the ability to add items to our ecommerce, It can be electronics, foods, books or anything else. Items can be grouped into categories and catalogs. A catalog is defined as a list of items that a company showcases online. the catalog is a collection of items, which can be grouped into categories. An item can be assigned to only one category or be direct child of a catalog without any category.
-Buyer can browse the products list with supported filtering and sorting by product name and price. customer can see the detail of the product on the product list and in the detail page, can see a name, description, available product in the inventory,...
+  Buyer can browse the products list with supported filtering and sorting by product name and price. customer can see the detail of the product on the product list and in the detail page, can see a name, description, available product in the inventory,...
 
 - `Customers Service`: This service is responsible for managing our customers information, track the activities and subscribing to get notification for out of stock products
 
 - `Order Service`: The Orders Service main purpose is to ecommerce order details and manage orders created by users on client side. This service is not designed to be a full order processing system like ERP but serves as storage for customer orders details and can be synchronized with different external processing systems.
-Some of this service responsibilities are `Saving orders`, `Saving order drafts`, `Ability to view and manage fulfillment, packages`, `Change discounts`
+  Some of this service responsibilities are `Saving orders`, `Saving order drafts`, `Ability to view and manage fulfillment, packages`, `Change discounts`
 
 - `Payment Service`: The payment service is responsible for payment process of our customer with different payment process and managing and tracking our payment history
 
 - `Shipping Service`: The Shipping Service provides the ability to extend shipping provider list with custom providers and also provides an interface and API for managing these shipping providers.
-Some of shipping service capabilities are `Register Shipping methods`, `Edit Shipping method`, `Shipment details`, `Shipping settings`
+  Some of shipping service capabilities are `Register Shipping methods`, `Edit Shipping method`, `Shipment details`, `Shipping settings`
 
 ## Application Architecture
 
@@ -248,7 +271,7 @@ Here I used [Outbox](http://www.kamilgrzybek.com/design/the-outbox-pattern/) for
 
 [Outbox pattern](https://event-driven.io/en/outbox_inbox_patterns_and_delivery_guarantees_explained/) ensures that a message was sent (e.g. to a queue) successfully at least once. With this pattern, instead of directly publishing a message to the queue, we ecommerce it in the temporary storage (e.g. database table) for preventing missing any message and some retry mechanism in any failure ([At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)). For example When we save data as part of one transaction in our service, we also save messages (Integration Events) that we later want to process in another microservices as part of the same transaction. The list of messages to be processed is called a [StoreMessage](./src/BuildingBlocks/BuildingBlocks.Abstractions/Messaging/PersistMessage/StoreMessage.cs) with [Message Delivery Type](./src/BuildingBlocks/BuildingBlocks.Abstractions/Messaging/PersistMessage/MessageDeliveryType.cs) `Outbox` that are part of our [MessagePersistence](./src/BuildingBlocks/BuildingBlocks.Core/Messaging/MessagePersistence/InMemory/InMemoryMessagePersistenceService.cs) service. This infrastructure also supports `Inbox` Message Delivery Type and `Internal` Message Delivery Type (Internal Processing).
 
-Also we have a background service [MessagePersistenceBackgroundService](./src/BuildingBlocks/BuildingBlocks.Core/Messaging/BackgroundServices/MessagePersistenceBackgroundService.cs)  that periodically checks the our [StoreMessages](./src/BuildingBlocks/BuildingBlocks.Abstractions/Messaging/PersistMessage/StoreMessage.cs) in the database and try to send the messages to the broker with using our [MessagePersistenceService](./src/BuildingBlocks/BuildingBlocks.Core/Messaging/MessagePersistence/InMemory/InMemoryMessagePersistenceService.cs) service. After it gets confirmation of publishing (e.g. ACK from the broker) it marks the message as processed to `avoid resending`.
+Also we have a background service [MessagePersistenceBackgroundService](./src/BuildingBlocks/BuildingBlocks.Core/Messaging/BackgroundServices/MessagePersistenceBackgroundService.cs) that periodically checks the our [StoreMessages](./src/BuildingBlocks/BuildingBlocks.Abstractions/Messaging/PersistMessage/StoreMessage.cs) in the database and try to send the messages to the broker with using our [MessagePersistenceService](./src/BuildingBlocks/BuildingBlocks.Core/Messaging/MessagePersistence/InMemory/InMemoryMessagePersistenceService.cs) service. After it gets confirmation of publishing (e.g. ACK from the broker) it marks the message as processed to `avoid resending`.
 However, it is possible that we will not be able to mark the message as processed due to communication error, for example `broker` is `unavailable`. In this case our [MessagePersistenceBackgroundService](./src/BuildingBlocks/BuildingBlocks.Core/Messaging/BackgroundServices/MessagePersistenceBackgroundService.cs) try to resend the messages that not processed and it is actually [ At-Least-Once delivery](http://www.cloudcomputingpatterns.org/at_least_once_delivery/). We can be sure that message will be sent `once`, but can be sent `multiple times` too! That’s why another name for this approach is Once-Or-More delivery. We should remember this and try to design receivers of our messages as [Idempotents](https://www.enterpriseintegrationpatterns.com/patterns/messaging/IdempotentReceiver.html), which means:
 
 > In Messaging this concepts translates into a message that has the same effect whether it is received once or multiple times. This means that a message can safely be resent without causing any problems even if the receiver receives duplicates of the same message.
@@ -257,13 +280,11 @@ For handling [Idempotency](https://www.enterpriseintegrationpatterns.com/pattern
 
 This pattern is similar to Outbox Pattern. It’s used to handle incoming messages (e.g. from a queue) for `unique processing` of `a single message` only `once` (even with executing multiple time). Accordingly, we have a table in which we’re storing incoming messages. Contrary to outbox pattern, we first save the messages in the database, then we’re returning ACK to queue. If save succeeded, but we didn’t return ACK to queue, then delivery will be retried. That’s why we have at-least-once delivery again. After that, an `inbox background process` runs and will process the inbox messages that not processed yet. also we can prevent executing a message with specific `MessgaeId`multiple times. after executing our inbox message for example with calling our subscribed event handlers we send a ACK to the queue when they succeeded. (Inbox part of the system is in progress, I will cover this part soon as possible)
 
-
 Also here I used `RabbitMQ` as my `Message Broker` for my async communication between the microservices with using eventually consistency mechanism, for now I used [MassTransit](https://github.com/MassTransit/MassTransit) tools for doing broker communications. beside of this eventually consistency we have a synchronous call with using `REST` (in future I will use gRpc) for our immediate consistency needs.
 
 We use a `Api Gateway` and here I used [YARP](https://microsoft.github.io/reverse-proxy/articles/getting-started.html) that is microsoft reverse proxy (we could use envoy, traefik, Ocelot, ...), in front of our services, we could also have multiple Api Gateway for reaching [BFF pattern](https://blog.bitsrc.io/bff-pattern-backend-for-frontend-an-introduction-e4fa965128bf). for example one Gateway for mobile apps, One Gateway for web apps and etc.
 With using api Gateway our internal microservices are transparent and user can not access them directly and all requests will serve through this Gateway.
 Also we could use gateway for load balancing, authentication and authorization, caching ,...
-
 
 ## Application Structure
 
@@ -275,7 +296,6 @@ In this project I used [vertical slice architecture](https://jimmybogard.com/ver
 - With this approach, each of our vertical slices can decide for itself how to best fulfill the request. New features only add code, we're not changing shared code and worrying about side effects. For implementing vertical slice architecture using cqrs pattern is a good match.
 
 ![](./assets/vertical-slice-architecture.jpg)
-
 
 ![](./assets/vsa2.png)
 
@@ -309,7 +329,6 @@ Keeping such a split works great with CQRS. It segregates our operations and sli
 
 ![](./assets/level-structure.png)
 
-
 ### Catalogs Service Structure
 
 ![](./assets/catalog-service.png)
@@ -323,7 +342,7 @@ For implementing vertical slice architecture in each microservice, I have two pr
 
 In vertical slice flow, we treat each request as a `slice`. For example for [CreatingProduct](src/Services/Catalogs/ECommerce.Services.Catalogs/Products/Features/CreatingProduct/) feature or slice, Our flow will start with a `Endpoint` with name [CreateProductEndpoint](src/Services/Catalogs/ECommerce.Services.Catalogs/Products/Features/CreatingProduct/CreateProductEndpoint.cs) and inner this endpoint we handle the http request from out side of world and pass our request data with a mediator gateway to corresponding handler.
 
-``` csharp
+```csharp
 // POST api/v1/catalog/products
 public static class CreateProductEndpoint
 {
@@ -360,7 +379,7 @@ public static class CreateProductEndpoint
 
 In this endpoint we use CQRS and pass [CreateProduct](src/Services/Catalogs/ECommerce.Services.Catalogs/Products/Features/CreatingProduct/CreateProduct.cs) command to our command processor for executing and route to corresponding [CreateProductHandler](src/Services/Catalogs/ECommerce.Services.Catalogs/Products/Features/CreatingProduct/CreateProduct.cs#L88) command handler.
 
-``` csharp
+```csharp
 public record CreateProduct(
     string Name,
     decimal Price,
@@ -457,13 +476,12 @@ And in the end of this handler before [Committing Transaction](src/BuildingBlock
 These integration events will [Save](src/BuildingBlocks/BuildingBlocks.Core/CQRS/Events/DomainEventPublisher.cs#L83) in the persistence message store, with help of [MessagePersistenceService](src/BuildingBlocks/BuildingBlocks.Core/Messaging/MessagePersistence/InMemory/InMemoryMessagePersistenceService.cs#L39) as [StoreMessage](src/BuildingBlocks/BuildingBlocks.Abstractions/Messaging/PersistMessage/StoreMessage.cs) with [MessageDeliveryType](src/BuildingBlocks/BuildingBlocks.Abstractions/Messaging/PersistMessage/MessageDeliveryType.cs) `Outbox` for guaranty delivery before committing.
 After [Committing Transaction](src/BuildingBlocks/BuildingBlocks.Core/Persistence/EfCore/EfTxBehavior.cs#L77) our [MessagePersistenceBackgroundService](src/BuildingBlocks/BuildingBlocks.Core/Messaging/BackgroundServices/MessagePersistenceBackgroundService.cs#L45) will send, StoreMessage with delivery type outbox to message broker.
 
-
 ## Prerequisites
 
-1. This application uses `Https` for hosting apis, to setup a valid certificate on your machine, you can create a [Self-Signed Certificate](https://docs.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide#create-a-self-signed-certificate).
+1. This application uses `Https` for hosting apis, to setup a valid certificate on your machine, you can create a [Self-Signed Certificate](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide#with-dotnet-dev-certs).
 2. Install git - [https://git-scm.com/downloads](https://git-scm.com/downloads).
-3. Install .NET Core 6.0 - [https://dotnet.microsoft.com/download/dotnet/6.0](https://dotnet.microsoft.com/download/dotnet/6.0).
-4. Install Visual Studio 2022, Rider or VSCode.
+3. Install .NET Core 7.0 - [https://dotnet.microsoft.com/download/dotnet/7.0](https://dotnet.microsoft.com/download/dotnet/7.0).
+4. Install Visual Studio, Rider or VSCode.
 5. Install docker - [https://docs.docker.com/docker-for-windows/install/](https://docs.docker.com/docker-for-windows/install/).
 6. Make sure that you have ~10GB disk space.
 7. Clone Project [https://github.com/mehdihadeli/ecommerce-microservices-sample](https://github.com/mehdihadeli/ecommerce-microservices-sample), make sure that's compiling
@@ -474,26 +492,27 @@ After [Committing Transaction](src/BuildingBlocks/BuildingBlocks.Core/Persistenc
 
 For Running this application we could run our microservices one by one in our Dev Environment, for me, it's Rider, Or we could run it with using [Docker-Compose](#using-docker-compose) or we could use [Kubernetes](#using-kubernetes).
 
-For testing apis I used [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) plugin of VSCode its related file scenarios are available in [_httpclients](\_httpclients) folder. also after running api you have access to `swagger open api` for all microservices in `/swagger` route path.
+For testing apis I used [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) plugin of VSCode its related file scenarios are available in [\_httpclients](_httpclients) folder. also after running api you have access to `swagger open api` for all microservices in `/swagger` route path.
 
 In this application I use a `fake email sender` with name of [ethereal](https://ethereal.email/) as a SMTP provider for sending email. after sending email by the application you can see the list of sent emails in [ethereal messages panel](https://ethereal.email/messages). My temp username and password is available inner the all of [appsettings file](./src/Services/Customers/ECommerce.Services.Customers.Api/appsettings.json).
 
 ### Using PM2
+
 For ruining all microservices and control on their running mode we could use [PM2](https://pm2.keymetrics.io/) tools. for installing `pm2` on our system globally we should use this command:
 
-``` bash
+```bash
 npm install pm2 -g
 ```
 
 After installing pm2 on our machine, we could run all of our microservices with running bellow command in root of the application with using [pm2.yaml](./pm2.yaml) file.
 
-``` bash
+```bash
 pm2 start pm2.yaml
 ```
 
 Some PM2 useful commands:
 
-``` bash
+```bash
 pm2 -h
 
 pm2 list
@@ -511,25 +530,34 @@ pm2 restart pm2.yaml
 pm2 delete pm2.yaml
 ```
 
-
 ### Using Docker-Compose
 
-10. Go to [deployments/docker-compose/docker-compose.yaml](./deployments/docker-compose/docker-compose.yaml) and run: `docker-compose up`.
-11. Wait until all dockers got are downloaded and running.
-12. You should automatically get:
-    - Postgres running
-    - RabbitMQ running
-    - MongoDB running
-    - Microservies running and accessible:
-      - Api Gateway, Available at: [http://localhost:3000](http://localhost:3000)
-      - Customers Service, Available at: [http://localhost:8000](http://localhost:8000)
-      - Catalogs Service, Available at: [http://localhost:4000](http://localhost:4000)
-      - Identity Service, Available at: [http://localhost:7000](http://localhost:7000)
+- First we should create a [dev-certificate](https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-linux-containers) for our docker-compose file with this commands:
 
+```powershell
+dotnet dev-certs https --clean
+dotnet dev-certs https -ep "$env:USERPROFILE\.aspnet\https\aspnetapp.pfx"  -p $CREDENTIAL_PLACEHOLDER$
+dotnet dev-certs https --trust
+```
+
+This local certificate will mapped to our containers in docker-compose file with setting `~/.aspnet/https:/https:ro` volume mount
+
+- Run the [docker-compose.infrastructure.yaml](./deployments/docker-compose/docker-compose.infrastructure.yaml) file, for running prerequisites infrastructures with `docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d` command.
+- Run the [docker-compose.services.yaml](./deployments/docker-compose/docker-compose.services.yaml) with `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml` for production mode that uses pushed docker images for services or for development mode you can use [docker-compose.services.dev.yaml](./deployments/docker-compose/docker-compose.services.dev.yaml) override docker-compose file with `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.dev.yaml up` command for building `dockerfiles` instead of using images in docker registry. Also for `debugging` purpose of docker-containers in vscode you can use [./deployments/docker-compose/docker-compose.services.debug.yaml](./deployments/docker-compose/docker-compose.services.debug.yaml) override docker-compose file with running `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.debug.yaml up -d`, I defined some [tasks](.vscode/tasks.json) for vscode for executing this command easier. For debugging in vscode we should use [launch.json](.vscode/launch.json).
+- Wait until all dockers got are downloaded and running.
+- You should automatically get:
+  - Postgres running
+  - RabbitMQ running
+  - MongoDB running
+  - Microservies running and accessible:
+    - Api Gateway, Available at: [http://localhost:3000](http://localhost:3000)
+    - Customers Service, Available at: [http://localhost:8000](http://localhost:8000)
+    - Catalogs Service, Available at: [http://localhost:4000](http://localhost:4000)
+    - Identity Service, Available at: [http://localhost:7000](http://localhost:7000)
 
 Some useful docker commands:
 
-``` powershell
+```powershell
 // start dockers
 docker-compose -f .\docker-compose.yaml up
 
@@ -548,27 +576,31 @@ docker ps
 // to show all dockers (also stopped)
 docker ps -a
 ```
+
 ### Using Tye
+
 We could run our microservices with new microsoft tools with name of [Project Tye](https://devblogs.microsoft.com/dotnet/introducing-project-tye/).
 
 Project Tye is an experimental developer tool that makes developing, testing, and deploying microservices and distributed applications easier.
 
 For installing `Tye` globally on our machine we should use this command:
 
-``` bash
+```bash
 dotnet tool install -g Microsoft.Tye --version "0.11.0-alpha.22111.1"
 ```
+
 OR if you already have Tye installed and want to update:
 
-``` bash
+```bash
 dotnet tool update -g Microsoft.Tye
 ```
 
 After installing tye, we could run our microservices with following command in the root of our project:
 
-``` bash
+```bash
 tye run
 ```
+
 One of key feature from tye run is a dashboard to view the state of your application. Navigate to [http://localhost:8000](http://localhost:8000) to see the dashboard running.
 
 Also We could run some [docker images](https://devblogs.microsoft.com/dotnet/introducing-project-tye/#adding-external-dependencies-redis) with Tye and Tye makes the process of deploying your application to [Kubernetes](https://devblogs.microsoft.com/dotnet/introducing-project-tye/#deploying-to-kubernetes) very simple with minimal knowlege or configuration required.
@@ -578,19 +610,19 @@ Also We could run some [docker images](https://devblogs.microsoft.com/dotnet/int
 TODO
 
 ## Contribution
+
 The application is in development status. You are feel free to submit pull request or create the issue.
 
-##  Project References
+## Project References
+
 - [https://github.com/oskardudycz/EventSourcing.NetCore](https://github.com/oskardudycz/EventSourcing.NetCore)
-- [https://github.com/thangchung/northwind-dotnet](https://github.com/thangchung/northwind-dotnet)
 - [https://github.com/dotnet-architecture/eShopOnContainers](https://github.com/dotnet-architecture/eShopOnContainers)
 - [https://github.com/jbogard/ContosoUniversityDotNetCore-Pages](https://github.com/jbogard/ContosoUniversityDotNetCore-Pages)
 - [https://github.com/kgrzybek/modular-monolith-with-ddd](https://github.com/kgrzybek/modular-monolith-with-ddd)
 - [https://github.com/thangchung/clean-architecture-dotnet](https://github.com/thangchung/clean-architecture-dotnet)
-- [https://github.com/jasontaylordev/CleanArchitecture](https://github.com/jasontaylordev/CleanArchitecture)
-- [https://github.com/devmentors/Inflow-micro](https://github.com/devmentors/Inflow-micro)
 
 ## License
+
 The project is under [MIT license](https://github.com/mehdihadeli/ecommerce-microservices-sample/blob/main/LICENSE).
 
 ## Star History

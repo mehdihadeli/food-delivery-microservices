@@ -3,6 +3,7 @@ using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Web;
 using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
+using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web;
 using BuildingBlocks.Web.Extensions;
@@ -34,6 +35,9 @@ builder.Host.UseDefaultServiceProvider(
         // options.ValidateOnBuild = true;
     }
 );
+
+Console.WriteLine(builder.Environment.EnvironmentName);
+Console.WriteLine(builder.Configuration.BindOptions<PostgresOptions>("MessagePersistenceOptions").ConnectionString);
 
 builder.Services
     .AddControllers(

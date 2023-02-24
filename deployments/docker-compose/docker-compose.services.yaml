@@ -1,63 +1,124 @@
-version: '3.7'
+# # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+# https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+# https://docs.docker.com/compose/extends/
+# if you have both 'docker-compose.services.yaml' and 'docker-compose.services.dev.yml' in the same directory, the latter will override the former. If you have multiple override files, you can specify them in order subsequently
+
+# To build and debug the app on prod machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml build
+# To start and debug the app on prod machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml up -d
+
+version: "3.8"
 services:
-  gateway:
-    build:
-      context: ../../
-      dockerfile: src/ApiGateway/Dockerfile
-    container_name: ecommerce-gateway
-    # restart: unless-stopped
-    ports:
-      - ${GATEWAY_PORT}:80
-    networks:
-      - ecommerce
+  # gateway:
+  # # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-servicemage
+  # # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+  # image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/gateway-service:${TAG:-latest}
+  # container_name: gateway-${TAG:-latest}
+  # # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+  # restart: on-failure
+  # ports:
+  #   - ${GATEWAY_HTTP_SVC_PORT:-3000}:80
+  #   - ${GATEWAY_HTTPs_SVC_PORT:-3001}:443
+  # # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+  # # https://docs.docker.com/compose/environment-variables/env-file/
+  # # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
+  # environment:
+  #    - ASPNETCORE_ENVIRONMENT=docker
+  #    - ASPNETCORE_URLS=https://+:443;http://+:80
+  #    - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
+  #    - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+  #  volumes:
+  #   - ${USERPROFILE}\.aspnet\https:/https:ro
+  # networks:
+  #   - ecommerce
 
   catalogs:
-    image: catalogs:${TAG}
-    build:
-      args:
-        Version: "1"
-      context: ../../
-      dockerfile: src/Services/Catalogs/Dockerfile
-    container_name: ecommerce-catalogs
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+    image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/catalogs-service:${TAG:-latest}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
+    container_name: catalogs-${TAG:-latest}
     # restart: unless-stopped
     ports:
-      - ${CATALOGS_SVC_PORT}:80
+      - ${CATALOGS_HTTP_SVC_PORT:-4000}:80
+      - ${CATALOGS_HTTPS_SVC_PORT:-4001}:443
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    # .env file will resolved implicitly
     env_file:
-      - ../../.docker-envs/catalogs.env
+      - ./catalogs.env
+    # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
     networks:
       - ecommerce
 
   identity:
-    image: identity:${TAG}
-    build:
-      args:
-        Version: "1"
-      context: ../../
-      dockerfile: src/Services/Identity/Dockerfile
-    container_name: ecommerce-identity
-    # restart: unless-stopped
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+    image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/identity-service:${TAG:-latest}
+    container_name: identity-{TAG:-latest}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
     ports:
-      - ${IDENTITY_SVC_PORT}:80
+      - ${IDENTITY_HTTP_SVC_PORT:-7000}:80
+      - ${IDENTITY_HTTPS_SVC_PORT:-7001}:443
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    # .env file will resolved implicitly
+    env_file:
+      - ./identity.env
+    # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
     networks:
       - ecommerce
 
   customers:
-    image: customers:${TAG}
-    build:
-      args:
-        Version: "1"
-      context: ../../
-      dockerfile: src/Services/Customers/Dockerfile
-    container_name: ecommerce-customers
-    # restart: unless-stopped
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+    image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/customers-service:${TAG:-latest}
+    container_name: customers-{TAG:-latest}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
     ports:
-      - ${CUSTOMERS_SVC_PORT}:80
+      - ${CUSTOMERS_HTTP_SVC_PORT:-8000}:80
+      - ${CUSTOMERS_HTTPS_SVC_PORT:-8001}:443
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    # .env file will resolved implicitly
+    env_file:
+      - ./customers.env
+    # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
     networks:
       - ecommerce
 
 # https://docs.docker.com/compose/networking/
+# https://docs.docker.com/engine/reference/commandline/network_create/
+# https://docs.docker.com/compose/compose-file/#networks-top-level-element
 # https://stackoverflow.com/questions/38088279/communication-between-multiple-docker-compose-projects
+# We could use also a predefined network and connect to that predefined network with specifying the 'name' of existing network and set 'external' attribute to true
+# When we run docker-compose up, Docker Compose will check if the 'ecommerce' network already exists. If it does not exist, it will create the 'ecommerce' network. If it exists, it will use the existing 'ecommerce' network. problem is that if we do a docker-compose down this network will delete and other docker-compose that use same network will fail because network deleted so its better we use `external` keyword for using a predefined network
 networks:
   ecommerce:
-    name: ecommerce-network
+    name: ecommerce
+    driver: bridge
+    # we can use the network that will create by infrastructure docker-compose file and we use that network here by specifying existing network 'name' and set 'external' attribute to 'true' (because we want to use a network outside of our docker-compose) or we can create a `ecommerce` network manually by `docker network create -d bridge ecommerce` and use this network as external network for all docker-compose files
     external: true

@@ -1,3 +1,11 @@
+# https://editorconfig.org
+# https://www.jetbrains.com/help/resharper/Using_EditorConfig.html
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/configuration-files
+# When opening a file, EditorConfig plugins look for a file named .editorconfig in the directory of the opened file and in every parent directory. A search for .editorconfig files will stop if the root filepath is reached or an EditorConfig file with `root=true` is found.
+
+# Remove the line below if you want to inherit .editorconfig settings from higher directories
+root = true
+
 [*]
 indent_style = space
 indent_size = 2
@@ -368,7 +376,7 @@ dotnet_diagnostic.sa1101.severity = None
 dotnet_diagnostic.ma0004.severity = Suggestion
 
 # MA0049: Type name should not match containing namespace
-dotnet_diagnostic.ma0049.severity = None
+dotnet_diagnostic.ma0049.severity = Suggestion
 
 # MA0048: File name must match type name
 dotnet_diagnostic.ma0048.severity = Suggestion

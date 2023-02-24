@@ -1,3 +1,4 @@
+#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
 FROM mcr.microsoft.com/dotnet/sdk:latest as builder
 
 WORKDIR /src
@@ -8,9 +9,10 @@ COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
-COPY ./src/Services/Orders/Directory.Build.props ./Services/Orders/
+COPY ./src/Services/Customers/Directory.Build.props ./Services/Customers/
 
 # TODO: Using wildcard to copy all files in the directory.
+
 COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
 COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
 COPY ./src/BuildingBlocks/BuildingBlocks.Caching/BuildingBlocks.Caching.csproj ./BuildingBlocks/BuildingBlocks.Caching/
@@ -31,17 +33,12 @@ COPY ./src/BuildingBlocks/BuildingBlocks.OpenTelemetry/BuildingBlocks.OpenTeleme
 RUN ls
 
 # Copy project files
+
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
-COPY ./src/Services/Orders/ECommerce.Services.Orders.Api/  ./Services/Orders/ECommerce.Services.Orders.Api/
-COPY ./src/Services/Orders/ECommerce.Services.Orders/  ./Services/Orders/ECommerce.Services.Orders/
-COPY ./src/Services/Shared/  ./Services/Shared/
+COPY ./src/Services/Customers/ECommerce.Services.Customers.Api/ ./Services/Customers/ECommerce.Services.Customers.Api/
+COPY ./src/Services/Customers/ECommerce.Services.Customers/ ./Services/Customers/ECommerce.Services.Customers/
+COPY ./src/Services/Shared/ ./Services/Shared/
 
-WORKDIR /src/Services/Orders/ECommerce.Services.Orders.Api/
+WORKDIR /src/Services/Customers/ECommerce.Services.Customers.Api/
 
-#https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
-#https://swimburger.net/blog/dotnet/how-to-get-aspdotnet-core-server-urls
-#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
-#https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments
-
-RUN dotnet watch run  ECommerce.Services.Orders.Api.csproj --launch-profile Orders.Api.LiveRecompilation
-
+RUN dotnet watch run ECommerce.Services.Customers.Api.csproj --launch-profile Customers.Api.LiveRecompilation

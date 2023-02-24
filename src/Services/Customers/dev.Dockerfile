@@ -9,7 +9,7 @@ WORKDIR /app
 #https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments
 EXPOSE 80
 EXPOSE 443
-ENV ASPNETCORE_URLS http://*:80  https://*:443 
+ENV ASPNETCORE_URLS http://*:80;https://*:443 
 ENV ASPNETCORE_ENVIRONMENT docker
 
 # # https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user

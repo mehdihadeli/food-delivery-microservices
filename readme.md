@@ -27,6 +27,7 @@ Thanks a bunch for supporting me!
 - [Features](#features)
 - [Plan](#plan)
 - [Setup](#setup)
+  - [Dev Certificate](#dev-certificate)
   - [Conventional Commit](#conventional-commit)
   - [Formatting](#formatting)
   - [Analizers](#analizers)
@@ -100,6 +101,8 @@ Thanks a bunch for supporting me!
 - ✔️ **[`MassTransit`](https://github.com/MassTransit/MassTransit)** - Distributed Application Framework for .NET
 
 ## Setup
+
+### Dev Certificate
 
 ### Conventional Commit
 
@@ -475,10 +478,10 @@ After [Committing Transaction](src/BuildingBlocks/BuildingBlocks.Core/Persistenc
 
 ## Prerequisites
 
-1. This application uses `Https` for hosting apis, to setup a valid certificate on your machine, you can create a [Self-Signed Certificate](https://docs.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide#create-a-self-signed-certificate).
+1. This application uses `Https` for hosting apis, to setup a valid certificate on your machine, you can create a [Self-Signed Certificate](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide#with-dotnet-dev-certs).
 2. Install git - [https://git-scm.com/downloads](https://git-scm.com/downloads).
-3. Install .NET Core 6.0 - [https://dotnet.microsoft.com/download/dotnet/6.0](https://dotnet.microsoft.com/download/dotnet/6.0).
-4. Install Visual Studio 2022, Rider or VSCode.
+3. Install .NET Core 7.0 - [https://dotnet.microsoft.com/download/dotnet/7.0](https://dotnet.microsoft.com/download/dotnet/7.0).
+4. Install Visual Studio, Rider or VSCode.
 5. Install docker - [https://docs.docker.com/docker-for-windows/install/](https://docs.docker.com/docker-for-windows/install/).
 6. Make sure that you have ~10GB disk space.
 7. Clone Project [https://github.com/mehdihadeli/ecommerce-microservices-sample](https://github.com/mehdihadeli/ecommerce-microservices-sample), make sure that's compiling
@@ -529,17 +532,28 @@ pm2 delete pm2.yaml
 
 ### Using Docker-Compose
 
-10. Go to [deployments/docker-compose/docker-compose.yaml](./deployments/docker-compose/docker-compose.yaml) and run: `docker-compose up`.
-11. Wait until all dockers got are downloaded and running.
-12. You should automatically get:
-    - Postgres running
-    - RabbitMQ running
-    - MongoDB running
-    - Microservies running and accessible:
-      - Api Gateway, Available at: [http://localhost:3000](http://localhost:3000)
-      - Customers Service, Available at: [http://localhost:8000](http://localhost:8000)
-      - Catalogs Service, Available at: [http://localhost:4000](http://localhost:4000)
-      - Identity Service, Available at: [http://localhost:7000](http://localhost:7000)
+- First we should create a [dev-certificate](https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-linux-containers) for our docker-compose file with this commands:
+
+```powershell
+dotnet dev-certs https --clean
+dotnet dev-certs https -ep "$env:USERPROFILE\.aspnet\https\aspnetapp.pfx"  -p $CREDENTIAL_PLACEHOLDER$
+dotnet dev-certs https --trust
+```
+
+This local certificate will mapped to our containers in docker-compose file with setting `~/.aspnet/https:/https:ro` volume mount
+
+- Run the [docker-compose.infrastructure.yaml](./deployments/docker-compose/docker-compose.infrastructure.yaml) file, for running prerequisites infrastructures with `docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d` command.
+- Run the [docker-compose.services.yaml](./deployments/docker-compose/docker-compose.services.yaml) with `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml` for production mode that uses pushed docker images for services or for development mode you can use [docker-compose.services.dev.yaml](./deployments/docker-compose/docker-compose.services.dev.yaml) override docker-compose file with `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.dev.yaml up` command for building `dockerfiles` instead of using images in docker registry. Also for `debugging` purpose of docker-containers in vscode you can use [./deployments/docker-compose/docker-compose.services.debug.yaml](./deployments/docker-compose/docker-compose.services.debug.yaml) override docker-compose file with running `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.debug.yaml up -d`, I defined some [tasks](.vscode/tasks.json) for vscode for executing this command easier. For debugging in vscode we should use [launch.json](.vscode/launch.json).
+- Wait until all dockers got are downloaded and running.
+- You should automatically get:
+  - Postgres running
+  - RabbitMQ running
+  - MongoDB running
+  - Microservies running and accessible:
+    - Api Gateway, Available at: [http://localhost:3000](http://localhost:3000)
+    - Customers Service, Available at: [http://localhost:8000](http://localhost:8000)
+    - Catalogs Service, Available at: [http://localhost:4000](http://localhost:4000)
+    - Identity Service, Available at: [http://localhost:7000](http://localhost:7000)
 
 Some useful docker commands:
 
@@ -602,13 +616,10 @@ The application is in development status. You are feel free to submit pull reque
 ## Project References
 
 - [https://github.com/oskardudycz/EventSourcing.NetCore](https://github.com/oskardudycz/EventSourcing.NetCore)
-- [https://github.com/thangchung/northwind-dotnet](https://github.com/thangchung/northwind-dotnet)
 - [https://github.com/dotnet-architecture/eShopOnContainers](https://github.com/dotnet-architecture/eShopOnContainers)
 - [https://github.com/jbogard/ContosoUniversityDotNetCore-Pages](https://github.com/jbogard/ContosoUniversityDotNetCore-Pages)
 - [https://github.com/kgrzybek/modular-monolith-with-ddd](https://github.com/kgrzybek/modular-monolith-with-ddd)
 - [https://github.com/thangchung/clean-architecture-dotnet](https://github.com/thangchung/clean-architecture-dotnet)
-- [https://github.com/jasontaylordev/CleanArchitecture](https://github.com/jasontaylordev/CleanArchitecture)
-- [https://github.com/devmentors/Inflow-micro](https://github.com/devmentors/Inflow-micro)
 
 ## License
 

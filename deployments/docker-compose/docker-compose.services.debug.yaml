@@ -1,10 +1,10 @@
 # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
 # https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
 # https://docs.docker.com/compose/extends/
-# Overrid 'docker-compose.services.yaml' configs here for debug mode
+# Overrid 'docker-compose.yaml' configs here for debug mode
 
-# To build and debug the app on debug machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.services.debug.yml build
-# To start and debug the app on debug machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.services.debug.yaml up -d
+# To build and debug the app on debug machine --> docker-compose -f docker-compose.yaml -f docker-compose.debug.yml build
+# To start and debug the app on debug machine --> docker-compose -f docker-compose.yaml -f docker-compose.debug.yaml up -d
 
 version: "3.8"
 services:

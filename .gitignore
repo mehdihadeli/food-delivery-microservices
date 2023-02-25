@@ -358,6 +358,8 @@ out/
 .idea/
 local/data/
 portainer-data/
+docker.sock/
+localtime/
 coveragereport/
 CoverageResults/
 coverage.cobertura.xml

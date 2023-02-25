@@ -71,9 +71,9 @@ services:
     # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
     # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
     volumes:
-      - ${USERPROFILE}\\vsdbg:/vsdbg:ro
-      - ${HOME}\\.nuget\\packages:/root/.nuget/packages:ro
-      - ${HOME}\\.nuget\\packages:/home/appuser/.nuget/packages:ro
+      - ~/vsdbg:/vsdbg:ro
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
     container_name: catalogs-debug
     environment:
       - ASPNETCORE_ENVIRONMENT=docker
@@ -114,9 +114,9 @@ services:
     # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
     # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
     volumes:
-      - ${USERPROFILE}\\vsdbg:/vsdbg:ro
-      - ${HOME}\\.nuget\\packages:/root/.nuget/packages:ro
-      - ${HOME}\\.nuget\\packages:/home/appuser/.nuget/packages:ro
+      - ~/vsdbg:/vsdbg:ro
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
     container_name: identity-debug
     environment:
       - ASPNETCORE_ENVIRONMENT=docker
@@ -157,9 +157,9 @@ services:
     # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
     # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
     volumes:
-      - ${USERPROFILE}\\vsdbg:/vsdbg:ro
-      - ${HOME}\\.nuget\\packages:/root/.nuget/packages:ro
-      - ${HOME}\\.nuget\\packages:/home/appuser/.nuget/packages:ro
+      - ~/vsdbg:/vsdbg:ro
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
     container_name: customers-debug
     environment:
       - ASPNETCORE_ENVIRONMENT=docker

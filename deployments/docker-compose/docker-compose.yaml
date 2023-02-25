@@ -21,6 +21,8 @@ services:
   #  - ASPNETCORE_URLS=https://+:443;http://+:80
   #  - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
   #  - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+  # volumes:
+  #  - ~/.aspnet/https:/https:ro
 
   catalogs:
     image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/catalogs-service:${TAG:-latest}
@@ -47,6 +49,8 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+       - ~/.aspnet/https:/https:ro
 
   identity:
     image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/identity-service:${TAG:-latest}
@@ -72,6 +76,8 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
 
   customers:
     image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/customers-service:${TAG:-latest}
@@ -98,6 +104,8 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
 
     #######################################################
     #  rabbitmq
@@ -192,6 +200,7 @@ services:
   #######################################################
   #  Portainer
   #######################################################
+  # https://bobcares.com/blog/install-portainer-docker-compose/
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer

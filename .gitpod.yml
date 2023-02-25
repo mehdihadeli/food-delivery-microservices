@@ -4,6 +4,7 @@
 # https://www.gitpod.io/docs/references/gitpod-yml
 # https://www.gitpod.io/docs/configure
 # https://www.gitpod.io/docs/configure/workspaces/ports
+# https://www.gitpod.io/docs/configure/projects/prebuilds
 
 image:
   file: .gitpod.Dockerfile
@@ -33,11 +34,23 @@ tasks:
      dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p 123456
      dotnet dev-certs https --trust
 
-  - name: Restore and Build dotnet & dotnet tool
+  - name: Husky Tools Setup
+    # https://www.gitpod.io/docs/configure/projects
+    # https://www.gitpod.io/docs/configure/projects/prebuilds
+    # https://www.gitpod.io/docs/configure/workspaces/tasks
+    # If prebuild is set up on repository with linking repository to a project, when there is a commit to project `init` commands will execute in prebuild process and its workspace will share with all new created workspace for this project, if we don't have a project when we create a new workspace `init` commands will execute
+    init: |
+        npm install
+        npm run prepare
+
+  - name: Restore and Build dotnet 
+    # https://www.gitpod.io/docs/configure/projects
+    # https://www.gitpod.io/docs/configure/projects/prebuilds
+    # https://www.gitpod.io/docs/configure/workspaces/tasks
+    # If prebuild is set up on repository with linking repository to a project, when there is a commit to project `init` commands will execute in prebuild process and its workspace will share with all new created workspace for this project, if we don't have a project when we create a new workspace `init` commands will execute
     init: |
       gp sync-await docker-bundle # wait for the bellow 'init' to finish
       dotnet restore
-      dotnet tool restore
       dotnet build
       gp sync-done build-bundle
 

@@ -17,6 +17,7 @@ vscode:
     - humao.rest-client
     - ms-azuretools.vscode-docker
     - donjayamanne.githistory
+    - mutantdino.resourcemonitor
     - pkief.material-icon-theme
     - emmanuelbeziat.vscode-great-icons
     - fernandoescolar.vscode-solution-explorer

@@ -21,7 +21,6 @@ vscode:
     - fernandoescolar.vscode-solution-explorer
     - tabnine.tabnine-vscode
     - ms-vscode.vs-keybindings
-    - Trottero.dotnetwatchattach
     - streetsidesoftware.code-spell-checker
 
 # https://www.gitpod.io/docs/configure/workspaces/tasks#execution-order

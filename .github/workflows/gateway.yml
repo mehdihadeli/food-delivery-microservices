@@ -179,9 +179,9 @@ jobs:
       contents: read
 
     # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
-    # we should not filter on head commit message like 'build', 'test' because it is possible it beside of this job it trigger also 'call-build-test-push' job when we commit on main branches (just filter on branches)
+    # we should not filter on head commit message like 'build', 'test' because it is possible beside of this job, it triggers also 'call-build-test-push' job when we commit on main branches (just filter on branches)
     if: |
-      !(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, 'chore') || contains(github.event.head_commit.message, 'docs') || contains(github.event.head_commit.message, 'style')) &&
+      !(contains(github.event.head_commit.message, '[skip ci]')) &&
       (github.event_name == 'pull_request' || !contains(fromJson('["develop", "main", "beta", "preview"]'), github.ref_name) || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish == 'false'))
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow

@@ -62,8 +62,17 @@
     //https://docs.docker.com/engine/reference/commandline/build/#target
     // this task only build target stage here `final`, and we will change the entrypoint in 'ducker run' (we change entrypoint only in debug mode) with --entrypoint because we don't want our contaoner runs we will run our cotainer in debug mode with launching app from docker container remotly
     {
-      "label": "docker-build: catalogs",
+      "label": "docker-build-dev: catalogs",
       "command": "docker build --target final -f ${workspaceFolder}/src/Services/Catalogs/dev.Dockerfile --tag catalogs:dev ${workspaceFolder}", //--no-cache
+      "type": "shell",
+      "dependsOn": [
+        "build: catalogs"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-build-prod: catalogs",
+      "command": "docker build --target final -f ${workspaceFolder}/src/Services/Catalogs/Dockerfile --tag catalogs:prod ${workspaceFolder}", //--no-cache
       "type": "shell",
       "dependsOn": [
         "build: catalogs"
@@ -110,16 +119,16 @@
       //--rm doesn't work in detached mode
       //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `catalogs-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm -d --publish '4000:80' --publish-all --name catalogs-debug --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly catalogs:dev",
+      "command": "docker run -it --rm -d --publish '4000:80' --publish '4001:443' --publish-all --name catalogs-debug --entrypoint 'bash' --env-file ${workspaceFolder}/src/Services/Catalogs/.env --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly catalogs:dev",
       "dependsOn": [
-        "docker-build: catalogs"
+        "docker-build-dev: catalogs"
       ],
       "type": "shell",
       "problemMatcher": []
     },
     // for see data inner container `docker exec -it catalogs-dev bash`
     {
-      "label": "docker-run: catalogs",
+      "label": "docker-run-dev: catalogs",
       //https://docs.docker.com/engine/reference/commandline/run/
       //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
       //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
@@ -130,9 +139,28 @@
       // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
       //--rm doesn't work in detached mode
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm --publish '4000:80' --publish-all --network=ecommerce --name catalogs-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg catalogs:dev",
+      "command": "docker run -it --rm --publish '4000:80' --publish '4001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Catalogs/.env --network=ecommerce --name catalogs-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly catalogs:dev",
       "dependsOn": [
-        "docker-build: catalogs"
+        "docker-build-dev: catalogs"
+      ],
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-run-prod: catalogs",
+      //https://docs.docker.com/engine/reference/commandline/run/
+      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
+      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
+      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      //https://docs.docker.com/engine/reference/commandline/run/#mount
+      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
+      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
+      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
+      //--rm doesn't work in detached mode
+      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+      "command": "docker run -it --rm --publish '4000:80' --publish '4001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Catalogs/.env --network=ecommerce --name catalogs-prod --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly catalogs:prod",
+      "dependsOn": [
+        "docker-build-prod: catalogs"
       ],
       "type": "shell",
       "problemMatcher": []
@@ -150,7 +178,7 @@
       //--rm doesn't work in detached mode
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
       //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
-      "command": "docker run -it --rm -d --publish '4000:80' --publish-all --network=ecommerce --name catalogs-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly catalogs:base",
+      "command": "docker run -it --rm -d --publish '4000:80' --publish '4001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Catalogs/.env --network=ecommerce --name catalogs-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly catalogs:base",
       "dependsOn": [
         "docker-build-base: catalogs"
       ],
@@ -276,7 +304,7 @@
     //https://docs.docker.com/engine/reference/commandline/build/#target
     // this task only build target stage here `final`, and we will change the entrypoint in 'ducker run' (we change entrypoint only in debug mode) with --entrypoint because we don't want our contaoner runs we will run our cotainer in debug mode with launching app from docker container remotly
     {
-      "label": "docker-build: customers",
+      "label": "docker-build-dev: customers",
       "command": "docker build --target final -f ${workspaceFolder}/src/Services/Customers/dev.Dockerfile --tag customers:dev ${workspaceFolder}", //--no-cache
       "type": "shell",
       "dependsOn": [
@@ -324,16 +352,16 @@
       //--rm doesn't work in detached mode
       //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `customers-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm -d --publish '8000:80' --publish-all --name customers-debug --entrypoint 'bash' --network=ecommerce --mount type=bind,src=~/vsdbg,dst=/vsdbg --mount type=bind,source=~/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=~/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly customers:dev",
+      "command": "docker run -it --rm -d --publish '8000:80' --publish '8001:443' --publish-all --name customers-debug --entrypoint 'bash' --env-file ${workspaceFolder}/src/Services/Customers/.env  --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly customers:dev",
       "dependsOn": [
-        "docker-build: customers"
+        "docker-build-dev: customers"
       ],
       "type": "shell",
       "problemMatcher": []
     },
     // for see data inner container `docker exec -it customers-dev bash`
     {
-      "label": "docker-run: customers",
+      "label": "docker-run-dev: customers",
       //https://docs.docker.com/engine/reference/commandline/run/
       //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
       //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
@@ -344,9 +372,9 @@
       // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
       //--rm doesn't work in detached mode
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm --publish '8000:80' --publish-all --network=ecommerce --name customers-dev --mount type=bind,src=~/vsdbg,dst=/vsdbg customers:dev",
+      "command": "docker run -it --rm --publish '8000:80' --publish '8001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Customers/.env --network=ecommerce --name customers-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly customers:dev",
       "dependsOn": [
-        "docker-build: customers"
+        "docker-build-dev: customers"
       ],
       "type": "shell",
       "problemMatcher": []
@@ -364,7 +392,7 @@
       //--rm doesn't work in detached mode
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
       //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
-      "command": "docker run -it --rm -d --publish '8000:80' --publish-all --network=ecommerce --name customers-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=~/vsdbg,dst=/vsdbg --mount type=bind,source=~/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=~/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly customers:base",
+      "command": "docker run -it --rm -d --publish '8000:80' --publish '8001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Customers/.env --network=ecommerce --name customers-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly customers:base",
       "dependsOn": [
         "docker-build-base: customers"
       ],
@@ -490,7 +518,7 @@
     //https://docs.docker.com/engine/reference/commandline/build/#target
     // this task only build target stage here `final`, and we will change the entrypoint in 'ducker run' (we change entrypoint only in debug mode) with --entrypoint because we don't want our contaoner runs we will run our cotainer in debug mode with launching app from docker container remotly
     {
-      "label": "docker-build: identity",
+      "label": "docker-build-dev: identity",
       "command": "docker build --target final -f ${workspaceFolder}/src/Services/Identity/dev.Dockerfile --tag identity:dev ${workspaceFolder}", //--no-cache
       "type": "shell",
       "dependsOn": [
@@ -505,6 +533,9 @@
       "label": "docker-dotnet-publsih: identity",
       "command": "dotnet publish --os linux --arch x64 -p:PublishProfile=DefaultContainer -c Release",
       "type": "shell",
+      "dependsOn": [
+        "build: identity"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/src/Services/Identity/ECommerce.Services.Identity.Api"
       },
@@ -538,16 +569,16 @@
       //--rm doesn't work in detached mode
       //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm -d --publish '7000:80' --publish-all --name identity-debug --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly identity:dev",
+      "command": "docker run -it --rm -d --publish '7000:80' --publish '7001:443' --publish-all --name identity-debug --env-file ${workspaceFolder}/src/Services/Identity/.env --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly identity:dev",
       "dependsOn": [
-        "docker-build: identity"
+        "docker-build-dev: identity"
       ],
       "type": "shell",
       "problemMatcher": []
     },
     // for see data inner container `docker exec -it identity-dev bash`
     {
-      "label": "docker-run: identity",
+      "label": "docker-run-dev: identity",
       //https://docs.docker.com/engine/reference/commandline/run/
       //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
       //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
@@ -558,9 +589,9 @@
       // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
       //--rm doesn't work in detached mode
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm --publish '7000:80' --publish-all --network=ecommerce --name identity-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg identity:dev",
+      "command": "docker run -it --rm --publish '7000:80' --publish '7001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Identity/.env --network=ecommerce --name identity-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly identity:dev",
       "dependsOn": [
-        "docker-build: identity"
+        "docker-build-dev: identity"
       ],
       "type": "shell",
       "problemMatcher": []
@@ -578,7 +609,7 @@
       //--rm doesn't work in detached mode
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
       //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
-      "command": "docker run -it --rm -d --publish '7000:80' --publish-all --network=ecommerce --name identity-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly identity:base",
+      "command": "docker run -it --rm -d --publish '7000:80' --publish '7001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Identity/.env --network=ecommerce --name identity-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly identity:base",
       "dependsOn": [
         "docker-build-base: identity"
       ],
@@ -704,7 +735,7 @@
     //https://docs.docker.com/engine/reference/commandline/build/#target
     // this task only build target stage here `final`, and we will change the entrypoint in 'ducker run' (we change entrypoint only in debug mode) with --entrypoint because we don't want our contaoner runs we will run our cotainer in debug mode with launching app from docker container remotly
     {
-      "label": "docker-build: orders",
+      "label": "docker-build-dev: orders",
       "command": "docker build --target final -f ${workspaceFolder}/src/Services/Orders/dev.Dockerfile --tag orders:dev ${workspaceFolder}", //--no-cache
       "type": "shell",
       "dependsOn": [
@@ -752,16 +783,16 @@
       //--rm doesn't work in detached mode
       //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `orders-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm -d --publish '9000:80' --publish-all --name orders-debug --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly orders:dev",
+      "command": "docker run -it --rm -d --publish '9000:80' --publish '9001:443' --publish-all --name orders-debug --entrypoint 'bash' --env-file ${workspaceFolder}/src/Services/Orders/.env --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly orders:dev",
       "dependsOn": [
-        "docker-build: orders"
+        "docker-build-dev: orders"
       ],
       "type": "shell",
       "problemMatcher": []
     },
     // for see data inner container `docker exec -it orders-dev bash`
     {
-      "label": "docker-run: orders",
+      "label": "docker-run-dev: orders",
       //https://docs.docker.com/engine/reference/commandline/run/
       //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
       //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
@@ -772,9 +803,9 @@
       // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
       //--rm doesn't work in detached mode
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm --publish '9000:80' --publish-all --network=ecommerce --name orders-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg orders:dev",
+      "command": "docker run -it --rm --publish '9000:80' --publish '9001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Orders/.env --network=ecommerce --name orders-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly  --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly orders:dev",
       "dependsOn": [
-        "docker-build: orders"
+        "docker-build-dev: orders"
       ],
       "type": "shell",
       "problemMatcher": []
@@ -792,7 +823,7 @@
       //--rm doesn't work in detached mode
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
       //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
-      "command": "docker run -it --rm -d --publish '9000:80' --publish-all --network=ecommerce --name orders-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly orders:base",
+      "command": "docker run -it --rm -d --publish '9000:80' --publish '9001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Orders/.env --network=ecommerce --name orders-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly orders:base",
       "dependsOn": [
         "docker-build-base: orders"
       ],
@@ -919,7 +950,7 @@
     //https://docs.docker.com/engine/reference/commandline/build/#target
     // this task only build target stage here `final`, and we will change the entrypoint in 'ducker run' (we change entrypoint only in debug mode) with --entrypoint because we don't want our contaoner runs we will run our cotainer in debug mode with launching app from docker container remotly
     {
-      "label": "docker-build: gateway",
+      "label": "docker-build-dev: gateway",
       "command": "docker build --target final -f ${workspaceFolder}/src/ApiGateway/dev.Dockerfile --tag gateway:dev ${workspaceFolder}", //--no-cache
       "type": "shell",
       "dependsOn": [
@@ -967,16 +998,16 @@
       //--rm doesn't work in detached mode
       //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `gateway-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm -d --publish '3000:80' --publish-all --name gateway-debug --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly gateway:dev",
+      "command": "docker run -it --rm -d --publish '3000:80' --publish '3001:443' --publish-all --name gateway-debug --env-file ${workspaceFolder}/src/ApiGateway/.env --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly gateway:dev",
       "dependsOn": [
-        "docker-build: gateway"
+        "docker-build-dev: gateway"
       ],
       "type": "shell",
       "problemMatcher": []
     },
     // for see data inner container `docker exec -it gateway-dev bash`
     {
-      "label": "docker-run: gateway",
+      "label": "docker-run-dev: gateway",
       //https://docs.docker.com/engine/reference/commandline/run/
       //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
       //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
@@ -987,9 +1018,9 @@
       // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
       //--rm doesn't work in detached mode
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm --publish '3000:80' --publish-all --network=ecommerce --name gateway-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg gateway:dev",
+      "command": "docker run -it --rm --publish '3000:80' --publish '3001:443' --publish-all --name gateway-dev --env-file ${workspaceFolder}/src/ApiGateway/.env --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly gateway:dev",
       "dependsOn": [
-        "docker-build: gateway"
+        "docker-build-dev: gateway"
       ],
       "type": "shell",
       "problemMatcher": []
@@ -1007,7 +1038,7 @@
       //--rm doesn't work in detached mode
       //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
       //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
-      "command": "docker run -it --rm -d --publish '3000:80' --publish-all --network=ecommerce --name gateway-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly gateway:base",
+      "command": "docker run -it --rm -d --publish '3000:80' --publish '3001:443' --publish-all --name gateway-base --env-file ${workspaceFolder}/src/ApiGateway/.env --network=ecommerce --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly gateway:base",
       "dependsOn": [
         "docker-build-base: gateway"
       ],

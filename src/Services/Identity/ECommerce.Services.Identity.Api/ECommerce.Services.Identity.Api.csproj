@@ -14,10 +14,10 @@
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:latest</ContainerBaseImage>
     <UserSecretsId>526a05d0-3da0-4d64-b60b-47482dd0cbc0</UserSecretsId>
   </PropertyGroup>
-  <ItemGroup>
-    <ContainerPort Include="80" Type="tcp" />
-    <ContainerEnvironmentVariable Include="ASPNETCORE_ENVIRONMENT" Value="docker" />
-  </ItemGroup>
+<!--  <ItemGroup>-->
+<!--    <ContainerPort Include="80" Type="tcp" />-->
+<!--    <ContainerEnvironmentVariable Include="ASPNETCORE_ENVIRONMENT" Value="docker" />-->
+<!--  </ItemGroup>-->
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />

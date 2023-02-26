@@ -13,15 +13,15 @@
     <ContainerImageTag>dev</ContainerImageTag>
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:latest</ContainerBaseImage>
   </PropertyGroup>
-  <ItemGroup>
-    <ContainerPort Include="80" Type="tcp" />
-    <ContainerEnvironmentVariable Include="ASPNETCORE_ENVIRONMENT" Value="docker" />
-  </ItemGroup>
+<!--  <ItemGroup>-->
+<!--    <ContainerPort Include="80" Type="tcp" />-->
+<!--    <ContainerEnvironmentVariable Include="ASPNETCORE_ENVIRONMENT" Value="docker" />-->
+<!--  </ItemGroup>-->
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Build.Containers" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\ECommerce.Services.Customers\ECommerce.Services.Customers.csproj" />

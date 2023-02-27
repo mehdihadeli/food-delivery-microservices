@@ -385,4 +385,4 @@ jobs:
       release-version: ${{ needs.call-release.outputs.release-version }}
       registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
       registry-endpoint: ${{ github.repository }}
-      service-name: ${${{ vars.GATEWAY_SERVICE_NAME }} # gateway-service
+      service-name: ${{ vars.GATEWAY_SERVICE_NAME }} # gateway-service

@@ -73,9 +73,9 @@ on:
   workflow_dispatch:
     inputs:
       logLevel:
-        description: 'Log level'
+        description: "Log level"
         required: true
-        default: 'info'
+        default: "info"
         type: choice
         options:
           - info
@@ -101,7 +101,6 @@ on:
 #       description: "Environment to run"
 #       type: environment
 #       required: true
-
 
 # https://docs.github.com/en/actions/learn-github-actions/variables#defining-environment-variables-for-a-single-workflow
 # https://docs.github.com/en/actions/using-workflows/reusing-workflows#limitations
@@ -131,7 +130,7 @@ jobs:
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
     # we should not filter on head commit message types like 'chore', 'docs' because it is possible it our latest SHA commit in integration branches like develop and main be these types and it will skips whole of our trigger
     if: |
-       github.actor != 'dependabot[bot]'
+      github.actor != 'dependabot[bot]'
 
     steps:
       - name: Conventional Commits Checks
@@ -330,20 +329,10 @@ jobs:
              echo "Error: IMAGE_NAME_FILE not found."
           fi
 
-      # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
-      - name: unzip artifacts
-        if: success()
-        run: |
-          unzip "artifacts/${{ vars.GATEWAY_SERVICE_NAME }}_test_artifacts/test-results.zip" -d "output"
-
-      - name: Ls Output Files
-        if: success()
-        run: ls -R ${{ github.workspace }}/output
-
   # typically release notes are published as part of the Continuous Deployment (CD) process, after the software has been built, tested, and deployed to production.
   # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
   call-release:
-    needs: [ pre-check, workflow-info ]
+    needs: [pre-check, workflow-info]
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions

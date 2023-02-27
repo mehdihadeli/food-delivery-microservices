@@ -5,6 +5,7 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?&style=flat-square)](http://commitizen.github.io/cz-cli/)
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/https://github.com/mehdihadeli/ecommerce-microservices)
+
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://mehdihadeli-humble-space-couscous-5x5pqwwjx5c7664.github.dev)
 
 > `ECommerece Microservices` is a fictional ecommerce sample, built with .Net Core and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
@@ -68,15 +69,15 @@ Thanks a bunch for supporting me!
 
 > This project is in progress, New features will be added over time.
 
-| Feature          | Architecture Pattern                  | Status         | Url                                           | CI-CD                                                                                                                                                                                                                                                  |
-| ---------------- | ------------------------------------- | -------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| API Gateway      | Microsoft YARP Reverse Proxy          | Completed ✔️   | https://localhost:3010; http://localhost:3000 | -                                                                                                                                                                                                                                                      |
-| Identity Service | Data Centeric Architecture (CRUD)     | Completed ✔️   | https://localhost:7001; http://localhost:7000 | [![Identity-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml)           |
-| Customer Service | Domain Driven Design                  | Completed ✔️   | https://localhost:8001; http://localhost:8000 | [![Customers-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/customers.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/customers.yml) |
-| Catalog Service  | Domain Driven Design                  | Completed ✔️   | https://localhost:4001; http://localhost:4000 | [![Catalogs-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs.yml)           |
-| Order Service    | Event Sourccing, Domain Driven Design | In Progress👷  | https://localhost:9001; http://localhost:9000 | -                                                                                                                                                                                                                                                      |
-| Shipping Service | Domain Driven Design                  | Not Started 🚩 | -                                             | -                                                                                                                                                                                                                                                      |
-| Payment Service  | Event Sourccing, Domain Driven Design | Not Started 🚩 | -                                             | -                                                                                                                                                                                                                                                      |
+| Feature          | Architecture Pattern                  | Status         | CI-CD                                                                                                                                                                                                                                                  |
+| ---------------- | ------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| API Gateway      | Microsoft YARP Reverse Proxy          | Completed ✔️   | [![Gateway-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/gateway.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/gateway.yml)              |
+| Identity Service | Data Centeric Architecture (CRUD)     | Completed ✔️   | [![Identity-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/identity.yml)           |
+| Customer Service | Domain Driven Design                  | Completed ✔️   | [![Customers-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/customers.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices-sample/actions/workflows/customers.yml) |
+| Catalog Service  | Domain Driven Design                  | Completed ✔️   | [![Catalogs-CI-CD](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs.yml/badge.svg?branch=develop&style=flat-square)](https://github.com/mehdihadeli/ecommerce-microservices/actions/workflows/catalogs.yml)           |
+| Order Service    | Event Sourccing, Domain Driven Design | In Progress👷  | -                                                                                                                                                                                                                                                      |
+| Shipping Service | Domain Driven Design                  | Not Started 🚩 | -                                                                                                                                                                                                                                                      |
+| Payment Service  | Event Sourccing, Domain Driven Design | Not Started 🚩 | -                                                                                                                                                                                                                                                      |
 
 ## Technologies - Libraries
 
@@ -539,6 +540,7 @@ dotnet dev-certs https --clean
 dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p $CREDENTIAL_PLACEHOLDER$
 dotnet dev-certs https --trust
 ```
+
 This local certificate will mapped to our containers in docker-compose file with setting `~/.aspnet/https:/https:ro` volume mount
 
 - Run the [docker-compose.infrastructure.yaml](./deployments/docker-compose/docker-compose.infrastructure.yaml) file, for running prerequisites infrastructures with `docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d` command.

@@ -11,7 +11,7 @@ description: "Generating semantic release note for our application"
 inputs:
   # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
   token:
-    description: 'A Github PAT'
+    description: "A Github PAT"
     required: true
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputsoutput_idvalue
@@ -25,7 +25,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-
     # https://github.com/actions/download-artifact#download-all-artifacts
     # download all artifacts for adding to release-notes with using 'semantic-release/github'
     - name: Download All Artifacts
@@ -63,12 +62,12 @@ runs:
     - name: Semantic Release Outputs
       shell: bash
       run: |
-            echo ${{ steps.semantic.outputs.semantic_nextRelease_version }}
-            echo ${{ steps.semantic.outputs.semantic_nextRelease_channel }}
-            echo ${{ steps.semantic.outputs.semantic_nextRelease_gitTag }}
-            echo ${{ steps.semantic.outputs.semantic_lastRelease_version }}
-            echo ${{ steps.semantic.outputs.semantic_lastRelease_channel }}
-            echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
+        echo ${{ steps.semantic.outputs.semantic_nextRelease_version }}
+        echo ${{ steps.semantic.outputs.semantic_nextRelease_channel }}
+        echo ${{ steps.semantic.outputs.semantic_nextRelease_gitTag }}
+        echo ${{ steps.semantic.outputs.semantic_lastRelease_version }}
+        echo ${{ steps.semantic.outputs.semantic_lastRelease_channel }}
+        echo ${{ steps.semantic.outputs.semantic_lastRelease_gitTag }}
 
     - name: Set Application Version
       id: app-version-step
@@ -94,4 +93,3 @@ runs:
         else
             echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_OUTPUT"
         fi
-        echo "app version is: ${{ steps.app-version-step.outputs.app-version }}"

@@ -12,7 +12,9 @@ services:
     # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
     image: gateway:dev
     build:
-        target: final
+      target: final
+      context: ../../
+      dockerfile: src/ApiGateway/dev.Dockerfile
     container_name: gateway-debug
     environment:
         - DOTNET_USE_POLLING_FILE_WATCHER=1
@@ -26,17 +28,32 @@ services:
       ##https://stackoverflow.com/questions/38546755/docker-compose-keep-container-running
       # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage inner container because we want to run container app with debugger launcher
     entrypoint: /bin/bash
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # https://github.com/docker/compose/issues/5089#issuecomment-321822300
+    # this mappings increase the size of docker image so we use it just in dev, debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
+    # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
+    volumes:
+      - ~/vsdbg:/vsdbg:ro
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
     # https://docs.docker.com/engine/reference/run/#foreground
     # https://www.baeldung.com/ops/docker-compose-interactive-shell#interactive-shell-in-docker-docker-compose-yml-47a72891aee2
     # https://stackoverflow.com/questions/22272401/what-does-it-mean-to-attach-a-tty-std-in-out-to-dockers-or-lxc
     tty: true  # docker run -t
     stdin_open: true # docker run -i
+    restart: "no"
 
   catalogs:
     # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
     image: catalogs:dev
     build:
       target: final
+      context: ../../
+      dockerfile: src/ApiGateway/dev.Dockerfile
     container_name: catalogs-debug
     environment:
       - DOTNET_USE_POLLING_FILE_WATCHER=1
@@ -51,17 +68,32 @@ services:
     ##https://stackoverflow.com/questions/38546755/docker-compose-keep-container-running
     # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage inner container because we want to run container app with debugger launcher
     entrypoint: /bin/bash
+        # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # https://github.com/docker/compose/issues/5089#issuecomment-321822300
+    # this mappings increase the size of docker image so we use it just in dev, debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
+    # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
+    volumes:
+      - ~/vsdbg:/vsdbg:ro
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
     # https://docs.docker.com/engine/reference/run/#foreground
     # https://www.baeldung.com/ops/docker-compose-interactive-shell#interactive-shell-in-docker-docker-compose-yml-47a72891aee2
     # https://stackoverflow.com/questions/22272401/what-does-it-mean-to-attach-a-tty-std-in-out-to-dockers-or-lxc
     tty: true # docker run -t
     stdin_open: true # docker run -i
+    restart: "no"
 
   identity:
     # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
     image: identity:dev
     build:
       target: final
+      context: ../../
+      dockerfile: src/ApiGateway/dev.Dockerfile
     container_name: identity-debug
     environment:
       - DOTNET_USE_POLLING_FILE_WATCHER=1
@@ -76,17 +108,32 @@ services:
     ##https://stackoverflow.com/questions/38546755/docker-compose-keep-container-running
     # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage inner container because we want to run container app with debugger launcher
     entrypoint: /bin/bash
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # https://github.com/docker/compose/issues/5089#issuecomment-321822300
+    # this mappings increase the size of docker image so we use it just in dev, debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
+    # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
+    volumes:
+      - ~/vsdbg:/vsdbg:ro
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
     # https://docs.docker.com/engine/reference/run/#foreground
     # https://www.baeldung.com/ops/docker-compose-interactive-shell#interactive-shell-in-docker-docker-compose-yml-47a72891aee2
     # https://stackoverflow.com/questions/22272401/what-does-it-mean-to-attach-a-tty-std-in-out-to-dockers-or-lxc
     tty: true # docker run -t
     stdin_open: true # docker run -i
+    restart: "no"
 
   customers:
     # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
     image: customers:dev
     build:
       target: final
+      context: ../../
+      dockerfile: src/ApiGateway/dev.Dockerfile
     container_name: customers-debug
     environment:
       - DOTNET_USE_POLLING_FILE_WATCHER=1
@@ -104,5 +151,18 @@ services:
     # https://docs.docker.com/engine/reference/run/#foreground
     # https://www.baeldung.com/ops/docker-compose-interactive-shell#interactive-shell-in-docker-docker-compose-yml-47a72891aee2
     # https://stackoverflow.com/questions/22272401/what-does-it-mean-to-attach-a-tty-std-in-out-to-dockers-or-lxc
+        # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # https://github.com/docker/compose/issues/5089#issuecomment-321822300
+    # this mappings increase the size of docker image so we use it just in dev, debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
+    # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
+    volumes:
+      - ~/vsdbg:/vsdbg:ro
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
     tty: true # docker run -t
     stdin_open: true # docker run -i
+    restart: "no"

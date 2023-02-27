@@ -7,13 +7,14 @@
 
 version: "3.8"
 services:
-  # gateway:
-  #   # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-servicemage
-  #   image: gateway-service:${TAG:-latest}
-  #   build:
-  #     context: ../../
-  #     dockerfile: src/ApiGateway/Dockerfile
-  #   container_name: gateway-prod
+  gateway:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-servicemage
+    image: gateway-service:${TAG:-latest}
+    build:
+      context: ../../
+      dockerfile: src/ApiGateway/Dockerfile
+    container_name: gateway-prod
+    restart: "no"
 
   catalogs:
     # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service

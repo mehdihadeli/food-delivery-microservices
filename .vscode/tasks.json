@@ -103,23 +103,7 @@
     // for see data inner container `docker exec -it catalogs-debug`
     {
       "label": "docker-run-debug: catalogs",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
-      //https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
-      //https://devopscube.com/keep-docker-container-running/
-      //https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
-      //https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `catalogs-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm -d --publish '4000:80' --publish '4001:443' --publish-all --name catalogs-debug --entrypoint 'bash' --env-file ${workspaceFolder}/src/Services/Catalogs/.env --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly catalogs:dev",
+      "command": "${workspaceFolder}/scripts/docker/debug-run.sh catalogs-debug catalogs:dev 4000 4001 ${workspaceFolder}/src/Services/Catalogs/.env",
       "dependsOn": [
         "docker-build-dev: catalogs"
       ],
@@ -129,17 +113,7 @@
     // for see data inner container `docker exec -it catalogs-dev bash`
     {
       "label": "docker-run-dev: catalogs",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm --publish '4000:80' --publish '4001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Catalogs/.env --network=ecommerce --name catalogs-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly catalogs:dev",
+      "command": "${workspaceFolder}/scripts/docker/dev-run.sh catalogs-dev catalogs:dev 4000 4001 ${workspaceFolder}/src/Services/Catalogs/.env",
       "dependsOn": [
         "docker-build-dev: catalogs"
       ],
@@ -148,17 +122,7 @@
     },
     {
       "label": "docker-run-prod: catalogs",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm --publish '4000:80' --publish '4001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Catalogs/.env --network=ecommerce --name catalogs-prod --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly catalogs:prod",
+      "command": "${workspaceFolder}/scripts/docker/prod-run.sh catalogs-prod catalogs:prod 4000 4001 ${workspaceFolder}/src/Services/Catalogs/.env",
       "dependsOn": [
         "docker-build-prod: catalogs"
       ],
@@ -167,18 +131,7 @@
     },
     {
       "label": "docker-run-base: catalogs",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
-      "command": "docker run -it --rm -d --publish '4000:80' --publish '4001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Catalogs/.env --network=ecommerce --name catalogs-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly catalogs:base",
+      "command": "${workspaceFolder}/scripts/docker/base-run.sh catalogs-base catalogs:base 4000 4001 ${workspaceFolder}/src/Services/Catalogs/.env ${workspaceRoot}",
       "dependsOn": [
         "docker-build-base: catalogs"
       ],
@@ -336,23 +289,7 @@
     // for see data inner container `docker exec -it customers-debug`
     {
       "label": "docker-run-debug: customers",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
-      //https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
-      //https://devopscube.com/keep-docker-container-running/
-      //https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
-      //https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `customers-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm -d --publish '8000:80' --publish '8001:443' --publish-all --name customers-debug --entrypoint 'bash' --env-file ${workspaceFolder}/src/Services/Customers/.env  --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly customers:dev",
+      "command": "${workspaceFolder}/scripts/docker/debug-run.sh customers-debug customers:dev 8000 8001 ${workspaceFolder}/src/Services/Customers/.env",
       "dependsOn": [
         "docker-build-dev: customers"
       ],
@@ -362,17 +299,7 @@
     // for see data inner container `docker exec -it customers-dev bash`
     {
       "label": "docker-run-dev: customers",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm --publish '8000:80' --publish '8001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Customers/.env --network=ecommerce --name customers-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly customers:dev",
+      "command": "${workspaceFolder}/scripts/docker/dev-run.sh customers-dev customers:dev 8000 8001 ${workspaceFolder}/src/Services/Customers/.env",
       "dependsOn": [
         "docker-build-dev: customers"
       ],
@@ -381,18 +308,7 @@
     },
     {
       "label": "docker-run-base: customers",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
-      "command": "docker run -it --rm -d --publish '8000:80' --publish '8001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Customers/.env --network=ecommerce --name customers-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly customers:base",
+      "command": "${workspaceFolder}/scripts/docker/base-run.sh customers-base customers:base 8000 8001 ${workspaceFolder}/src/Services/Customers/.env ${workspaceRoot}",
       "dependsOn": [
         "docker-build-base: customers"
       ],
@@ -553,23 +469,7 @@
     // for see data inner container `docker exec -it identity-debug`
     {
       "label": "docker-run-debug: identity",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
-      //https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
-      //https://devopscube.com/keep-docker-container-running/
-      //https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
-      //https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm -d --publish '7000:80' --publish '7001:443' --publish-all --name identity-debug --env-file ${workspaceFolder}/src/Services/Identity/.env --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly identity:dev",
+      "command": "${workspaceFolder}/scripts/docker/debug-run.sh identity-debug identity:dev 7000 7001 ${workspaceFolder}/src/Services/Identity/.env",
       "dependsOn": [
         "docker-build-dev: identity"
       ],
@@ -579,17 +479,7 @@
     // for see data inner container `docker exec -it identity-dev bash`
     {
       "label": "docker-run-dev: identity",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm --publish '7000:80' --publish '7001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Identity/.env --network=ecommerce --name identity-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly identity:dev",
+      "command": "${workspaceFolder}/scripts/docker/dev-run.sh identity-dev identity:dev 7000 7001 ${workspaceFolder}/src/Services/Identity/.env",
       "dependsOn": [
         "docker-build-dev: identity"
       ],
@@ -598,18 +488,7 @@
     },
     {
       "label": "docker-run-base: identity",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
-      "command": "docker run -it --rm -d --publish '7000:80' --publish '7001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Identity/.env --network=ecommerce --name identity-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly identity:base",
+      "command": "${workspaceFolder}/scripts/docker/base-run.sh identity-base identity:base 7000 7001 ${workspaceFolder}/src/Services/Identity/.env ${workspaceRoot}",
       "dependsOn": [
         "docker-build-base: identity"
       ],
@@ -767,23 +646,7 @@
     // for see data inner container `docker exec -it orders-debug`
     {
       "label": "docker-run-debug: orders",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
-      //https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
-      //https://devopscube.com/keep-docker-container-running/
-      //https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
-      //https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `orders-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm -d --publish '9000:80' --publish '9001:443' --publish-all --name orders-debug --entrypoint 'bash' --env-file ${workspaceFolder}/src/Services/Orders/.env --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly orders:dev",
+      "command": "${workspaceFolder}/scripts/docker/debug-run.sh orders-debug orders:dev 9000 9001 ${workspaceFolder}/src/Services/Orders/.env",
       "dependsOn": [
         "docker-build-dev: orders"
       ],
@@ -793,17 +656,7 @@
     // for see data inner container `docker exec -it orders-dev bash`
     {
       "label": "docker-run-dev: orders",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm --publish '9000:80' --publish '9001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Orders/.env --network=ecommerce --name orders-dev --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly  --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly orders:dev",
+      "command": "${workspaceFolder}/scripts/docker/dev-run.sh orders-dev orders:dev 9000 9001 ${workspaceFolder}/src/Services/Orders/.env",
       "dependsOn": [
         "docker-build-dev: orders"
       ],
@@ -812,18 +665,7 @@
     },
     {
       "label": "docker-run-base: orders",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
-      "command": "docker run -it --rm -d --publish '9000:80' --publish '9001:443' --publish-all --env-file ${workspaceFolder}/src/Services/Orders/.env --network=ecommerce --name orders-base --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly orders:base",
+      "command": "${workspaceFolder}/scripts/docker/base-run.sh orders-base orders:base 9000 9001 ${workspaceFolder}/src/Services/Orders/.env ${workspaceRoot}",
       "dependsOn": [
         "docker-build-base: orders"
       ],
@@ -982,23 +824,7 @@
     // for see data inner container `docker exec -it gateway-debug`
     {
       "label": "docker-run-debug: gateway",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
-      //https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
-      //https://devopscube.com/keep-docker-container-running/
-      //https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
-      //https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `gateway-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args` 
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm -d --publish '3000:80' --publish '3001:443' --publish-all --name gateway-debug --env-file ${workspaceFolder}/src/ApiGateway/.env --entrypoint 'bash' --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly gateway:dev",
+      "command": "${workspaceFolder}/scripts/docker/debug-run.sh gateway-debug gateway:dev 3000 3001 ${workspaceFolder}/src/ApiGateway/.env",
       "dependsOn": [
         "docker-build-dev: gateway"
       ],
@@ -1008,17 +834,7 @@
     // for see data inner container `docker exec -it gateway-dev bash`
     {
       "label": "docker-run-dev: gateway",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      "command": "docker run -it --rm --publish '3000:80' --publish '3001:443' --publish-all --name gateway-dev --env-file ${workspaceFolder}/src/ApiGateway/.env --network=ecommerce --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly gateway:dev",
+      "command": "${workspaceFolder}/scripts/docker/dev-run.sh gateway-dev gateway:dev 3000 3001 ${workspaceFolder}/src/ApiGateway/.env",
       "dependsOn": [
         "docker-build-dev: gateway"
       ],
@@ -1027,18 +843,7 @@
     },
     {
       "label": "docker-run-base: gateway",
-      //https://docs.docker.com/engine/reference/commandline/run/
-      //https://www.aaron-powell.com/posts/2019-04-04-debugging-dotnet-in-docker-with-vscode/
-      //https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
-      //https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
-      //https://docs.docker.com/engine/reference/commandline/run/#mount
-      //https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
-      //https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
-      // here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json
-      //--rm doesn't work in detached mode
-      //mappings increase the size of docker image so we use it just in debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
-      //because we use `base` image directly for running app, and we don't have any source code and nuggets and entrypoint (so our container not be launch) in base layer we should map source code and vsdbg as a volume or using in launch time in launch.json on base layer. In launch.json app will run with `pipeTransport` and type `coreclr` and after connecting to base layer container with running vsdb on the container and then coreclr will launch specified `program` with `dotnet run` on the container and pass `args` to `dotnet run` as launch program (nugget path, ... as --additionalProbingPath because our dll is in debug build and need to resolve all nugget dependecies that doesn't exist in this build).
-      "command": "docker run -it --rm -d --publish '3000:80' --publish '3001:443' --publish-all --name gateway-base --env-file ${workspaceFolder}/src/ApiGateway/.env --network=ecommerce --mount type=bind,src=${workspaceRoot},dst=/app --mount type=bind,src=${HOME}/vsdbg,dst=/vsdbg --mount type=bind,source=${HOME}/.nuget/packages,destination=/root/.nuget/packages,readonly --mount type=bind,source=${HOME}/.nuget/packages,destination=/home/appuser/.nuget/packages,readonly --mount type=bind,src=${HOME}/.aspnet/https,dst=/https,readonly gateway:base",
+      "command": "${workspaceFolder}/scripts/docker/base-run.sh gateway-base gateway:base 3000 3001 ${workspaceFolder}/src/ApiGateway/.env ${workspaceRoot}",
       "dependsOn": [
         "docker-build-base: gateway"
       ],

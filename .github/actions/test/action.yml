@@ -120,8 +120,8 @@ runs:
       with:
         files: |
           **/test-results.trx
-        check_name: ${{ inputs.service-name }} Test Result Report
         comment_mode: off
+        ignore_runs: true
         github_token: ${{ inputs.token }}
         # https://github.com/EnricoMi/publish-unit-test-result-action#configuration
         # Configures the state of the created test result check run. With "test failures" it fails if any test fails or test errors occur

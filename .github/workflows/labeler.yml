@@ -1,6 +1,8 @@
 name: "Pull Request Labeler"
+
 on:
-  - pull_request_target
+  pull_request:
+    types: [ opened, edited, synchronize, ready_for_review ]
 
 jobs:
   auto-labeling:
@@ -11,12 +13,22 @@ jobs:
       pull-requests: write
       statuses: write
       checks: write
+      
     steps:
       - uses: fuxingloh/multi-labeler@v1
         name: conventional-commits-pull-request-labeler
         with:
           github-token: ${{secrets.GITHUB_TOKEN}} # optional, default to '${{ github.token }}'
           config-path: .github/multi-labeler.yml # optional, default to '.github/labeler.yml'
+
+        # https://docs.github.com/en/actions/using-workflows/about-workflows#creating-dependent-jobs
+        # https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow
+      - name: check-conventional-commits-labels
+        uses: docker://agilepathway/pull-request-label-checker:latest
+        if: success()
+        with:
+          any_of : feature,bug,enhancement,deprecated,security,documentation,build,ci/cd,chore,performance,formatting,dependencies
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
 
       #      - uses: release-drafter/release-drafter@v5
       #        name: release-drafter auto labeler

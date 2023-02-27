@@ -3,24 +3,26 @@
 version: "3.8"
 
 services:
-  # gateway:
-  # image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/gateway-service:${TAG:-latest}
-  # container_name: gateway-${TAG:-latest}
-  ## https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
-  # restart: on-failure
-  # ports:
-  #  - ${GATEWAY_HTTP_SVC_PORT:-3000}:80
-  #  - ${GATEWAY_HTTPS_SVC_PORT:-3001}:443
-  # networks:
-  #   - ecommerce
-  # # https://docs.docker.com/compose/environment-variables/set-environment-variables/
-  # # https://docs.docker.com/compose/environment-variables/env-file/
-  # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
-  # environment:
-  #  - ASPNETCORE_ENVIRONMENT=docker
-  #  - ASPNETCORE_URLS=https://+:443;http://+:80
-  #  - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
-  #  - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+  gateway:
+    image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/gateway-service:${TAG:-latest}
+    container_name: gateway-${TAG:-latest}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
+    ports:
+    - ${GATEWAY_HTTP_SVC_PORT:-3000}:80
+    - ${GATEWAY_HTTPS_SVC_PORT:-3001}:443
+    networks:
+      - ecommerce
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
+    environment:
+    - ASPNETCORE_ENVIRONMENT=docker
+    - ASPNETCORE_URLS=https://+:443;http://+:80
+    - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
+    - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+    - ~/.aspnet/https:/https:ro
 
   catalogs:
     image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/catalogs-service:${TAG:-latest}
@@ -47,6 +49,8 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+       - ~/.aspnet/https:/https:ro
 
   identity:
     image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/identity-service:${TAG:-latest}
@@ -72,6 +76,8 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
 
   customers:
     image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/customers-service:${TAG:-latest}
@@ -98,6 +104,8 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
 
     #######################################################
     #  rabbitmq
@@ -192,6 +200,7 @@ services:
   #######################################################
   #  Portainer
   #######################################################
+  # https://bobcares.com/blog/install-portainer-docker-compose/
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer

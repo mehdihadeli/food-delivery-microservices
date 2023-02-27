@@ -12,10 +12,17 @@
 		}
 	},
 	"extensions": [
-	    "ms-dotnettools.csharp",
+		"ms-dotnettools.csharp",
 		"mutantdino.resourcemonitor",
 		"humao.rest-client",
-		"hashicorp.hcl"
+		"dzhavat.bracket-pair-toggler",
+		"Trottero.dotnetwatchattach",
+		"ms-azuretools.vscode-docker",
+		"vivaxy.vscode-conventional-commits",
+		"emmanuelbeziat.vscode-great-icons",
+		"fernandoescolar.vscode-solution-explorer",
+		"mikestead.dotenv",
+		"ms-vscode.vs-keybindings"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],

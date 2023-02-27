@@ -313,11 +313,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "formatting", "formatting", 
 		.github\actions\formatting\action.yml = .github\actions\formatting\action.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "checkout-code", "checkout-code", "{72AEC7D5-E3CE-47DA-AB8A-CBF9BD5984E3}"
-	ProjectSection(SolutionItems) = preProject
-		.github\actions\checkout-code\action.yml = .github\actions\checkout-code\action.yml
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "back-merge", "back-merge", "{9FB97A84-E908-478A-941C-91838B19B635}"
 	ProjectSection(SolutionItems) = preProject
 		.github\actions\back-merge\action.yml = .github\actions\back-merge\action.yml
@@ -426,7 +421,6 @@ Global
 		{33C38A19-362D-4BEF-AE4B-9BCD677C610C} = {85ED6805-E7DC-43DB-9306-72A9CC5B2776}
 		{99F91770-A9FF-43E8-B210-AECD8E28886E} = {FCA71BE1-9420-4B96-B297-A2170400E061}
 		{7DE5D0ED-9B20-4007-8E8C-5FB30E1C8C2E} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
-		{72AEC7D5-E3CE-47DA-AB8A-CBF9BD5984E3} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{9FB97A84-E908-478A-941C-91838B19B635} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{D9C5FD4A-D35F-4EB8-9130-EE6528128693} = {5D021403-D731-4673-BE48-6407504C7709}
 	EndGlobalSection

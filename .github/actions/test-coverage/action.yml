@@ -88,13 +88,14 @@ runs:
         format: 'markdown'
         output: 'both'
 
-    - name: Add Coverage PR Comment
-      uses: marocchino/sticky-pull-request-comment@v2
-      if: ${{ success() && github.event_name == 'pull_request' }}
-      with:
-        recreate: true
-        # get generated summary from `CodeCoverageSummary` step
-        path: code-coverage-results.md
+    # - name: Add Coverage PR Comment
+    #   uses: marocchino/sticky-pull-request-comment@v2
+    #   if: ${{ success() && github.event_name == 'pull_request' }}
+    #   with:
+    #     recreate: true
+    #     GITHUB_TOKEN: ${{ inputs.token }}
+    #     # get generated summary from `CodeCoverageSummary` step
+    #     path: code-coverage-results.md
 
     # https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/
     # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary

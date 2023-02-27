@@ -43,7 +43,6 @@
     <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
     <PackageReference Include="SerilogAnalyzer" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
     <PackageReference Include="NetFabric.Hyperlinq.Analyzer" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
-    <PackageReference Include="AspNetCoreAnalyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
     <PackageReference Include="SmartanAlyzers.ExceptionAnalyzer" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
     <PackageReference Include="Roslynator.Analyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
     <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'"/>

@@ -98,6 +98,7 @@ services:
   #######################################################
   #  Portainer
   #######################################################
+  # https://bobcares.com/blog/install-portainer-docker-compose/
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer

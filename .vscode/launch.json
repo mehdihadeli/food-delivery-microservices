@@ -233,8 +233,8 @@
       "type": "coreclr",
       "request": "launch",
       "console": "externalTerminal",
-      // "preLaunchTask": "docker-run-debug: customers",
-      // "postDebugTask": "docker-remove-debug: customers",
+      "preLaunchTask": "docker-run-debug: customers",
+      "postDebugTask": "docker-remove-debug: customers",
       // connecting debugger to docker container with using vsdbg inner container and ssh to our local source code
       // it will run `exec -i <container name> /vsdbg/vsdbg ` inner container after that coreclr will launch our app with program attribute on container
       "pipeTransport": {

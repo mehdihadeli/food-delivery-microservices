@@ -1,35 +1,31 @@
 # # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
 # https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
 # https://docs.docker.com/compose/extends/
-# if you have both 'docker-compose.services.yaml' and 'docker-compose.services.dev.yml' in the same directory, the latter will override the former. If you have multiple override files, you can specify them in order subsequently
-
-# To build and debug the app on prod machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml build
-# To start and debug the app on prod machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.override.yaml up -d
 
 version: "3.8"
 services:
-  # gateway:
-  # # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-servicemage
-  # # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
-  # image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/gateway-service:${TAG:-latest}
-  # container_name: gateway-${TAG:-latest}
-  # # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
-  # restart: on-failure
-  # ports:
-  #   - ${GATEWAY_HTTP_SVC_PORT:-3000}:80
-  #   - ${GATEWAY_HTTPs_SVC_PORT:-3001}:443
-  # # https://docs.docker.com/compose/environment-variables/set-environment-variables/
-  # # https://docs.docker.com/compose/environment-variables/env-file/
-  # # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
-  # environment:
-  #    - ASPNETCORE_ENVIRONMENT=docker
-  #    - ASPNETCORE_URLS=https://+:443;http://+:80
-  #    - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
-  #    - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-  #  volumes:
-  #   - ${USERPROFILE}\.aspnet\https:/https:ro
-  # networks:
-  #   - ecommerce
+  gateway:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-servicemage
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+    image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/ecommerce-microservices}/gateway-service:${TAG:-latest}
+    container_name: gateway-${TAG:-latest}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
+    ports:
+      - ${GATEWAY_HTTP_SVC_PORT:-3000}:80
+      - ${GATEWAY_HTTPs_SVC_PORT:-3001}:443
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    networks:
+      - ecommerce
 
   catalogs:
     # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
@@ -38,7 +34,6 @@ services:
     # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
     restart: on-failure
     container_name: catalogs-${TAG:-latest}
-    # restart: unless-stopped
     ports:
       - ${CATALOGS_HTTP_SVC_PORT:-4000}:80
       - ${CATALOGS_HTTPS_SVC_PORT:-4001}:443
@@ -54,7 +49,7 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
-      - ${USERPROFILE}\.aspnet\https:/https:ro
+      - ~/.aspnet/https:/https:ro
     networks:
       - ecommerce
 
@@ -80,7 +75,7 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
-      - ${USERPROFILE}\.aspnet\https:/https:ro
+      - ~/.aspnet/https:/https:ro
     networks:
       - ecommerce
 
@@ -106,7 +101,7 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
-      - ${USERPROFILE}\.aspnet\https:/https:ro
+      - ~/.aspnet/https:/https:ro
     networks:
       - ecommerce
 

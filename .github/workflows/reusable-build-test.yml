@@ -75,9 +75,33 @@ jobs:
           echo "project-path is: ${{ inputs.project-path }}"
           echo "tests-path is: ${{ inputs.tests-path }}"
 
-      - name: Call Composite Action checkout
-        uses: ./.github/actions/checkout-code
-        id: checkout-step
+      # https://github.com/cycjimmy/semantic-release-action/issues/6
+      # https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
+      # https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits
+      # https://github.com/semantic-release/semantic-release/issues/1208
+      # https://github.com/orgs/community/discussions/26560
+      # https://blog.pother.ca/github-actions-workflow_run-event/
+      # https://stackoverflow.com/questions/63343937/how-to-use-the-github-actions-workflow-run-event
+      # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+      # https://github.com/semantic-release/semantic-release/blob/b9b5c7689f0acdfdc079c839db0fcf78339745e2/index.js#L92
+      ## https://github.com/actions/checkout/issues/439#issuecomment-965968956
+      # get latest remote change because sematic-release in `verifyConditions` event checks local branch has latest remote branch changes, for preventing: The local branch `something` is behind the remote one, therefore a new version won't be published.
+      # By default checkout@v3, will check branch on ref/SHA that triggered in starting workflow, so if inner a job in the workflow we change HEAD of repository by changing code, subsequent jobs don't get these commits and they get ref/SHA that triggered in starting workflow
+      # we can't create a `composite-action` for `checkout` because for finding composite-action locally with relative path, repository should be `checkout` first
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
+          fetch-depth: 0
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # set ref to 'github.ref' works correctly with both pull_requests event and push event and this is default behavior checkout action when we don't use ref attribute
+          ref: ${{ github.ref }}
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+        shell: bash
 
       - name: Call Composite Action formatting
         if: success()

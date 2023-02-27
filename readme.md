@@ -478,7 +478,7 @@ After [Committing Transaction](src/BuildingBlocks/BuildingBlocks.Core/Persistenc
 
 ## Prerequisites
 
-1. This application uses `Https` for hosting apis, to setup a valid certificate on your machine, you can create a [Self-Signed Certificate](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide#with-dotnet-dev-certs).
+1. This application uses `Https` for hosting apis, to setup a valid certificate on your machine, you can create a [Self-Signed Certificate](https://learn.microsoft.com/en-us/aspnet/core/security/docker-https?view=aspnetcore-7.0#macos-or-linux), see more about enforce certificate [here](https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl).
 2. Install git - [https://git-scm.com/downloads](https://git-scm.com/downloads).
 3. Install .NET Core 7.0 - [https://dotnet.microsoft.com/download/dotnet/7.0](https://dotnet.microsoft.com/download/dotnet/7.0).
 4. Install Visual Studio, Rider or VSCode.
@@ -532,14 +532,13 @@ pm2 delete pm2.yaml
 
 ### Using Docker-Compose
 
-- First we should create a [dev-certificate](https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-linux-containers) for our docker-compose file with this commands:
+- First we should create a [dev-certificate](https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#macos-or-linux) for our docker-compose file with this commands, see more about enforce certificate [here](https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl):
 
 ```powershell
 dotnet dev-certs https --clean
-dotnet dev-certs https -ep "$env:USERPROFILE\.aspnet\https\aspnetapp.pfx"  -p $CREDENTIAL_PLACEHOLDER$
+dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p $CREDENTIAL_PLACEHOLDER$
 dotnet dev-certs https --trust
 ```
-
 This local certificate will mapped to our containers in docker-compose file with setting `~/.aspnet/https:/https:ro` volume mount
 
 - Run the [docker-compose.infrastructure.yaml](./deployments/docker-compose/docker-compose.infrastructure.yaml) file, for running prerequisites infrastructures with `docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d` command.

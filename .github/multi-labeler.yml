@@ -23,9 +23,7 @@ labels:
 
   - label: "documentation"
     matcher:
-      title:
-        - '^(docs)(\([a-z ]+\))?: .'
-        - '**/*.md'
+      title: '^(docs)(\([a-z ]+\))?: .'
       commits: '^(docs)(\([a-z ]+\))?: .'
       branch: '(docs)(\([a-z ]+\))?\/.'
 
@@ -37,9 +35,7 @@ labels:
 
   - label: "ci/cd"
     matcher:
-      title:
-        - '^(ci)(\([a-z ]+\))?: .'
-        - '.github/**/*'
+      title: '^(ci)(\([a-z ]+\))?: .'
       commits: '^(ci)(\([a-z ]+\))?: .'
       branch: '(ci)(\([a-z ]+\))?\/.'
 
@@ -69,9 +65,7 @@ labels:
 
   - label: "test"
     matcher:
-      title:
-        - '^(test)(\([a-z ]+\))?: .'
-        - 'test/**/*'
+      title: '^(test)(\([a-z ]+\))?: .'
       commits: '^(test)(\([a-z ]+\))?: .'
       branch: '(test)(\([a-z ]+\))?\/.'
 
@@ -91,8 +85,3 @@ labels:
       title: '^(fix)(\([a-z ]+\))?: .'
       commits: '^(fix)(\([a-z ]+\))?: .'
       branch: '(fix)(\([a-z ]+\))?\/.'
-
-documentation:
-
-ci/cd:
-  - .github/**/*

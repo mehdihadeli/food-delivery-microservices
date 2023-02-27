@@ -1,6 +1,8 @@
 name: "Pull Request Labeler"
+
 on:
-  - pull_request_target
+  pull_request:
+    types: [ opened, edited, synchronize, ready_for_review ]
 
 jobs:
   auto-labeling:
@@ -11,6 +13,7 @@ jobs:
       pull-requests: write
       statuses: write
       checks: write
+      
     steps:
       - uses: fuxingloh/multi-labeler@v1
         name: conventional-commits-pull-request-labeler

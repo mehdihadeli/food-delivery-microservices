@@ -7,6 +7,7 @@ using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Core.Types;
+using DotNet.Testcontainers.Configurations;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using MassTransit;
@@ -19,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using Serilog;
+using Serilog.AspNetCore;
 using Tests.Shared.Auth;
 using Tests.Shared.Factory;
 using WireMock.Server;
@@ -80,6 +82,10 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             .CreateLogger()
             .ForContext<SharedFixture<TEntryPoint>>();
 
+        //https://github.com/testcontainers/testcontainers-dotnet/blob/8db93b2eb28bc2bc7d579981da1651cd41ec03f8/docs/custom_configuration/index.md#enable-logging
+        TestcontainersSettings.Logger = new Serilog.Extensions.Logging.SerilogLoggerFactory(Logger)
+            .CreateLogger("TestContainer");
+
         // Service provider will build after getting with get accessors, we don't want to build our service provider here
         PostgresContainerFixture = new PostgresContainerFixture(messageSink);
         MongoContainerFixture = new MongoContainerFixture(messageSink);
@@ -118,18 +124,18 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
                 builder.AddInMemoryCollection(
                     new TestConfigurations
                     {
-                        { "PostgresOptions:ConnectionString", PostgresContainerFixture.Container.ConnectionString },
+                        { "PostgresOptions:ConnectionString", PostgresContainerFixture.Container.GetConnectionString() },
                         {
                             "MessagePersistenceOptions:ConnectionString",
-                            PostgresContainerFixture.Container.ConnectionString
+                            PostgresContainerFixture.Container.GetConnectionString()
                         },
-                        { "MongoOptions:ConnectionString", MongoContainerFixture.Container.ConnectionString },
-                        { "MongoOptions:DatabaseName", MongoContainerFixture.Container.Database },
+                        { "MongoOptions:ConnectionString", MongoContainerFixture.Container.GetConnectionString() },
+                        { "MongoOptions:DatabaseName", MongoContainerFixture.MongoContainerOptions.DatabaseName },
                         //{"MongoOptions:ConnectionString", Mongo2GoFixture.MongoDbRunner.ConnectionString}, //initialize mongo2go connection
-                        { "RabbitMqOptions:UserName", RabbitMqContainerFixture.Container.Username },
-                        { "RabbitMqOptions:Password", RabbitMqContainerFixture.Container.Password },
+                        { "RabbitMqOptions:UserName", RabbitMqContainerFixture.RabbitMqContainerOptions.UserName },
+                        { "RabbitMqOptions:Password", RabbitMqContainerFixture.RabbitMqContainerOptions.Password },
                         { "RabbitMqOptions:Host", RabbitMqContainerFixture.Container.Hostname },
-                        { "RabbitMqOptions:Port", RabbitMqContainerFixture.Container.Port.ToString() },
+                        { "RabbitMqOptions:Port", RabbitMqContainerFixture.HostPort.ToString() },
                     }
                 );
 

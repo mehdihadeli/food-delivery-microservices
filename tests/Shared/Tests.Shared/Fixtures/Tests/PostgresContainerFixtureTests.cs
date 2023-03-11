@@ -13,7 +13,7 @@ public class PostgresContainerFixtureTests : IAsyncLifetime
     public async Task init_container()
     {
         _fixture.Container.Should().NotBeNull();
-        _fixture.Container.ConnectionString.Should().NotBeEmpty();
+        _fixture.Container.GetConnectionString().Should().NotBeEmpty();
     }
 
     // [Fact]

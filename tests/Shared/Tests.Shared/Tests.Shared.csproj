@@ -15,6 +15,9 @@
   <ItemGroup>
     <PackageReference Include="AutoFixture" />
     <PackageReference Include="Mongo2Go" />
+    <PackageReference Include="Testcontainers.MongoDb" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Testcontainers.RabbitMq" />
     <PackageReference Include="WireMock.Net" />
     <PackageReference Include="Hypothesist" />
     <PackageReference Include="Hypothesist.MassTransit" />

@@ -1,19 +1,22 @@
+# https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
 # https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
 # https://docs.docker.com/compose/extends/
-# Overrid 'docker-compose.services.yaml' configs here for development mode
+# Overrid 'docker-compose.yaml' configs here for debug mode
 
-# To build and debug the app on dev machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.services.dev.yml build
-# To start and debug the app on dev machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.services.dev.yaml up -d
+# To build and debug the app on debug machine --> docker-compose -f docker-compose.yaml -f docker-compose.debug.yml build
+# To start and debug the app on debug machine --> docker-compose -f docker-compose.yaml -f docker-compose.debug.yaml up -d
 
 version: "3.8"
 services:
   gateway:
-    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-servicemage
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
     image: gateway:dev
     build:
-      context: ../../
-      dockerfile: src/ApiGateway/dev.Dockerfile
-    # Environment Variables are only passed to processes upon startup, Environment Variables are not reloaded once the process has started so if we need to realod app we can use volume map for waching our new setting from `config-files` folder in the the volume or volume map for appsettings.json file
+      target: final
+      context: ..\..\
+      dockerfile: src\ApiGateway\dev.Dockerfile
+    container_name: gateway-debug
+    # Environment Variables are only passed to processes upon startup, Environment Variables are not reloaded once the process has started so if we need to realod we can use appsetting volume map for waching our setting by app for the volume
     # https://www.thorsten-hans.com/hot-reload-net-configuration-in-kubernetes-with-configmaps/
     environment:
       # https://learn.microsoft.com/en-us/aspnet/core/tutorials/dotnet-watch?view=aspnetcore-7.0#dotnet-watch-configuration
@@ -23,7 +26,22 @@ services:
       # If set to "1" or "true", dotnet watch uses a polling file watcher instead of CoreFx's FileSystemWatcher. Used when watching files on network shares or Docker mounted volumes.
       - DOTNET_USE_POLLING_FILE_WATCHER=1
       - ConfigurationFolder=${ConfigurationFolder:-config-files/}
-    container_name: gateway-dev
+      - ASPNETCORE_ENVIRONMENT=docker
+      # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+      # https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+      # https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
+      # https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+      # https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+      # https://docs.docker.com/compose/compose-file/#entrypoint
+      ##https://stackoverflow.com/questions/38546755/docker-compose-keep-container-running
+      # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage inner container because we want to run container app with debugger launcher
+    entrypoint: /bin/bash
+    # https://docs.docker.com/engine/reference/run/#foreground
+    # https://www.baeldung.com/ops/docker-compose-interactive-shell#interactive-shell-in-docker-docker-compose-yml-47a72891aee2
+    # https://stackoverflow.com/questions/22272401/what-does-it-mean-to-attach-a-tty-std-in-out-to-dockers-or-lxc
+    tty: true # docker run -t
+    stdin_open: true # docker run -i
+    restart: "no"
     # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
     # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
     # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
@@ -33,28 +51,25 @@ services:
     # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
     # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
     volumes:
-      - ~/vsdbg:/vsdbg:ro
-      - ~/.nuget/packages:/root/.nuget/packages:ro
-      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
+      - ${USERPROFILE}\vsdbg:/vsdbg:ro
+      - ${USERPROFILE}\.nuget\packages:/root/.nuget/packages:ro
+      - ${USERPROFILE}\.nuget\packages:/home/appuser/.nuget/packages:ro
       # https://www.thorsten-hans.com/hot-reload-net-configuration-in-kubernetes-with-configmaps/
       # if we need to reload app, we can use volume map for watching our new setting from config-files folder in the the volume or change appsettings.json file in volume map
-      - src/ApiGateway/ECommerce.ApiGateway/${ConfigurationFolder:-config-files/}:/app/config-files/
+      - src\ApiGateway\ECommerce.ApiGateway\${ConfigurationFolder:-config-files\}:/app/config-files/
       # https://levelup.gitconnected.com/docker-environment-variables-appsettings-json-net-bdac052bf3db
       # https://bartwullems.blogspot.com/2021/03/kubernetesoverride-appsettingsjson-file.html
-      - ./src/ApiGateway/dev.Dockerfile/ECommerce.ApiGateway/appsettings.docker.json:/app/appsettings.docker.json
+      - .\src\ApiGateway\dev.Dockerfile\ECommerce.ApiGateway\appsettings.docker.json:/app/appsettings.docker.json
 
   catalogs:
     # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
     image: catalogs:dev
     build:
-      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
-      # we can use a .dockerignore file to exclude some files or directories from build context
-      # https://docs.docker.com/build/building/context/
-      # https://docs.docker.com/engine/reference/commandline/build/
-      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
-      context: ../../
-      dockerfile: src/Services/Catalogs/dev.Dockerfile
-    # Environment Variables are only passed to processes upon startup, Environment Variables are not reloaded once the process has started so if we need to realod app we can use volume map for waching our new setting from `config-files` folder in the the volume or volume map for appsettings.json file
+      target: final
+      context: ..\..\
+      dockerfile: src\Services\Catalogs\dev.Dockerfile
+    container_name: catalogs-debug
+    # Environment Variables are only passed to processes upon startup, Environment Variables are not reloaded once the process has started so if we need to realod we can use appsetting volume map for waching our setting by app for the volume
     # https://www.thorsten-hans.com/hot-reload-net-configuration-in-kubernetes-with-configmaps/
     environment:
       # https://learn.microsoft.com/en-us/aspnet/core/tutorials/dotnet-watch?view=aspnetcore-7.0#dotnet-watch-configuration
@@ -64,7 +79,23 @@ services:
       # If set to "1" or "true", dotnet watch uses a polling file watcher instead of CoreFx's FileSystemWatcher. Used when watching files on network shares or Docker mounted volumes.
       - DOTNET_USE_POLLING_FILE_WATCHER=1
       - ConfigurationFolder=${ConfigurationFolder:-config-files/}
-    container_name: catalogs-dev
+      - ASPNETCORE_ENVIRONMENT=doc
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+    # https://phoenixnap.com/kb/docker-run-override-entrypoint
+    # https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
+    # https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+    # https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+    # https://docs.docker.com/compose/compose-file/#entrypoint
+    ##https://stackoverflow.com/questions/38546755/docker-compose-keep-container-running
+    # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage inner container because we want to run container app with debugger launcher
+    entrypoint: /bin/bash
+    # https://docs.docker.com/engine/reference/run/#foreground
+    # https://www.baeldung.com/ops/docker-compose-interactive-shell#interactive-shell-in-docker-docker-compose-yml-47a72891aee2
+    # https://stackoverflow.com/questions/22272401/what-does-it-mean-to-attach-a-tty-std-in-out-to-dockers-or-lxc
+    tty: true # docker run -t
+    stdin_open: true # docker run -i
+    restart: "no"
     # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
     # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
     # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
@@ -74,28 +105,25 @@ services:
     # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
     # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
     volumes:
-      - ~/vsdbg:/vsdbg:ro
-      - ~/.nuget/packages:/root/.nuget/packages:ro
-      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
+      - ${USERPROFILE}\vsdbg:/vsdbg:ro
+      - ${USERPROFILE}\.nuget\packages:/root/.nuget/packages:ro
+      - ${USERPROFILE}\.nuget\packages:/home/appuser/.nuget/packages:ro
       # https://www.thorsten-hans.com/hot-reload-net-configuration-in-kubernetes-with-configmaps/
       # if we need to reload app, we can use volume map for watching our new setting from config-files folder in the the volume or change appsettings.json file in volume map
-      - src/Services/Catalogs/ECommerce.Services.Catalogs.Api/${ConfigurationFolder:-config-files/}:/app/config-files/
+      - src\Services\Catalogs\ECommerce.Services.Catalogs.Api\${ConfigurationFolder:-config-files\}:/app/config-files/
       # https://levelup.gitconnected.com/docker-environment-variables-appsettings-json-net-bdac052bf3db
       # https://bartwullems.blogspot.com/2021/03/kubernetesoverride-appsettingsjson-file.html
-      - ./src/Services/Catalogs/ECommerce.Services.Catalogs.Api/appsettings.docker.json
+      - .\src\Services\Catalogs\ECommerce.Services.Catalogs.Api\appsettings.docker.json
 
   identity:
     # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
     image: identity:dev
     build:
-      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
-      # we can use a .dockerignore file to exclude some files or directories from build context
-      # https://docs.docker.com/build/building/context/
-      # https://docs.docker.com/engine/reference/commandline/build/
-      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
-      context: ../../
-      dockerfile: src/Services/Identity/dev.Dockerfile
-    # Environment Variables are only passed to processes upon startup, Environment Variables are not reloaded once the process has started so if we need to realod app we can use volume map for waching our new setting from `config-files` folder in the the volume or volume map for appsettings.json file
+      target: final
+      context: ..\..\
+      dockerfile: src\Services\Identity\dev.Dockerfile
+    container_name: identity-debug
+    # Environment Variables are only passed to processes upon startup, Environment Variables are not reloaded once the process has started so if we need to realod we can use appsetting volume map for waching our setting by app for the volume
     # https://www.thorsten-hans.com/hot-reload-net-configuration-in-kubernetes-with-configmaps/
     environment:
       # https://learn.microsoft.com/en-us/aspnet/core/tutorials/dotnet-watch?view=aspnetcore-7.0#dotnet-watch-configuration
@@ -105,7 +133,23 @@ services:
       # If set to "1" or "true", dotnet watch uses a polling file watcher instead of CoreFx's FileSystemWatcher. Used when watching files on network shares or Docker mounted volumes.
       - DOTNET_USE_POLLING_FILE_WATCHER=1
       - ConfigurationFolder=${ConfigurationFolder:-config-files/}
-    container_name: identity-dev
+      - ASPNETCORE_ENVIRONMENT=doc
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+    # https://phoenixnap.com/kb/docker-run-override-entrypoint
+    # https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
+    # https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+    # https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+    # https://docs.docker.com/compose/compose-file/#entrypoint
+    ##https://stackoverflow.com/questions/38546755/docker-compose-keep-container-running
+    # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage inner container because we want to run container app with debugger launcher
+    entrypoint: /bin/bash
+    # https://docs.docker.com/engine/reference/run/#foreground
+    # https://www.baeldung.com/ops/docker-compose-interactive-shell#interactive-shell-in-docker-docker-compose-yml-47a72891aee2
+    # https://stackoverflow.com/questions/22272401/what-does-it-mean-to-attach-a-tty-std-in-out-to-dockers-or-lxc
+    tty: true # docker run -t
+    stdin_open: true # docker run -i
+    restart: "no"
     # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
     # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
     # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
@@ -115,28 +159,25 @@ services:
     # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
     # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
     volumes:
-      - ~/vsdbg:/vsdbg:ro
-      - ~/.nuget/packages:/root/.nuget/packages:ro
-      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
+      - ${USERPROFILE}\vsdbg:/vsdbg:ro
+      - ${USERPROFILE}\.nuget\packages:/root/.nuget/packages:ro
+      - ${USERPROFILE}\.nuget\packages:/home/appuser/.nuget/packages:ro
       # https://www.thorsten-hans.com/hot-reload-net-configuration-in-kubernetes-with-configmaps/
       # if we need to reload app, we can use volume map for watching our new setting from config-files folder in the the volume or change appsettings.json file in volume map
-      - src/Services/Identity/ECommerce.Services.Identity.Api/${ConfigurationFolder:-config-files/}:/app/config-files/
+      - src\Services\Identity\ECommerce.Services.Identity.Api\${ConfigurationFolder:-config-files\}:/app/config-files/
       # https://levelup.gitconnected.com/docker-environment-variables-appsettings-json-net-bdac052bf3db
       # https://bartwullems.blogspot.com/2021/03/kubernetesoverride-appsettingsjson-file.html
-      - ./src/Services/Identity/ECommerce.Services.Identity.Api/appsettings.docker.json
+      - .\src\Services\Identity\ECommerce.Services.Identity.Api\appsettings.docker.json
 
   customers:
     # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
     image: customers:dev
     build:
-      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
-      # we can use a .dockerignore file to exclude some files or directories from build context
-      # https://docs.docker.com/build/building/context/
-      # https://docs.docker.com/engine/reference/commandline/build/
-      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
-      context: ../../
-      dockerfile: src/Services/Customers/dev.Dockerfile
-    # Environment Variables are only passed to processes upon startup, Environment Variables are not reloaded once the process has started so if we need to realod app we can use volume map for waching our new setting from `config-files` folder in the the volume or volume map for appsettings.json file
+      target: final
+      context: ..\..\
+      dockerfile: src\Services\Customers\dev.Dockerfile
+    container_name: customers-debug
+    # Environment Variables are only passed to processes upon startup, Environment Variables are not reloaded once the process has started so if we need to realod we can use appsetting volume map for waching our setting by app for the volume
     # https://www.thorsten-hans.com/hot-reload-net-configuration-in-kubernetes-with-configmaps/
     environment:
       # https://learn.microsoft.com/en-us/aspnet/core/tutorials/dotnet-watch?view=aspnetcore-7.0#dotnet-watch-configuration
@@ -146,7 +187,23 @@ services:
       # If set to "1" or "true", dotnet watch uses a polling file watcher instead of CoreFx's FileSystemWatcher. Used when watching files on network shares or Docker mounted volumes.
       - DOTNET_USE_POLLING_FILE_WATCHER=1
       - ConfigurationFolder=${ConfigurationFolder:-config-files/}
-    container_name: customers-dev
+      - ASPNETCORE_ENVIRONMENT=doc
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
+    # https://phoenixnap.com/kb/docker-run-override-entrypoint
+    # https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
+    # https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
+    # https://github.com/microsoft/vscode-docker/issues/3831#issuecomment-1433567030
+    # https://docs.docker.com/compose/compose-file/#entrypointfile/#entrypoint
+    ##https://stackoverflow.com/questions/38546755/docker-compose-keep-container-running
+    # for debug mode we change entrypoint with '--entrypoint' in 'docker run' for prevent runing application in this stage inner container because we want to run container app with debugger launcher
+    entrypoint: /bin/bash
+    tty: true # docker run -t
+    stdin_open: true # docker run -i
+    restart: "no"
+    # https://docs.docker.com/engine/reference/run/#foreground
+    # https://www.baeldung.com/ops/docker-compose-interactive-shell#interactive-shell-in-docker-docker-compose-yml-47a72891aee2
+    # https://stackoverflow.com/questions/22272401/what-does-it-mean-to-attach-a-tty-std-in-out-to-dockers-or-lxc
     # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
     # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
     # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
@@ -156,12 +213,12 @@ services:
     # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
     # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
     volumes:
-      - ~/vsdbg:/vsdbg:ro
-      - ~/.nuget/packages:/root/.nuget/packages:ro
-      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
+      - ${USERPROFILE}\vsdbg:/vsdbg:ro
+      - ${USERPROFILE}\.nuget\packages:/root/.nuget/packages:ro
+      - ${USERPROFILE}\.nuget\packages:/home/appuser/.nuget/packages:ro
       # https://www.thorsten-hans.com/hot-reload-net-configuration-in-kubernetes-with-configmaps/
       # if we need to reload app, we can use volume map for watching our new setting from config-files folder in the the volume or change appsettings.json file in volume map
-      - src/Services/Customers/ECommerce.Services.Customers.Api/${ConfigurationFolder:-config-files/}:/app/config-files/
+      - src\Services\Customers\ECommerce.Services.Customers.Api\${ConfigurationFolder:-config-files\}:/app/config-files/
       # https://levelup.gitconnected.com/docker-environment-variables-appsettings-json-net-bdac052bf3db
       # https://bartwullems.blogspot.com/2021/03/kubernetesoverride-appsettingsjson-file.html
-      - ./src/Services/Customers/ECommerce.Services.Customers.Api/appsettings.docker.json
+      - .\src\Services\Customers\ECommerce.Services.Customers.Api\appsettings.docker.json

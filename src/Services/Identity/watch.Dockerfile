@@ -31,7 +31,6 @@ COPY ./src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj ./Buildin
 COPY ./src/BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/BuildingBlocks.Messaging.Persistence.Postgres.csproj ./BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/
 COPY ./src/BuildingBlocks/BuildingBlocks.OpenTelemetry/BuildingBlocks.OpenTelemetry.csproj ./BuildingBlocks/BuildingBlocks.OpenTelemetry/
 
-RUN ls
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
@@ -40,5 +39,12 @@ COPY ./src/Services/Identity/ECommerce.Services.Identity/  ./Services/Identity/E
 COPY ./src/Services/Shared/  ./Services/Shared/
 
 WORKDIR /src/Services/Identity/ECommerce.Services.Identity.Api/
+
+# https://learn.microsoft.com/en-us/aspnet/core/tutorials/dotnet-watch?view=aspnetcore-7.0#dotnet-watch-configuration
+# https://learn.microsoft.com/en-us/aspnet/core/fundamentals/file-providers?view=aspnetcore-3.1#watch-for-changes
+# https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch?WT.mc_id=DOP-MVP-5001942#environment-variables
+# Some file systems, such as Docker containers and network shares, may not reliably send change notifications. Set the DOTNET_USE_POLLING_FILE_WATCHER environment variable to 1 or true to poll the file system for changes every four seconds
+# If set to "1" or "true", dotnet watch uses a polling file watcher instead of CoreFx's FileSystemWatcher. Used when watching files on network shares or Docker mounted volumes.
+ENV DOTNET_USE_POLLING_FILE_WATCHER 1
 
 RUN dotnet watch run  ECommerce.Services.Identity.Api.csproj --launch-profile Identity.Api.LiveRecompilation

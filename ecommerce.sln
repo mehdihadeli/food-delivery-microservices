@@ -141,12 +141,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tye", "tye", "{DA4712E6-5DB
 		deployments\tye\tye.yaml = deployments\tye\tye.yaml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".docker-envs", ".docker-envs", "{0952C659-1412-4AAC-898B-B002D8757C53}"
-	ProjectSection(SolutionItems) = preProject
-		.docker-envs\catalogs.env = .docker-envs\catalogs.env
-		.docker-envs\customers.env = .docker-envs\customers.env
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".devcontainer", ".devcontainer", "{91AC3964-EBE5-4DB5-925A-09F822D48CFF}"
 	ProjectSection(SolutionItems) = preProject
 		.devcontainer\devcontainer.json = .devcontainer\devcontainer.json
@@ -326,6 +320,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{D9C5
 		.vscode\tasks.json = .vscode\tasks.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{79CA5FB0-ECDC-4855-BD02-58F7880ECEDA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{2D9E4BFD-BBD3-4770-A867-5129070A96E3}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\docker\base-run.sh = scripts\docker\base-run.sh
+		scripts\docker\debug-run.sh = scripts\docker\debug-run.sh
+		scripts\docker\dev-run.sh = scripts\docker\dev-run.sh
+		scripts\docker\prod-run.sh = scripts\docker\prod-run.sh
+	EndProjectSection
+EndProject
 
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -380,7 +384,6 @@ Global
 		{DA4712E6-5DB6-4159-B2A4-AC5549FEA93E} = {82164318-DB62-4A9E-8599-16931835EA2C}
 		{9CF0B364-5E11-424A-BE0A-94AD2AF14D8D} = {5D021403-D731-4673-BE48-6407504C7709}
 		{91AC3964-EBE5-4DB5-925A-09F822D48CFF} = {5D021403-D731-4673-BE48-6407504C7709}
-		{0952C659-1412-4AAC-898B-B002D8757C53} = {5D021403-D731-4673-BE48-6407504C7709}
 		{34C0E02A-0068-4A4B-AD3A-68AED63B27B8} = {90568AC2-B826-4F30-AB54-C7B117D348EE}
 		{D87BDBDB-89BA-4703-B11D-E79A0935A909} = {5D021403-D731-4673-BE48-6407504C7709}
 		{3CC5AECD-915C-4CCB-90AA-EF29EBD9A3E5} = {D87BDBDB-89BA-4703-B11D-E79A0935A909}
@@ -424,6 +427,8 @@ Global
 		{7DE5D0ED-9B20-4007-8E8C-5FB30E1C8C2E} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{9FB97A84-E908-478A-941C-91838B19B635} = {7015BB05-7FFC-4C75-9A9F-0211C8C807B4}
 		{D9C5FD4A-D35F-4EB8-9130-EE6528128693} = {5D021403-D731-4673-BE48-6407504C7709}
+		{79CA5FB0-ECDC-4855-BD02-58F7880ECEDA} = {5D021403-D731-4673-BE48-6407504C7709}
+		{2D9E4BFD-BBD3-4770-A867-5129070A96E3} = {79CA5FB0-ECDC-4855-BD02-58F7880ECEDA}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9063E326-1CDF-4CA7-8D72-CA15AB532EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

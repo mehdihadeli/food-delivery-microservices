@@ -34,29 +34,33 @@ public static partial class WebApplicationBuilderExtensions
         builder.Services.AddCustomJwtAuthentication(builder.Configuration);
         builder.Services.AddCustomAuthorization(
             rolePolicies: new List<RolePolicy>
-            {
-                new(CatalogConstants.Role.Admin, new List<string> { CatalogConstants.Role.Admin }),
-                new(CatalogConstants.Role.User, new List<string> { CatalogConstants.Role.User })
-            }
-        );
+                          {
+                              new(CatalogConstants.Role.Admin, new List<string> {CatalogConstants.Role.Admin}),
+                              new(CatalogConstants.Role.User, new List<string> {CatalogConstants.Role.User})
+                          });
 
         builder.Services.AddEmailService(builder.Configuration);
         builder.Services.AddCqrs(
             pipelines: new[]
-            {
-                typeof(RequestValidationBehavior<,>),
-                typeof(StreamRequestValidationBehavior<,>),
-                typeof(StreamLoggingBehavior<,>),
-                typeof(StreamCachingBehavior<,>),
-                typeof(LoggingBehavior<,>),
-                typeof(CachingBehavior<,>),
-                typeof(InvalidateCachingBehavior<,>),
-                typeof(EfTxBehavior<,>)
-            }
-        );
+                       {
+                           typeof(RequestValidationBehavior<,>),
+                           typeof(StreamRequestValidationBehavior<,>),
+                           typeof(StreamLoggingBehavior<,>),
+                           typeof(StreamCachingBehavior<,>),
+                           typeof(LoggingBehavior<,>),
+                           typeof(CachingBehavior<,>),
+                           typeof(InvalidateCachingBehavior<,>),
+                           typeof(EfTxBehavior<,>)
+                       });
 
         // https://github.com/tonerdo/dotnet-env
         DotNetEnv.Env.TraversePath().Load();
+
+        // https://www.thorsten-hans.com/hot-reload-net-configuration-in-kubernetes-with-configmaps/
+        // https://bartwullems.blogspot.com/2021/03/kubernetesoverride-appsettingsjson-file.html
+        // if we need to reload app by change settings, we can use volume map for watching our new setting from config-files folder in the the volume or change appsettings.json file in the volume map
+        var configFolder = builder.Configuration.GetValue<string>("ConfigurationFolder") ?? "config-files/";
+        builder.Configuration.AddKeyPerFile(configFolder, true, true);
 
         // https://www.michaco.net/blog/EnvironmentVariablesAndConfigurationInASPNETCoreApps#environment-variables-and-configuration
         // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#non-prefixed-environment-variables
@@ -84,39 +88,50 @@ public static partial class WebApplicationBuilderExtensions
             (busRegistrationContext, busFactoryConfigurator) =>
             {
                 busFactoryConfigurator.AddProductPublishers();
-            }
-        );
+            });
 
         if (builder.Environment.IsTest() == false)
         {
-            builder.AddCustomHealthCheck(healthChecksBuilder =>
-            {
-                var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>(nameof(PostgresOptions));
-                var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
+            builder.AddCustomHealthCheck(
+                healthChecksBuilder =>
+                {
+                    var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>(nameof(PostgresOptions));
+                    var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>(nameof(RabbitMqOptions));
 
-                Guard.Against.Null(postgresOptions, nameof(postgresOptions));
-                Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));
+                    Guard.Against.Null(postgresOptions, nameof(postgresOptions));
+                    Guard.Against.Null(rabbitMqOptions, nameof(rabbitMqOptions));
 
-                healthChecksBuilder
-                    .AddNpgSql(
-                        postgresOptions.ConnectionString,
-                        name: "CatalogsService-Postgres-Check",
-                        tags: new[] { "postgres", "infra", "database", "catalogs-service" }
-                    )
-                    .AddRabbitMQ(
-                        rabbitMqOptions.ConnectionString,
-                        name: "CatalogsService-RabbitMQ-Check",
-                        timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "rabbitmq", "infra", "bus", "catalogs-service" }
-                    );
-            });
+                    healthChecksBuilder
+                        .AddNpgSql(
+                            postgresOptions.ConnectionString,
+                            name: "CatalogsService-Postgres-Check",
+                            tags: new[]
+                                  {
+                                      "postgres",
+                                      "infra",
+                                      "database",
+                                      "catalogs-service"
+                                  })
+                        .AddRabbitMQ(
+                            rabbitMqOptions.ConnectionString,
+                            name: "CatalogsService-RabbitMQ-Check",
+                            timeout: TimeSpan.FromSeconds(3),
+                            tags: new[]
+                                  {
+                                      "rabbitmq",
+                                      "infra",
+                                      "bus",
+                                      "catalogs-service"
+                                  });
+                });
         }
 
         builder.Services.AddCustomValidators(Assembly.GetExecutingAssembly());
-        builder.Services.AddAutoMapper(x =>
-        {
-            x.AddProfile<ProductMappers>();
-        });
+        builder.Services.AddAutoMapper(
+            x =>
+            {
+                x.AddProfile<ProductMappers>();
+            });
 
         builder.AddCustomCaching();
 

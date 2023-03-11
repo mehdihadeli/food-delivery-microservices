@@ -105,6 +105,26 @@ Thanks a bunch for supporting me!
 
 ### Dev Certificate
 
+This application uses `Https` for hosting apis, to setup a valid certificate on your machine, you can create a [Self-Signed Certificate](https://learn.microsoft.com/en-us/aspnet/core/security/docker-https#macos-or-linux), see more about enforce certificate [here](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide) and [here](https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl).
+
+- Setup on windows and [`powershell`](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide#with-dotnet-dev-certs):
+
+```powershell
+dotnet dev-certs https --clean
+dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\aspnetapp.pfx -p <CREDENTIAL_PLACEHOLDER>
+dotnet dev-certs https --trust
+```
+
+- Setup in [`linux and wsl`](https://learn.microsoft.com/en-us/aspnet/core/security/docker-https?view=aspnetcore-7.0#macos-or-linux):
+
+```bash
+dotnet dev-certs https --clean
+dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p <CREDENTIAL_PLACEHOLDER>
+dotnet dev-certs https --trust
+```
+
+`dotnet dev-certs https --trust` is only supported on macOS and Windows. You need to trust certs on Linux in the way that is supported by your distribution. It is likely that you need to trust the certificate in your browser(with this certificate we don't get an exception for https port because of not found certificate but browser shows us this certificate is not trusted).
+
 ### Conventional Commit
 
 In this app I use [Conventional Commit](https://www.conventionalcommits.org/en/) and for enforcing its rule I use [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) and [typicode/husky](https://github.com/typicode/husky) with a pre-commit hook. For read more about its setup see [commitlint docs](https://github.com/conventional-changelog/commitlint#getting-started) and [this article](https://betterprogramming.pub/how-to-lint-commit-messages-with-husky-and-commitlint-b51d20a5e514) and [this article](https://www.code4it.dev/blog/conventional-commit-with-githooks).
@@ -540,8 +560,10 @@ dotnet dev-certs https --clean
 dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p $CREDENTIAL_PLACEHOLDER$
 dotnet dev-certs https --trust
 ```
+
 This local certificate will mapped to our containers in docker-compose file with setting `~/.aspnet/https:/https:ro` volume mount
 
+- Our docker-compose files are based on linux
 - Run the [docker-compose.infrastructure.yaml](./deployments/docker-compose/docker-compose.infrastructure.yaml) file, for running prerequisites infrastructures with `docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d` command.
 - Run the [docker-compose.services.yaml](./deployments/docker-compose/docker-compose.services.yaml) with `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml` for production mode that uses pushed docker images for services or for development mode you can use [docker-compose.services.dev.yaml](./deployments/docker-compose/docker-compose.services.dev.yaml) override docker-compose file with `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.dev.yaml up` command for building `dockerfiles` instead of using images in docker registry. Also for `debugging` purpose of docker-containers in vscode you can use [./deployments/docker-compose/docker-compose.services.debug.yaml](./deployments/docker-compose/docker-compose.services.debug.yaml) override docker-compose file with running `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.debug.yaml up -d`, I defined some [tasks](.vscode/tasks.json) for vscode for executing this command easier. For debugging in vscode we should use [launch.json](.vscode/launch.json).
 - Wait until all dockers got are downloaded and running.
@@ -607,7 +629,64 @@ Also We could run some [docker images](https://devblogs.microsoft.com/dotnet/int
 
 ### Using Kubernetes
 
-TODO
+For using kubernetes we can use multiple approach with different tools like [`plain kubernetes`](./deployments/k8s/kubernetes/), [`kustomize`](./deployments/k8s/kustomize/) and `helm` and here I will use show use of all of them.
+
+#### Plain Kubernetes
+
+##### Prerequisites
+
+Here I uses plain kubernetes command and resources for applying kubernetes manifest to the cluster. If you're a Docker/Compose user new to Kubernetes, you might have noticed that you can’t `substitutes` and `replace` the `environment variables` in your kubernetes manifest files (exception is `substitutes` and `replace` environment variables in `env` attribute, with using [`environment dependent variable`](https://kubernetes.io/docs/tasks/inject-data-application/define-interdependent-environment-variables/#define-an-environment-dependent-variable-for-a-container)). we often have some personal `.env` files for projects that we use to store credentials and configurations.
+
+For `substitutes` and `replace` environment variables in our kubernetes `manifest` or `resource` files we can use [envsubst](https://github.com/a8m/envsubst) tools, and we can even pipe it into other commands like Kubernetes `kubectl`, read more in [this](https://skofgar.ch/dev/2020/08/how-to-quickly-replace-environment-variables-in-a-file/) and [this](https://blog.8bitbuddhism.com/2022/11/12/how-to-use-environment-variables-in-a-kubernetes-manifest/) articles.
+
+So here we should first install this tools on our OS with [this guid](https://github.com/a8m/envsubst#installation).
+
+Now for running manifest files, firstly we should `load` our `environment variables` inner [`.env`](./deployments/k8s/kubernetes/.env) file in our `current shell session` by using `source .env` command (after closing our shell environments will destroy).
+
+> Make sure to use `export`, otherwise our variables are considered shell variables and might not be accessible to `envsubst`
+
+Here is a example of `.env` file:
+
+```env
+export ASPNETCORE_ENVIRONMENT=docker
+export REGISTRY=ghcr.io
+```
+
+After loading `environment variables` to the our `shell session` we can run manifests with using `envsubst` and pipe envsubst output to `kubectl` command as a input like this example:
+
+```bash
+# pipe a deployment "deploy.yml" into kubectl apply
+envsubst < deploy.yml | kubectl apply -f -
+```
+
+Also it is also possible to write our `substitution` to a `new file` (envsubst < input.tmpl > output.text):
+
+```bash
+envsubst < deploy.yml > compiled_deploy.yaml
+```
+
+I've create a [shell](https://medium.com/@peey/how-to-make-a-file-executable-in-linux-99f2070306b5) script [kubectl](./deployments/k8s/kubernetes/kubectl), we can call this `script` just like we would `kubectl`. This script sources any `.env` file in the manifests directory , If we're running `./kubectl apply` or `./kubectl delete` with [kubectl script](./deployments/k8s/kubernetes/kubectl), it calls `envsubst` to `swap out` your environment variables, then it passes the code on to the `real kubectl`.
+
+```bash
+#!/bin/bash
+ENV_FILE=.env
+
+source $ENV_FILE
+
+if [[ "$1" == "apply" ]] || [[ "$1" == "delete" ]]; then
+    envsubst < $3 | kubectl $1 $2 -
+else
+    kubectl "$@"
+fi
+```
+
+##### Installation
+
+- For installing `Infrastructure` manifests for kubernetes cluster we run bellow command with [`kubectl script`](./deployments/k8s/kubernetes/kubectl):
+
+```bash
+./kubectl apply -f ./deployments/k8s/kubernetes/infrastructure.yaml
+```
 
 ## Contribution
 

@@ -96,6 +96,13 @@ COPY --from=publish /app/publish  .
 #https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
 #https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
 
+# https://learn.microsoft.com/en-us/aspnet/core/tutorials/dotnet-watch?view=aspnetcore-7.0#dotnet-watch-configuration
+# https://learn.microsoft.com/en-us/aspnet/core/fundamentals/file-providers?view=aspnetcore-3.1#watch-for-changes
+# https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch?WT.mc_id=DOP-MVP-5001942#environment-variables
+# Some file systems, such as Docker containers and network shares, may not reliably send change notifications. Set the DOTNET_USE_POLLING_FILE_WATCHER environment variable to 1 or true to poll the file system for changes every four seconds
+# If set to "1" or "true", dotnet watch uses a polling file watcher instead of CoreFx's FileSystemWatcher. Used when watching files on network shares or Docker mounted volumes.
+ENV DOTNET_USE_POLLING_FILE_WATCHER 1
+
 #https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
 # when we `run` app `dll`, inner `api project` working directory (will resolve to current working directory for app) that contains appsetings.json files or inner `bin directory` because when run app dll in this directory `app working directory` and `current working directory` will be set bin and because appsettings.json are there, so app can find this `appsettings.json` files in current working directory but if we run app dll outside this directories app current working directory will be changed, and it can't find `appsettings.json` files in current working directory, so we should explicitly specify working dir in to `bin` or `app project` folder, this problem doesn't exist for `.csproj files` and their working dir always resolve `correctly`
 # in this layer we don't have nugets so we can use mounted volume in `docker run` or `docker-compose up` for this entrypoint when docker container will be run for the `host` with --mount type=bind,source=${env:USERPROFILE}\\.nuget\\packages,destination=/root/.nuget/packages,readonly, for example dotnet <application.dll> --additionalProbingPath /root/nuget/packages --additionalProbingPath ~/.nuget/packages 

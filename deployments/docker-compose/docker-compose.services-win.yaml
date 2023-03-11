@@ -33,7 +33,7 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ~/.aspnet/https:/https:ro
+      - ${USERPROFILE}\.aspnet\https:/https:ro
     networks:
       - ecommerce
 
@@ -65,7 +65,7 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
-      - ~/.aspnet/https:/https:ro
+      - ${USERPROFILE}\.aspnet\https:/https:ro
     networks:
       - ecommerce
 
@@ -97,7 +97,7 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
-      - ~/.aspnet/https:/https:ro
+      - ${USERPROFILE}\.aspnet\https:/https:ro
     networks:
       - ecommerce
 
@@ -129,7 +129,7 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
-      - ~/.aspnet/https:/https:ro
+      - ${USERPROFILE}\.aspnet\https:/https:ro
     networks:
       - ecommerce
 

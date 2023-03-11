@@ -11,6 +11,7 @@ env_path=$5
 #https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
 #https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
 #https://docs.docker.com/engine/reference/commandline/run/#mount
+#https://docs.docker.com/engine/reference/commandline/run/#env
 #https://oprea.rocks/blog/how-to-properly-override-the-entrypoint-using-docker-run
 #https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/
 #https://devopscube.com/keep-docker-container-running/

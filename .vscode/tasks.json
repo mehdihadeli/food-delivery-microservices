@@ -65,18 +65,12 @@
       "label": "docker-build-dev: catalogs",
       "command": "docker build --target final -f ${workspaceFolder}/src/Services/Catalogs/dev.Dockerfile --tag catalogs:dev ${workspaceFolder}", //--no-cache
       "type": "shell",
-      "dependsOn": [
-        "build: catalogs"
-      ],
       "problemMatcher": []
     },
     {
       "label": "docker-build-prod: catalogs",
       "command": "docker build --target final -f ${workspaceFolder}/src/Services/Catalogs/Dockerfile --tag catalogs:prod ${workspaceFolder}", //--no-cache
       "type": "shell",
-      "dependsOn": [
-        "build: catalogs"
-      ],
       "problemMatcher": []
     },
     //https://learn.microsoft.com/en-us/dotnet/core/docker/publish-as-container
@@ -95,9 +89,6 @@
       "label": "docker-build-base: catalogs",
       "command": "docker build --target base -f ${workspaceFolder}/src/Services/Catalogs/dev.Dockerfile --tag catalogs:base ${workspaceFolder}",
       "type": "shell",
-      "dependsOn": [
-        "build: catalogs"
-      ],
       "problemMatcher": []
     },
     // for see data inner container `docker exec -it catalogs-debug`
@@ -260,9 +251,6 @@
       "label": "docker-build-dev: customers",
       "command": "docker build --target final -f ${workspaceFolder}/src/Services/Customers/dev.Dockerfile --tag customers:dev ${workspaceFolder}", //--no-cache
       "type": "shell",
-      "dependsOn": [
-        "build: customers"
-      ],
       "problemMatcher": []
     },
     //https://learn.microsoft.com/en-us/dotnet/core/docker/publish-as-container
@@ -281,9 +269,6 @@
       "label": "docker-build-base: customers",
       "command": "docker build --target base -f ${workspaceFolder}/src/Services/Customers/dev.Dockerfile --tag customers:base ${workspaceFolder}",
       "type": "shell",
-      "dependsOn": [
-        "build: customers"
-      ],
       "problemMatcher": []
     },
     // for see data inner container `docker exec -it customers-debug`
@@ -437,9 +422,6 @@
       "label": "docker-build-dev: identity",
       "command": "docker build --target final -f ${workspaceFolder}/src/Services/Identity/dev.Dockerfile --tag identity:dev ${workspaceFolder}", //--no-cache
       "type": "shell",
-      "dependsOn": [
-        "build: identity"
-      ],
       "problemMatcher": []
     },
     //https://learn.microsoft.com/en-us/dotnet/core/docker/publish-as-container
@@ -461,9 +443,6 @@
       "label": "docker-build-base: identity",
       "command": "docker build --target base -f ${workspaceFolder}/src/Services/Identity/dev.Dockerfile --tag identity:base ${workspaceFolder}",
       "type": "shell",
-      "dependsOn": [
-        "build: identity"
-      ],
       "problemMatcher": []
     },
     // for see data inner container `docker exec -it identity-debug`
@@ -617,9 +596,6 @@
       "label": "docker-build-dev: orders",
       "command": "docker build --target final -f ${workspaceFolder}/src/Services/Orders/dev.Dockerfile --tag orders:dev ${workspaceFolder}", //--no-cache
       "type": "shell",
-      "dependsOn": [
-        "build: orders"
-      ],
       "problemMatcher": []
     },
     //https://learn.microsoft.com/en-us/dotnet/core/docker/publish-as-container
@@ -638,9 +614,6 @@
       "label": "docker-build-base: orders",
       "command": "docker build --target base -f ${workspaceFolder}/src/Services/Orders/dev.Dockerfile --tag orders:base ${workspaceFolder}",
       "type": "shell",
-      "dependsOn": [
-        "build: orders"
-      ],
       "problemMatcher": []
     },
     // for see data inner container `docker exec -it orders-debug`
@@ -795,9 +768,6 @@
       "label": "docker-build-dev: gateway",
       "command": "docker build --target final -f ${workspaceFolder}/src/ApiGateway/dev.Dockerfile --tag gateway:dev ${workspaceFolder}", //--no-cache
       "type": "shell",
-      "dependsOn": [
-        "build: gateway"
-      ],
       "problemMatcher": []
     },
     //https://learn.microsoft.com/en-us/dotnet/core/docker/publish-as-container
@@ -816,9 +786,6 @@
       "label": "docker-build-base: gateway",
       "command": "docker build --target base -f ${workspaceFolder}/src/ApiGateway/dev.Dockerfile --tag gateway:base ${workspaceFolder}",
       "type": "shell",
-      "dependsOn": [
-        "build: gateway"
-      ],
       "problemMatcher": []
     },
     // for see data inner container `docker exec -it gateway-debug`
@@ -928,7 +895,8 @@
       // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
       // https://docs.docker.com/compose/extends/
       // to remove containers we use `docker-compose down`
-      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.debug.yaml up -d",
+      //https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with---env-file
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.debug.yaml --env-file ${workspaceFolder}/deployments/docker-compose/.env  --env-file ${workspaceFolder}/deployments/docker-compose/.env.dev up -d",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
@@ -975,7 +943,8 @@
       // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
       // https://docs.docker.com/compose/extends/
       // to remove containers we use `docker-compose down`
-      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.dev.yaml up",
+      //https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with---env-file
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.dev.yaml --env-file ${workspaceFolder}/deployments/docker-compose/.env  --env-file ${workspaceFolder}/deployments/docker-compose/.env.dev up",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
@@ -1005,7 +974,8 @@
       // https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
       // https://docs.docker.com/compose/extends/
       // to remove containers we use `docker-compose down`
-      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml up",
+      //https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with---env-file
+      "command": "docker-compose -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.yaml --env-file ${workspaceFolder}/deployments/docker-compose/.env  --env-file ${workspaceFolder}/deployments/docker-compose/.env.prod up",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",

@@ -11,6 +11,7 @@ env_path=$5
 #https://www.powercms.in/article/how-automatically-delete-docker-container-after-running-it
 #https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
 #https://docs.docker.com/engine/reference/commandline/run/#mount
+#https://docs.docker.com/engine/reference/commandline/run/#env
 #https://stackoverflow.com/questions/52070171/whats-the-default-user-for-docker-exec
 #https://code.visualstudio.com/docs/containers/troubleshooting#_running-as-a-nonroot-user
 # here if we don't use detached mode this task block process for inreactive mode and prevent to use launch debuger in laucnch.json

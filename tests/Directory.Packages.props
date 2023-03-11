@@ -35,11 +35,14 @@
     <PackageVersion Include="Serilog.Sinks.XUnit" Version="3.0.3" />
     <PackageVersion Include="Squadron.Mongo" Version="0.17.0" />
     <PackageVersion Include="System.Reactive.Linq" Version="5.0.0" />
+	<PackageVersion Include="Testcontainers" Version="3.0.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="3.0.0" />
+    <PackageVersion Include="Testcontainers.MongoDb" Version="3.0.0" />
+    <PackageVersion Include="Testcontainers.RabbitMq" Version="3.0.0" />
     <PackageVersion Include="Verify.Xunit" Version="19.1.0" />
     <PackageVersion Include="XunitContext" Version="3.2.5" />
     <PackageVersion Include="WebMotions.Fake.Authentication.JwtBearer" Version="6.1.0" />
     <PackageVersion Include="Bazinga.AspNetCore.Authentication.Basic" Version="2.0.1" />
-    <PackageVersion Include="Testcontainers" Version="2.2.0" />
     <PackageVersion Include="RestAssured.NET" Version="2.0.0" />
     <PackageVersion Include="WireMock.NET" Version="1.5.13" />
     <PackageVersion Include="Thinkcode.RabbitMQ.OpenAPI" Version="1.0.8" />

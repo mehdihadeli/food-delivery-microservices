@@ -36,9 +36,6 @@ builder.Host.UseDefaultServiceProvider(
     }
 );
 
-Console.WriteLine(builder.Environment.EnvironmentName);
-Console.WriteLine(builder.Configuration.BindOptions<PostgresOptions>("MessagePersistenceOptions").ConnectionString);
-
 builder.Services
     .AddControllers(
         options => options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()))

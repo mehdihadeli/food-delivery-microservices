@@ -1,0 +1,6 @@
+# https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/#composing-and-customizing-resources
+
+# https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/#kustomize-feature-list
+resources:
+- deployment.yaml
+- service.yaml

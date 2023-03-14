@@ -55,7 +55,8 @@ public class RabbitMQContainerFixture : IAsyncLifetime
             $"http://{Container.Hostname}",
             RabbitMqContainerOptions.UserName,
             RabbitMqContainerOptions.Password,
-            ApiPort);
+            ApiPort
+        );
 
         //Creating new exchange after each publish doesn't support by masstransit and it just creates exchanges in init phase but works for queues
         var queues = await managementClient.GetQueuesAsync(cancellationToken);
@@ -76,7 +77,8 @@ public class RabbitMQContainerFixture : IAsyncLifetime
             $"http://{Container.Hostname}",
             RabbitMqContainerOptions.UserName,
             RabbitMqContainerOptions.Password,
-            apiPort);
+            apiPort
+        );
 
         var bd = await managementClient.GetBindingsAsync(cancellationToken);
         var bindings = bd.Where(x => !string.IsNullOrEmpty(x.Source) && !string.IsNullOrEmpty(x.Destination));
@@ -108,7 +110,9 @@ public class RabbitMQContainerFixture : IAsyncLifetime
         await Container.StartAsync();
         _messageSink.OnMessage(
             new DiagnosticMessage(
-                $"RabbitMq fixture started on api port {ApiPort}, container tcp port {TcpContainerPort} and host port: {HostPort}..."));
+                $"RabbitMq fixture started on api port {ApiPort}, container tcp port {TcpContainerPort} and host port: {HostPort}..."
+            )
+        );
     }
 
     public async Task DisposeAsync()

@@ -23,10 +23,10 @@ public class MongoContainerFixture : IAsyncLifetime
         MongoContainerOptions = mongoContainerOptions;
 
         var postgresContainerBuilder = new MongoDbBuilder()
-                .WithUsername(mongoContainerOptions.UserName)
-                .WithPassword(mongoContainerOptions.Password)
-                .WithName(mongoContainerOptions.Name)
-                .WithCleanUp(true)
+            .WithUsername(mongoContainerOptions.UserName)
+            .WithPassword(mongoContainerOptions.Password)
+            .WithName(mongoContainerOptions.Name)
+            .WithCleanUp(true)
             // https://github.com/testcontainers/testcontainers-dotnet/issues/734
             // testcontainers has a problem with using mongo:latest version for now we use testcontainer default image
             .WithImage(mongoContainerOptions.ImageName);
@@ -42,7 +42,11 @@ public class MongoContainerFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         await Container.StartAsync();
-        _messageSink.OnMessage(new DiagnosticMessage($"Mongo fixture started on Host port {HostPort} and container tcp port {TcpContainerPort}..."));
+        _messageSink.OnMessage(
+            new DiagnosticMessage(
+                $"Mongo fixture started on Host port {HostPort} and container tcp port {TcpContainerPort}..."
+            )
+        );
     }
 
     public async Task DisposeAsync()
@@ -61,8 +65,8 @@ public class MongoContainerFixture : IAsyncLifetime
         //await dbClient.DropDatabaseAsync(Container.Database, cancellationToken);
 
         var collections = await dbClient
-                              .GetDatabase(MongoContainerOptions.DatabaseName)
-                              .ListCollectionsAsync(cancellationToken: cancellationToken);
+            .GetDatabase(MongoContainerOptions.DatabaseName)
+            .ListCollectionsAsync(cancellationToken: cancellationToken);
 
         foreach (var collection in collections.ToList())
         {

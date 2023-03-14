@@ -143,10 +143,12 @@ npm init
 npm install husky --save-dev
 ```
 
-3. Add `prepare` command for installing and activating `husky hooks` in the package.json file:
+3. Add `prepare` and `install-dev-cert-bash` command for installing and activating `husky hooks` in the package.json file:
 
 ```bash
-npm pkg set scripts.prepare="husky install"
+npm pkg set scripts.prepare="husky install && dotnet tool restore"
+
+npm pkg set scripts.install-dev-cert-bash="curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
 ```
 
 4. Install CommitLint:
@@ -177,6 +179,9 @@ npx husky add .husky/commit-msg 'npx --no -- commitlint --edit ${1}'
 
 ```bash
 npm run prepare
+
+# this command should run in git-bash on the windows or bash in the linux
+npm run install-dev-cert-bash
 ```
 
 ### Formatting

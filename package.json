@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "ecommerce-microservices",
   "scripts": {
-    "prepare": "husky install && dotnet tool restore && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
+    "prepare": "husky install && dotnet tool restore",
+    "install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
   },
   "repository": {
     "type": "git",

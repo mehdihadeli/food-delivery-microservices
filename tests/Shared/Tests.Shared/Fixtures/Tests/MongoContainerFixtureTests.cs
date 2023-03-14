@@ -33,7 +33,9 @@ public class MongoContainerFixtureTests : IAsyncLifetime
 
         await _fixture.ResetDbAsync();
 
-        var collections = await dbClient.GetDatabase(_fixture.MongoContainerOptions.DatabaseName).ListCollectionsAsync();
+        var collections = await dbClient
+            .GetDatabase(_fixture.MongoContainerOptions.DatabaseName)
+            .ListCollectionsAsync();
 
         collections.ToList().Should().BeEmpty();
     }

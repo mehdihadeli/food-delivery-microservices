@@ -83,8 +83,9 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             .ForContext<SharedFixture<TEntryPoint>>();
 
         //https://github.com/testcontainers/testcontainers-dotnet/blob/8db93b2eb28bc2bc7d579981da1651cd41ec03f8/docs/custom_configuration/index.md#enable-logging
-        TestcontainersSettings.Logger = new Serilog.Extensions.Logging.SerilogLoggerFactory(Logger)
-            .CreateLogger("TestContainer");
+        TestcontainersSettings.Logger = new Serilog.Extensions.Logging.SerilogLoggerFactory(Logger).CreateLogger(
+            "TestContainer"
+        );
 
         // Service provider will build after getting with get accessors, we don't want to build our service provider here
         PostgresContainerFixture = new PostgresContainerFixture(messageSink);
@@ -124,7 +125,10 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
                 builder.AddInMemoryCollection(
                     new TestConfigurations
                     {
-                        { "PostgresOptions:ConnectionString", PostgresContainerFixture.Container.GetConnectionString() },
+                        {
+                            "PostgresOptions:ConnectionString",
+                            PostgresContainerFixture.Container.GetConnectionString()
+                        },
                         {
                             "MessagePersistenceOptions:ConnectionString",
                             PostgresContainerFixture.Container.GetConnectionString()

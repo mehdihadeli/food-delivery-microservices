@@ -36,7 +36,11 @@ public class PostgresContainerFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         await Container.StartAsync();
-        _messageSink.OnMessage(new DiagnosticMessage($"Postgres fixture started on Host port {HostPort} and container tcp port {TcpContainerPort}..."));
+        _messageSink.OnMessage(
+            new DiagnosticMessage(
+                $"Postgres fixture started on Host port {HostPort} and container tcp port {TcpContainerPort}..."
+            )
+        );
     }
 
     public async Task ResetDbAsync(CancellationToken cancellationToken = default)
@@ -49,8 +53,9 @@ public class PostgresContainerFixture : IAsyncLifetime
             await CheckForExistingDatabase(connection);
 
             var checkpoint = await Respawner.CreateAsync(
-                                 connection,
-                                 new RespawnerOptions {DbAdapter = DbAdapter.Postgres});
+                connection,
+                new RespawnerOptions { DbAdapter = DbAdapter.Postgres }
+            );
             // https://github.com/jbogard/Respawn/issues/108
             // https://github.com/jbogard/Respawn/pull/115 - fixed
             // waiting for new nuget version of respawn, current is 6.
@@ -72,13 +77,15 @@ public class PostgresContainerFixture : IAsyncLifetime
     private async Task CheckForExistingDatabase(NpgsqlConnection connection)
     {
         var existsDb = await connection.ExecuteScalarAsync<bool>(
-                           "SELECT 1 FROM  pg_catalog.pg_database WHERE datname= @dbname",
-                           param: new {dbname = PostgresContainerOptions.DatabaseName});
+            "SELECT 1 FROM  pg_catalog.pg_database WHERE datname= @dbname",
+            param: new { dbname = PostgresContainerOptions.DatabaseName }
+        );
         if (existsDb == false)
         {
             await connection.ExecuteAsync(
                 "CREATE DATABASE @DBName",
-                param: new {DBName = PostgresContainerOptions.DatabaseName});
+                param: new { DBName = PostgresContainerOptions.DatabaseName }
+            );
         }
 
         // //https://github.com/jbogard/Respawn/issues/108

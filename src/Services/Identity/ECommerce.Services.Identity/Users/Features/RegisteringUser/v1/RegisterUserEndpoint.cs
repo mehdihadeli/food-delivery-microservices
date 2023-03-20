@@ -30,6 +30,7 @@ public static class RegisterUserEndpoint
             request.LastName,
             request.UserName,
             request.Email,
+            request.PhoneNumber,
             request.Password,
             request.ConfirmPassword,
             request.Roles?.ToList()

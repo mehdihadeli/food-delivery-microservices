@@ -2,7 +2,6 @@ using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Core.CQRS.Queries;
 using BuildingBlocks.Persistence.Mongo;
-using ECommerce.Services.Customers.Customers.Dtos;
 using ECommerce.Services.Customers.Customers.Dtos.v1;
 using ECommerce.Services.Customers.Customers.Models.Reads;
 using ECommerce.Services.Customers.Shared.Data;

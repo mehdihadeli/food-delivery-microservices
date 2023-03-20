@@ -6,13 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Products\Features\CreatingProduct\v1" />
-    <Folder Include="Products\Features\ReplenishingProductStock\v1" />
-    <Folder Include="RestockSubscriptions\Fakes" />
     <Folder Include="Shared\Data\Migrations" />
     <Folder Include="Shared\Data\Migrations\Customers" />
-    <Folder Include="Users\Features" />
-    <Folder Include="Users\Features\RegisteringUser\v1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +42,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="ECommerce.Services.Customers.IntegrationTests" />
+    <InternalsVisibleTo Include="ECommerce.Services.Customers.UnitTests" />
   </ItemGroup>
 
 </Project>

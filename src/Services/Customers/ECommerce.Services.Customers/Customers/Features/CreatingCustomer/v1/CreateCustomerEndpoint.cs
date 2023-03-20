@@ -7,7 +7,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace ECommerce.Services.Customers.Customers.Features.CreatingCustomer.v1;
 
-public class CreateCustomerEndpoint : ICommandMinimalEndpoint<CreateCustomerRequest>
+internal class CreateCustomerEndpoint : ICommandMinimalEndpoint<CreateCustomerRequest>
 {
     public string GroupName => CustomersConfigs.Tag;
     public string PrefixRoute => CustomersConfigs.CustomersPrefixUri;
@@ -18,7 +18,7 @@ public class CreateCustomerEndpoint : ICommandMinimalEndpoint<CreateCustomerRequ
         return builder
             .MapPost("/", HandleAsync)
             .AllowAnonymous()
-            .Produces<CreateCustomerResponse>(StatusCodes.Status201Created)
+            .Produces<CreateCustomerResult>(StatusCodes.Status201Created)
             .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)
             .WithMetadata(new SwaggerOperationAttribute("Creating a Customer", "Creating a Customer"))
             .WithName("CreateCustomer")
@@ -43,8 +43,13 @@ public class CreateCustomerEndpoint : ICommandMinimalEndpoint<CreateCustomerRequ
         using (Serilog.Context.LogContext.PushProperty("CustomerId", command.Id))
         {
             var result = await commandProcessor.SendAsync(command, cancellationToken);
+            var response = new CreateCustomerResponse(result.CustomerId, result.IdentityUserId);
 
-            return Results.Created($"{CustomersConfigs.CustomersPrefixUri}/{result.CustomerId}", result);
+            return Results.Created($"{CustomersConfigs.CustomersPrefixUri}/{result.CustomerId}", response);
         }
     }
 }
+
+internal record CreateCustomerRequest(string Email);
+
+internal record CreateCustomerResponse(long CustomerId, Guid IdentityUserId);

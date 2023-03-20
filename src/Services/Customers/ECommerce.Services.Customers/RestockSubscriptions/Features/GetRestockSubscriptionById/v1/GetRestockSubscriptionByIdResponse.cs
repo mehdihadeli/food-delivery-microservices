@@ -1,0 +1,5 @@
+using ECommerce.Services.Customers.RestockSubscriptions.Dtos.v1;
+
+namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GetRestockSubscriptionById.v1;
+
+public record GetRestockSubscriptionByIdResponse(RestockSubscriptionDto RestockSubscription);

@@ -1,6 +1,8 @@
 using ECommerce.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using ECommerce.Services.Customers.Shared.Data;
 using ECommerce.Services.Customers.TestShared.Fakes.Customers.Events;
+using ECommerce.Services.Customers.TestShared.Fakes.Shared.Servers;
+using ECommerce.Services.Customers.TestShared.Fixtures;
 using ECommerce.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
 using ECommerce.Services.Shared.Customers.Customers.Events.v1.Integration;
 using ECommerce.Services.Shared.Identity.Users.Events.v1.Integration;

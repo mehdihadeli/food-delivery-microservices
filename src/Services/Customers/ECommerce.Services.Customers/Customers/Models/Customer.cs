@@ -2,6 +2,7 @@ using Ardalis.GuardClauses;
 using BuildingBlocks.Core.Domain;
 using BuildingBlocks.Core.Domain.ValueObjects;
 using ECommerce.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
+using ECommerce.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
 using ECommerce.Services.Customers.Customers.ValueObjects;
 
 namespace ECommerce.Services.Customers.Customers.Models;
@@ -27,7 +28,10 @@ public class Customer : Aggregate<CustomerId>
         Email email,
         PhoneNumber phoneNumber,
         CustomerName name,
-        Guid identityId
+        Guid identityId,
+        Address? address = null,
+        BirthDate? birthDate = null,
+        Nationality? nationality = null
     )
     {
         var customer = new Customer
@@ -37,10 +41,44 @@ public class Customer : Aggregate<CustomerId>
             PhoneNumber = Guard.Against.Null(phoneNumber),
             Name = Guard.Against.Null(name),
             IdentityId = Guard.Against.NullOrEmpty(identityId),
+            BirthDate = birthDate,
+            Address = address,
+            Nationality = nationality
         };
 
         customer.AddDomainEvents(new CustomerCreated(customer));
 
         return customer;
+    }
+
+    public void Update(
+        Email email,
+        PhoneNumber phoneNumber,
+        CustomerName name,
+        Address? address = null,
+        BirthDate? birthDate = null,
+        Nationality? nationality = null
+    )
+    {
+        Email = email;
+        PhoneNumber = phoneNumber;
+        Name = name;
+
+        if (address is { })
+        {
+            Address = address;
+        }
+
+        if (birthDate is { })
+        {
+            BirthDate = birthDate;
+        }
+
+        if (nationality is { })
+        {
+            Nationality = nationality;
+        }
+
+        AddDomainEvents(new CustomerUpdated(this));
     }
 }

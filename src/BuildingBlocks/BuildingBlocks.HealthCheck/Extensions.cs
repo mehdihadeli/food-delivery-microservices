@@ -31,7 +31,13 @@ public static class Extensions
             return builder;
         }
 
-        var healCheckBuilder = builder.Services.AddHealthChecks().ForwardToPrometheus();
+        var healCheckBuilder = builder.Services
+            .AddHealthChecks()
+            .AddDiskStorageHealthCheck(_ => { }, tags: new[] { "live", "ready" })
+            .AddPingHealthCheck(_ => { }, tags: new[] { "live", "ready" })
+            .AddPrivateMemoryHealthCheck(512 * 1024 * 1024, tags: new[] { "live", "ready" })
+            .AddDnsResolveHealthCheck(_ => { }, tags: new[] { "live", "ready" })
+            .ForwardToPrometheus();
 
         healthChecksBuilder?.Invoke(healCheckBuilder);
 
@@ -112,12 +118,26 @@ public static class Extensions
                 }
             )
             .UseHealthChecks(
-                "/health/ready",
+                "health/ready",
                 new HealthCheckOptions
                 {
-                    Predicate = _ => true,
-                    AllowCachingResponses = false,
-                    ResponseWriter = WriteResponseAsync,
+                    Predicate = check => check.Tags.Contains("ready"),
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                }
+            )
+            .UseHealthChecks(
+                "health/live",
+                new HealthCheckOptions
+                {
+                    Predicate = check => check.Tags.Contains("live"),
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                }
+            )
+            .UseHealthChecksPrometheusExporter(
+                "/health/prometheus",
+                options =>
+                {
+                    options.ResultStatusCodes[HealthStatus.Unhealthy] = 200;
                 }
             )
             .UseHealthChecksUI(setup =>

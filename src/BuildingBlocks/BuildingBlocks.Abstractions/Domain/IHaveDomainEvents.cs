@@ -17,10 +17,9 @@ public interface IHaveDomainEvents
     IReadOnlyList<IDomainEvent> GetUncommittedDomainEvents();
 
     /// <summary>
-    /// Gets a list of uncommitted events for this aggregate, mark all events as committed.
+    /// Remove all domain events
     /// </summary>
-    /// <returns></returns>
-    IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents();
+    void ClearDomainEvents();
 
     /// <summary>
     /// Mark all changes (events) as committed, clears uncommitted changes and updates the current version of the aggregate.

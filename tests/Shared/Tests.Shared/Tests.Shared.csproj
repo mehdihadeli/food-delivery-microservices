@@ -14,7 +14,9 @@
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="Mongo2Go" />
+    <PackageReference Include="RichardSzalay.MockHttp" />
     <PackageReference Include="Testcontainers.MongoDb" />
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="Testcontainers.RabbitMq" />

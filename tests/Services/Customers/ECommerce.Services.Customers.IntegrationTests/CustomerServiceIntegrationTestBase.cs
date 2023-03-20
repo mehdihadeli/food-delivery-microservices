@@ -1,11 +1,10 @@
 using ECommerce.Services.Customers.Shared.Data;
-using Google.Protobuf.WellKnownTypes;
+using ECommerce.Services.Customers.TestShared.Fixtures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Tests.Shared.Fixtures;
 using Tests.Shared.TestBase;
-using Tests.Shared.XunitCategories;
 using Xunit.Abstractions;
 
 namespace ECommerce.Services.Customers.IntegrationTests;
@@ -16,6 +15,7 @@ namespace ECommerce.Services.Customers.IntegrationTests;
 public class CustomerServiceIntegrationTestBase
     : IntegrationTestBase<Api.Program, CustomersDbContext, CustomersReadDbContext>
 {
+    // We don't need to inject `CustomersServiceMockServersFixture` class fixture in the constructor because it initialized by `collection fixture` and its static properties are accessible in the codes
     public CustomerServiceIntegrationTestBase(
         SharedFixtureWithEfCoreAndMongo<Api.Program, CustomersDbContext, CustomersReadDbContext> sharedFixture,
         ITestOutputHelper outputHelper
@@ -54,5 +54,14 @@ public class CustomerServiceIntegrationTestBase
     {
         //// here we use same data seeder of service but if we need different data seeder for test for can replace it
         // services.ReplaceScoped<IDataSeeder, CustomersTestDataSeeder>();
+    }
+
+    public override Task DisposeAsync()
+    {
+        // we should reset mappings routes we define in each test in end of running each test, but wiremock server is up in whole of test collection and is active for all tests
+        CustomersServiceMockServersFixture.CatalogsServiceMock.Reset();
+        CustomersServiceMockServersFixture.IdentityServiceMock.Reset();
+
+        return base.DisposeAsync();
     }
 }

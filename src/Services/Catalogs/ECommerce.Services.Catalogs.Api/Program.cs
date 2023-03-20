@@ -1,5 +1,6 @@
 using Bogus;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Web;
 using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
@@ -35,6 +36,9 @@ builder.Host.UseDefaultServiceProvider(
         // options.ValidateOnBuild = true;
     }
 );
+
+DotNetEnv.Env.TraversePath().Load();
+var f =SnowFlakIdGenerator.NewId();
 
 builder.Services
     .AddControllers(

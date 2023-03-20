@@ -51,16 +51,6 @@ public static class CoreRegistrationExtensions
 
         RegisterEventMappers(services, assemblies);
 
-        switch (configuration["IdGenerator:Type"])
-        {
-            case "Guid":
-                services.AddSingleton<IIdGenerator<Guid>, GuidIdGenerator>();
-                break;
-            default:
-                services.AddSingleton<IIdGenerator<long>, SnowFlakIdGenerator>();
-                break;
-        }
-
         return services;
     }
 

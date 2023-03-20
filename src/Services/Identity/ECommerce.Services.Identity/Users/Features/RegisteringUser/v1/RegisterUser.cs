@@ -1,7 +1,9 @@
+using System.Text.RegularExpressions;
 using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Core.Exception;
 using ECommerce.Services.Identity.Shared.Models;
 using ECommerce.Services.Identity.Users.Dtos;
 using ECommerce.Services.Identity.Users.Dtos.v1;
@@ -17,6 +19,7 @@ public record RegisterUser(
     string LastName,
     string UserName,
     string Email,
+    string PhoneNumber,
     string Password,
     string ConfirmPassword,
     List<string>? Roles = null
@@ -40,6 +43,14 @@ internal class RegisterUserValidator : AbstractValidator<RegisterUser>
         RuleFor(v => v.UserName).NotEmpty().WithMessage("UserName is required.");
 
         RuleFor(v => v.Password).NotEmpty().WithMessage("Password is required.");
+
+        RuleFor(p => p.PhoneNumber)
+            .NotEmpty()
+            .WithMessage("Phone Number is required.")
+            .MinimumLength(7)
+            .WithMessage("PhoneNumber must not be less than 7 characters.")
+            .MaximumLength(15)
+            .WithMessage("PhoneNumber must not exceed 15 characters.");
 
         RuleFor(v => v.ConfirmPassword)
             .Equal(x => x.Password)
@@ -91,6 +102,7 @@ internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserR
             LastName = request.LastName,
             UserName = request.UserName,
             Email = request.Email,
+            PhoneNumber = request.PhoneNumber,
             UserState = UserState.Active,
             CreatedAt = request.CreatedAt,
         };

@@ -1,8 +1,6 @@
 using Ardalis.GuardClauses;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
 using BuildingBlocks.Core.Web.Extenions;
@@ -19,7 +17,6 @@ using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
 using BuildingBlocks.Web.Extensions;
 using ECommerce.Services.Catalogs.Products;
-using Serilog.Events;
 
 namespace ECommerce.Services.Catalogs.Shared.Extensions.WebApplicationBuilderExtensions;
 
@@ -27,8 +24,6 @@ public static partial class WebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
-        SnowFlakIdGenerator.Configure(1);
-
         builder.Services.AddCore(builder.Configuration);
 
         builder.Services.AddCustomJwtAuthentication(builder.Configuration);
@@ -70,7 +65,7 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomVersioning();
 
-        builder.AddCustomSwagger(typeof(CatalogRoot).Assembly);
+        builder.AddCustomSwagger(typeof(CatalogAssemblyInfo).Assembly);
 
         builder.Services.AddHttpContextAccessor();
 
@@ -107,13 +102,13 @@ public static partial class WebApplicationBuilderExtensions
                     .AddNpgSql(
                         postgresOptions.ConnectionString,
                         name: "CatalogsService-Postgres-Check",
-                        tags: new[] { "postgres", "infra", "database", "catalogs-service" }
+                        tags: new[] { "postgres", "infra", "database", "catalogs-service", "live", "ready" }
                     )
                     .AddRabbitMQ(
                         rabbitMqOptions.ConnectionString,
                         name: "CatalogsService-RabbitMQ-Check",
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "rabbitmq", "infra", "bus", "catalogs-service" }
+                        tags: new[] { "rabbitmq", "infra", "bus", "catalogs-service", "live", "ready" }
                     );
             });
         }

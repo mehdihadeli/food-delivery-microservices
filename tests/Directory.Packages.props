@@ -25,17 +25,19 @@
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
     <PackageVersion Include="MassTransit" Version="8.0.8" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0-preview.2.23128.3" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
     <PackageVersion Include="Microsoft.VisualStudio.TestPlatform" Version="14.0.0" />
     <PackageVersion Include="Mongo2Go" Version="3.1.3" />
     <PackageVersion Include="NSubstitute" Version="4.4.0" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.16" />
     <PackageVersion Include="Respawn" Version="6.0.0" />
+    <PackageVersion Include="RichardSzalay.MockHttp" Version="6.0.0" />
     <PackageVersion Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageVersion Include="Serilog.Sinks.XUnit" Version="3.0.3" />
     <PackageVersion Include="Squadron.Mongo" Version="0.17.0" />
     <PackageVersion Include="System.Reactive.Linq" Version="5.0.0" />
-	<PackageVersion Include="Testcontainers" Version="3.0.0" />
+    <PackageVersion Include="Testcontainers" Version="3.0.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="3.0.0" />
     <PackageVersion Include="Testcontainers.MongoDb" Version="3.0.0" />
     <PackageVersion Include="Testcontainers.RabbitMq" Version="3.0.0" />

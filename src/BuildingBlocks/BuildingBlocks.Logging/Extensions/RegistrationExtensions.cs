@@ -3,8 +3,11 @@ using BuildingBlocks.Core.Web.Extenions;
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Serilog.Exceptions;
+using Serilog.Exceptions.Core;
+using Serilog.Exceptions.EntityFrameworkCore.Destructurers;
 using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
+using Serilog.Sinks.Grafana.Loki;
 
 namespace BuildingBlocks.Logging;
 
@@ -37,7 +40,11 @@ public static class RegistrationExtensions
                     .Enrich.WithEnvironmentName()
                     .Enrich.WithMachineName()
                     // https://rehansaeed.com/logging-with-serilog-exceptions/
-                    .Enrich.WithExceptionDetails();
+                    .Enrich.WithExceptionDetails(
+                        new DestructuringOptionsBuilder()
+                            .WithDefaultDestructurers()
+                            .WithDestructurers(new[] { new DbUpdateExceptionDestructurer() })
+                    );
 
                 // https://github.com/serilog/serilog-settings-configuration
                 loggerConfiguration.ReadFrom.Configuration(context.Configuration, sectionName: sectionName);
@@ -73,8 +80,27 @@ public static class RegistrationExtensions
                             AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
                             CustomFormatter = new ExceptionAsObjectJsonFormatter(renderMessage: true),
                             IndexFormat =
-                                $"{builder.Environment.ApplicationName}-{builder.Environment.EnvironmentName}-{DateTime.Now:yyyy-MM}"
+                                $"{
+                                    builder.Environment.ApplicationName
+                                }-{
+                                    builder.Environment.EnvironmentName
+                                }-{
+                                    DateTime.Now
+                                    :yyyy-MM}"
                         }
+                    );
+                }
+
+                // https://github.com/serilog-contrib/serilog-sinks-grafana-loki
+                if (!string.IsNullOrEmpty(serilogOptions.GrafanaLokiUrl))
+                {
+                    loggerConfiguration.WriteTo.GrafanaLoki(
+                        serilogOptions.GrafanaLokiUrl,
+                        new[]
+                        {
+                            new LokiLabel { Key = "service", Value = "ecommerce" }
+                        },
+                        new[] { "app" }
                     );
                 }
 
@@ -82,6 +108,13 @@ public static class RegistrationExtensions
                 {
                     // seq sink internally is async
                     loggerConfiguration.WriteTo.Seq(serilogOptions.SeqUrl);
+                }
+
+                // https://github.com/serilog/serilog-sinks-opentelemetry
+                if (serilogOptions.ExportLogsToOpenTelemetry)
+                {
+                    // export logs from serilog to opentelemetry
+                    loggerConfiguration.WriteTo.OpenTelemetry();
                 }
 
                 if (!string.IsNullOrEmpty(serilogOptions.LogPath))

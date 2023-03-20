@@ -40,6 +40,11 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
         return _uncommittedDomainEvents.ToImmutableList();
     }
 
+    public void ClearDomainEvents()
+    {
+        _uncommittedDomainEvents.Clear();
+    }
+
     public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
     {
         var events = _uncommittedDomainEvents.ToImmutableList();

@@ -35,7 +35,7 @@
   <!-- Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
   <!--Set CopyToPublishDirectory to always for ensuring copy to publish directory and prevent to conflict with other appsentigs.json, if don't set this it is possible other refrence project setting ovverid its own settings in publish dir-->
   <ItemGroup>
-    <Content Include="..\ECommerce.Services.Catalogs.Api\appsettings.json" CopyToOutputDirectory="PreserveNewest"  CopyToPublishDirectory="Always"/>
+    <Content Include="..\ECommerce.Services.Catalogs.Api\appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>

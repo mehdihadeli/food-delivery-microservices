@@ -1,4 +1,5 @@
 using ECommerce.Services.Customers.Shared.Data;
+using ECommerce.Services.Customers.TestShared.Fixtures;
 using Tests.Shared.Fixtures;
 
 namespace ECommerce.Services.Customers.IntegrationTests;

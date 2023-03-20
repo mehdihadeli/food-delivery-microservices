@@ -51,7 +51,7 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomVersioning();
 
-        builder.AddCustomSwagger(typeof(IdentityRoot).Assembly);
+        builder.AddCustomSwagger(typeof(IdentityAssemblyInfo).Assembly);
 
         builder.AddCustomOpenTelemetry();
 
@@ -68,13 +68,13 @@ public static partial class WebApplicationBuilderExtensions
                     .AddNpgSql(
                         postgresOptions.ConnectionString,
                         name: "IdentityService-Postgres-Check",
-                        tags: new[] { "postgres", "database", "infra", "identity-service" }
+                        tags: new[] { "postgres", "database", "infra", "identity-service", "live", "ready" }
                     )
                     .AddRabbitMQ(
                         rabbitMqOptions.ConnectionString,
                         name: "IdentityService-RabbitMQ-Check",
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "rabbitmq", "bus", "infra", "identity-service" }
+                        tags: new[] { "rabbitmq", "bus", "infra", "identity-service", "live", "ready" }
                     );
             });
         }

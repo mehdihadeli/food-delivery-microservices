@@ -1,6 +1,5 @@
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
-using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
@@ -18,7 +17,6 @@ using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
 using BuildingBlocks.Web.Extensions;
-using ECommerce.Services.Customers.Customers;
 using ECommerce.Services.Customers.Customers.Extensions;
 using ECommerce.Services.Customers.Products;
 using ECommerce.Services.Customers.RestockSubscriptions;
@@ -26,7 +24,6 @@ using ECommerce.Services.Customers.Shared.Clients.Catalogs;
 using ECommerce.Services.Customers.Shared.Clients.Identity;
 using ECommerce.Services.Customers.Users;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Serilog.Events;
 
 namespace ECommerce.Services.Customers.Shared.Extensions.WebApplicationBuilderExtensions;
 
@@ -34,8 +31,6 @@ public static partial class WebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
-        SnowFlakIdGenerator.Configure(2);
-
         builder.Services.AddCore(builder.Configuration);
 
         builder.Services.AddCustomJwtAuthentication(builder.Configuration);
@@ -70,33 +65,33 @@ public static partial class WebApplicationBuilderExtensions
                     .AddNpgSql(
                         postgresOptions.ConnectionString,
                         name: "CustomersService-Postgres-Check",
-                        tags: new[] { "postgres", "database", "infra", "customers-service" }
+                        tags: new[] { "postgres", "database", "infra", "customers-service", "live", "ready" }
                     )
                     .AddRabbitMQ(
                         rabbitMqOptions.ConnectionString,
                         name: "CustomersService-RabbitMQ-Check",
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "rabbitmq", "bus", "infra", "customers-service" }
+                        tags: new[] { "rabbitmq", "bus", "infra", "customers-service", "live", "ready" }
                     )
                     .AddMongoDb(
                         mongoOptions.ConnectionString,
                         mongoDatabaseName: mongoOptions.DatabaseName,
                         "CustomersService-Mongo-Check",
-                        tags: new[] { "mongodb", "database", "infra", "customers-service" }
+                        tags: new[] { "mongodb", "database", "infra", "customers-service", "live", "ready" }
                     )
                     .AddUrlGroup(
                         new List<Uri> { new($"{catalogsApiClientOptions.BaseApiAddress}/healthz") },
                         name: "Catalogs-Downstream-API-Check",
                         failureStatus: HealthStatus.Unhealthy,
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "uris", "downstream-services", "customers-service" }
+                        tags: new[] { "uris", "downstream-services", "customers-service", "live", "ready" }
                     )
                     .AddUrlGroup(
                         new List<Uri> { new($"{identityApiClientOptions.BaseApiAddress}/healthz") },
                         name: "Identity-Downstream-API-Check",
                         failureStatus: HealthStatus.Unhealthy,
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "uris", "downstream-services", "customers-service" }
+                        tags: new[] { "uris", "downstream-services", "customers-service", "live", "ready" }
                     );
             });
         }
@@ -111,7 +106,7 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomSerilog();
 
         builder.AddCustomVersioning();
-        builder.AddCustomSwagger(typeof(CustomersRoot).Assembly);
+        builder.AddCustomSwagger(typeof(CustomersAssemblyInfo).Assembly);
         builder.Services.AddHttpContextAccessor();
 
         builder.Services.AddCqrs(

@@ -28,8 +28,6 @@ internal static partial class WebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
-        SnowFlakIdGenerator.Configure(3);
-
         builder.Services.AddCore(builder.Configuration);
 
         builder.Services.AddCustomJwtAuthentication(builder.Configuration);
@@ -56,7 +54,7 @@ internal static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomVersioning();
 
-        builder.AddCustomSwagger(typeof(OrdersRoot).Assembly);
+        builder.AddCustomSwagger(typeof(OrdersAssemblyInfo).Assembly);
 
         builder.Services.AddHttpContextAccessor();
 
@@ -76,13 +74,13 @@ internal static partial class WebApplicationBuilderExtensions
                     .AddNpgSql(
                         postgresOptions.ConnectionString,
                         name: "OrdersService-Postgres-Check",
-                        tags: new[] { "postgres", "database", "infra", "orders-service" }
+                        tags: new[] { "postgres", "database", "infra", "orders-service", "live", "ready" }
                     )
                     .AddRabbitMQ(
                         rabbitMqOptions.ConnectionString,
                         name: "OrdersService-RabbitMQ-Check",
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "rabbitmq", "bus", "infra", "orders-service" }
+                        tags: new[] { "rabbitmq", "bus", "infra", "orders-service", "live", "ready" }
                     );
             });
         }

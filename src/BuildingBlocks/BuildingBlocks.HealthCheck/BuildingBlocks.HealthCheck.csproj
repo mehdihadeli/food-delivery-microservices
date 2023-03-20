@@ -16,10 +16,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.Network" />
+    <PackageReference Include="AspNetCore.HealthChecks.Prometheus.Metrics" />
+    <PackageReference Include="AspNetCore.HealthChecks.Publisher.Prometheus" />
+    <PackageReference Include="AspNetCore.HealthChecks.System" />
     <PackageReference Include="AspNetCore.HealthChecks.UI" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" />
     <PackageReference Include="AspNetCore.HealthChecks.Uris" />
+    <PackageReference Include="Microsoft.Diagnostics.NETCore.Client" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
     <PackageReference Include="AspNetCore.HealthChecks.MongoDb" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.SQLite.Storage" />
@@ -29,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
     <PackageReference Include="prometheus-net.AspNetCore" />
     <PackageReference Include="prometheus-net.AspNetCore.Grpc" />
     <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" />

@@ -2,7 +2,6 @@ using Ardalis.GuardClauses;
 using AutoMapper;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Core.Exception;
-using ECommerce.Services.Customers.RestockSubscriptions.Dtos;
 using ECommerce.Services.Customers.RestockSubscriptions.Dtos.v1;
 using ECommerce.Services.Customers.RestockSubscriptions.Exceptions.Application;
 using ECommerce.Services.Customers.Shared.Data;

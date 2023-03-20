@@ -28,6 +28,7 @@ public class CustomerName : ValueObject
         return new CustomerName { FirstName = firstName, LastName = lastName };
     }
 
+    // will call for equality(==) checks.
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return FirstName;

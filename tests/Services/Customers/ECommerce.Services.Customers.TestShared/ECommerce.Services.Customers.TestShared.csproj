@@ -13,5 +13,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Fakes\Customers\Dtos" />
+    <Folder Include="Fakes\Customers\Queries" />
+  </ItemGroup>
 
 </Project>

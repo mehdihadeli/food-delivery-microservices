@@ -388,7 +388,6 @@ public static class CreateProductEndpoint
 
     private static async Task<IResult> CreateProducts(
         CreateProductRequest request,
-        IIdGenerator<long> idGenerator,
         ICommandProcessor commandProcessor,
         IMapper mapper,
         CancellationToken cancellationToken)

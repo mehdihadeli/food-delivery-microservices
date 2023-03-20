@@ -3,6 +3,8 @@ using BuildingBlocks.Core.Exception.Types;
 using ECommerce.Services.Customers.Customers.Exceptions.Application;
 using ECommerce.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using ECommerce.Services.Customers.Shared.Data;
+using ECommerce.Services.Customers.TestShared.Fakes.Shared.Servers;
+using ECommerce.Services.Customers.TestShared.Fixtures;
 using ECommerce.Services.Shared.Customers.Customers.Events.v1.Integration;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

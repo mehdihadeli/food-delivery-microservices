@@ -15,12 +15,17 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="AspNetCore.HealthChecks.Network" Version="6.0.4" />
+    <PackageVersion Include="AspNetCore.HealthChecks.Prometheus.Metrics" Version="6.0.2" />
+    <PackageVersion Include="AspNetCore.HealthChecks.Publisher.Prometheus" Version="6.0.2" />
+    <PackageVersion Include="AspNetCore.HealthChecks.System" Version="6.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.ResponseCompression" Version="2.2.0" />
+    <PackageVersion Include="Microsoft.Diagnostics.NETCore.Client" Version="0.2.410101" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftConfigurationVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftConfigurationVersion)" />
@@ -31,6 +36,7 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftDependencyInjectionVersion)" />
     <PackageVersion Include="Microsoft.Extensions.DiagnosticAdapter" Version="3.1.32" />
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(AspNetCoreVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Http.Polly" Version="$(AspNetCoreVersion)" />
@@ -49,6 +55,9 @@
     <PackageVersion Include="Asp.Versioning.Abstractions" Version="7.0.0" />
     <PackageVersion Include="Microsoft.NET.Build.Containers" Version="0.2.7" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCoreVersion)" />
+    <PackageVersion Include="Serilog.Exceptions.EntityFrameworkCore" Version="8.4.0" />
+    <PackageVersion Include="Serilog.Sinks.Grafana.Loki" Version="8.1.0" />
+    <PackageVersion Include="Serilog.Sinks.OpenTelemetry" Version="1.0.0-dev-00113" />
     <PackageVersion Include="System.Threading.RateLimiting" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="System.Net.Http.Json" Version="$(AspNetCoreVersion)" />
   </ItemGroup>

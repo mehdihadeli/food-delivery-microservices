@@ -5,6 +5,7 @@ public record RegisterUserRequest(
     string LastName,
     string UserName,
     string Email,
+    string PhoneNumber,
     string Password,
     string ConfirmPassword
 )

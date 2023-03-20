@@ -1,5 +1,4 @@
 using Asp.Versioning.Builder;
-using BuildingBlocks.Abstractions.CQRS.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
 using ECommerce.Services.Customers.Customers.Data;

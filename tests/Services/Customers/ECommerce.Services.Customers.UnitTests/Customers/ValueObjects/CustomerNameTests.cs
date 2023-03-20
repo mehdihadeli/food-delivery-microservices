@@ -37,10 +37,10 @@ public class CustomerNameTests
 
         //Act
         var act = () =>
-                  {
-                      var customerNameValueObject = CustomerName.Of(firstName, lastName);
-                      return customerNameValueObject;
-                  };
+        {
+            var customerNameValueObject = CustomerName.Of(firstName, lastName);
+            return customerNameValueObject;
+        };
 
         // Assert
         act.Should().Throw<InvalidNameException>();

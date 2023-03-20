@@ -10,7 +10,8 @@ namespace ECommerce.Services.Customers.RestockSubscriptions.Features.GettingRest
 
 public class GetRestockSubscriptionsByEmailsEndpoints
     : EndpointBaseSync.WithRequest<GetRestockSubscriptionsByEmailsRequest?>.WithActionResult<
-        IAsyncEnumerable<RestockSubscriptionDto>>
+        IAsyncEnumerable<RestockSubscriptionDto>
+    >
 {
     private readonly IQueryProcessor _queryProcessor;
 

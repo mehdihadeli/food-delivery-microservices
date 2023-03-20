@@ -48,14 +48,13 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
 
         //Act
         Func<Task> act = async () =>
-                         {
-                             await handler.Handle(null!, CancellationToken.None);
-                         };
+        {
+            await handler.Handle(null!, CancellationToken.None);
+        };
 
         // Assert
         await act.Should().ThrowAsync<ArgumentNullException>();
     }
-
 
     [Fact]
     public async Task must_throw_not_found_when_input_customer_not_exists()

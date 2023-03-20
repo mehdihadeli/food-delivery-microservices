@@ -37,9 +37,6 @@ builder.Host.UseDefaultServiceProvider(
     }
 );
 
-DotNetEnv.Env.TraversePath().Load();
-var f =SnowFlakIdGenerator.NewId();
-
 builder.Services
     .AddControllers(
         options => options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()))

@@ -33,12 +33,14 @@ public class CustomersMapping : Profile
             .ForMember(x => x.City, opt => opt.MapFrom(x => x.Address == Address.Empty ? "" : x.Address!.City))
             .ForMember(
                 x => x.DetailAddress,
-                opt => opt.MapFrom(x => x.Address == Address.Empty ? "" : x.Address!.Detail))
+                opt => opt.MapFrom(x => x.Address == Address.Empty ? "" : x.Address!.Detail)
+            )
             .ForMember(x => x.Nationality, opt => opt.MapFrom(x => x.Nationality == null ? null : x.Nationality!.Value))
             .ForMember(x => x.Email, opt => opt.MapFrom(x => x.Email.Value))
             .ForMember(
                 x => x.BirthDate,
-                opt => opt.MapFrom(x => x.BirthDate == null ? null : x.BirthDate!.Value as DateTime?))
+                opt => opt.MapFrom(x => x.BirthDate == null ? null : x.BirthDate!.Value as DateTime?)
+            )
             .ForMember(x => x.PhoneNumber, opt => opt.MapFrom(x => x.PhoneNumber == null ? "" : x.PhoneNumber!.Value))
             .ForMember(x => x.FirstName, opt => opt.MapFrom(x => x.Name.FirstName))
             .ForMember(x => x.LastName, opt => opt.MapFrom(x => x.Name.LastName))
@@ -57,12 +59,14 @@ public class CustomersMapping : Profile
             .ForMember(x => x.City, opt => opt.MapFrom(x => x.Address == Address.Empty ? "" : x.Address!.City))
             .ForMember(
                 x => x.DetailAddress,
-                opt => opt.MapFrom(x => x.Address == Address.Empty ? "" : x.Address!.Detail))
+                opt => opt.MapFrom(x => x.Address == Address.Empty ? "" : x.Address!.Detail)
+            )
             .ForMember(x => x.Nationality, opt => opt.MapFrom(x => x.Nationality == null ? null : x.Nationality!.Value))
             .ForMember(x => x.Email, opt => opt.MapFrom(x => x.Email.Value))
             .ForMember(
                 x => x.BirthDate,
-                opt => opt.MapFrom(x => x.BirthDate == null ? null : x.BirthDate!.Value as DateTime?))
+                opt => opt.MapFrom(x => x.BirthDate == null ? null : x.BirthDate!.Value as DateTime?)
+            )
             .ForMember(x => x.PhoneNumber, opt => opt.MapFrom(x => x.PhoneNumber == null ? "" : x.PhoneNumber!.Value))
             .ForMember(x => x.FirstName, opt => opt.MapFrom(x => x.Name.FirstName))
             .ForMember(x => x.LastName, opt => opt.MapFrom(x => x.Name.LastName))

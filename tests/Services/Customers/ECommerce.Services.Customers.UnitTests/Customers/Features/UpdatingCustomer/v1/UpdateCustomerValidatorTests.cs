@@ -57,7 +57,13 @@ public class UpdateCustomerValidatorTests : CustomerServiceUnitTestBase
     [CategoryTrait(TestCategory.Unit)]
     public void must_fail_with_invalid_max_lenght_phone_number()
     {
-        var updateCommand = new UpdateCustomer(0, string.Empty, string.Empty, string.Empty, "123555555555555555555555555555");
+        var updateCommand = new UpdateCustomer(
+            0,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            "123555555555555555555555555555"
+        );
 
         var validator = new UpdateCustomerValidator();
 
@@ -76,9 +82,7 @@ public class UpdateCustomerValidatorTests : CustomerServiceUnitTestBase
         var validator = new UpdateCustomerValidator();
 
         var result = validator.TestValidate(updateCommand);
-        result
-            .ShouldHaveValidationErrorFor(x => x.PhoneNumber)
-            .WithErrorMessage("Phone Number is required.");
+        result.ShouldHaveValidationErrorFor(x => x.PhoneNumber).WithErrorMessage("Phone Number is required.");
     }
 
     [Fact]

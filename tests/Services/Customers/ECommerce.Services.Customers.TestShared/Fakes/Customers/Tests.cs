@@ -30,9 +30,7 @@ public class Tests
         }
     }
 
-    public class Dtos
-    {
-    }
+    public class Dtos { }
 
     public class Entities
     {
@@ -84,19 +82,11 @@ public class Tests
             customers.All(x => !string.IsNullOrWhiteSpace(x.City)).Should().BeTrue();
             customers.All(x => !string.IsNullOrWhiteSpace(x.Country)).Should().BeTrue();
             customers.All(x => !string.IsNullOrWhiteSpace(x.DetailAddress)).Should().BeTrue();
-            customers.All(
-                    x => x.BirthDate is
-                         {
-                         } &&
-                         x.BirthDate.Value != default)
-                .Should()
-                .BeTrue();
+            customers.All(x => x.BirthDate is { } && x.BirthDate.Value != default).Should().BeTrue();
         }
     }
 
-    public class Queries
-    {
-    }
+    public class Queries { }
 
     public class Commands
     {

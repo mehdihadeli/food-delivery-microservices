@@ -46,7 +46,7 @@
     <PackageVersion Include="WebMotions.Fake.Authentication.JwtBearer" Version="6.1.0" />
     <PackageVersion Include="Bazinga.AspNetCore.Authentication.Basic" Version="2.0.1" />
     <PackageVersion Include="RestAssured.NET" Version="2.0.0" />
-    <PackageVersion Include="WireMock.NET" Version="1.5.13" />
+    <PackageVersion Include="WireMock.NET" Version="1.5.23" />
     <PackageVersion Include="Thinkcode.RabbitMQ.OpenAPI" Version="1.0.8" />
     <PackageVersion Include="EasyNetQ.Management.Client" Version="1.4.2" />
     <PackageVersion Include="coverlet.msbuild" Version="3.2.0" />

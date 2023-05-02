@@ -41,7 +41,7 @@
     <PackageVersion Include="Testcontainers.PostgreSql" Version="3.0.0" />
     <PackageVersion Include="Testcontainers.MongoDb" Version="3.0.0" />
     <PackageVersion Include="Testcontainers.RabbitMq" Version="3.0.0" />
-    <PackageVersion Include="Verify.Xunit" Version="19.1.0" />
+    <PackageVersion Include="Verify.Xunit" Version="19.14.1" />
     <PackageVersion Include="XunitContext" Version="3.2.5" />
     <PackageVersion Include="WebMotions.Fake.Authentication.JwtBearer" Version="6.1.0" />
     <PackageVersion Include="Bazinga.AspNetCore.Authentication.Basic" Version="2.0.1" />

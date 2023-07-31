@@ -17,6 +17,13 @@
 
 🎯 This Application ported to `modular monolith` approach in [ecommerce-modular-monolith](https://github.com/mehdihadeli/ecommerce-modular-monolith) repository, we can choose best fit architecture for our projects based on production needs.
 
+Other versions of this project are available in these repositories, We can choose best fit architecture for our projects based on production needs:
+- [https://github.com/mehdihadeli/ecommerce-modular-monolith](https://github.com/mehdihadeli/ecommerce-modular-monolith)
+- [https://github.com/mehdihadeli/go-ecommerce-microservices](https://github.com/mehdihadeli/go-ecommerce-microservices)
+
+For your simplest .net core projects, you can use my `vertical-slice-api-template` project template: 
+- [https://github.com/mehdihadeli/vertical-slice-api-template](https://github.com/mehdihadeli/vertical-slice-api-template)
+
 # ⭐ Support
 
 If you like feel free to ⭐ this repository, It helps out :)

@@ -74,7 +74,7 @@ Thanks a bunch for supporting me!
 - ✅ Using [Microsoft Tye](https://github.com/dotnet/tye) for deployment
 - ✅ Using [YARP](https://microsoft.github.io/reverse-proxy/) reverse proxy as API Gateway
 - ✅ Using different type of tests like `Unit Tests`, `Integration Tests`, `End-To-End Tests` and [testcontainers](https://microsoft.github.io/reverse-proxy/) for testing in isolation
-- 🚧 Using `Helm` and `Kubernetes` and `Kustomize` for deployment
+- 🚧 Using `Helm`, `Kubernetes` and `Kustomize` for deployment
 - 🚧 Using `OpenTelemetry` for collecting `Metrics` and `Distributed Traces`
 
 ## Plan

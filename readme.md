@@ -65,7 +65,8 @@ Thanks a bunch for supporting me!
 - ✅ Uing Structured logging for export logs to Elastic Seacrch and Kibana through [serilog-sinks-elasticsearch](https://github.com/serilog-contrib/serilog-sinks-elasticsearch) Sink
 - ✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
 - ✅ Using `Inbox Pattern` for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in reciver side and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/)
-- ✅ Using `UnitTests` and NSubstitute for mocking dependencies and `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) for cleanup our test enviroment with real dependencies
+- ✅ Using `UnitTests` and `NSubstitute` for mocking dependencies
+- ✅ Using `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) library for cleanup our test enviroment through docker containers
 - ✅ Using `Minimal APIs` for handling requests
 - ✅ Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
 - ✅ Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database

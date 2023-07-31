@@ -57,13 +57,15 @@ Thanks a bunch for supporting me!
 ## Features
 
 - ✅ Using `Vertical Slice Architecture` as a high level architecture
-- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit
+- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit library
 - ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
-- ✅ Using `Event Sourcing` in `Audit Based` services like Orders, Payment
+- ✅ Using `Event Sourcing` and `EventStoreDB` in `Audit Based` services like Orders, Payment
 - ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
-- ✅ Using `CQRS Pattern` on top of `MediatR` library
+- ✅ Using `CQRS Pattern` on top of `MediatR` library and spliting `read models` and `write models`
+- ✅ Uing Structured logging for export logs to Elastic Seacrch and Kibana through [serilog-sinks-elasticsearch](https://github.com/serilog-contrib/serilog-sinks-elasticsearch) Sink
 - ✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
 - ✅ Using `Inbox Pattern` for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in reciver side and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/)
+- ✅ Using `UnitTests` and NSubstitute for mocking dependencies and `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) for cleanup our test enviroment with real dependencies
 - ✅ Using `Minimal APIs` for handling requests
 - ✅ Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
 - ✅ Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
@@ -71,8 +73,8 @@ Thanks a bunch for supporting me!
 - ✅ Using [Microsoft Tye](https://github.com/dotnet/tye) for deployment
 - ✅ Using [YARP](https://microsoft.github.io/reverse-proxy/) reverse proxy as API Gateway
 - ✅ Using different type of tests like `Unit Tests`, `Integration Tests`, `End-To-End Tests` and [testcontainers](https://microsoft.github.io/reverse-proxy/) for testing in isolation
-- 🚧 Using `Helm` and `Kubernetes` for deployment
-- 🚧 Using `OpenTelemetry` for collection `Metrics` and `Distributed Tracing`
+- 🚧 Using `Helm` and `Kubernetes` and `Kustomize` for deployment
+- 🚧 Using `OpenTelemetry` for collecting `Metrics` and `Distributed Traces`
 
 ## Plan
 

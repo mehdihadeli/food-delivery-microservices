@@ -62,7 +62,7 @@ Thanks a bunch for supporting me!
 - ✅ Using `Event Sourcing` and `EventStoreDB` in `Audit Based` services like Orders, Payment
 - ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
 - ✅ Using `CQRS Pattern` on top of `MediatR` library and spliting `read models` and `write models`
-- ✅ Uing Structured logging for export logs to Elastic Seacrch and Kibana through [serilog-sinks-elasticsearch](https://github.com/serilog-contrib/serilog-sinks-elasticsearch) Sink
+- ✅ Uing `Structured logging` with serilog and exporting logs to `Elastic Seacrch` and `Kibana` through [serilog-sinks-elasticsearch](https://github.com/serilog-contrib/serilog-sinks-elasticsearch) sink
 - ✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
 - ✅ Using `Inbox Pattern` for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in reciver side and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/)
 - ✅ Using `UnitTests` and `NSubstitute` for mocking dependencies

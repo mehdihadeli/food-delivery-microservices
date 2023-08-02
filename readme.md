@@ -4,9 +4,8 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?logoColor=white&style=for-the-badge)](http://commitizen.github.io/cz-cli/)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release&style=for-the-badge&logoColor=white)](https://github.com/semantic-release/semantic-release)
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/https://github.com/mehdihadeli/ecommerce-microservices)
-
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://mehdihadeli-humble-space-couscous-5x5pqwwjx5c7664.github.dev)
+[![Gitpod](https://img.shields.io/static/v1?style=for-the-badge&message=Open%20in%20Gitpod&color=222222&logo=Gitpod&logoColor=FFAE33&label=)](https://gitpod.io/https://github.com/mehdihadeli/ecommerce-microservices)
+[![Codespaces](https://img.shields.io/static/v1?style=for-the-badge&message=Open%20in%20GitHub%20Codespaces&color=181717&logo=GitHub&logoColor=FFFFFF&label=)](https://mehdihadeli-humble-space-couscous-5x5pqwwjx5c7664.github.dev)
 
 > `ECommerece Microservices` is a fictional ecommerce sample, built with .Net Core and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
 

@@ -55,7 +55,7 @@ Thanks a bunch for supporting me!
 
 ## Features
 
-- ✅ Using `Vertical Slice Architecture` as a high level architecture
+- ✅ Using `Microservices` and `Vertical Slice Architecture` as a high level architecture
 - ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit library
 - ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
 - ✅ Using `Event Sourcing` and `EventStoreDB` in `Audit Based` services like Orders, Payment

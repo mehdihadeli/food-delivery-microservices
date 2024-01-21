@@ -1,3 +1,0 @@
-namespace ECommerce.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
-
-public record CreateRestockSubscriptionResponse(long RestockSubscriptionId);

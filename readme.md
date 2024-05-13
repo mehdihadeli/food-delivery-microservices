@@ -7,18 +7,16 @@
 [![Gitpod](https://img.shields.io/static/v1?style=for-the-badge&message=Open%20in%20Gitpod&color=222222&logo=Gitpod&logoColor=FFAE33&label=)](https://gitpod.io/https://github.com/mehdihadeli/food-delivery-microservices)
 [![Codespaces](https://img.shields.io/static/v1?style=for-the-badge&message=Open%20in%20GitHub%20Codespaces&color=181717&logo=GitHub&logoColor=FFFFFF&label=)](https://mehdihadeli-humble-space-couscous-5x5pqwwjx5c7664.github.dev)
 
-<!-- https://raw.githubusercontent.com/progfay/shields-with-icon/master/README.md -->
+> `Food Delivery Microservices` is a practical and imaginary food delivery microservices, built with .Net Core and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications using REST and gRPC calls.
 
-> `Food Delivery Microservices` is a fictional food delivery microservices, built with .Net Core and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
-
-💡 This application is not business oriented and my focus is mostly on technical part, I just want to implement a sample with using different technologies, software architecture design, principles and all the thing we need for creating a microservices app.
+💡 This application is not business-oriented and my focus is mostly on the technical part, I just want to implement a sample using different technologies, software architecture design, principles, and all the things we need for creating a microservices app.
 
 > **Warning**
-> This project is in progress. I add new features over the time. You can check the [Release Notes](https://github.com/mehdihadeli/food-delivery-microservices/releases).
+> This project is in progress. I add new features over time. You can check the [Release Notes](https://github.com/mehdihadeli/food-delivery-microservices/releases).
 
-🎯 This Application ported to `modular monolith` approach in [food-delivery-modular-monolith](https://github.com/mehdihadeli/food-delivery-modular-monolith) repository, we can choose best fit architecture for our projects based on production needs.
+🎯 This Application ported to `modular monolith` approach in [food-delivery-modular-monolith](https://github.com/mehdihadeli/food-delivery-modular-monolith) repository, we can choose the best-fit architecture for our projects based on production needs.
 
-Other versions of this project are available in these repositories, We can choose best fit architecture for our projects based on production needs:
+Other versions of this project are available in these repositories, We can choose best-fit architecture for our projects based on production needs:
 
 - [https://github.com/mehdihadeli/food-delivery-modular-monolith](https://github.com/mehdihadeli/food-delivery-modular-monolith)
 - [https://github.com/mehdihadeli/go-food-delivery-microservices](https://github.com/mehdihadeli/go-food-delivery-microservices)

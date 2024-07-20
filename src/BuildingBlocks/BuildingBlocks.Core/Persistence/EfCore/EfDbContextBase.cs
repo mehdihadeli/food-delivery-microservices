@@ -1,8 +1,8 @@
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq.Expressions;
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Domain;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Persistence.EfCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BuildingBlocks.Core.Persistence.EfCore;
 
+// https://learn.microsoft.com/en-us/ef/core/saving/transactions
+// https://learn.microsoft.com/en-us/ef/core/saving/
 public abstract class EfDbContextBase : DbContext, IDbFacadeResolver, IDbContext, IDomainEventContext
 {
     // private readonly IDomainEventPublisher _domainEventPublisher;

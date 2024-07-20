@@ -1,17 +1,15 @@
-using BuildingBlocks.Abstractions.CQRS.Events;
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 
 namespace BuildingBlocks.Abstractions.Persistence.EventStore;
 
-public interface IStreamEvent : IEvent
+public interface IStreamEvent
 {
-    public IDomainEvent Data { get; }
-
-    public IStreamEventMetadata? Metadata { get; }
+    object Data { get; }
+    IStreamEventMetadata Metadata { get; init; }
 }
 
 public interface IStreamEvent<out T> : IStreamEvent
     where T : IDomainEvent
 {
-    public new T Data { get; }
+    new T Data { get; }
 }

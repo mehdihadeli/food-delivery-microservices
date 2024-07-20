@@ -1,7 +1,7 @@
 name: First interaction
 on:
   pull_request_target:
-    types: 
+    types:
       - opened
   issues:
     types:
@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     name: First interaction
     steps:
-    - uses: actions/first-interaction@v1
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-message: 'Welcome to ecommerece-microservice. Thank you ${{ github.event.pull_request.user.login }} for reporting your first issue. Please check out our [contributor guide](https://github.com/mehdihadeli/ecommerce-microservices/blob/develop/CONTRIBUTION.md).'          
-        pr-message: 'Thank you ${{ github.event.pull_request.user.login }} for your first pull request to ecommerece-microservice repository. Please check out our [contributors guide](https://github.com/mehdihadeli/ecommerce-microservices/blob/develop/CONTRIBUTION.md).'
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: "Welcome to food-delivery-microservice. Thank you ${{ github.event.pull_request.user.login }} for reporting your first issue. Please check out our [contributor guide](https://github.com/mehdihadeli/food-delivery-microservices/blob/develop/CONTRIBUTION.md)."
+          pr-message: "Thank you ${{ github.event.pull_request.user.login }} for your first pull request to food-delivery-microservice repository. Please check out our [contributors guide](https://github.com/mehdihadeli/food-delivery-microservices/blob/develop/CONTRIBUTION.md)."

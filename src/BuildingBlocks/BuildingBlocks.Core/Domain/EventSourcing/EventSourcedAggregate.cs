@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Domain;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
 using BuildingBlocks.Core.Domain.Exceptions;
 using BuildingBlocks.Core.Extensions;
@@ -73,8 +73,7 @@ public abstract class EventSourcedAggregate<TId> : Entity<TId>, IEventSourcedAgg
     {
         if (!_uncommittedDomainEvents.Any(x => Equals(x.EventId, domainEvent.EventId)))
         {
-            IDomainEvent eventWithAggregate = domainEvent.WithAggregate(Id, CurrentVersion + 1);
-            _uncommittedDomainEvents.Enqueue(eventWithAggregate);
+            _uncommittedDomainEvents.Enqueue(domainEvent);
         }
     }
 
@@ -86,6 +85,11 @@ public abstract class EventSourcedAggregate<TId> : Entity<TId>, IEventSourcedAgg
     public IReadOnlyList<IDomainEvent> GetUncommittedDomainEvents()
     {
         return _uncommittedDomainEvents.ToImmutableList();
+    }
+
+    public void ClearDomainEvents()
+    {
+        _uncommittedDomainEvents.Clear();
     }
 
     public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
@@ -105,9 +109,20 @@ public abstract class EventSourcedAggregate<TId> : Entity<TId>, IEventSourcedAgg
 
     public void CheckRule(IBusinessRule rule)
     {
-        if (rule.IsBroken())
+        var broken = rule.IsBroken();
+        if (broken)
         {
-            throw new BusinessRuleValidationException(rule);
+            throw new DomainException(rule.GetType(), rule.Message, rule.Status);
+        }
+    }
+
+    public void CheckRule<T>(IBusinessRuleWithExceptionType<T> ruleWithExceptionType)
+        where T : DomainException
+    {
+        var isBroken = ruleWithExceptionType.IsBroken();
+        if (isBroken)
+        {
+            throw ruleWithExceptionType.Exception;
         }
     }
 }

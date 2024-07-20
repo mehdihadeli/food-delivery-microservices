@@ -2,7 +2,7 @@ using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Ardalis.GuardClauses;
+using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Utils;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -80,30 +80,36 @@ public class JwtService : IJwtService
         if (usersClaims?.Any() is true)
             jwtClaims = jwtClaims.Union(usersClaims).ToList();
 
-        Guard.Against.NullOrEmpty(_jwtOptions.SecretKey, nameof(_jwtOptions.SecretKey));
+        _jwtOptions.SecretKey.NotBeNullOrWhiteSpace();
 
         SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
         SigningCredentials signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
         var expireTime = now.AddSeconds(_jwtOptions.TokenLifeTimeSecond == 0 ? 300 : _jwtOptions.TokenLifeTimeSecond);
-        var jwt = new JwtSecurityToken(
-            _jwtOptions.Issuer,
-            _jwtOptions.Audience,
-            notBefore: now,
-            claims: jwtClaims,
-            expires: expireTime,
-            signingCredentials: signingCredentials
-        );
 
-        var token = new JwtSecurityTokenHandler().WriteToken(jwt);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new Claim[] { new(ClaimTypes.Name, userId) }),
+            Expires = expireTime,
+            SigningCredentials = signingCredentials,
+            Claims = jwtClaims.ConvertClaimsToDictionary(),
+            Issuer = _jwtOptions.Issuer,
+            Audience = _jwtOptions.Issuer,
+            NotBefore = now
+        };
+
+        JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+        jwtSecurityTokenHandler.OutboundClaimTypeMap.Clear();
+        var securityToken = jwtSecurityTokenHandler.CreateToken(tokenDescriptor);
+        var token = jwtSecurityTokenHandler.WriteToken(securityToken);
 
         return new GenerateTokenResult(token, expireTime);
     }
 
     public ClaimsPrincipal? GetPrincipalFromToken(string token)
     {
-        Guard.Against.NullOrEmpty(token, nameof(token));
-        Guard.Against.NullOrEmpty(_jwtOptions.SecretKey, nameof(_jwtOptions.SecretKey));
+        token.NotBeNullOrWhiteSpace();
+        _jwtOptions.SecretKey.NotBeNullOrWhiteSpace();
 
         TokenValidationParameters tokenValidationParameters = new TokenValidationParameters
         {
@@ -131,5 +137,13 @@ public class JwtService : IJwtService
         }
 
         return principal;
+    }
+}
+
+public static class JwtHelper
+{
+    public static IDictionary<string, object> ConvertClaimsToDictionary(this IList<Claim> claims)
+    {
+        return claims.ToDictionary(claim => claim.Type, claim => (object)claim.Value);
     }
 }

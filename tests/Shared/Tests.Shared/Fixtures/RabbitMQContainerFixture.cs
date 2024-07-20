@@ -1,8 +1,6 @@
-using Ardalis.GuardClauses;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using DotNet.Testcontainers.Containers;
+using BuildingBlocks.Core.Extensions;
 using EasyNetQ.Management.Client;
+using Testcontainers.RabbitMq;
 using Tests.Shared.Helpers;
 using Xunit.Sdk;
 
@@ -16,32 +14,28 @@ namespace Tests.Shared.Fixtures;
 public class RabbitMQContainerFixture : IAsyncLifetime
 {
     private readonly IMessageSink _messageSink;
-    private readonly RabbitMQContainerOptions _rabbitMqContainerOptions;
-    public RabbitMqTestcontainer Container { get; }
+    public RabbitMqContainer Container { get; }
     public int ApiPort => Container.GetMappedPublicPort(15672);
+    public int HostPort => Container.GetMappedPublicPort(RabbitMqBuilder.RabbitMqPort);
+    public int TcpContainerPort => RabbitMqBuilder.RabbitMqPort;
+    public RabbitMQContainerOptions RabbitMqContainerOptions { get; }
 
     public RabbitMQContainerFixture(IMessageSink messageSink)
     {
         _messageSink = messageSink;
-        var rabbitmqContainerOptions = ConfigurationHelper.BindOptions<RabbitMQContainerOptions>();
-        Guard.Against.Null(rabbitmqContainerOptions);
-        _rabbitMqContainerOptions = rabbitmqContainerOptions;
+        RabbitMqContainerOptions = ConfigurationHelper.BindOptions<RabbitMQContainerOptions>();
+        RabbitMqContainerOptions.NotBeNull();
 
-        var rabbitmqContainerBuilder = new TestcontainersBuilder<RabbitMqTestcontainer>()
-            .WithMessageBroker(
-                new RabbitMqTestcontainerConfiguration
-                {
-                    Username = rabbitmqContainerOptions.UserName,
-                    Password = rabbitmqContainerOptions.Password,
-                }
-            )
+        var rabbitmqContainerBuilder = new RabbitMqBuilder()
+            .WithUsername(RabbitMqContainerOptions.UserName)
+            .WithPassword(RabbitMqContainerOptions.Password)
             // set custom host http port for container http port 15672, beside of automatic tcp port will assign for container port 5672 (default port)
             .WithPortBinding(15672, true)
             // we could comment this line, this is default port for testcontainer
             .WithPortBinding(5672, true)
             .WithCleanUp(true)
-            .WithName(rabbitmqContainerOptions.Name)
-            .WithImage(rabbitmqContainerOptions.ImageName);
+            .WithName(RabbitMqContainerOptions.Name)
+            .WithImage(RabbitMqContainerOptions.ImageName);
 
         Container = rabbitmqContainerBuilder.Build();
     }
@@ -55,13 +49,12 @@ public class RabbitMQContainerFixture : IAsyncLifetime
         // https://www.planetgeek.ch/2015/08/16/cleaning-up-queues-and-exchanges-on-rabbitmq/
         // https://www.planetgeek.ch/2015/08/31/cleanup-code-for-cleaning-up-queues-and-exchanges-on-rabbitmq/
 
-
         // here I used rabbitmq http apis (Management Plugin) but also we can also use RabbitMQ client library and channel.ExchangeDelete(), channel.QueueDelete(), official client
         // is not complete for administrative works for example it doesn't have GetAllQueues, GetAllExchanges
         var managementClient = new ManagementClient(
             $"http://{Container.Hostname}",
-            Container.Username,
-            Container.Password,
+            RabbitMqContainerOptions.UserName,
+            RabbitMqContainerOptions.Password,
             ApiPort
         );
 
@@ -82,8 +75,8 @@ public class RabbitMQContainerFixture : IAsyncLifetime
         // is not complete for administrative works for example it doesn't have GetAllQueues, GetAllExchanges
         var managementClient = new ManagementClient(
             $"http://{Container.Hostname}",
-            Container.Username,
-            Container.Password,
+            RabbitMqContainerOptions.UserName,
+            RabbitMqContainerOptions.Password,
             apiPort
         );
 
@@ -116,7 +109,9 @@ public class RabbitMQContainerFixture : IAsyncLifetime
     {
         await Container.StartAsync();
         _messageSink.OnMessage(
-            new DiagnosticMessage($"RabbitMq fixture started on Host port {Container.Port} and Api Port {ApiPort}...")
+            new DiagnosticMessage(
+                $"RabbitMq fixture started on api port {ApiPort}, container tcp port {TcpContainerPort} and host port: {HostPort}..."
+            )
         );
     }
 
@@ -126,13 +121,13 @@ public class RabbitMQContainerFixture : IAsyncLifetime
         await Container.DisposeAsync(); //important for the event to cleanup to be fired!
         _messageSink.OnMessage(new DiagnosticMessage("RabbitMq fixture stopped."));
     }
+}
 
-    private sealed class RabbitMQContainerOptions
-    {
-        public string Name { get; set; } = "rabbitmq_" + Guid.NewGuid();
-        public ushort Port { get; set; } = 5672;
-        public string ImageName { get; set; } = "rabbitmq:management";
-        public string UserName { get; set; } = "guest";
-        public string Password { get; set; } = "guest";
-    }
+public sealed class RabbitMQContainerOptions
+{
+    public string Name { get; set; } = "rabbitmq_" + Guid.NewGuid();
+    public ushort Port { get; set; } = 5672;
+    public string ImageName { get; set; } = "rabbitmq:management";
+    public string UserName { get; set; } = "guest";
+    public string Password { get; set; } = "guest";
 }

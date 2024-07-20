@@ -15,10 +15,19 @@ public class CommandProcessor : ICommandProcessor
         _messagePersistenceService = messagePersistenceService;
     }
 
-    public Task<TResult> SendAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
-        where TResult : notnull
+    public async Task<TResult> SendAsync<TResult>(
+        ICommand<TResult> command,
+        CancellationToken cancellationToken = default
+    )
+        where TResult : class
     {
-        return _mediator.Send(command, cancellationToken);
+        return await _mediator.Send(command, cancellationToken);
+    }
+
+    public async Task SendAsync<TRequest>(TRequest command, CancellationToken cancellationToken = default)
+        where TRequest : ICommand
+    {
+        await _mediator.Send(command, cancellationToken);
     }
 
     public async Task ScheduleAsync(

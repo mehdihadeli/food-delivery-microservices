@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using BuildingBlocks.Abstractions.CQRS.Events;
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Abstractions.Domain.Events;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Abstractions.Scheduler;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -660,7 +660,7 @@ public static class TypeExtensions
 
                 if (addIfAlreadyExists)
                 {
-                    matches.ForEach(match => services.AddTransient(@interface, match));
+                    matches.ForEach(match => services.TryAddTransient(@interface, match));
                 }
                 else
                 {

@@ -19,7 +19,7 @@ inputs:
     description: Docker registry to push
     default: "ghcr.io"
   registry-endpoint:
-    description: Image registry repo e.g. username/ecommerce-microservices
+    description: Image registry repo e.g. username/food-delivery-microservices
     required: true
   registry-username:
     description: Registry username
@@ -35,15 +35,14 @@ inputs:
 runs:
   using: "composite"
   steps:
-
     - name: Info
       shell: bash
       run: |
-           echo actor is: "${{ github.actor }}"
-           echo registry is: "${{ inputs.registry }}"
-           echo docker-file-path is: "${{ inputs.docker-file-path }}"
-           echo service-name is: "${{ inputs.service-name }}"
-           echo application-version is: "${{ inputs.application-version }}"
+        echo actor is: "${{ github.actor }}"
+        echo registry is: "${{ inputs.registry }}"
+        echo docker-file-path is: "${{ inputs.docker-file-path }}"
+        echo service-name is: "${{ inputs.service-name }}"
+        echo application-version is: "${{ inputs.application-version }}"
 
     - name: Check Inputs
       shell: bash
@@ -72,7 +71,7 @@ runs:
       run: |
         docker build . --tag  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}  -f "${{ inputs.docker-file-path }}"
 
-    - name: 'Login to GitHub Container Registry'
+    - name: "Login to GitHub Container Registry"
       uses: docker/login-action@v1
       if: success()
       with:

@@ -1,36 +1,113 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.245.0/containers/ubuntu
-// https://github.com/microsoft/vscode-remote-try-dotnetcore/blob/main/.devcontainer/devcontainer.json
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
+// https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/setting-up-your-dotnet-project-for-codespaces
+// https://github.com/microsoft/vscode-remote-try-dotnet
+// https://dev.to/this-is-learning/set-up-github-codespaces-for-a-net-8-application-5999
+// https://audacioustux.notion.site/Getting-Started-with-Devcontainer-c727dbf9d56f4d6b9b0ef87b3111693f
 {
-	"name": "Ubuntu",
-	"build": {
-		"dockerfile": "Dockerfile",
-		// Update 'VARIANT' to pick an Ubuntu version: jammy / ubuntu-22.04, focal / ubuntu-20.04, bionic /ubuntu-18.04
-		// Use ubuntu-22.04 or ubuntu-18.04 on local arm64/Apple Silicon.
-		"args": {
-			"VARIANT": "ubuntu-22.04"
-		}
-	},
-	"extensions": [
-		"ms-dotnettools.csharp",
-		"mutantdino.resourcemonitor",
-		"humao.rest-client",
-		"dzhavat.bracket-pair-toggler",
-		"Trottero.dotnetwatchattach",
-		"ms-azuretools.vscode-docker",
-		"vivaxy.vscode-conventional-commits",
-		"emmanuelbeziat.vscode-great-icons",
-		"fernandoescolar.vscode-solution-explorer",
-		"mikestead.dotenv",
-		"ms-vscode.vs-keybindings"
-	],
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "uname -a",
-	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "vscode",
-	"features": {
-		"docker-in-docker": "latest"
-	}
+  "name": "Food Delivery Microservices",
+  // use existing dev container templates. More info: https://containers.dev/guide/dockerfile, https://containers.dev/templates
+  //"image": "mcr.microsoft.com/devcontainers/dotnet:1-7.0",
+  // use a Dockerfile file. More info: https://containers.dev/guide/dockerfile#dockerfile
+  // "build": {
+  //   // Path is relative to the devcontainer.json file.
+  //   "dockerfile": "Dockerfile"
+  // },
+  // using a Dockerfile with Docker Compose, https://containers.dev/guide/dockerfile#docker-compose-image
+  "dockerComposeFile": "docker-compose.yaml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    // https://github.com/devcontainers/features/tree/main/src/dotnet#dotnet-cli-dotnet
+    "ghcr.io/devcontainers/features/dotnet:2": {
+      // this version should be matched with global.json .net version for working vscode IntelliSense correctly
+      "version": "8.0.303",
+      "additionalVersions": "latest, 7.0.410, 8.0.303, 6.0.424",
+      "aspNetCoreRuntimeVersions": "latest, 7.0"
+    },
+    // https://github.com/devcontainers/features/tree/main/src/github-cli
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "2"
+    },
+    // https://github.com/devcontainers/features/tree/main/src/powershell
+    "ghcr.io/devcontainers/features/powershell:1": {
+      "version": "latest"
+    },
+    // https://github.com/devcontainers/features/tree/main/src/node
+    "ghcr.io/devcontainers/features/node:1": {},
+    // // https://github.com/devcontainers/features/tree/main/src/kubectl-helm-minikube
+    // "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
+    // // https://github.com/devcontainers/features/tree/main/src/terraform
+    // "ghcr.io/devcontainers/features/terraform:1": {},
+    // https://github.com/devcontainers/features/tree/main/src/docker-in-docker
+    // https://devopscube.com/run-docker-in-docker/
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "dockerDashComposeVersion": "v2"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    // https://github.com/devcontainers/features/tree/main/src/common-utils
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true
+    }
+  },
+  // Configure tool-specific properties.
+  "customizations": {
+    // Configure properties specific to VS Code.
+    "vscode": {
+      "settings": {
+        "git.autofetch": true,
+        "files.autoSave": "onFocusChange",
+        "editor.formatOnSave": true,
+        "editor.suggest.snippetsPreventQuickSuggestions": false,
+        "explorer.autoReveal": true,
+        "resmon.show.cpufreq": false,
+        "dotnet.defaultSolution": "food-delivery.sln",
+        "dotnet.server.startTimeout": 60000,
+        "omnisharp.projectLoadTimeout": 60,
+        "workbench.colorTheme": "Visual Studio Light",
+        "workbench.iconTheme": "material-icon-theme",
+        "editor.minimap.enabled": false,
+        "editor.fontFamily": "'MesloLGM Nerd Font', 'Droid Sans Mono', 'monospace', 'Droid Sans Fallback', 'Consolas'",
+        "editor.fontSize": 14,
+        "explorer.confirmDelete": false,
+        "terminal.integrated.defaultProfile.windows": "PowerShell",
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "powershell.cwd": "~",
+        "terminal.external.windowsExec": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe"
+      },
+      "extensions": [
+        "streetsidesoftware.code-spell-checker",
+        "ms-dotnettools.csdevkit",
+        "mutantdino.resourcemonitor",
+        "humao.rest-client",
+        "dzhavat.bracket-pair-toggler",
+        "ms-azuretools.vscode-docker",
+        "vivaxy.vscode-conventional-commits",
+        "emmanuelbeziat.vscode-great-icons",
+        "ms-vscode.vs-keybindings",
+        "GitHub.vscode-github-actions",
+        "PKief.material-icon-theme",
+        "EditorConfig.EditorConfig",
+        "DavidAnson.vscode-markdownlint"
+      ]
+    }
+  },
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [5000, 5001],
+  // "portsAttributes": {
+  //		"5001": {
+  //			"protocol": "https"
+  //		}
+  // }
+  // https://containers.dev/implementors/json_reference/#lifecycle-scripts
+  "updateContentCommand": "chmod +x .devcontainer/scripts/update.sh",
+  "postCreateCommand": "chmod +x .devcontainer/scripts/post-create.sh"
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
 }

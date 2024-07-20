@@ -8,12 +8,15 @@
     <PackageReference Include="Serilog.Enrichers.Environment" />
     <PackageReference Include="Serilog.Enrichers.Span" />
     <PackageReference Include="Serilog.Exceptions" />
+    <PackageReference Include="Serilog.Exceptions.EntityFrameworkCore" />
     <PackageReference Include="Serilog.Extensions.Hosting" />
     <PackageReference Include="Serilog.Formatting.Elasticsearch" />
     <PackageReference Include="Serilog.Sinks.Async" />
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Serilog.Sinks.Elasticsearch" />
     <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Serilog.Sinks.Grafana.Loki" />
+    <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
     <PackageReference Include="Serilog.Sinks.Seq" />
     <PackageReference Include="Serilog.Sinks.SpectreConsole" />
     <PackageReference Include="SerilogTimings" />

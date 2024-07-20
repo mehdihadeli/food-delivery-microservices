@@ -29,8 +29,11 @@ public static partial class VersioningExtensions
                 // existing service introduces a breaking change. Conceptually, clients in this situation are
                 // bound to some API version of a service, but they don't know what it is and never explicit request it.
                 options.AssumeDefaultVersionWhenUnspecified = true;
+
+                // the default value of `DefaultApiVersion` is  `ApiVersion(1, new int?(0)`
                 options.DefaultApiVersion = new ApiVersion(1, 0);
 
+                // default `ApiVersionReader` is combine of both `QueryStringApiVersionReader` and `UrlSegmentApiVersionReader`
                 // Defines how an API version is read from the current HTTP request
                 options.ApiVersionReader = ApiVersionReader.Combine(
                     new HeaderApiVersionReader("api-version"),

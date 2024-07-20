@@ -1,26 +1,35 @@
 using System.Linq.Expressions;
-using Ardalis.GuardClauses;
-using BuildingBlocks.Abstractions.CQRS.Events;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using BuildingBlocks.Abstractions.Core.Paging;
+using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Domain;
-using BuildingBlocks.Abstractions.Persistence.EfCore;
+using BuildingBlocks.Abstractions.Domain.Events;
+using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
+using Sieve.Services;
 
 namespace BuildingBlocks.Core.Persistence.EfCore;
 
-public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>
-    : IEfRepository<TEntity, TKey>,
-        IPageRepository<TEntity, TKey>
+public abstract class EfRepositoryBase<TDbContext, TEntity, TKey> : IRepository<TEntity, TKey>
     where TEntity : class, IHaveIdentity<TKey>
     where TDbContext : DbContext
 {
     protected readonly TDbContext DbContext;
+    private readonly ISieveProcessor _sieveProcessor;
     private readonly IAggregatesDomainEventsRequestStore _aggregatesDomainEventsStore;
     protected readonly DbSet<TEntity> DbSet;
 
-    protected EfRepositoryBase(TDbContext dbContext, IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore)
+    protected EfRepositoryBase(
+        TDbContext dbContext,
+        ISieveProcessor sieveProcessor,
+        IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore
+    )
     {
         DbContext = dbContext;
+        _sieveProcessor = sieveProcessor;
         _aggregatesDomainEventsStore = aggregatesDomainEventsStore;
         DbSet = dbContext.Set<TEntity>();
     }
@@ -35,7 +44,7 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>
         CancellationToken cancellationToken = default
     )
     {
-        Guard.Against.Null(predicate, nameof(predicate));
+        predicate.NotBeNull();
 
         return DbSet.SingleOrDefaultAsync(predicate, cancellationToken);
     }
@@ -48,88 +57,72 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>
         return await DbSet.Where(predicate).ToListAsync(cancellationToken);
     }
 
+    public async Task<bool> AnyAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await DbSet.AnyAsync(predicate, cancellationToken: cancellationToken);
+    }
+
     public async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await DbSet.ToListAsync(cancellationToken);
     }
 
-    public virtual IEnumerable<TEntity> GetInclude(
-        Expression<Func<TEntity, bool>> predicate,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null,
-        bool withTracking = true
+    public IAsyncEnumerable<TResult> ProjectBy<TResult, TSortKey>(
+        IConfigurationProvider configuration,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
+        CancellationToken cancellationToken = default
     )
     {
-        IQueryable<TEntity> query = DbSet;
-
-        if (includes != null)
+        var query = DbSet.AsQueryable();
+        if (predicate is not null)
         {
-            query = includes(query);
+            query = query.Where(predicate);
         }
 
-        query = query.Where(predicate);
-
-        if (withTracking == false)
+        if (sortExpression is not null)
         {
-            query = query.Where(predicate).AsNoTracking();
+            query = query.OrderByDescending(sortExpression);
         }
 
-        return query.AsEnumerable();
+        return query.ProjectTo<TResult>(configuration).ToAsyncEnumerable();
     }
 
-    public virtual IEnumerable<TEntity> GetInclude(
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null
+    public async Task<IPageList<TEntity>> GetByPageFilter<TSortKey>(
+        IPageRequest pageRequest,
+        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default
     )
     {
-        IQueryable<TEntity> query = DbSet;
-
-        if (includes != null)
-        {
-            query = includes(query);
-        }
-
-        return query.AsEnumerable();
+        return await DbSet.ApplyPagingAsync(pageRequest, _sieveProcessor, predicate, sortExpression, cancellationToken);
     }
 
-    public virtual async Task<IEnumerable<TEntity>> GetIncludeAsync(
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null
+    public async Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
+        IPageRequest pageRequest,
+        IConfigurationProvider configuration,
+        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default
     )
+        where TResult : class
     {
-        IQueryable<TEntity> query = DbSet;
-
-        if (includes != null)
-        {
-            query = includes(query);
-        }
-
-        return await query.ToListAsync();
-    }
-
-    public virtual async Task<IEnumerable<TEntity>> GetIncludeAsync(
-        Expression<Func<TEntity, bool>> predicate,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null,
-        bool withTracking = true
-    )
-    {
-        IQueryable<TEntity> query = DbSet;
-
-        if (includes != null)
-        {
-            query = includes(query);
-        }
-
-        query = query.Where(predicate);
-
-        if (withTracking == false)
-        {
-            query = query.Where(predicate).AsNoTracking();
-        }
-
-        return await query.ToListAsync();
+        return await DbSet.ApplyPagingAsync<TEntity, TResult, TSortKey>(
+            pageRequest,
+            _sieveProcessor,
+            configuration,
+            predicate,
+            sortExpression,
+            cancellationToken
+        );
     }
 
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        Guard.Against.Null(entity, nameof(entity));
+        entity.NotBeNull();
 
         await DbSet.AddAsync(entity, cancellationToken);
 
@@ -138,7 +131,7 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>
 
     public Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        Guard.Against.Null(entity, nameof(entity));
+        entity.NotBeNull();
 
         var entry = DbContext.Entry(entity);
         entry.State = EntityState.Modified;
@@ -148,7 +141,7 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>
 
     public async Task DeleteRangeAsync(IReadOnlyList<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        Guard.Against.NullOrEmpty(entities, nameof(entities));
+        entities.NotBeNull();
 
         foreach (var entity in entities)
         {
@@ -165,7 +158,7 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>
 
     public Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        Guard.Against.Null(entity, nameof(entity));
+        entity.NotBeNull();
 
         DbSet.Remove(entity);
 
@@ -175,7 +168,8 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>
     public async Task DeleteByIdAsync(TKey id, CancellationToken cancellationToken = default)
     {
         var item = await DbSet.SingleOrDefaultAsync(e => e.Id.Equals(id), cancellationToken);
-        Guard.Against.NotFound(id.ToString(), id.ToString(), nameof(id));
+        if (item is null)
+            throw new NotFoundException($"Item with ID '{id}' not found");
 
         DbSet.Remove(item);
     }

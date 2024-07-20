@@ -30,5 +30,8 @@ public class MongoUnitOfWork<TContext> : IMongoUnitOfWork<TContext>, ITransactio
         return Context.CommitTransactionAsync(cancellationToken);
     }
 
-    public void Dispose() => Context.Dispose();
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
 }

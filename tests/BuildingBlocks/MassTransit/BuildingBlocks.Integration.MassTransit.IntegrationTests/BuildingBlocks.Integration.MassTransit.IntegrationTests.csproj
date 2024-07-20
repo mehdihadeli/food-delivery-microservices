@@ -9,12 +9,6 @@
     <ProjectReference Include="..\..\..\Shared\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
 
-<!--  &lt;!&ndash;  https://devblogs.microsoft.com/nuget/introducing-central-package-management/&ndash;&gt;-->
-<!--  <ItemGroup>-->
-<!--    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" VersionOverride="11.0.0"/>-->
-<!--    <PackageReference Include="AutoMapper" VersionOverride="11.0.0"/>-->
-<!--  </ItemGroup>-->
-
   <!--  We should add this reference in each test project-->
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />

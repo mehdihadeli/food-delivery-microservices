@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Configuration;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extenions;
 
 namespace Tests.Shared.Helpers;
 
@@ -23,7 +22,7 @@ public static class ConfigurationHelper
     //https://www.thecodebuzz.com/read-appsettings-json-in-net-core-test-project-xunit-mstest/
     //https://weblog.west-wind.com/posts/2018/Feb/18/Accessing-Configuration-in-NET-Core-Test-Projects
     //https://bartwullems.blogspot.com/2019/03/net-coreunit-tests-configuration.html
-    private static IConfigurationRoot BuildConfiguration()
+    public static IConfigurationRoot BuildConfiguration()
     {
         var rootPath = Directory.GetCurrentDirectory();
 

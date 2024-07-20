@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 
 namespace BuildingBlocks.Abstractions.CQRS.Commands;
 

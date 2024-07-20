@@ -2,4 +2,4 @@ using BuildingBlocks.Abstractions.Messaging;
 
 namespace BuildingBlocks.Core.Messaging;
 
-public record IntegrationEvent : Message, IIntegrationEvent;
+public abstract record IntegrationEvent : Message, IIntegrationEvent;

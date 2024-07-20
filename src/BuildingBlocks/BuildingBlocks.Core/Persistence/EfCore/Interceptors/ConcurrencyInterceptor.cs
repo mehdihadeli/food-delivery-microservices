@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Domain;
+using BuildingBlocks.Abstractions.Domain.Events;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BuildingBlocks.Core.Persistence.EfCore.Interceptors;

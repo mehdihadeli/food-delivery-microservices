@@ -1,9 +1,9 @@
-using System.Net;
+using Microsoft.AspNetCore.Http;
 
 namespace BuildingBlocks.Core.Exception.Types;
 
 public class ForbiddenException : IdentityException
 {
-    public ForbiddenException(string message)
-        : base(message, statusCode: HttpStatusCode.Forbidden) { }
+    public ForbiddenException(string message, System.Exception? innerException = null)
+        : base(message, statusCode: StatusCodes.Status403Forbidden, innerException) { }
 }

@@ -1,0 +1,62 @@
+# https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+# https://docs.docker.com/compose/extends/
+# Overrid 'docker-compose.services.yaml' configs here for production mode
+
+# To build and debug the app on dev machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.services.prod.yml build
+# To start and debug the app on dev machine --> docker-compose -f docker-compose.services.yaml -f docker-compose.services.prod.yaml up -d
+
+version: "3.8"
+services:
+  gateway:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-servicemage
+    image: gateway-service:${TAG:-latest}
+    build:
+      context: ../../
+      dockerfile: src/ApiGateway/Dockerfile
+    container_name: gateway-prod
+    restart: "no"
+
+  catalogs:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    image: catalogs-service:${TAG:-latest}
+    build:
+      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+      # we can use a .dockerignore file to exclude some files or directories from build context
+      # https://docs.docker.com/build/building/context/
+      # https://docs.docker.com/engine/reference/commandline/build/
+      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
+      context: ../../
+      dockerfile: src/Services/Catalogs/Dockerfile
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: "no"
+    container_name: catalogs-prod
+
+  identity:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    image: identity-service:${TAG:-latest}
+    build:
+      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+      # we can use a .dockerignore file to exclude some files or directories from build context
+      # https://docs.docker.com/build/building/context/
+      # https://docs.docker.com/engine/reference/commandline/build/
+      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
+      context: ../../
+      dockerfile: src/Services/Identity/Dockerfile
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: "no"
+    container_name: identity-prod
+
+  customers:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    image: customers-service:${TAG:-latest}
+    build:
+      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+      # we can use a .dockerignore file to exclude some files or directories from build context
+      # https://docs.docker.com/build/building/context/
+      # https://docs.docker.com/engine/reference/commandline/build/
+      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
+      context: ../../
+      dockerfile: src/Services/Customers/Dockerfile
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: "no"
+    container_name: customers-prod

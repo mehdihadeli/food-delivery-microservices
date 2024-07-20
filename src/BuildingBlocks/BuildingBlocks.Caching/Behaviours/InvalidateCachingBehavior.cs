@@ -1,5 +1,5 @@
-using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Caching;
+using BuildingBlocks.Core.Extensions;
 using EasyCaching.Core;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -8,28 +8,20 @@ using Microsoft.Extensions.Options;
 namespace BuildingBlocks.Caching.Behaviours;
 
 public class InvalidateCachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : notnull, IRequest<TResponse>
-    where TResponse : notnull
+    where TRequest : IRequest<TResponse>
+    where TResponse : class
 {
     private readonly ILogger<InvalidateCachingBehavior<TRequest, TResponse>> _logger;
     private readonly IEasyCachingProvider _cacheProvider;
-    private readonly IEnumerable<IInvalidateCacheRequest<TRequest, TResponse>> _invalidateCachingPolicies;
 
     public InvalidateCachingBehavior(
         ILogger<InvalidateCachingBehavior<TRequest, TResponse>> logger,
         IEasyCachingProviderFactory cachingProviderFactory,
-        IOptions<CacheOptions> cacheOptions,
-        IEnumerable<IInvalidateCacheRequest<TRequest, TResponse>> invalidateCachingPolicies
+        IOptions<CacheOptions> cacheOptions
     )
     {
-        _logger = Guard.Against.Null(logger);
-        Guard.Against.Null(cacheOptions.Value);
-        _cacheProvider = Guard.Against
-            .Null(cachingProviderFactory)
-            .GetCachingProvider(cacheOptions.Value.DefaultCacheType);
-
-        // cachePolicies inject like `FluentValidation` approach as a nested or seperated cache class for commands ,queries
-        _invalidateCachingPolicies = invalidateCachingPolicies;
+        _logger = logger;
+        _cacheProvider = cachingProviderFactory.GetCachingProvider(cacheOptions.Value.DefaultCacheType);
     }
 
     public async Task<TResponse> Handle(
@@ -38,8 +30,7 @@ public class InvalidateCachingBehavior<TRequest, TResponse> : IPipelineBehavior<
         CancellationToken cancellationToken
     )
     {
-        var cacheRequest = _invalidateCachingPolicies.FirstOrDefault();
-        if (cacheRequest == null)
+        if (request is not IInvalidateCacheRequest<TRequest, TResponse> cacheRequest)
         {
             // No cache policy found, so just continue through the pipeline
             return await next();
@@ -55,5 +46,54 @@ public class InvalidateCachingBehavior<TRequest, TResponse> : IPipelineBehavior<
         }
 
         return response;
+    }
+}
+
+public class StreamInvalidateCachingBehavior<TRequest, TResponse> : IStreamPipelineBehavior<TRequest, TResponse>
+    where TRequest : IStreamRequest<TResponse>
+    where TResponse : class
+{
+    private readonly ILogger<StreamInvalidateCachingBehavior<TRequest, TResponse>> _logger;
+    private readonly IEasyCachingProvider _cacheProvider;
+
+    public StreamInvalidateCachingBehavior(
+        ILogger<StreamInvalidateCachingBehavior<TRequest, TResponse>> logger,
+        IEasyCachingProviderFactory cachingProviderFactory,
+        IOptions<CacheOptions> cacheOptions
+    )
+    {
+        _logger = logger;
+        _cacheProvider = cachingProviderFactory.GetCachingProvider(cacheOptions.Value.DefaultCacheType);
+    }
+
+    public async IAsyncEnumerable<TResponse> Handle(
+        TRequest request,
+        StreamHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken
+    )
+    {
+        if (request is not IStreamInvalidateCacheRequest<TRequest, TResponse> cacheRequest)
+        {
+            // If the request does not implement IStreamCacheRequest, go to the next pipeline
+            await foreach (var response in next().WithCancellation(cancellationToken))
+            {
+                yield return response;
+            }
+
+            yield break;
+        }
+
+        await foreach (var response in next().WithCancellation(cancellationToken))
+        {
+            var cacheKeys = cacheRequest.CacheKeys(request);
+
+            foreach (var cacheKey in cacheKeys)
+            {
+                await _cacheProvider.RemoveAsync(cacheKey, cancellationToken);
+                _logger.LogDebug("Cache data with cache key: {CacheKey} invalidated", cacheKey);
+            }
+
+            yield return response;
+        }
     }
 }

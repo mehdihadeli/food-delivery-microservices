@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.CQRS.Events;
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Abstractions.Domain.Events;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Abstractions.Persistence.EfCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -80,7 +80,7 @@ public class EfUnitOfWork<TDbContext> : IEfUnitOfWork<TDbContext>
 
     public void Dispose()
     {
-        _context.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     public Task ExecuteTransactionalAsync(Func<Task> action, CancellationToken cancellationToken = default)

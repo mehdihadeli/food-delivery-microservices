@@ -1,3 +1,4 @@
+using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Persistence.Mongo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,21 +30,24 @@ public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLif
         CancellationTokenSource = new(TimeSpan.FromSeconds(Timeout));
         CancellationToken.ThrowIfCancellationRequested();
 
-        SharedFixture.WithConfigureAppConfigurations(
+        SharedFixture.ConfigureTestServices(RegisterTestConfigureServices);
+
+        SharedFixture.ConfigureTestConfigureApp(
             (context, configurationBuilder) =>
             {
                 RegisterTestAppConfigurations(configurationBuilder, context.Configuration, context.HostingEnvironment);
             }
         );
 
-        SharedFixture.ConfigureTestServices(RegisterTestConfigureServices);
-
         // Build Service Provider here
         Scope = SharedFixture.ServiceProvider.CreateScope();
     }
 
     // we use IAsyncLifetime in xunit instead of constructor when we have async operation
-    public virtual async Task InitializeAsync() { }
+    public virtual async Task InitializeAsync()
+    {
+        await RunSeedAndMigrationAsync();
+    }
 
     public virtual async Task DisposeAsync()
     {
@@ -54,6 +58,31 @@ public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLif
         CancellationTokenSource.Cancel();
 
         Scope.Dispose();
+    }
+
+    private async Task RunSeedAndMigrationAsync()
+    {
+        var migrations = Scope.ServiceProvider.GetServices<IMigrationExecutor>();
+        var seeders = Scope.ServiceProvider.GetServices<IDataSeeder>();
+
+        if (!SharedFixture.AlreadyMigrated)
+        {
+            foreach (var migration in migrations)
+            {
+                SharedFixture.Logger.Information("Migration '{Migration}' started...", migrations.GetType().Name);
+                await migration.ExecuteAsync(CancellationToken);
+                SharedFixture.Logger.Information("Migration '{Migration}' ended...", migration.GetType().Name);
+            }
+
+            SharedFixture.AlreadyMigrated = true;
+        }
+
+        foreach (var seeder in seeders)
+        {
+            SharedFixture.Logger.Information("Seeder '{Seeder}' started...", seeder.GetType().Name);
+            await seeder.SeedAllAsync();
+            SharedFixture.Logger.Information("Seeder '{Seeder}' ended...", seeder.GetType().Name);
+        }
     }
 
     protected virtual void RegisterTestConfigureServices(IServiceCollection services) { }

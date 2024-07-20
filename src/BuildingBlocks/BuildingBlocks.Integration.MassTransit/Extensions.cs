@@ -5,10 +5,11 @@ using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Reflection;
 using BuildingBlocks.Core.Utils;
-using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Validation;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
 
 namespace BuildingBlocks.Integration.MassTransit;
@@ -30,7 +31,7 @@ public static class Extensions
             ? scanAssemblies
             : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).ToArray();
 
-        if (!builder.Environment.IsTest())
+        if (!builder.Environment.IsEnvironment("test"))
         {
             builder.Services.AddMassTransit(ConfiguratorAction);
         }
@@ -103,7 +104,7 @@ public static class Extensions
             );
         }
 
-        builder.Services.AddTransient<IBus, MassTransitBus>();
+        builder.Services.TryAddTransient<IBus, MassTransitBus>();
 
         return builder;
     }

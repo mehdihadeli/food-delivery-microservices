@@ -1,4 +1,5 @@
 using System.Text.Json;
+using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -6,20 +7,19 @@ using Microsoft.Extensions.Logging;
 namespace BuildingBlocks.Validation;
 
 public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : notnull, IRequest<TResponse>
-    where TResponse : notnull
+    where TRequest : IRequest<TResponse>
+    where TResponse : class
 {
     private readonly ILogger<RequestValidationBehavior<TRequest, TResponse>> _logger;
     private readonly IServiceProvider _serviceProvider;
-    private IValidator<TRequest> _validator;
 
     public RequestValidationBehavior(
         IServiceProvider serviceProvider,
         ILogger<RequestValidationBehavior<TRequest, TResponse>> logger
     )
     {
-        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     public async Task<TResponse> Handle(
@@ -28,12 +28,12 @@ public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
         CancellationToken cancellationToken
     )
     {
-        _validator = _serviceProvider.GetService<IValidator<TRequest>>()!;
-        if (_validator is null)
+        var validator = _serviceProvider.GetService<IValidator<TRequest>>()!;
+        if (validator is null)
             return await next();
 
         _logger.LogInformation(
-            "[{Prefix}] Handle request={X-RequestData} and response={X-ResponseData}",
+            "[{Prefix}] Handle request={RequestData} and response={ResponseData}",
             nameof(RequestValidationBehavior<TRequest, TResponse>),
             typeof(TRequest).Name,
             typeof(TResponse).Name
@@ -45,7 +45,7 @@ public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
             JsonSerializer.Serialize(request)
         );
 
-        await _validator.HandleValidationAsync(request, cancellationToken);
+        await validator.HandleValidationAsync(request, cancellationToken);
 
         var response = await next();
 
@@ -55,8 +55,8 @@ public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
 }
 
 public class StreamRequestValidationBehavior<TRequest, TResponse> : IStreamPipelineBehavior<TRequest, TResponse>
-    where TRequest : notnull, IStreamRequest<TResponse>
-    where TResponse : notnull
+    where TRequest : IStreamRequest<TResponse>
+    where TResponse : class
 {
     private readonly ILogger<StreamRequestValidationBehavior<TRequest, TResponse>> _logger;
     private readonly IServiceProvider _serviceProvider;
@@ -71,7 +71,7 @@ public class StreamRequestValidationBehavior<TRequest, TResponse> : IStreamPipel
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public IAsyncEnumerable<TResponse> Handle(
+    public async IAsyncEnumerable<TResponse> Handle(
         TRequest request,
         StreamHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken
@@ -79,10 +79,17 @@ public class StreamRequestValidationBehavior<TRequest, TResponse> : IStreamPipel
     {
         _validator = _serviceProvider.GetService<IValidator<TRequest>>()!;
         if (_validator is null)
-            return next();
+        {
+            await foreach (var response in next().WithCancellation(cancellationToken))
+            {
+                yield return response;
+            }
+
+            yield break;
+        }
 
         _logger.LogInformation(
-            "[{Prefix}] Handle request={X-RequestData} and response={X-ResponseData}",
+            "[{Prefix}] Handle request={RequestData} and response={ResponseData}",
             nameof(StreamRequestValidationBehavior<TRequest, TResponse>),
             typeof(TRequest).Name,
             typeof(TResponse).Name
@@ -96,9 +103,10 @@ public class StreamRequestValidationBehavior<TRequest, TResponse> : IStreamPipel
 
         _validator.HandleValidation(request);
 
-        var response = next();
-
-        _logger.LogInformation("Handled {FullName}", typeof(TRequest).FullName);
-        return response;
+        await foreach (var response in next().WithCancellation(cancellationToken))
+        {
+            yield return response;
+            _logger.LogInformation("Handled {FullName}", typeof(TRequest).FullName);
+        }
     }
 }

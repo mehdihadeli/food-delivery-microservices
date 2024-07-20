@@ -1,5 +1,6 @@
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extenions;
+using BuildingBlocks.Security.Extensions;
+using BuildingBlocks.Security.Jwt;
+using BuildingBlocks.Web.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,8 +16,6 @@ using Serilog;
 using Serilog.Events;
 using Tests.Shared.Auth;
 using WebMotions.Fake.Authentication.JwtBearer;
-using Xunit;
-using Xunit.Abstractions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Tests.Shared.Factory;
@@ -30,15 +29,25 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
     private Action<IWebHostBuilder>? _customWebHostBuilder;
     private Action<IHostBuilder>? _customHostBuilder;
     private Action<HostBuilderContext, IConfigurationBuilder>? _configureAppConfigurations;
+    private Action<IServiceCollection>? _testServices;
+    private readonly Dictionary<string, string?> _inMemoryConfigs = new();
 
+    public Action<IConfiguration>? ConfigurationAction { get; set; }
     public Action<IServiceCollection>? TestConfigureServices { get; set; }
-    public Action<IApplicationBuilder>? TestConfigureApp { get; set; }
+    public Action<HostBuilderContext, IConfigurationBuilder>? TestConfigureApp { get; set; }
 
     public ILogger Logger => Services.GetRequiredService<ILogger<CustomWebApplicationFactory<TEntryPoint>>>();
 
     public void ClearOutputHelper() => _outputHelper = null;
 
     public void SetOutputHelper(ITestOutputHelper value) => _outputHelper = value;
+
+    public CustomWebApplicationFactory<TEntryPoint> WithTestServices(Action<IServiceCollection> services)
+    {
+        _testServices += services;
+
+        return this;
+    }
 
     public CustomWebApplicationFactory<TEntryPoint> WithConfigureAppConfigurations(
         Action<HostBuilderContext, IConfigurationBuilder> builder
@@ -75,13 +84,14 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
     protected override IHost CreateHost(IHostBuilder builder)
     {
         builder.UseEnvironment("test");
+        builder.UseContentRoot(".");
 
         // UseSerilog on WebHostBuilder is absolute so we should use IHostBuilder
         builder.UseSerilog(
             (ctx, loggerConfiguration) =>
             {
                 //https://github.com/trbenning/serilog-sinks-xunit
-                if (_outputHelper is { })
+                if (_outputHelper is not null)
                 {
                     loggerConfiguration.WriteTo.TestOutput(
                         _outputHelper,
@@ -91,54 +101,6 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
                 }
             }
         );
-
-        builder.ConfigureServices(services =>
-        {
-            services.AddScoped<TextWriter>(_ => new StringWriter());
-            services.AddScoped<TextReader>(
-                sp => new StringReader(sp.GetRequiredService<TextWriter>().ToString() ?? "")
-            );
-
-            // services.RemoveAll(typeof(IHostedService));
-
-            // TODO: Web could use this in E2E test for running another service during our test
-            // https://milestone.topics.it/2021/11/10/http-client-factory-in-integration-testing.html
-            // services.Replace(new ServiceDescriptor(typeof(IHttpClientFactory),
-            //     new DelegateHttpClientFactory(ClientProvider)));
-
-            //// https://blog.joaograssi.com/posts/2021/asp-net-core-testing-permission-protected-api-endpoints/
-            //// This helper just supports jwt Scheme, and for Identity server Scheme will crash so we should disable AddIdentityServer()
-            // services.AddScoped(_ => CreateAnonymouslyUserMock());
-            // services.ReplaceSingleton(CreateCustomTestHttpContextAccessorMock);
-            // services.AddTestAuthentication();
-
-            // Or
-            // add authentication using a fake jwt bearer - we can use SetAdminUser method to set authenticate user to existing HttContextAccessor
-            // https://github.com/webmotions/fake-authentication-jwtbearer
-            // https://github.com/webmotions/fake-authentication-jwtbearer/issues/14
-            services
-                .AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddFakeJwtBearer();
-        });
-
-        builder.ConfigureWebHost(wb =>
-        {
-            wb.ConfigureTestServices(services =>
-            {
-                TestConfigureServices?.Invoke(services);
-            });
-
-            // //https://github.com/dotnet/aspnetcore/issues/45372
-            // wb.Configure(x =>
-            // {
-            // });
-
-            _customWebHostBuilder?.Invoke(wb);
-        });
 
         builder.UseDefaultServiceProvider(
             (env, c) =>
@@ -170,15 +132,118 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
 
                 //// add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
                 //// https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
-                // configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?> {});
+                configurationBuilder.AddInMemoryCollection(_inMemoryConfigs);
 
+                ConfigurationAction?.Invoke(hostingContext.Configuration);
                 _configureAppConfigurations?.Invoke(hostingContext, configurationBuilder);
+                TestConfigureApp?.Invoke(hostingContext, configurationBuilder);
             }
         );
 
         _customHostBuilder?.Invoke(builder);
 
         return base.CreateHost(builder);
+    }
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        // test services will call after registering all application services in program.cs and can override them with `Replace` or `Remove` dependencies
+        builder.ConfigureTestServices(services =>
+        {
+            //// https://andrewlock.net/converting-integration-tests-to-net-core-3/
+            //// Don't run IHostedServices when running as a test
+            // services.RemoveAll(typeof(IHostedService));
+
+            // TODO: Web could use this in E2E test for running another service during our test
+            // https://milestone.topics.it/2021/11/10/http-client-factory-in-integration-testing.html
+            // services.Replace(new ServiceDescriptor(typeof(IHttpClientFactory),
+            //     new DelegateHttpClientFactory(ClientProvider)));
+
+            //// https://blog.joaograssi.com/posts/2021/asp-net-core-testing-permission-protected-api-endpoints/
+            //// This helper just supports jwt Scheme, and for Identity server Scheme will crash so we should disable AddIdentityServer()
+            // services.TryAddScoped(_ => CreateAnonymouslyUserMock());
+            // services.ReplaceSingleton(CreateCustomTestHttpContextAccessorMock);
+            // services.AddTestAuthentication();
+
+            // Or
+            // add authentication using a fake jwt bearer - we can use SetAdminUser method to set authenticate user to existing HttContextAccessor
+            // https://github.com/webmotions/fake-authentication-jwtbearer
+            // https://github.com/webmotions/fake-authentication-jwtbearer/issues/14
+            services
+                // will skip registering dependencies if exists previously, but will override authentication option inner configure delegate through Configure<AuthenticationOptions>
+                .AddAuthentication(options =>
+                {
+                    // choosing `FakeBearer` scheme (instead of exiting default scheme of application) as default in runtime for authentication and authorization middleware
+                    options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddFakeJwtBearer(c =>
+                {
+                    // for working fake token this should be set to jwt
+                    c.BearerValueType = FakeJwtBearerBearerValueType.Jwt;
+                })
+                .Services.AddCustomAuthorization(
+                    rolePolicies: new List<RolePolicy>
+                    {
+                        new(Constants.Users.Admin.Role, new List<string> { Constants.Users.Admin.Role }),
+                        new(Constants.Users.NormalUser.Role, new List<string> { Constants.Users.NormalUser.Role }),
+                    },
+                    scheme: FakeJwtBearerDefaults.AuthenticationScheme
+                );
+
+            _testServices?.Invoke(services);
+            TestConfigureServices?.Invoke(services);
+        });
+
+        // //https://github.com/dotnet/aspnetcore/issues/45372
+        // wb.Configure(x =>
+        // {
+        // });
+
+        _customWebHostBuilder?.Invoke(builder);
+
+        base.ConfigureWebHost(builder);
+    }
+
+    public Task InitializeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    public new async Task DisposeAsync()
+    {
+        await base.DisposeAsync();
+    }
+
+    public void AddOverrideInMemoryConfig(string key, string value)
+    {
+        // overriding app configs with using in-memory configs
+        // add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
+        // https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
+        _inMemoryConfigs.Add(key, value);
+    }
+
+    public void AddOverrideInMemoryConfig(IDictionary<string, string> inMemConfigs)
+    {
+        // overriding app configs with using in-memory configs
+        // add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
+        // https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
+        inMemConfigs.ToList().ForEach(x => _inMemoryConfigs.Add(x.Key, x.Value));
+    }
+
+    public void AddOverrideEnvKeyValue(string key, string value)
+    {
+        // overriding app configs with using environments
+        Environment.SetEnvironmentVariable(key, value);
+    }
+
+    public void AddOverrideEnvKeyValues(IDictionary<string, string> keyValues)
+    {
+        foreach (var (key, value) in keyValues)
+        {
+            // overriding app configs with using environments
+            Environment.SetEnvironmentVariable(key, value);
+        }
     }
 
     private static IHttpContextAccessor CreateCustomTestHttpContextAccessorMock(IServiceProvider serviceProvider)
@@ -195,20 +260,5 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
             .GetResult();
         httpContextAccessorMock.HttpContext.User = res.Ticket?.Principal!;
         return httpContextAccessorMock;
-    }
-
-    private MockAuthUser CreateAnonymouslyUserMock()
-    {
-        return new MockAuthUser();
-    }
-
-    public Task InitializeAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    public new async Task DisposeAsync()
-    {
-        await base.DisposeAsync();
     }
 }

@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Serialization;
 using MediatR;

@@ -1,27 +1,26 @@
-using System.Reflection;
-using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Caching;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Reflection;
-using BuildingBlocks.Core.Utils;
-using BuildingBlocks.Core.Web.Extenions;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using EasyCaching.Redis;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using StackExchange.Redis;
 
 namespace BuildingBlocks.Caching;
 
 public static class Extensions
 {
-    public static WebApplicationBuilder AddCustomCaching(
+    public static WebApplicationBuilder AddCustomEasyCaching(
         this WebApplicationBuilder builder,
-        params Assembly[] scanAssemblies
+        Action<CacheOptions>? configurator = null
     )
     {
         // https://www.twilio.com/blog/provide-default-configuration-to-dotnet-applications
         var cacheOptions = builder.Configuration.BindOptions<CacheOptions>();
-        Guard.Against.Null(cacheOptions);
+        configurator?.Invoke(cacheOptions);
 
-        AddCachingRequests(builder.Services, scanAssemblies);
+        // add option to the dependency injection
+        builder.Services.AddValidationOptions<CacheOptions>(opt => configurator?.Invoke(opt));
 
         builder.Services.AddEasyCaching(option =>
         {
@@ -48,54 +47,49 @@ public static class Extensions
                 nameof(CacheProviderType.InMemory)
             );
 
-            if (cacheOptions.SerializationType == nameof(CacheSerializationType.Json))
+            switch (cacheOptions.SerializationType)
             {
-                option.WithJson(
-                    jsonSerializerSettingsConfigure: x =>
-                    {
-                        x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
-                    },
-                    nameof(CacheSerializationType.Json)
-                );
-            }
-            else if (cacheOptions.SerializationType == nameof(CacheSerializationType.MessagePack))
-            {
-                option.WithMessagePack(nameof(CacheSerializationType.MessagePack));
+                case nameof(CacheSerializationType.Json):
+                    option.WithJson(
+                        jsonSerializerSettingsConfigure: x =>
+                        {
+                            x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+                        },
+                        nameof(CacheSerializationType.Json)
+                    );
+                    break;
+                case nameof(CacheSerializationType.MessagePack):
+                    option.WithMessagePack(nameof(CacheSerializationType.MessagePack));
+                    break;
             }
         });
 
         return builder;
     }
 
-    private static IServiceCollection AddCachingRequests(
-        this IServiceCollection services,
-        params Assembly[] scanAssemblies
+    public static WebApplicationBuilder AddCustomRedis(
+        this WebApplicationBuilder builder,
+        Action<RedisOptions>? configurator = null
     )
     {
-        // Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
-        // load all referenced assemblies explicitly.
-        var assemblies = scanAssemblies.Any()
-            ? scanAssemblies
-            : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).ToArray();
+        // https://www.twilio.com/blog/provide-default-configuration-to-dotnet-applications
+        var redisOptions = builder.Configuration.BindOptions<RedisOptions>();
+        configurator?.Invoke(redisOptions);
 
-        // ICacheRequest discovery and registration
-        services.Scan(
-            scan =>
-                scan.FromAssemblies(assemblies)
-                    .AddClasses(classes => classes.AssignableTo(typeof(ICacheRequest<,>)), false)
-                    .AsImplementedInterfaces()
-                    .WithTransientLifetime()
+        // add option to the dependency injection
+        builder.Services.AddValidationOptions<RedisOptions>(opt => configurator?.Invoke(opt));
+
+        builder.Services.TryAddSingleton<IConnectionMultiplexer>(
+            sp =>
+                ConnectionMultiplexer.Connect(
+                    new ConfigurationOptions
+                    {
+                        EndPoints = { $"{redisOptions.Host}:{redisOptions.Port}" },
+                        AllowAdmin = true
+                    }
+                )
         );
 
-        // IInvalidateCacheRequest discovery and registration
-        services.Scan(
-            scan =>
-                scan.FromAssemblies(assemblies)
-                    .AddClasses(classes => classes.AssignableTo(typeof(IInvalidateCacheRequest<,>)), false)
-                    .AsImplementedInterfaces()
-                    .WithTransientLifetime()
-        );
-
-        return services;
+        return builder;
     }
 }

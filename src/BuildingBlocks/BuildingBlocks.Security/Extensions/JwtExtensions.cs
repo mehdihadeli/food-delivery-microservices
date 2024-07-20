@@ -1,15 +1,15 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Text;
-using Ardalis.GuardClauses;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extenions;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Security.Jwt;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BuildingBlocks.Security.Extensions;
@@ -19,20 +19,24 @@ public static class Extensions
     public static AuthenticationBuilder AddCustomJwtAuthentication(
         this IServiceCollection services,
         IConfiguration configuration,
-        Action<JwtOptions>? optionConfigurator = null
+        Action<JwtOptions>? configurator = null
     )
     {
         // https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/415
         // https://mderriey.com/2019/06/23/where-are-my-jwt-claims/
         // https://leastprivilege.com/2017/11/15/missing-claims-in-the-asp-net-core-2-openid-connect-handler/
         // https://stackoverflow.com/a/50012477/581476
+        // to compatibility with new versions of claim names standard
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
 
-        AddJwtServices(services, configuration, optionConfigurator);
+        var jwtOptions = configuration.BindOptions<JwtOptions>();
+        configurator?.Invoke(jwtOptions);
 
-        var jwtOptions = configuration.BindOptions<JwtOptions>(nameof(JwtOptions));
-        Guard.Against.Null(jwtOptions, nameof(jwtOptions));
+        // add option to the dependency injection
+        services.AddValidationOptions<JwtOptions>(opt => configurator?.Invoke(opt));
+
+        services.TryAddTransient<IJwtService, JwtService>();
 
         // https://docs.microsoft.com/en-us/aspnet/core/security/authentication
         // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-6.0#use-multiple-authentication-schemes
@@ -58,6 +62,8 @@ public static class Extensions
                     ValidIssuer = jwtOptions.Issuer,
                     ValidAudience = jwtOptions.Audience,
                     SaveSigninToken = true,
+                    // default skew is 5 minutes,
+                    // The ClockSkew property allows you to specify the amount of leeway to account for any differences in clock times between the token issuer and the token validation server. This property defines the maximum amount of time (in seconds) by which the token's expiration or not-before time can differ from the system clock on the validation server.
                     ClockSkew = TimeSpan.Zero,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
                 };
@@ -73,7 +79,7 @@ public static class Extensions
 
                         throw new IdentityException(
                             context.Exception.Message,
-                            statusCode: HttpStatusCode.InternalServerError
+                            statusCode: StatusCodes.Status500InternalServerError
                         );
                     },
                     OnChallenge = context =>
@@ -93,47 +99,18 @@ public static class Extensions
             });
     }
 
-    public static IServiceCollection AddJwtServices(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        Action<JwtOptions>? optionConfigurator = null
-    )
-    {
-        var jwtOptions = configuration.BindOptions<JwtOptions>(nameof(JwtOptions));
-        Guard.Against.Null(jwtOptions, nameof(jwtOptions));
-
-        optionConfigurator?.Invoke(jwtOptions);
-
-        if (optionConfigurator is { })
-        {
-            services.Configure(nameof(JwtOptions), optionConfigurator);
-        }
-        else
-        {
-            services
-                .AddOptions<JwtOptions>()
-                .Bind(configuration.GetSection(nameof(JwtOptions)))
-                .ValidateDataAnnotations();
-        }
-
-        services.AddTransient<IJwtService, JwtService>();
-
-        return services;
-    }
-
     public static IServiceCollection AddCustomAuthorization(
         this IServiceCollection services,
         IList<ClaimPolicy>? claimPolicies = null,
-        IList<RolePolicy>? rolePolicies = null
+        IList<RolePolicy>? rolePolicies = null,
+        string scheme = JwtBearerDefaults.AuthenticationScheme
     )
     {
         services.AddAuthorization(authorizationOptions =>
         {
             // https://docs.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme
             // https://andrewlock.net/setting-global-authorization-policies-using-the-defaultpolicy-and-the-fallbackpolicy-in-aspnet-core-3/
-            var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
-                JwtBearerDefaults.AuthenticationScheme
-            );
+            var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(scheme);
             defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
             authorizationOptions.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
 
@@ -146,7 +123,7 @@ public static class Extensions
                         policy.Name,
                         x =>
                         {
-                            x.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            x.AuthenticationSchemes.Add(scheme);
                             foreach (var policyClaim in policy.Claims)
                             {
                                 x.RequireClaim(policyClaim.Type, policyClaim.Value);
@@ -165,7 +142,7 @@ public static class Extensions
                         rolePolicy.Name,
                         x =>
                         {
-                            x.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            x.AuthenticationSchemes.Add(scheme);
                             x.RequireRole(rolePolicy.Roles);
                         }
                     );
@@ -179,7 +156,7 @@ public static class Extensions
     public static void AddExternalLogins(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtOptions = configuration.BindOptions<JwtOptions>(nameof(JwtOptions));
-        Guard.Against.Null(jwtOptions, nameof(jwtOptions));
+        jwtOptions.NotBeNull();
 
         if (jwtOptions.GoogleLoginConfigs is { })
         {

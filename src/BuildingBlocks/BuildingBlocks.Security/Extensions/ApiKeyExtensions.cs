@@ -1,6 +1,7 @@
 using BuildingBlocks.Security.ApiKey;
 using BuildingBlocks.Security.ApiKey.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace BuildingBlocks.Security.Extensions;
 
@@ -29,11 +30,11 @@ public static class ApiKeyExtensions
             );
         });
 
-        services.AddSingleton<IAuthorizationHandler, OnlyCustomersAuthorizationHandler>();
-        services.AddSingleton<IAuthorizationHandler, OnlyAdminsAuthorizationHandler>();
-        services.AddSingleton<IAuthorizationHandler, OnlyThirdPartiesAuthorizationHandler>();
+        services.TryAddSingleton<IAuthorizationHandler, OnlyCustomersAuthorizationHandler>();
+        services.TryAddSingleton<IAuthorizationHandler, OnlyAdminsAuthorizationHandler>();
+        services.TryAddSingleton<IAuthorizationHandler, OnlyThirdPartiesAuthorizationHandler>();
 
-        services.AddSingleton<IGetApiKeyQuery, InMemoryGetApiKeyQuery>();
+        services.TryAddSingleton<IGetApiKeyQuery, InMemoryGetApiKeyQuery>();
 
         return services;
     }

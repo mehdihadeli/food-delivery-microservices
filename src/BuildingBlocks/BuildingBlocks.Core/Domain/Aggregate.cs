@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Domain;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Core.Domain.Exceptions;
 
 namespace BuildingBlocks.Core.Domain;
@@ -40,6 +37,11 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
         return _uncommittedDomainEvents.ToImmutableList();
     }
 
+    public void ClearDomainEvents()
+    {
+        _uncommittedDomainEvents.Clear();
+    }
+
     public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
     {
         var events = _uncommittedDomainEvents.ToImmutableList();
@@ -54,9 +56,20 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
 
     public void CheckRule(IBusinessRule rule)
     {
-        if (rule.IsBroken())
+        var isBroken = rule.IsBroken();
+        if (isBroken)
         {
-            throw new BusinessRuleValidationException(rule);
+            throw new DomainException(rule.GetType(), rule.Message, rule.Status);
+        }
+    }
+
+    public void CheckRule<T>(IBusinessRuleWithExceptionType<T> ruleWithExceptionType)
+        where T : DomainException
+    {
+        var isBroken = ruleWithExceptionType.IsBroken();
+        if (isBroken)
+        {
+            throw ruleWithExceptionType.Exception;
         }
     }
 }

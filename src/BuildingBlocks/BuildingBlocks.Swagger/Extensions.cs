@@ -1,8 +1,7 @@
-using System.Reflection;
-using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -14,24 +13,19 @@ public static class Extensions
 {
     // https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/README.md
     // https://github.com/dotnet/aspnet-api-versioning/tree/88323136a97a59fcee24517a514c1a445530c7e2/examples/AspNetCore/WebApi/MinimalOpenApiExample
-    public static WebApplicationBuilder AddCustomSwagger(
-        this WebApplicationBuilder builder,
-        params Assembly[] assemblies
-    )
+    public static WebApplicationBuilder AddCustomSwagger(this WebApplicationBuilder builder)
     {
-        builder.Services.AddCustomSwagger(assemblies);
+        builder.Services.AddCustomSwagger();
 
         return builder;
     }
 
-    public static IServiceCollection AddCustomSwagger(this IServiceCollection services, params Assembly[] assemblies)
+    public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
     {
-        var scanAssemblies = assemblies.Any() ? assemblies : new[] { Assembly.GetExecutingAssembly() };
-
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi
         services.AddEndpointsApiExplorer();
 
-        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        services.TryAddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         services.AddValidatedOptions<SwaggerOptions>();
 
         services.AddSwaggerGen(options =>
@@ -45,17 +39,10 @@ public static class Extensions
             options.OperationFilter<SwaggerDefaultValues>();
             options.OperationFilter<ApiVersionOperationFilter>();
 
-            foreach (var assembly in scanAssemblies)
-            {
-                var xmlFile = XmlCommentsFilePath(assembly);
-                if (File.Exists(xmlFile))
-                    options.IncludeXmlComments(xmlFile);
-            }
-
             // https://github.com/domaindrivendev/Swashbuckle.AspNetCore#add-security-definitions-and-requirements
             // https://swagger.io/docs/specification/authentication/
             // https://medium.com/@niteshsinghal85/assign-specific-authorization-scheme-to-endpoint-in-swagger-ui-in-net-core-cd84d2a2ebd7
-            var bearerScheme = new OpenApiSecurityScheme()
+            var bearerScheme = new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.Http,
                 Name = JwtBearerDefaults.AuthenticationScheme,
@@ -93,13 +80,6 @@ public static class Extensions
             // Enables Swagger annotations (SwaggerOperationAttribute, SwaggerParameterAttribute etc.)
             options.EnableAnnotations();
         });
-
-        static string XmlCommentsFilePath(Assembly assembly)
-        {
-            var basePath = Path.GetDirectoryName(assembly.Location);
-            var fileName = assembly.GetName().Name + ".xml";
-            return Path.Combine(basePath, fileName);
-        }
 
         return services;
     }

@@ -1,15 +1,22 @@
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
-using BuildingBlocks.Core.CQRS.Events;
 
 namespace BuildingBlocks.Core.Persistence.EventStore;
 
-public record StreamEvent(IDomainEvent Data, IStreamEventMetadata? Metadata = null) : Event, IStreamEvent;
-
-public record StreamEvent<T>(T Data, IStreamEventMetadata? Metadata = null)
-    : StreamEvent(Data, Metadata),
-        IStreamEvent<T>
+public record StreamEvent<T>(T Data, IStreamEventMetadata Metadata) : IStreamEvent<T>
     where T : IDomainEvent
 {
-    public new T Data => (T)base.Data;
+    object IStreamEvent.Data => Data;
+}
+
+public record StreamEvent(object Data, IStreamEventMetadata Metadata) : IStreamEvent;
+
+public static class StreamEventFactory
+{
+    public static IStreamEvent From(object data, IStreamEventMetadata metadata)
+    {
+        //TODO: Get rid of reflection!
+        var type = typeof(StreamEvent<>).MakeGenericType(data.GetType());
+        return (IStreamEvent)Activator.CreateInstance(type, data, metadata)!;
+    }
 }

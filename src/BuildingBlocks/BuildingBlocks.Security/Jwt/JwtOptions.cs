@@ -8,7 +8,7 @@ public class JwtOptions
     public string? Audience { get; set; }
     public double TokenLifeTimeSecond { get; set; } = 300;
 
-    public bool CheckRevokedAccessTokens { get; set; } = false;
+    public bool CheckRevokedAccessTokens { get; set; }
     public GoogleExternalLogin? GoogleLoginConfigs { get; set; }
 
     public class GoogleExternalLogin

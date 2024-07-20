@@ -204,10 +204,8 @@ csx/
 ecf/
 rcf/
 
-# Windows ECommerce app package directories and files
 AppPackages/
 BundleArtifacts/
-Package.ECommerceAssociation.xml
 _pkginfo.txt
 *.appx
 *.appxbundle
@@ -370,3 +368,11 @@ coverage.info
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# exclude sensitive env files
+.env
+.env.dev
+.denv.prod
+.env.catalogs
+.env.customers
+.env.identity

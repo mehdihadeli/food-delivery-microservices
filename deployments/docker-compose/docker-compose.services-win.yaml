@@ -1,0 +1,147 @@
+# # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+# https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+# https://docs.docker.com/compose/extends/
+
+version: "3.8"
+services:
+  gateway:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-servicemage
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with-an-env-file
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # Substitute for replacing evnironment only support from `.env file substitute` and `shell substitute` for reading shell based environemnts
+    image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/food-delivery-microservices}/gateway-service:${TAG:-latest}
+    container_name: gateway-${TAG:-latest}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
+    ports:
+      - ${GATEWAY_HTTP_SVC_PORT:-3000}:80
+      - ${GATEWAY_HTTPs_SVC_PORT:-3001}:443
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with---env-file
+    # Substitute env files and replacing (without passing to container) inner docker-compose files with `--env-file` and pass the file as an argument in the CLI, If the --env-file is not used in the command line, the .env file is loaded by default(docker compose --env-file ./config/.env.dev up)
+    # Pass multiple environment variables from an external file through to a service’s `containers` with the `env_file` attribute
+    env_file:
+      - ./.env
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    networks:
+      - food-delivery
+
+  catalogs:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with-an-env-file
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # Substitute for replacing evnironment only support from `.env file substitute` and `shell substitute` for reading shell based environemnts
+    image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/food-delivery-microservices}/catalogs-service:${TAG:-latest}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
+    container_name: catalogs-${TAG:-latest}
+    ports:
+      - ${CATALOGS_HTTP_SVC_PORT:-4000}:80
+      - ${CATALOGS_HTTPS_SVC_PORT:-4001}:443
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with---env-file
+    # Substitute env files and replacing (without passing to container) inner docker-compose files with `--env-file` and pass the file as an argument in the CLI, If the --env-file is not used in the command line, the .env file is loaded by default(docker compose --env-file ./config/.env.dev up)
+    # Pass multiple environment variables from an external file through to a service’s `containers` with the `env_file` attribute
+    env_file:
+      - ./.env
+      - ./.env.catalogs
+    # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    networks:
+      - food-delivery
+
+  identity:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with-an-env-file
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # Substitute for replacing evnironment only support from `.env file substitute` and `shell substitute` for reading shell based environemnts
+    image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/food-delivery-microservices}/identity-service:${TAG:-latest}
+    container_name: identity-{TAG:-latest}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
+    ports:
+      - ${IDENTITY_HTTP_SVC_PORT:-7000}:80
+      - ${IDENTITY_HTTPS_SVC_PORT:-7001}:443
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with---env-file
+    # Substitute env files and replacing (without passing to container) inner docker-compose files with `--env-file` and pass the file as an argument in the CLI, If the --env-file is not used in the command line, the .env file is loaded by default(docker compose --env-file ./config/.env.dev up)
+    # Pass multiple environment variables from an external file through to a service’s `containers` with the `env_file` attributebute
+    env_file:
+      - ./.env
+      - ./.env.identity
+    # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    networks:
+      - food-delivery
+
+  customers:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with-an-env-file
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # Substitute for replacing evnironment only support from `.env file substitute` and `shell substitute` for reading shell based environemnts
+    image: ${REGISTRY:-ghcr.io}/${PROJECT_NAME:-mehdihadeli/food-delivery-microservices}/customers-service:${TAG:-latest}
+    container_name: customers-{TAG:-latest}
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+    restart: on-failure
+    ports:
+      - ${CUSTOMERS_HTTP_SVC_PORT:-8000}:80
+      - ${CUSTOMERS_HTTPS_SVC_PORT:-8001}:443
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+    # https://docs.docker.com/compose/environment-variables/env-file/
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with---env-file
+    # Substitute env files and replacing (without passing to container) inner docker-compose files with `--env-file` and pass the file as an argument in the CLI, If the --env-file is not used in the command line, the .env file is loaded by default(docker compose --env-file ./config/.env.dev up)
+    # Pass multiple environment variables from an external file through to a service’s `containers` with the `env_file` attribute
+    env_file:
+      - ./.env
+      - ./.env.customers
+    # https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#windows-using-windows-containers
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${DEV_CERT_PASSWORD:-your_password}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    networks:
+      - food-delivery
+
+# https://docs.docker.com/compose/networking/
+# https://docs.docker.com/engine/reference/commandline/network_create/
+# https://docs.docker.com/compose/compose-file/#networks-top-level-element
+# https://stackoverflow.com/questions/38088279/communication-between-multiple-docker-compose-projects
+# We could use also a predefined network and connect to that predefined network with specifying the 'name' of existing network and set 'external' attribute to true
+# When we run docker-compose up, Docker Compose will check if the 'food-delivery' network already exists. If it does not exist, it will create the 'food-delivery' network. If it exists, it will use the existing 'food-delivery' network. problem is that if we do a docker-compose down this network will delete and other docker-compose that use same network will fail because network deleted so its better we use `external` keyword for using a predefined network
+networks:
+  food-delivery:
+    name: food-delivery
+    driver: bridge
+    # we can use the network that will create by infrastructure docker-compose file and we use that network here by specifying existing network 'name' and set 'external' attribute to 'true' (because we want to use a network outside of our docker-compose) or we can create a `food-delivery` network manually by `docker network create -d bridge food-delivery` and use this network as external network for all docker-compose files
+    external: true

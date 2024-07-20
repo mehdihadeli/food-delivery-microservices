@@ -1,5 +1,3 @@
-using Ardalis.GuardClauses;
-
 namespace BuildingBlocks.Abstractions.Domain;
 
 public record AggregateId<T> : Identity<T>
@@ -23,7 +21,10 @@ public record AggregateId : AggregateId<long>
         : base(value) { }
 
     // validations should be placed here instead of constructor
-    public static new AggregateId CreateAggregateId(long value) => new(Guard.Against.NegativeOrZero(value));
+    public new static AggregateId CreateAggregateId(long value)
+    {
+        return new AggregateId(value);
+    }
 
     public static implicit operator long(AggregateId id) => id.Value;
 }

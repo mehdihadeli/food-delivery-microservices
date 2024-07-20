@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+
+  <!--  https://github.com/dotnet/core/issues/907-->
+  <PropertyGroup>
+    <WarningsAsErrors></WarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Caching\BuildingBlocks.Caching.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Email\BuildingBlocks.Email.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.HealthCheck\BuildingBlocks.HealthCheck.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Integration.MassTransit\BuildingBlocks.Integration.MassTransit.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Logging\BuildingBlocks.Logging.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Messaging.Persistence.Postgres\BuildingBlocks.Messaging.Persistence.Postgres.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.OpenTelemetry\BuildingBlocks.OpenTelemetry.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Persistence.Mongo\BuildingBlocks.Persistence.Mongo.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Resiliency\BuildingBlocks.Resiliency.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Security\BuildingBlocks.Security.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Swagger\BuildingBlocks.Swagger.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Validation\BuildingBlocks.Validation.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Duende.IdentityServer" />
+    <PackageReference Include="Duende.IdentityServer.Storage" />
+    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" />
+    <PackageReference Include="Duende.IdentityServer.EntityFramework" />
+  </ItemGroup>
+
+  <!-- Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
+  <!--Set CopyToPublishDirectory to always for ensuring copy to publish directory and prevent to conflict with other appsentigs.json, if don't set this it is possible other refrence project setting ovverid its own settings in publish dir-->
+  <ItemGroup>
+    <Content Include="..\FoodDelivery.Services.Identity.Api\appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+
+  <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
+
+<!--  https://devblogs.microsoft.com/nuget/introducing-central-package-management/-->
+<!--  <ItemGroup>-->
+<!--    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" VersionOverride="11.0.0"/>-->
+<!--    <PackageReference Include="AutoMapper" VersionOverride="11.0.0"/>-->
+<!--  </ItemGroup>-->
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FoodDelivery.Services.Identity.IntegrationTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Shared\Data\Migrations" />
+    <Folder Include="Shared\Data\Migrations\Identity" />
+  </ItemGroup>
+
+</Project>

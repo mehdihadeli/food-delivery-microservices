@@ -1,0 +1,122 @@
+# https://docs.docker.com/compose/reference/#use--f-to-specify-name-and-path-of-one-or-more-compose-files
+# https://docs.docker.com/compose/extends/
+# Overrid 'docker-compose.yaml' configs here for development, actually we can name this file also to docker-compose.dev.yaml but because `override` suffix infere implicitly by docker-compose we use this name
+
+# To build and debug the app on dev machine --> docker-compose -f docker-compose.yaml build
+# To start and debug the app on dev machine --> docker-compose -f docker-compose.yaml up -d
+
+version: "3.8"
+services:
+  gateway:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-servicemage
+    image: gateway:dev
+    build:
+      context: ../../
+      dockerfile: src/ApiGateway/dev.Dockerfile
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # https://github.com/docker/compose/issues/5089#issuecomment-321822300
+    # this mappings increase the size of docker image so we use it just in dev, debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
+    # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
+    volumes:
+      - ~/vsdbg:/vsdbg:ro
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
+    container_name: gateway-dev
+
+  catalogs:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    image: catalogs:dev
+    build:
+      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+      # we can use a .dockerignore file to exclude some files or directories from build context
+      # https://docs.docker.com/build/building/context/
+      # https://docs.docker.com/engine/reference/commandline/build/
+      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
+      context: ../../
+      dockerfile: src/Services/Catalogs/dev.Dockerfile
+    container_name: catalogs-dev
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # https://github.com/docker/compose/issues/5089#issuecomment-321822300
+    # this mappings increase the size of docker image so we use it just in dev, debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
+    # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
+    volumes:
+      - ~/vsdbg:/vsdbg:ro
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
+  identity:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    image: identity:dev
+    build:
+      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+      # we can use a .dockerignore file to exclude some files or directories from build context
+      # https://docs.docker.com/build/building/context/
+      # https://docs.docker.com/engine/reference/commandline/build/
+      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
+      context: ../../
+      dockerfile: src/Services/Identity/dev.Dockerfile
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # https://github.com/docker/compose/issues/5089#issuecomment-321822300
+    # this mappings increase the size of docker image so we use it just in dev, debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
+    # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
+    volumes:
+      - ~/vsdbg:/vsdbg:ro
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
+    container_name: identity-dev
+
+  customers:
+    # https://nickjanetakis.com/blog/docker-tip-57-using-build-and-image-in-the-same-docker-compose-service
+    image: customers:dev
+    build:
+      # the .dockerignore needs to be in the root of your build context. The build context is the directory you pass at the end of the build command, often a . or the current directory
+      # we can use a .dockerignore file to exclude some files or directories from build context
+      # https://docs.docker.com/build/building/context/
+      # https://docs.docker.com/engine/reference/commandline/build/
+      # https://www.howtogeek.com/devops/understanding-the-docker-build-context-why-you-should-use-dockerignore/
+      context: ../../
+      dockerfile: src/Services/Customers/dev.Dockerfile
+    # https://www.richard-banks.org/2018/07/debugging-core-in-docker.html
+    # https://copyprogramming.com/howto/docker-compose-says-pwd-variable-not-set-windows
+    # https://github.com/OmniSharp/omnisharp-vscode/wiki/Attaching-to-remote-processes#installing-vsdbg-on-the-server
+    # https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell
+    # https://github.com/docker/compose/issues/5089#issuecomment-321822300
+    # this mappings increase the size of docker image so we use it just in dev, debug mode, in prod its better dockerfile restore just nugets it needs for decresing image size
+    # here we use full build image for debugging but we change dcoker file `entrypoint` durring `docker run` for for preventing launch app in docker container but with using new entrypoint our stage will run on app working directory and then in our launch.json we launch our app inner container with connecting to `identity-debug` container with `pipeTransport` and `vsdbg` (internaly use dcoker exec and run vsdb on container) and then with using coreclr type and prgram to run, it will run this program with `dotnet run` by coreclr and passed `args`
+    # https://docs.docker.com/storage/volumes/#use-a-read-only-volume
+    volumes:
+      - ~/vsdbg:/vsdbg:ro
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.nuget/packages:/home/appuser/.nuget/packages:ro
+    container_name: customers-dev
+
+  rabbitmq:
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+  postgres:
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+
+  mongo:
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}

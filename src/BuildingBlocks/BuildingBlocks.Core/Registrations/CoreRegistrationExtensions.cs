@@ -1,33 +1,37 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Core;
-using BuildingBlocks.Abstractions.CQRS.Events;
+using BuildingBlocks.Abstractions.Domain.Events;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Serialization;
 using BuildingBlocks.Abstractions.Types;
-using BuildingBlocks.Core.CQRS.Events;
+using BuildingBlocks.Core.Domain;
+using BuildingBlocks.Core.Domain.Events;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Messaging.BackgroundServices;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
 using BuildingBlocks.Core.Messaging.MessagePersistence.InMemory;
+using BuildingBlocks.Core.Paging;
+using BuildingBlocks.Core.Persistence;
 using BuildingBlocks.Core.Reflection;
 using BuildingBlocks.Core.Serialization;
 using BuildingBlocks.Core.Types;
 using BuildingBlocks.Core.Utils;
-using BuildingBlocks.Core.Web.Extenions.ServiceCollection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Polly;
 using Scrutor;
+using Sieve.Services;
 
 namespace BuildingBlocks.Core.Registrations;
 
 public static class CoreRegistrationExtensions
 {
-    public static IServiceCollection AddCore(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        params Assembly[] scanAssemblies
-    )
+    public static IServiceCollection AddCore(this IServiceCollection services, params Assembly[] scanAssemblies)
     {
         var systemInfo = MachineInstanceInfo.New();
 
@@ -37,31 +41,38 @@ public static class CoreRegistrationExtensions
             ? scanAssemblies
             : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).Distinct().ToArray();
 
-        services.AddSingleton<IMachineInstanceInfo>(systemInfo);
-        services.AddSingleton(systemInfo);
-        services.AddSingleton<IExclusiveLock, ExclusiveLock>();
+        services.TryAddSingleton<IMachineInstanceInfo>(systemInfo);
+        services.TryAddSingleton(systemInfo);
+        services.TryAddSingleton<IExclusiveLock, ExclusiveLock>();
 
-        services.AddTransient<IAggregatesDomainEventsRequestStore, AggregatesDomainEventsStore>();
+        services.TryAddTransient<IAggregatesDomainEventsRequestStore, AggregatesDomainEventsStore>();
+        services.TryAddTransient<IDomainEventsAccessor, DomainEventAccessor>();
+        services.TryAddTransient<IDomainEventPublisher, DomainEventPublisher>();
+        services.TryAddTransient<IDomainNotificationEventPublisher, DomainNotificationEventPublisher>();
+
+        services.TryAddScoped<ISieveProcessor, ApplicationSieveProcessor>();
+        services.ScanAndRegisterDbExecutors(assemblies);
+
+        var policy = Policy.Handle<System.Exception>().RetryAsync(2);
+        services.TryAddSingleton<AsyncPolicy>(policy);
 
         services.AddHttpContextAccessor();
 
         AddDefaultSerializer(services);
 
-        AddMessagingCore(services, configuration, assemblies);
+        AddMessagingCore(services, assemblies);
 
         RegisterEventMappers(services, assemblies);
 
-        switch (configuration["IdGenerator:Type"])
-        {
-            case "Guid":
-                services.AddSingleton<IIdGenerator<Guid>, GuidIdGenerator>();
-                break;
-            default:
-                services.AddSingleton<IIdGenerator<long>, SnowFlakIdGenerator>();
-                break;
-        }
+        RegisterMigrationAndSeedManager(services);
 
         return services;
+    }
+
+    private static void RegisterMigrationAndSeedManager(IServiceCollection services)
+    {
+        services.AddHostedService<SeedWorker>();
+        services.TryAddScoped<IMigrationManager, MigrationManager>();
     }
 
     private static void RegisterEventMappers(IServiceCollection services, Assembly[] scanAssemblies)
@@ -83,25 +94,21 @@ public static class CoreRegistrationExtensions
 
     private static void AddMessagingCore(
         this IServiceCollection services,
-        IConfiguration configuration,
         Assembly[] scanAssemblies,
         ServiceLifetime serviceLifetime = ServiceLifetime.Transient
     )
     {
         AddMessagingMediator(services, serviceLifetime, scanAssemblies);
 
-        AddPersistenceMessage(services, configuration);
+        AddPersistenceMessage(services);
     }
 
-    private static void AddPersistenceMessage(IServiceCollection services, IConfiguration configuration)
+    private static void AddPersistenceMessage(IServiceCollection services)
     {
-        services.AddScoped<IMessagePersistenceService, MessagePersistenceService>();
-        services.AddScoped<IMessagePersistenceRepository, NullPersistenceRepository>();
-        services.AddHostedService<MessagePersistenceBackgroundService>();
-        services
-            .AddOptions<MessagePersistenceOptions>()
-            .Bind(configuration.GetSection(nameof(MessagePersistenceOptions)))
-            .ValidateDataAnnotations();
+        services.TryAddScoped<IMessagePersistenceService, MessagePersistenceService>();
+        services.TryAddScoped<IMessagePersistenceRepository, NullPersistenceRepository>();
+        services.AddHostedService<MessagePersistenceWorker>();
+        services.AddValidatedOptions<MessagePersistenceOptions>();
     }
 
     private static void AddMessagingMediator(

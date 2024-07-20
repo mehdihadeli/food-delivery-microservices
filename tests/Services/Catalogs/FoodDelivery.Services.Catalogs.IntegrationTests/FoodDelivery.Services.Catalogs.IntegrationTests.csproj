@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\FoodDelivery.Services.Catalogs.TestShared\FoodDelivery.Services.Catalogs.TestShared.csproj" />
+  </ItemGroup>
+
+  <!--  Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
+  <!--  https://stackoverflow.com/questions/39791634/read-appsettings-json-values-in-net-core-test-project-->
+  <ItemGroup>
+    <Content Include="..\..\..\..\src\Services\Catalogs\FoodDelivery.Services.Catalogs.Api\appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\..\src\Services\Catalogs\FoodDelivery.Services.Catalogs.Api\appsettings.test.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+
+  <!--  We should add this reference in each test project-->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="coverlet.msbuild">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
-using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Core.Extensions;
 
 namespace BuildingBlocks.Core.Messaging.MessagePersistence.InMemory;
 
@@ -12,7 +12,7 @@ public class InMemoryMessagePersistenceRepository : IMessagePersistenceRepositor
 
     public Task AddAsync(StoreMessage storeMessage, CancellationToken cancellationToken = default)
     {
-        Guard.Against.Null(storeMessage, nameof(storeMessage));
+        storeMessage.NotBeNull();
 
         _messages.TryAdd<Guid, StoreMessage>(storeMessage.Id, storeMessage);
 
@@ -53,7 +53,7 @@ public class InMemoryMessagePersistenceRepository : IMessagePersistenceRepositor
         CancellationToken cancellationToken = default
     )
     {
-        Guard.Against.Null(predicate, nameof(predicate));
+        predicate.NotBeNull();
 
         var result = _messages.Select(x => x.Value).Where(predicate.Compile()).ToImmutableList();
 
@@ -69,7 +69,7 @@ public class InMemoryMessagePersistenceRepository : IMessagePersistenceRepositor
 
     public Task<bool> RemoveAsync(StoreMessage storeMessage, CancellationToken cancellationToken = default)
     {
-        Guard.Against.Null(storeMessage, nameof(storeMessage));
+        storeMessage.NotBeNull();
 
         var result = _messages.Remove(storeMessage.Id, out _);
 

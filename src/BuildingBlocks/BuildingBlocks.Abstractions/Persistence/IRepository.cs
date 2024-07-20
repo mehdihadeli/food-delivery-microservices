@@ -1,4 +1,7 @@
 using System.Linq.Expressions;
+using AutoMapper;
+using BuildingBlocks.Abstractions.Core.Paging;
+using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Domain;
 
 namespace BuildingBlocks.Abstractions.Persistence;
@@ -18,7 +21,32 @@ public interface IReadRepository<TEntity, in TId>
         CancellationToken cancellationToken = default
     );
 
+    Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
+
+    IAsyncEnumerable<TResult> ProjectBy<TResult, TSortKey>(
+        IConfigurationProvider configuration,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IPageList<TEntity>> GetByPageFilter<TSortKey>(
+        IPageRequest pageRequest,
+        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
+        IPageRequest pageRequest,
+        IConfigurationProvider configuration,
+        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default
+    )
+        where TResult : class;
 }
 
 public interface IWriteRepository<TEntity, in TId>

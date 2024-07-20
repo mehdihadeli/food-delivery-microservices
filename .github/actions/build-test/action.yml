@@ -22,14 +22,14 @@ inputs:
   # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
   coverage-exclude:
     description: Coverage exclude filter
-    default: "[BuildingBlocks.*]*%2c[ECommerce.Services.Shared]*"
+    default: "[BuildingBlocks.*]*%2c[FoodDelivery.Services.Shared]*"
   # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
   unit-test-filter:
     description: Unit tests filter
-    default: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~ECommerce.Services)"
+    default: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~FoodDelivery.Services)"
   integration-test-filter:
     description: Integration tests filter
-    default: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~ECommerce.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
+    default: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~FoodDelivery.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
   reports-path:
     description: Test report path
     required: true
@@ -60,7 +60,7 @@ runs:
 
     - name: Call Composite Action test
       uses: ./.github/actions/test
-      if: ${{ success() && inputs.tests-path != ''}} 
+      if: ${{ success() && inputs.tests-path != ''}}
       id: test-step
       with:
         tests-path: ${{ inputs.tests-path }}

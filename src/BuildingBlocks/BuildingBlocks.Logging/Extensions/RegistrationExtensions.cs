@@ -1,10 +1,13 @@
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extenions;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Serilog.Exceptions;
+using Serilog.Exceptions.Core;
+using Serilog.Exceptions.EntityFrameworkCore.Destructurers;
 using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
+using Serilog.Sinks.Grafana.Loki;
 
 namespace BuildingBlocks.Logging;
 
@@ -12,11 +15,15 @@ public static class RegistrationExtensions
 {
     public static WebApplicationBuilder AddCustomSerilog(
         this WebApplicationBuilder builder,
-        string sectionName = "Serilog",
-        Action<LoggerConfiguration>? extraConfigure = null
+        Action<LoggerConfiguration>? extraConfigure = null,
+        Action<SerilogOptions>? configurator = null
     )
     {
-        var serilogOptions = builder.Configuration.BindOptions<SerilogOptions>(sectionName);
+        var serilogOptions = builder.Configuration.BindOptions<SerilogOptions>();
+        configurator?.Invoke(serilogOptions);
+
+        // add option to the dependency injection
+        builder.Services.AddValidationOptions<SerilogOptions>(opt => configurator?.Invoke(opt));
 
         // https://andrewlock.net/creating-a-rolling-file-logging-provider-for-asp-net-core-2-0/
         // https://github.com/serilog/serilog-extensions-hosting
@@ -37,10 +44,14 @@ public static class RegistrationExtensions
                     .Enrich.WithEnvironmentName()
                     .Enrich.WithMachineName()
                     // https://rehansaeed.com/logging-with-serilog-exceptions/
-                    .Enrich.WithExceptionDetails();
+                    .Enrich.WithExceptionDetails(
+                        new DestructuringOptionsBuilder()
+                            .WithDefaultDestructurers()
+                            .WithDestructurers(new[] { new DbUpdateExceptionDestructurer() })
+                    );
 
                 // https://github.com/serilog/serilog-settings-configuration
-                loggerConfiguration.ReadFrom.Configuration(context.Configuration, sectionName: sectionName);
+                loggerConfiguration.ReadFrom.Configuration(context.Configuration, sectionName: nameof(SerilogOptions));
 
                 if (serilogOptions.UseConsole)
                 {
@@ -78,10 +89,30 @@ public static class RegistrationExtensions
                     );
                 }
 
+                // https://github.com/serilog-contrib/serilog-sinks-grafana-loki
+                if (!string.IsNullOrEmpty(serilogOptions.GrafanaLokiUrl))
+                {
+                    loggerConfiguration.WriteTo.GrafanaLoki(
+                        serilogOptions.GrafanaLokiUrl,
+                        new[]
+                        {
+                            new LokiLabel { Key = "service", Value = "food-delivery" }
+                        },
+                        new[] { "app" }
+                    );
+                }
+
                 if (!string.IsNullOrEmpty(serilogOptions.SeqUrl))
                 {
                     // seq sink internally is async
                     loggerConfiguration.WriteTo.Seq(serilogOptions.SeqUrl);
+                }
+
+                // https://github.com/serilog/serilog-sinks-opentelemetry
+                if (serilogOptions.ExportLogsToOpenTelemetry)
+                {
+                    // export logs from serilog to opentelemetry
+                    loggerConfiguration.WriteTo.OpenTelemetry();
                 }
 
                 if (!string.IsNullOrEmpty(serilogOptions.LogPath))

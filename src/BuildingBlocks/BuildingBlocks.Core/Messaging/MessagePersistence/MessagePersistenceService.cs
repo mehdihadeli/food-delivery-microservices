@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
-using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Serialization;
+using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Types;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -94,7 +94,7 @@ public class MessagePersistenceService : IMessagePersistenceService
         CancellationToken cancellationToken = default
     )
     {
-        Guard.Against.Null(messageEnvelope.Message, nameof(messageEnvelope.Message));
+        messageEnvelope.Message.NotBeNull();
 
         Guid id;
         if (messageEnvelope.Message is IMessage im)

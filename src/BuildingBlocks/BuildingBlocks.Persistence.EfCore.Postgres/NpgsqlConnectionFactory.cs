@@ -1,7 +1,7 @@
 using System.Data;
 using System.Data.Common;
-using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Persistence.EfCore;
+using BuildingBlocks.Core.Extensions;
 using Npgsql;
 
 namespace Core.Persistence.Postgres;
@@ -11,9 +11,9 @@ public class NpgsqlConnectionFactory : IConnectionFactory
     private readonly string _connectionString;
     private DbConnection? _connection;
 
-    public NpgsqlConnectionFactory(string connectionString)
+    public NpgsqlConnectionFactory(string? connectionString)
     {
-        Guard.Against.NullOrEmpty(connectionString);
+        connectionString.NotBeNullOrWhiteSpace();
         _connectionString = connectionString;
     }
 
@@ -32,5 +32,6 @@ public class NpgsqlConnectionFactory : IConnectionFactory
     {
         if (_connection is { State: ConnectionState.Open })
             _connection.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

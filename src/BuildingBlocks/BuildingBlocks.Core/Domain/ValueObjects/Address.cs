@@ -1,6 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+using BuildingBlocks.Core.Extensions;
+
 namespace BuildingBlocks.Core.Domain.ValueObjects;
 
 // https://learn.microsoft.com/en-us/ef/core/modeling/constructors
+// https://event-driven.io/en/how_to_validate_business_logic/
+// https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 public record Address
 {
     // EF
@@ -13,18 +18,30 @@ public record Address
 
     public static Address Empty => new();
 
-    public static Address Of(string country, string city, string detail, PostalCode postalCode)
+    public static Address Of(
+        [NotNull] string? country,
+        [NotNull] string? city,
+        [NotNull] string? detail,
+        [NotNull] PostalCode? postalCode
+    )
     {
         var address = new Address
         {
-            Country = country,
-            City = city,
-            Detail = detail,
-            PostalCode = postalCode
+            Country = country.NotBeNullOrWhiteSpace(),
+            City = city.NotBeNullOrWhiteSpace(),
+            Detail = detail.NotBeNullOrWhiteSpace(),
+            PostalCode = postalCode.NotBeNull()
         };
 
         return address;
     }
+
+    // https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/deconstruct#user-defined-types
+    // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record#positional-syntax-for-property-definition
+    // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record#nondestructive-mutation
+    // https://alexanderzeitler.com/articles/deconstructing-a-csharp-record-with-properties/
+    public void Deconstruct(out string country, out string city, out string detail, out PostalCode postalCode) =>
+        (country, city, detail, postalCode) = (Country, City, Detail, PostalCode);
 }
 
 public record PostalCode
@@ -36,7 +53,7 @@ public record PostalCode
     public string Value { get; init; } = default!;
 
     // validations should be placed here instead of constructor
-    public static PostalCode Of(string postalCode) => new() { Value = postalCode };
+    public static PostalCode Of(string? postalCode) => new() { Value = postalCode.NotBeNullOrWhiteSpace() };
 
     public static implicit operator string(PostalCode postalCode) => postalCode.Value;
 }

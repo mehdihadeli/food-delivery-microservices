@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Abstractions.CQRS.Events;
+﻿using BuildingBlocks.Abstractions.Domain.Events;
 
 namespace BuildingBlocks.Abstractions.Persistence
 {

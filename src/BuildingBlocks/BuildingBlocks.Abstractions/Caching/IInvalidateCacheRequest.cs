@@ -11,3 +11,10 @@ public interface IInvalidateCacheRequest<in TRequest, TResponse>
 
 public interface IInvalidateCacheRequest<in TRequest> : IInvalidateCacheRequest<TRequest, Unit>
     where TRequest : IRequest<Unit> { }
+
+public interface IStreamInvalidateCacheRequest<in TRequest, TResponse>
+    where TRequest : IStreamRequest<TResponse>
+{
+    string Prefix { get; }
+    IEnumerable<string> CacheKeys(TRequest request);
+}

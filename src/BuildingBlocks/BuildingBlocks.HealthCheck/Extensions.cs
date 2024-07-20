@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extenions;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -22,16 +22,27 @@ public static class Extensions
     public static WebApplicationBuilder AddCustomHealthCheck(
         this WebApplicationBuilder builder,
         Action<IHealthChecksBuilder>? healthChecksBuilder = null,
-        string sectionName = nameof(HealthOptions)
+        Action<HealthOptions>? configurator = null
     )
     {
-        var healthOptions = builder.Configuration.BindOptions<HealthOptions>(sectionName);
+        var healthOptions = builder.Configuration.BindOptions<HealthOptions>();
+        configurator?.Invoke(healthOptions);
+
+        // add option to the dependency injection
+        builder.Services.AddValidationOptions<HealthOptions>(opt => configurator?.Invoke(opt));
+
         if (!healthOptions.Enabled)
         {
             return builder;
         }
 
-        var healCheckBuilder = builder.Services.AddHealthChecks().ForwardToPrometheus();
+        var healCheckBuilder = builder.Services
+            .AddHealthChecks()
+            .AddDiskStorageHealthCheck(_ => { }, tags: new[] { "live", "ready" })
+            .AddPingHealthCheck(_ => { }, tags: new[] { "live", "ready" })
+            .AddPrivateMemoryHealthCheck(512 * 1024 * 1024, tags: new[] { "live", "ready" })
+            .AddDnsResolveHealthCheck(_ => { }, tags: new[] { "live", "ready" })
+            .ForwardToPrometheus();
 
         healthChecksBuilder?.Invoke(healCheckBuilder);
 
@@ -112,12 +123,26 @@ public static class Extensions
                 }
             )
             .UseHealthChecks(
-                "/health/ready",
+                "health/ready",
                 new HealthCheckOptions
                 {
-                    Predicate = _ => true,
-                    AllowCachingResponses = false,
-                    ResponseWriter = WriteResponseAsync,
+                    Predicate = check => check.Tags.Contains("ready"),
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                }
+            )
+            .UseHealthChecks(
+                "health/live",
+                new HealthCheckOptions
+                {
+                    Predicate = check => check.Tags.Contains("live"),
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                }
+            )
+            .UseHealthChecksPrometheusExporter(
+                "/health/prometheus",
+                options =>
+                {
+                    options.ResultStatusCodes[HealthStatus.Unhealthy] = 200;
                 }
             )
             .UseHealthChecksUI(setup =>

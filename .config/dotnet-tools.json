@@ -3,28 +3,60 @@
   "isRoot": true,
   "tools": {
     "altcover.global": {
-      "version": "8.3.838",
+      "version": "8.8.74",
       "commands": [
         "altcover"
-      ]
+      ],
+      "rollForward": false
     },
     "cake.tool": {
       "version": "2.3.0",
       "commands": [
         "dotnet-cake"
-      ]
+      ],
+      "rollForward": false
     },
     "dotnet-format": {
       "version": "5.1.250801",
       "commands": [
         "dotnet-format"
-      ]
+      ],
+      "rollForward": false
     },
     "csharpier": {
-      "version": "0.22.1",
+      "version": "0.28.2",
       "commands": [
         "dotnet-csharpier"
-      ]
+      ],
+      "rollForward": false
+    },
+    "swashbuckle.aspnetcore.cli": {
+      "version": "6.6.2",
+      "commands": [
+        "swagger"
+      ],
+      "rollForward": false
+    },
+    "microsoft.tye": {
+      "version": "0.11.0-alpha.22111.1",
+      "commands": [
+        "tye"
+      ],
+      "rollForward": false
+    },
+    "dotnet-ef": {
+      "version": "8.0.7",
+      "commands": [
+        "dotnet-ef"
+      ],
+      "rollForward": false
+    },
+    "dotnet-outdated-tool": {
+      "version": "4.6.4",
+      "commands": [
+        "dotnet-outdated"
+      ],
+      "rollForward": false
     }
   }
 }

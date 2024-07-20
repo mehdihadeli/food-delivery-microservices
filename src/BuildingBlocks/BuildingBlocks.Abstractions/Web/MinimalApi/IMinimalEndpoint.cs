@@ -1,8 +1,6 @@
-using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Queries;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
 
 namespace BuildingBlocks.Abstractions.Web.MinimalApi;
@@ -59,96 +57,88 @@ public interface IMinimalEndpoint<in TRequest, in TDependency1, in TDependency2,
     );
 }
 
-public interface ICommandMinimalEndpoint<in TRequest> : IMinimalEndpoint
+public interface ICommandMinimalEndpoint<in TRequest, in TRequestParameters> : IMinimalEndpoint
+    where TRequestParameters : IHttpCommand<TRequest>
 {
-    Task<IResult> HandleAsync(
-        HttpContext context,
-        TRequest request,
-        ICommandProcessor commandProcessor,
-        IMapper mapper,
-        CancellationToken cancellationToken
+    Task<IResult> HandleAsync([AsParameters] TRequestParameters requestParameters);
+}
+
+public interface ICommandMinimalEndpoint<in TRequest, in TRequestParameters, TResult1> : IMinimalEndpoint
+    where TRequestParameters : IHttpCommand<TRequest>
+    where TResult1 : IResult
+{
+    Task<TResult1> HandleAsync([AsParameters] TRequestParameters requestParameters);
+}
+
+public interface ICommandMinimalEndpoint<in TRequest, in TRequestParameters, TResult1, TResult2> : IMinimalEndpoint
+    where TRequestParameters : IHttpCommand<TRequest>
+    where TResult1 : IResult
+    where TResult2 : IResult
+{
+    Task<Results<TResult1, TResult2>> HandleAsync([AsParameters] TRequestParameters requestParameters);
+}
+
+public interface ICommandMinimalEndpoint<in TRequest, in TRequestParameters, TResult1, TResult2, TResult3>
+    : IMinimalEndpoint
+    where TRequestParameters : IHttpCommand<TRequest>
+    where TResult1 : IResult
+    where TResult2 : IResult
+    where TResult3 : IResult
+{
+    Task<Results<TResult1, TResult2, TResult3>> HandleAsync([AsParameters] TRequestParameters requestParameters);
+}
+
+public interface ICommandMinimalEndpoint<in TRequest, in TRequestParameters, TResult1, TResult2, TResult3, TResult4>
+    : IMinimalEndpoint
+    where TRequestParameters : IHttpCommand<TRequest>
+    where TResult1 : IResult
+    where TResult2 : IResult
+    where TResult3 : IResult
+    where TResult4 : IResult
+{
+    Task<Results<TResult1, TResult2, TResult3, TResult4>> HandleAsync(
+        [AsParameters] TRequestParameters requestParameters
     );
 }
 
-public interface ICommandMinimalEndpoint<in TRequest, TResult> : IMinimalEndpoint
+public interface IQueryMinimalEndpoint<in TRequestParameters> : IMinimalEndpoint
+    where TRequestParameters : IHttpQuery
 {
-    Task<TResult> HandleAsync(
-        HttpContext context,
-        TRequest request,
-        ICommandProcessor commandProcessor,
-        IMapper mapper,
-        CancellationToken cancellationToken
-    );
+    Task<IResult> HandleAsync([AsParameters] TRequestParameters requestParameters);
 }
 
-public interface ICommandMinimalEndpoint<in TRequest, in TDependency, TResult> : IMinimalEndpoint
+public interface IQueryMinimalEndpoint<in TRequestParameters, TResult1> : IMinimalEndpoint
+    where TRequestParameters : IHttpQuery
+    where TResult1 : IResult
 {
-    Task<TResult> HandleAsync(
-        HttpContext context,
-        TRequest request,
-        ICommandProcessor commandProcessor,
-        IMapper mapper,
-        TDependency dependency1,
-        CancellationToken cancellationToken
-    );
+    Task<TResult1> HandleAsync([AsParameters] TRequestParameters requestParameters);
 }
 
-public interface ICommandMinimalEndpoint<in TRequest, in TDependency1, in TDependency2, TResult> : IMinimalEndpoint
+public interface IQueryMinimalEndpoint<in TRequestParameters, TResult1, TResult2> : IMinimalEndpoint
+    where TRequestParameters : IHttpQuery
+    where TResult1 : IResult
+    where TResult2 : IResult
 {
-    Task<TResult> HandleAsync(
-        HttpContext context,
-        TRequest request,
-        ICommandProcessor commandProcessor,
-        IMapper mapper,
-        TDependency1 dependency1,
-        TDependency2 dependency2,
-        CancellationToken cancellationToken
-    );
+    Task<Results<TResult1, TResult2>> HandleAsync([AsParameters] TRequestParameters requestParameters);
 }
 
-public interface IQueryMinimalEndpoint<in TRequest> : IMinimalEndpoint
+public interface IQueryMinimalEndpoint<in TRequestParameters, TResult1, TResult2, TResult3> : IMinimalEndpoint
+    where TRequestParameters : IHttpQuery
+    where TResult1 : IResult
+    where TResult2 : IResult
+    where TResult3 : IResult
 {
-    Task<IResult> HandleAsync(
-        HttpContext context,
-        TRequest request,
-        IQueryProcessor queryProcessor,
-        IMapper mapper,
-        CancellationToken cancellationToken
-    );
+    Task<Results<TResult1, TResult2, TResult3>> HandleAsync([AsParameters] TRequestParameters requestParameters);
 }
 
-public interface IQueryMinimalEndpoint<in TRequest, TResult> : IMinimalEndpoint
+public interface IQueryMinimalEndpoint<in TRequestParameters, TResult1, TResult2, TResult3, TResult4> : IMinimalEndpoint
+    where TRequestParameters : IHttpQuery
+    where TResult1 : IResult
+    where TResult2 : IResult
+    where TResult3 : IResult
+    where TResult4 : IResult
 {
-    Task<TResult> HandleAsync(
-        HttpContext context,
-        TRequest request,
-        IQueryProcessor queryProcessor,
-        IMapper mapper,
-        CancellationToken cancellationToken
-    );
-}
-
-public interface IQueryMinimalEndpoint<in TRequest, in TDependency, TResult> : IMinimalEndpoint
-{
-    Task<TResult> HandleAsync(
-        HttpContext context,
-        TRequest request,
-        IQueryProcessor queryProcessor,
-        IMapper mapper,
-        TDependency dependency,
-        CancellationToken cancellationToken
-    );
-}
-
-public interface IQueryMinimalEndpoint<in TRequest, in TDependency1, in TDependency2, TResult> : IMinimalEndpoint
-{
-    Task<TResult> HandleAsync(
-        HttpContext context,
-        TRequest request,
-        IQueryProcessor queryProcessor,
-        IMapper mapper,
-        TDependency1 dependency1,
-        TDependency2 dependency2,
-        CancellationToken cancellationToken
+    Task<Results<TResult1, TResult2, TResult3, TResult4>> HandleAsync(
+        [AsParameters] TRequestParameters requestParameters
     );
 }

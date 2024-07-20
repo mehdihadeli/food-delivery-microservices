@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 
 namespace BuildingBlocks.Abstractions.Messaging.PersistMessage;
 
@@ -9,6 +9,9 @@ namespace BuildingBlocks.Abstractions.Messaging.PersistMessage;
 // Ref: https://debezium.io/blog/2019/02/19/reliable-microservices-data-exchange-with-the-outbox-pattern/
 // Ref: https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/multi-container-microservice-net-applications/subscribe-events#designing-atomicity-and-resiliency-when-publishing-to-the-event-bus
 // Ref: https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
+// Ref: https://learn.microsoft.com/en-us/azure/service-bus-messaging/duplicate-detection
+// Ref: https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-queues-topics-subscriptions#receive-modes
+// https://exactly-once.github.io/posts/exactly-once-delivery/
 public interface IMessagePersistenceService
 {
     Task<IReadOnlyList<StoreMessage>> GetByFilterAsync(

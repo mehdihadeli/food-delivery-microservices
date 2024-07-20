@@ -2,6 +2,7 @@ using System.Reflection;
 using BuildingBlocks.Resiliency.Fallback;
 using BuildingBlocks.Resiliency.Retry;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Scrutor;
 
 namespace BuildingBlocks.Resiliency.Extensions;
@@ -13,7 +14,7 @@ public static class ServiceCollectionExtensions
         IReadOnlyList<Assembly> assemblies
     )
     {
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RetryBehavior<,>));
+        services.TryAddTransient(typeof(IPipelineBehavior<,>), typeof(RetryBehavior<,>));
 
         services.Scan(
             scan =>
@@ -32,7 +33,7 @@ public static class ServiceCollectionExtensions
         IReadOnlyList<Assembly> assemblies
     )
     {
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FallbackBehavior<,>));
+        services.TryAddTransient(typeof(IPipelineBehavior<,>), typeof(FallbackBehavior<,>));
 
         services.Scan(
             scan =>

@@ -7,16 +7,18 @@
 [![Gitpod](https://img.shields.io/static/v1?style=for-the-badge&message=Open%20in%20Gitpod&color=222222&logo=Gitpod&logoColor=FFAE33&label=)](https://gitpod.io/https://github.com/mehdihadeli/food-delivery-microservices)
 [![Codespaces](https://img.shields.io/static/v1?style=for-the-badge&message=Open%20in%20GitHub%20Codespaces&color=181717&logo=GitHub&logoColor=FFFFFF&label=)](https://mehdihadeli-humble-space-couscous-5x5pqwwjx5c7664.github.dev)
 
-> `Food Delivery Microservices` is a practical and imaginary food delivery microservices, built with .Net Core and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications using REST and gRPC calls.
+<!-- https://raw.githubusercontent.com/progfay/shields-with-icon/master/README.md -->
 
-💡 This application is not business-oriented and my focus is mostly on the technical part, I just want to implement a sample using different technologies, software architecture design, principles, and all the things we need for creating a microservices app.
+> `Food Delivery Microservices` is a fictional food delivery microservices, built with .Net Core and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
+
+💡 This application is not business oriented and my focus is mostly on technical part, I just want to implement a sample with using different technologies, software architecture design, principles and all the thing we need for creating a microservices app.
 
 > **Warning**
-> This project is in progress. I add new features over time. You can check the [Release Notes](https://github.com/mehdihadeli/food-delivery-microservices/releases).
+> This project is in progress. I add new features over the time. You can check the [Release Notes](https://github.com/mehdihadeli/food-delivery-microservices/releases).
 
-🎯 This Application ported to `modular monolith` approach in [food-delivery-modular-monolith](https://github.com/mehdihadeli/food-delivery-modular-monolith) repository, we can choose the best-fit architecture for our projects based on production needs.
+🎯 This Application ported to `modular monolith` approach in [food-delivery-modular-monolith](https://github.com/mehdihadeli/food-delivery-modular-monolith) repository, we can choose best fit architecture for our projects based on production needs.
 
-Other versions of this project are available in these repositories, We can choose best-fit architecture for our projects based on production needs:
+Other versions of this project are available in these repositories, We can choose best fit architecture for our projects based on production needs:
 
 - [https://github.com/mehdihadeli/food-delivery-modular-monolith](https://github.com/mehdihadeli/food-delivery-modular-monolith)
 - [https://github.com/mehdihadeli/go-food-delivery-microservices](https://github.com/mehdihadeli/go-food-delivery-microservices)
@@ -88,7 +90,7 @@ Thanks a bunch for supporting me!
 
 ## Technologies - Libraries
 
-- ✔️ **[`.NET 7`](https://dotnet.microsoft.com/download)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core
+- ✔️ **[`.NET 8`](https://dotnet.microsoft.com/download)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core
 - ✔️ **[`MassTransit`](https://github.com/MassTransit/MassTransit)** - Distributed Application Framework for .NET
 - ✔️ **[`StackExchange.Redis`](https://github.com/StackExchange/StackExchange.Redis)** - General purpose redis client
 - ✔️ **[`Npgsql Entity Framework Core Provider`](https://www.npgsql.org/efcore/)** - Npgsql has an Entity Framework (EF) Core provider. It behaves like other EF Core providers (e.g. SQL Server), so the general EF Core docs apply here as well
@@ -152,12 +154,23 @@ npm init
 npm install husky --save-dev
 ```
 
-3. Add `prepare` and `install-dev-cert-bash` command for installing and activating `husky hooks` in the package.json file:
+3. Add `prepare` and `install-dev-cert-bash` commands for installing and activating `husky hooks` and [`dotnet tools`](https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools) in the package.json file:
+
+- Actually [prepare](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts) is a special `life cycle scripts` that runs automatically on `local npm install` without any arguments.
+- The [scripts](https://docs.npmjs.com/cli/v10/using-npm/scripts) property of your package.json file supports a number of built-in scripts and their preset life cycle events as well as arbitrary scripts. These all can be executed by running `npm run-script <stage>` or `npm run <stage>` for short.
+- For working `dotnet tools restore` commands to install and update local packages we should have a valid `nuget.config` file in the root of our project. we can create a `nuget.config` file with using `dotnet new nugetconfig` command.
 
 ```bash
 npm pkg set scripts.prepare="husky install && dotnet tool restore"
 
 npm pkg set scripts.install-dev-cert-bash="curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
+```
+
+``` json
+"scripts": {
+"prepare": "husky install && dotnet tool restore",
+"install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
+}
 ```
 
 4. Install CommitLint:
@@ -226,7 +239,7 @@ dotnet tool install csharpier
 dotnet tool install dotnet-format
 ```
 
-4. Add `prepare` command for installing and activating `husky hooks` and `restoring` our installed [dotnet tools](.config/dotnet-tools.json) in the previous step to the [package.json](package.json) file:
+4. Add `prepare` command for installing and activating `husky hooks` and `restoring` our [dotnet tools](.config/dotnet-tools.json) in the previous step to the [package.json](package.json) file:
 
 ```bash
 npm pkg set scripts.prepare="husky install && dotnet tool restore"
@@ -273,7 +286,7 @@ The bellow architecture shows that there is one public API (API Gateway) which i
 
 Microservices are event based which means they can publish and/or subscribe to any events occurring in the setup. By using this approach for communicating between services, each microservice does not need to know about the other services or handle errors occurred in other microservices.
 
-In this architecture we use [CQRS Pattern](https://www.eventstore.com/cqrs-pattern) for separating read and write model beside of other [CQRS Advantages](https://youtu.be/dK4Yb6-LxAk?t=1029). Here for now I don't use [Event Sourcing](https://www.eventstore.com/blog/event-sourcing-and-cqrs) for simplicity but I will use it in future for syncing read and write side with sending streams and using [Projection Feature](https://event-driven.io/en/how_to_do_events_projections_with_entity_framework/) for some subscribers to syncing their data through sent streams and creating our [Custom Read Models](https://codeopinion.com/projections-in-event-sourcing-build-any-model-you-want/) in subscribers side.
+In this architecture we use [CQRS Pattern](https://www.eventecommerce.com/cqrs-pattern) for separating read and write model beside of other [CQRS Advantages](https://youtu.be/dK4Yb6-LxAk?t=1029). Here for now I don't use [Event Sourcing](https://www.eventecommerce.com/blog/event-sourcing-and-cqrs) for simplicity but I will use it in future for syncing read and write side with sending streams and using [Projection Feature](https://event-driven.io/en/how_to_do_events_projections_with_entity_framework/) for some subscribers to syncing their data through sent streams and creating our [Custom Read Models](https://codeopinion.com/projections-in-event-sourcing-build-any-model-you-want/) in subscribers side.
 
 Here I have a write model that uses a postgres database for handling better `Consistency` and `ACID Transaction` guaranty. beside o this write side I use a read side model that uses MongoDB for better performance of our read side without any joins with suing some nested document in our document also better scalability with some good scaling features of MongoDB.
 
@@ -317,7 +330,7 @@ In this project I used [vertical slice architecture](https://jimmybogard.com/ver
 
 ![](./assets/vsa2.png)
 
-Also here I used [CQRS](https://www.eventstore.com/cqrs-pattern) for decompose my features to very small parts that makes our application:
+Also here I used [CQRS](https://www.eventecommerce.com/cqrs-pattern) for decompose my features to very small parts that makes our application:
 
 - maximize performance, scalability and simplicity.
 - adding new feature to this mechanism is very easy without any breaking change in other part of our codes. New features only add code, we're not changing shared code and worrying about side effects.

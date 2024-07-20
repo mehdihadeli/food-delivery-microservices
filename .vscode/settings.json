@@ -1,0 +1,21 @@
+{
+  "git.autofetch": true,
+  "files.autoSave": "onFocusChange",
+  "editor.formatOnSave": true,
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "explorer.autoReveal": true,
+  "resmon.show.cpufreq": false,
+  "dotnet.defaultSolution": "food-delivery.sln",
+  "dotnet.server.startTimeout": 60000,
+  "omnisharp.projectLoadTimeout": 60,
+  "workbench.colorTheme": "Visual Studio Light",
+  "workbench.iconTheme": "material-icon-theme",
+  "editor.minimap.enabled": false,
+  "editor.fontFamily": "'MesloLGM Nerd Font', 'Droid Sans Mono', 'monospace', 'Droid Sans Fallback', 'Consolas'",
+  "editor.fontSize": 14,
+  "explorer.confirmDelete": false,
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "powershell.cwd": "~",
+  "terminal.external.windowsExec": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe"
+}

@@ -1,65 +1,46 @@
-// using System.Net.Http.Json;
-// using BuildingBlocks.Core.Extensions;
-// using BuildingBlocks.Persistence.Mongo;
-// using Microsoft.EntityFrameworkCore;
-// using Tests.Shared.Auth;
-//
-// namespace Tests.Shared.Fixtures;
-//
-// [Trait("Category", "EndToEnd")]
-// public class EndToEndTestTestBase<TEntryPoint, TWContext, TRContext> :
-//     IntegrationTestBase<TEntryPoint, TWContext, TRContext>
-//     where TWContext : DbContext
-//     where TRContext : MongoDbContext
-//     where TEntryPoint : class
-// {
-//     public EndToEndTestTestBase(
-//         SharedFixture<TEntryPoint, TWContext, TRContext> sharedFixture,
-//         ITestOutputHelper outputHelper)
-//         : base(sharedFixture, outputHelper)
-//     {
-//     }
-//
-//     protected virtual UserType UserType => UserType.Admin;
-//
-//     public async Task<TResponse?> GetAsync<TResponse>(string requestUrl, CancellationToken cancellationToken = default)
-//     {
-//         var client = GetClient(UserType);
-//         return await client.GetFromJsonAsync<TResponse>(requestUrl, cancellationToken: cancellationToken);
-//     }
-//
-//     public async Task<TResponse?> PostAsync<TRequest, TResponse>(string requestUrl, TRequest request,
-//         CancellationToken cancellationToken = default)
-//     {
-//         var client = GetClient(UserType);
-//         return await client.PostAsJsonAsync<TRequest, TResponse>(requestUrl, request, cancellationToken);
-//     }
-//
-//     public async Task<TResponse?> PutAsync<TRequest, TResponse>(
-//         string requestUrl,
-//         TRequest request,
-//         CancellationToken cancellationToken = default)
-//     {
-//         var client = GetClient(UserType);
-//         return await client.PutAsJsonAsync<TRequest, TResponse>(requestUrl, request, cancellationToken);
-//     }
-//
-//     public async Task Delete(string requestUrl, CancellationToken cancellationToken = default)
-//     {
-//         var client = GetClient(UserType);
-//         await client.DeleteAsync(requestUrl, cancellationToken);
-//     }
-//
-//     private HttpClient GetClient(UserType userType)
-//     {
-//         switch (userType)
-//         {
-//             case UserType.Admin:
-//                 return Fixture.AdminHttpClient;
-//             case UserType.User:
-//                 return Fixture.NormalUserHttpClient;
-//             default:
-//                 return Fixture.GuestClient;
-//         }
-//     }
-// }
+using BuildingBlocks.Persistence.Mongo;
+using Microsoft.EntityFrameworkCore;
+using Tests.Shared.TestBase;
+using Tests.Shared.XunitCategories;
+
+namespace Tests.Shared.Fixtures;
+
+public class EndToEndTestTest<TEntryPoint> : IntegrationTest<TEntryPoint>
+    where TEntryPoint : class
+{
+    public EndToEndTestTest(SharedFixture<TEntryPoint> sharedFixture, ITestOutputHelper outputHelper)
+        : base(sharedFixture, outputHelper) { }
+}
+
+public abstract class EndToEndTestTestBase<TEntryPoint, TContext> : EndToEndTestTest<TEntryPoint>
+    where TEntryPoint : class
+    where TContext : DbContext
+{
+    protected EndToEndTestTestBase(
+        SharedFixtureWithEfCore<TEntryPoint, TContext> sharedFixture,
+        ITestOutputHelper outputHelper
+    )
+        : base(sharedFixture, outputHelper)
+    {
+        SharedFixture = sharedFixture;
+    }
+
+    public new SharedFixtureWithEfCore<TEntryPoint, TContext> SharedFixture { get; }
+}
+
+public abstract class EndToEndTestTestBase<TEntryPoint, TWContext, TRContext> : EndToEndTestTest<TEntryPoint>
+    where TEntryPoint : class
+    where TWContext : DbContext
+    where TRContext : MongoDbContext
+{
+    protected EndToEndTestTestBase(
+        SharedFixtureWithEfCoreAndMongo<TEntryPoint, TWContext, TRContext> sharedFixture,
+        ITestOutputHelper outputHelper
+    )
+        : base(sharedFixture, outputHelper)
+    {
+        SharedFixture = sharedFixture;
+    }
+
+    public new SharedFixtureWithEfCoreAndMongo<TEntryPoint, TWContext, TRContext> SharedFixture { get; }
+}

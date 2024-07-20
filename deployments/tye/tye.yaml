@@ -1,0 +1,46 @@
+# https://github.com/dotnet/tye/tree/main/docs
+# https://github.com/dotnet/tye/blob/main/docs/reference/schema.md#environment-variables
+# https://www.daveabrock.com/2020/08/19/microservices-with-tye-1/
+# https://www.daveabrock.com/2020/08/27/microservices-with-tye-2/
+# https://github.com/dotnet/tye/tree/main/samples
+# https://devblogs.microsoft.com/dotnet/introducing-project-tye/
+
+name: tye-ecomerce
+containerEngine: docker
+registry: mehdihadeli
+
+services:
+  - name: gateway
+    project: ./../../src/ApiGateway/FoodDelivery.ApiGateway/ApiGateway.csproj
+    env_file:
+      - .env
+    bindings:
+      - port: 3000
+
+  - name: catalog-service
+    project: ./../../src/Services/Catalogs/FoodDelivery.Services.Catalogs.Api/FoodDelivery.Services.Catalogs.Api.csproj
+    env_file:
+      - .env
+    bindings:
+      - port: 4000
+
+  - name: customers-service
+    project: ./../../src/Services/Customers/FoodDelivery.Services.Customers.Api/FoodDelivery.Services.Customers.Api.csproj
+    env_file:
+      - .env
+    bindings:
+      - port: 8000
+
+  - name: identity-service
+    project: ./../../src/Services/Identity/FoodDelivery.Services.Identity.Api/FoodDelivery.Services.Identity.Api.csproj
+    env_file:
+      - .env
+    bindings:
+      - port: 7000
+
+  - name: order-service
+    project: ./../../src/Services/Orders/FoodDelivery.Services.Orders.Api/FoodDelivery.Services.Orders.Api.csproj
+    env_file:
+      - .env
+    bindings:
+      - port: 9000

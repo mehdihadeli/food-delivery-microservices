@@ -1,12 +1,13 @@
-using System.Net;
+using Microsoft.AspNetCore.Http;
 
 namespace BuildingBlocks.Core.Exception.Types;
 
 public class AppException : CustomException
 {
-    public AppException(string message, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
-        : base(message)
-    {
-        StatusCode = statusCode;
-    }
+    public AppException(
+        string message,
+        int statusCode = StatusCodes.Status400BadRequest,
+        System.Exception? innerException = null
+    )
+        : base(message, statusCode, innerException) { }
 }

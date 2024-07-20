@@ -46,12 +46,12 @@ public class SharedFixtureWithEfCoreAndMongo<TEntryPoint, TEfCoreDbContext, TMon
     public Task<T> ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, Task<T>> action) =>
         ExecuteScopeAsync(sp => action(sp.GetRequiredService<TMongoDbContext>()));
 
-    public async Task InsertMongoDbContextAsync<T>(string collectionName, params T[] entities)
+    public async Task InsertMongoDbContextAsync<T>(params T[] entities)
         where T : class
     {
         await ExecuteMongoDbContextAsync(async db =>
         {
-            await db.GetCollection<T>(collectionName).InsertManyAsync(entities.ToList());
+            await db.GetCollection<T>().InsertManyAsync(entities.ToList());
         });
     }
 

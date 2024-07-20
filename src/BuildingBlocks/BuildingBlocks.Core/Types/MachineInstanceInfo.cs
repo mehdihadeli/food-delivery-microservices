@@ -1,13 +1,14 @@
-using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Types;
+using BuildingBlocks.Core.Extensions;
 
 namespace BuildingBlocks.Core.Types;
 
 public record MachineInstanceInfo : IMachineInstanceInfo
 {
-    public MachineInstanceInfo(Guid clientId, string clientGroup)
+    public MachineInstanceInfo(Guid clientId, string? clientGroup)
     {
-        Guard.Against.NullOrEmpty(clientGroup, nameof(clientGroup));
+        clientGroup.NotBeNullOrWhiteSpace();
+        clientId.NotBeEmpty();
 
         ClientId = clientId;
         ClientGroup = clientGroup;

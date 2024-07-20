@@ -1,8 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using Ardalis.GuardClauses;
-using BuildingBlocks.Core.Exception;
+using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Reflection;
-using BuildingBlocks.Core.Utils;
 
 namespace BuildingBlocks.Core.Types;
 
@@ -72,8 +70,7 @@ public static class TypeMapper
 
     private static string ToName(Type type, bool fullName = true)
     {
-        Guard.Against.Null(type);
-
+        type.NotBeNull();
         return TypeNameMap.GetOrAdd(
             type,
             _ =>
@@ -87,9 +84,9 @@ public static class TypeMapper
         );
     }
 
-    private static Type ToType(string typeName)
+    private static Type ToType(string? typeName)
     {
-        Guard.Against.NullOrWhiteSpace(typeName, nameof(typeName));
+        typeName.NotBeNull();
 
         return TypeMap.GetOrAdd(
             typeName,

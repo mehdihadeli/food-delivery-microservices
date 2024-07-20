@@ -1,12 +1,17 @@
-using System.Net;
+using System.Net.Http.Headers;
 using System.Security.Claims;
-using Ardalis.GuardClauses;
 using AutoBogus;
 using BuildingBlocks.Abstractions.CQRS.Commands;
 using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Messaging.MessagePersistence;
 using BuildingBlocks.Core.Types;
+using BuildingBlocks.Integration.MassTransit;
+using BuildingBlocks.Persistence.EfCore.Postgres;
+using BuildingBlocks.Persistence.Mongo;
+using DotNet.Testcontainers.Configurations;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using MassTransit;
@@ -20,6 +25,7 @@ using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using Serilog;
 using Tests.Shared.Auth;
+using Tests.Shared.Extensions;
 using Tests.Shared.Factory;
 using WireMock.Server;
 using Xunit.Sdk;
@@ -41,6 +47,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
     public Func<Task>? OnSharedFixtureInitialized;
     public Func<Task>? OnSharedFixtureDisposed;
+    public bool AlreadyMigrated { get; set; }
 
     public ILogger Logger { get; }
     public PostgresContainerFixture PostgresContainerFixture { get; }
@@ -58,9 +65,34 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     public IHttpContextAccessor HttpContextAccessor =>
         _httpContextAccessor ??= ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
+    /// <summary>
+    /// We should not dispose this GuestClient, because we reuse it in our tests
+    /// </summary>
+    public HttpClient GuestClient
+    {
+        get
+        {
+            if (_guestClient == null)
+            {
+                _guestClient = Factory.CreateClient();
+                // Set the media type of the request to JSON - we need this for getting problem details result for all http calls because problem details just return response for request with media type JSON
+                _guestClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            }
+
+            return _guestClient;
+        }
+    }
+
+    /// <summary>
+    /// We should not dispose this AdminHttpClient, because we reuse it in our tests
+    /// </summary>
     public HttpClient AdminHttpClient => _adminClient ??= CreateAdminHttpClient();
+
+    /// <summary>
+    /// We should not dispose this NormalUserHttpClient, because we reuse it in our tests
+    /// </summary>
     public HttpClient NormalUserHttpClient => _normalClient ??= CreateNormalUserHttpClient();
-    public HttpClient GuestClient => _guestClient ??= Factory.CreateClient();
+
     public WireMockServer WireMockServer { get; }
     public string? WireMockServerUrl { get; }
 
@@ -80,13 +112,17 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             .CreateLogger()
             .ForContext<SharedFixture<TEntryPoint>>();
 
+        // //https://github.com/testcontainers/testcontainers-dotnet/blob/8db93b2eb28bc2bc7d579981da1651cd41ec03f8/docs/custom_configuration/index.md#enable-logging
+        // TestcontainersSettings.Logger = new Serilog.Extensions.Logging.SerilogLoggerFactory(Logger).CreateLogger(
+        //     "TestContainer"
+        // );
+
         // Service provider will build after getting with get accessors, we don't want to build our service provider here
         PostgresContainerFixture = new PostgresContainerFixture(messageSink);
         MongoContainerFixture = new MongoContainerFixture(messageSink);
         //Mongo2GoFixture = new Mongo2GoFixture(messageSink);
         RabbitMqContainerFixture = new RabbitMQContainerFixture(messageSink);
 
-        Factory = new CustomWebApplicationFactory<TEntryPoint>();
         AutoFaker.Configure(b =>
         {
             // configure global AutoBogus settings here
@@ -110,33 +146,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         WireMockServer = WireMockServer.Start();
         WireMockServerUrl = WireMockServer.Url;
 
-        WithConfigureAppConfigurations(
-            (context, builder) =>
-            {
-                // add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
-                // https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
-                builder.AddInMemoryCollection(
-                    new TestConfigurations
-                    {
-                        { "PostgresOptions:ConnectionString", PostgresContainerFixture.Container.ConnectionString },
-                        {
-                            "MessagePersistenceOptions:ConnectionString",
-                            PostgresContainerFixture.Container.ConnectionString
-                        },
-                        { "MongoOptions:ConnectionString", MongoContainerFixture.Container.ConnectionString },
-                        { "MongoOptions:DatabaseName", MongoContainerFixture.Container.Database },
-                        //{"MongoOptions:ConnectionString", Mongo2GoFixture.MongoDbRunner.ConnectionString}, //initialize mongo2go connection
-                        { "RabbitMqOptions:UserName", RabbitMqContainerFixture.Container.Username },
-                        { "RabbitMqOptions:Password", RabbitMqContainerFixture.Container.Password },
-                        { "RabbitMqOptions:Host", RabbitMqContainerFixture.Container.Hostname },
-                        { "RabbitMqOptions:Port", RabbitMqContainerFixture.Container.Port.ToString() },
-                    }
-                );
-
-                // Or we can override configuration explicitly and it is accessible via IOptions<> and Configuration
-                context.Configuration["WireMockUrl"] = WireMockServerUrl;
-            }
-        );
+        Factory = new CustomWebApplicationFactory<TEntryPoint>();
     }
 
     public async Task InitializeAsync()
@@ -150,6 +160,54 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         //await Mongo2GoFixture.InitializeAsync();
         await RabbitMqContainerFixture.InitializeAsync();
 
+        // with `AddOverrideEnvKeyValues` config changes are accessible during services registration
+        Factory.AddOverrideEnvKeyValues(
+            new Dictionary<string, string>
+            {
+                {
+                    $"{nameof(PostgresOptions)}:{nameof(PostgresOptions.ConnectionString)}",
+                    PostgresContainerFixture.Container.GetConnectionString()
+                },
+                {
+                    $"{nameof(MessagePersistenceOptions)}:{nameof(PostgresOptions.ConnectionString)}",
+                    PostgresContainerFixture.Container.GetConnectionString()
+                },
+                {
+                    $"{nameof(MongoOptions)}:{nameof(MongoOptions.ConnectionString)}",
+                    MongoContainerFixture.Container.GetConnectionString()
+                },
+                {
+                    $"{nameof(MongoOptions)}:{nameof(MongoOptions.DatabaseName)}",
+                    MongoContainerFixture.MongoContainerOptions.DatabaseName
+                },
+                //{"MongoOptions:ConnectionString", Mongo2GoFixture.MongoDbRunner.ConnectionString}, //initialize mongo2go connection
+                {
+                    $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.UserName)}",
+                    RabbitMqContainerFixture.RabbitMqContainerOptions.UserName
+                },
+                {
+                    $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Password)}",
+                    RabbitMqContainerFixture.RabbitMqContainerOptions.Password
+                },
+                {
+                    $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Host)}",
+                    RabbitMqContainerFixture.Container.Hostname
+                },
+                {
+                    $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Port)}",
+                    RabbitMqContainerFixture.HostPort.ToString()
+                },
+            }
+        );
+
+        // with `AddOverrideInMemoryConfig` config changes are accessible after services registration and build process
+        Factory.AddOverrideInMemoryConfig(new Dictionary<string, string>() { });
+        Factory.ConfigurationAction += cfg =>
+        {
+            // Or we can override configuration explicitly and it is accessible via IOptions<> and Configuration
+            cfg["WireMockUrl"] = WireMockServerUrl;
+        };
+
         var initCallback = OnSharedFixtureInitialized?.Invoke();
         if (initCallback != null)
             await initCallback;
@@ -157,8 +215,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await MasstransitHarness.Stop(cancellationToken: CancellationToken.None);
-
         await PostgresContainerFixture.DisposeAsync();
         await MongoContainerFixture.DisposeAsync();
         //await Mongo2GoFixture.DisposeAsync();
@@ -216,7 +272,13 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         return Factory;
     }
 
-    public void ConfigureTestServices(Action<IServiceCollection>? services = null)
+    public void ConfigureTestConfigureApp(Action<HostBuilderContext, IConfigurationBuilder>? configBuilder)
+    {
+        if (configBuilder is not null)
+            Factory.TestConfigureApp += configBuilder;
+    }
+
+    public void ConfigureTestServices(Action<IServiceCollection>? services)
     {
         if (services is not null)
             Factory.TestConfigureServices += services;
@@ -274,7 +336,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         ICommand<TResponse> request,
         CancellationToken cancellationToken = default
     )
-        where TResponse : notnull
+        where TResponse : class
     {
         return await ExecuteScopeAsync(async sp =>
         {
@@ -291,7 +353,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         {
             var commandProcessor = sp.GetRequiredService<ICommandProcessor>();
 
-            return await commandProcessor.SendAsync(request, cancellationToken);
+            await commandProcessor.SendAsync(request, cancellationToken);
         });
     }
 
@@ -325,7 +387,11 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     }
 
     // Ref: https://tech.energyhelpline.com/in-memory-testing-with-masstransit/
-    public async ValueTask WaitUntilConditionMet(Func<Task<bool>> conditionToMet, int? timeoutSecond = null)
+    public async ValueTask WaitUntilConditionMet(
+        Func<Task<bool>> conditionToMet,
+        int? timeoutSecond = null,
+        string? exception = null
+    )
     {
         var time = timeoutSecond ?? 300;
 
@@ -336,7 +402,9 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         {
             if (timeoutExpired)
             {
-                throw new TimeoutException("Condition not met for the test.");
+                throw new TimeoutException(
+                    exception ?? $"Condition not met for the test in the '{timeoutExpired}' second."
+                );
             }
 
             await Task.Delay(100);
@@ -432,7 +500,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             return await ExecuteScopeAsync(async sp =>
             {
                 var messagePersistenceService = sp.GetService<IMessagePersistenceService>();
-                Guard.Against.Null(messagePersistenceService, nameof(messagePersistenceService));
+                messagePersistenceService.NotBeNull();
 
                 var filter = await messagePersistenceService.GetByFilterAsync(
                     x =>
@@ -443,7 +511,8 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
                 var res = filter.Any(x => x.MessageStatus == MessageStatus.Processed);
 
-                if (res is true) { }
+                if (res is true)
+                { }
 
                 return res;
             });
@@ -460,7 +529,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             return await ExecuteScopeAsync(async sp =>
             {
                 var messagePersistenceService = sp.GetService<IMessagePersistenceService>();
-                Guard.Against.Null(messagePersistenceService, nameof(messagePersistenceService));
+                messagePersistenceService.NotBeNull();
 
                 var filter = await messagePersistenceService.GetByFilterAsync(
                     x =>
@@ -480,10 +549,13 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         var adminClient = Factory.CreateClient();
 
+        // Set the media type of the request to JSON - we need this for getting problem details result for all http calls because problem details just return response for request with media type JSON
+        adminClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
         //https://github.com/webmotions/fake-authentication-jwtbearer/issues/14
         var claims = CreateAdminUserMock().Claims;
 
-        adminClient.SetFakeBearerToken(claims);
+        adminClient.SetFakeJwtBearerClaims(claims);
 
         return adminClient;
     }
@@ -492,10 +564,13 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         var userClient = Factory.CreateClient();
 
+        // Set the media type of the request to JSON - we need this for getting problem details result for all http calls because problem details just return response for request with media type JSON
+        userClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
         //https://github.com/webmotions/fake-authentication-jwtbearer/issues/14
         var claims = CreateNormalUserMock().Claims;
 
-        userClient.SetFakeBearerToken(claims);
+        userClient.SetFakeJwtBearerClaims(claims);
 
         return userClient;
     }

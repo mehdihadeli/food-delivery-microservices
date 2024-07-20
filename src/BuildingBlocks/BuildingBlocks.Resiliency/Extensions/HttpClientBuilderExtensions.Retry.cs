@@ -1,6 +1,4 @@
-using Ardalis.GuardClauses;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Resiliency.Retry;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -17,7 +15,7 @@ public static partial class HttpClientBuilderExtensions
             {
                 var options = sp.GetRequiredService<IConfiguration>().BindOptions<PolicyOptions>(nameof(PolicyOptions));
 
-                Guard.Against.Null(options, nameof(options));
+                options.NotBeNull();
 
                 var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
                 var retryLogger = loggerFactory.CreateLogger("PollyHttpRetryPoliciesLogger");

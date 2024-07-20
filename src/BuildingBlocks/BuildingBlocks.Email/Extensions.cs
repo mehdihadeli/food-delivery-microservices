@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Email.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace BuildingBlocks.Email;
 
@@ -19,11 +19,11 @@ public static class Extensions
 
         if (provider == EmailProvider.SendGrid)
         {
-            services.AddSingleton<IEmailSender, SendGridEmailSender>();
+            services.TryAddSingleton<IEmailSender, SendGridEmailSender>();
         }
         else
         {
-            services.AddSingleton<IEmailSender, MailKitEmailSender>();
+            services.TryAddSingleton<IEmailSender, MailKitEmailSender>();
         }
 
         if (configureOptions is { })

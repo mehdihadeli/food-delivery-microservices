@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
 using BuildingBlocks.Abstractions.Domain;
+using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
 using BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 

@@ -1,10 +1,9 @@
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extenions;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
-using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -14,22 +13,33 @@ namespace BuildingBlocks.OpenTelemetry;
 
 public static class Extensions
 {
-    public static WebApplicationBuilder AddCustomOpenTelemetry(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddCustomOpenTelemetry(
+        this WebApplicationBuilder builder,
+        Action<OpenTelemetryOptions>? configurator = null
+    )
     {
-        var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
         var options = builder.Configuration.BindOptions<OpenTelemetryOptions>();
+        configurator?.Invoke(options);
 
-        builder.Services.AddOpenTelemetryTracing(tracerProviderBuilder =>
-        {
-            tracerProviderBuilder
-                .SetResourceBuilder(resourceBuilder)
-                .AddSource("MassTransit") // https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/326
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddEntityFrameworkCoreInstrumentation();
+        // add option to the dependency injection
+        builder.Services.AddValidationOptions<OpenTelemetryOptions>(opt => configurator?.Invoke(opt));
 
-            SetTracingExporters(options, tracerProviderBuilder);
-        });
+        var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
+
+        builder.Services
+            .AddOpenTelemetry()
+            .WithTracing(tracerProviderBuilder =>
+            {
+                tracerProviderBuilder
+                    .SetResourceBuilder(resourceBuilder)
+                    // https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/326
+                    .AddSource("MassTransit")
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation();
+
+                SetTracingExporters(options, tracerProviderBuilder);
+            });
 
         builder.Logging.AddOpenTelemetry(o =>
         {
@@ -38,40 +48,36 @@ public static class Extensions
             SetLogExporters(options, o);
         });
 
-        builder.Services.AddOpenTelemetryMetrics(metrics =>
-        {
-            metrics
-                .SetResourceBuilder(resourceBuilder)
-                .AddPrometheusExporter()
-                .AddAspNetCoreInstrumentation()
-                .AddRuntimeInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddEventCountersInstrumentation(c =>
-                {
-                    // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
-                    c.AddEventSources(
-                        "Microsoft.AspNetCore.Hosting",
-                        "System.Net.Http",
-                        "System.Net.Sockets",
-                        "System.Net.NameResolution",
-                        "System.Net.Security"
-                    );
-                });
+        builder.Services
+            .AddOpenTelemetry()
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .SetResourceBuilder(resourceBuilder)
+                    .AddPrometheusExporter()
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEventCountersInstrumentation(c =>
+                    {
+                        // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
+                        c.AddEventSources(
+                            "Microsoft.AspNetCore.Hosting",
+                            "System.Net.Http",
+                            "System.Net.Sockets",
+                            "System.Net.NameResolution",
+                            "System.Net.Security"
+                        );
+                    });
 
-            SetMetricsExporters(options, metrics);
-        });
+                SetMetricsExporters(options, metrics);
+            });
 
         builder.Services.Configure<OpenTelemetryLoggerOptions>(opt =>
         {
             opt.IncludeScopes = true;
             opt.ParseStateValues = true;
             opt.IncludeFormattedMessage = true;
-        });
-
-        // For options which can be configured from code only.
-        builder.Services.Configure<AspNetCoreInstrumentationOptions>(aspNetCoreInstrumentationOptions =>
-        {
-            aspNetCoreInstrumentationOptions.Filter = _ => true;
         });
 
         return builder;
@@ -86,10 +92,10 @@ public static class Extensions
                 break;
 
             case nameof(LogExporterType.OTLP):
-                loggerOptions.AddOtlpExporter(otlpOptions =>
-                {
-                    otlpOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint);
-                });
+                loggerOptions.AddOtlpExporter((otelExporterOptions, logRecorderOptions) =>
+                 {
+                     otelExporterOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint);
+                 });
                 break;
             case nameof(LogExporterType.None):
                 break;

@@ -1,13 +1,9 @@
-using Ardalis.GuardClauses;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Reflection.Extensions;
-using BuildingBlocks.Core.Types.Extensions;
 using BuildingBlocks.Persistence.EfCore.Postgres;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using DotNet.Testcontainers.Containers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Testcontainers.PostgreSql;
 using Tests.Shared.Helpers;
 using Xunit.Sdk;
 
@@ -21,28 +17,24 @@ public class EfDbContextTransactionFixture<TContext> : IAsyncLifetime
     private readonly string? _migrationAssembly;
     private bool _isInnerTransaction;
     private IDbContextTransaction _transaction = null!;
+    public PostgresContainerOptions PostgresContainerOptions { get; }
     public TContext DbContext { get; private set; } = default!;
-    public PostgreSqlTestcontainer Container { get; }
+    public PostgreSqlContainer Container { get; }
+    public int HostPort => Container.GetMappedPublicPort(PostgreSqlBuilder.PostgreSqlPort);
+    public int TcpContainerPort => PostgreSqlBuilder.PostgreSqlPort;
 
     public EfDbContextTransactionFixture(IMessageSink messageSink)
     {
         _messageSink = messageSink;
         _migrationAssembly = typeof(TContext).Assembly.GetName().Name;
-        var postgresOptions = ConfigurationHelper.BindOptions<PostgresContainerOptions>();
-        Guard.Against.Null(postgresOptions);
+        PostgresContainerOptions = ConfigurationHelper.BindOptions<PostgresContainerOptions>();
+        PostgresContainerOptions.NotBeNull();
 
-        var postgresContainerBuilder = new TestcontainersBuilder<PostgreSqlTestcontainer>()
-            .WithDatabase(
-                new PostgreSqlTestcontainerConfiguration
-                {
-                    Database = postgresOptions.DatabaseName,
-                    Username = postgresOptions.UserName,
-                    Password = postgresOptions.Password,
-                }
-            )
+        var postgresContainerBuilder = new PostgreSqlBuilder()
+            .WithDatabase(PostgresContainerOptions.DatabaseName)
             .WithCleanUp(true)
-            .WithName(postgresOptions.Name)
-            .WithImage(postgresOptions.ImageName);
+            .WithName(PostgresContainerOptions.Name)
+            .WithImage(PostgresContainerOptions.ImageName);
 
         Container = postgresContainerBuilder.Build();
     }
@@ -70,7 +62,7 @@ public class EfDbContextTransactionFixture<TContext> : IAsyncLifetime
     {
         await Container.StartAsync();
         var options = ConfigurationHelper.BindOptions<PostgresOptions>();
-        options.ConnectionString = Container.ConnectionString;
+        options.ConnectionString = Container.GetConnectionString();
         options.MigrationAssembly = _migrationAssembly;
 
         var optionBuilder = new DbContextOptionsBuilder<TContext>()
@@ -106,14 +98,5 @@ public class EfDbContextTransactionFixture<TContext> : IAsyncLifetime
             // https://github.com/dotnet/efcore/issues/6233#issuecomment-242693262
             _transaction = await DbContext.Database.BeginTransactionAsync();
         });
-    }
-
-    private sealed class PostgresContainerOptions
-    {
-        public string Name { get; set; } = "postgres_" + Guid.NewGuid();
-        public string ImageName { get; set; } = "postgres:latest";
-        public string DatabaseName { get; set; } = "test_db";
-        public string UserName { get; set; } = "postgres";
-        public string Password { get; set; } = "postgres";
     }
 }

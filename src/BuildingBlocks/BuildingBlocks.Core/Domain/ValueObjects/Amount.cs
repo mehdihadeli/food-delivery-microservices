@@ -1,9 +1,13 @@
-using BuildingBlocks.Core.Exception.Types;
+using System.Diagnostics.CodeAnalysis;
+using BuildingBlocks.Core.Domain.Exceptions;
+using BuildingBlocks.Core.Extensions;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 namespace BuildingBlocks.Core.Domain.ValueObjects;
 
 // https://learn.microsoft.com/en-us/ef/core/modeling/constructors
+// https://event-driven.io/en/how_to_validate_business_logic/
+// https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 public record Amount
 {
     // EF
@@ -18,10 +22,19 @@ public record Amount
     public decimal Value { get; private set; }
     public static Amount Zero => Of(0);
 
+    public static Amount Of([NotNull] decimal? value)
+    {
+        value.NotBeNull();
+
+        return Of(value.Value);
+    }
+
     public static Amount Of(decimal value)
     {
+        value.NotBeNegativeOrZero();
+
         // validations should be placed here instead of constructor
-        if (value is < 0 or > 1000000)
+        if (value > 1000000)
         {
             throw new InvalidAmountException(value);
         }
@@ -42,4 +55,10 @@ public record Amount
     public static Amount operator +(Amount a, Amount b) => new(a.Value + b.Value);
 
     public static Amount operator -(Amount a, Amount b) => new(a.Value - b.Value);
+
+    // https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/deconstruct#user-defined-types
+    // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record#positional-syntax-for-property-definition
+    // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record#nondestructive-mutation
+    // https://alexanderzeitler.com/articles/deconstructing-a-csharp-record-with-properties/
+    public void Deconstruct(out decimal value) => value = Value;
 }

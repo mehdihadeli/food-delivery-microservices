@@ -1,10 +1,6 @@
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Persistence.Mongo;
-using BuildingBlocks.Persistence.Mongo.Serializers;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Conventions;
-using MongoDB.Bson.Serialization.Serializers;
+using Humanizer;
 using MongoDB.Driver;
 
 namespace BuildingBlocks.Persistence.Mongo;
@@ -15,7 +11,7 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
     public IClientSessionHandle? Session { get; set; }
     public IMongoDatabase Database { get; }
     public IMongoClient MongoClient { get; }
-    protected readonly List<Func<Task>> _commands;
+    protected readonly IList<Func<Task>> _commands;
 
     public MongoDbContext(MongoOptions options)
     {
@@ -29,7 +25,7 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
 
     public IMongoCollection<T> GetCollection<T>(string? name = null)
     {
-        return Database.GetCollection<T>(name ?? typeof(T).Name.ToLower());
+        return Database.GetCollection<T>(name ?? typeof(T).Name.Pluralize().Underscore());
     }
 
     public void Dispose()
@@ -44,19 +40,22 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
     {
         var result = _commands.Count;
 
+        // Standalone servers do not support transactions.
         using (Session = await MongoClient.StartSessionAsync(cancellationToken: cancellationToken))
         {
-            Session.StartTransaction();
-
             try
             {
-                var commandTasks = _commands.Select(c => c());
+                Session.StartTransaction();
 
-                await Task.WhenAll(commandTasks);
+                await SaveAction();
 
                 await Session.CommitTransactionAsync(cancellationToken);
             }
-            catch (System.Exception ex)
+            catch (NotSupportedException notSupportedException)
+            {
+                await SaveAction();
+            }
+            catch (Exception ex)
             {
                 await Session.AbortTransactionAsync(cancellationToken);
                 _commands.Clear();
@@ -65,7 +64,15 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
         }
 
         _commands.Clear();
+
         return result;
+    }
+
+    private async Task SaveAction()
+    {
+        var commandTasks = _commands.Select(c => c());
+
+        await Task.WhenAll(commandTasks);
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)

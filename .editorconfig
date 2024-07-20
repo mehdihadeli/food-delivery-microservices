@@ -368,6 +368,9 @@ dotnet_diagnostic.sa1013.severity = Suggestion
 # A call to an instance member of the local class or a base class is not prefixed with 'this.', within a C# code file.
 dotnet_diagnostic.sa1101.severity = None
 
+# The keywords within the declaration of an element do not follow a standard ordering scheme.
+dotnet_diagnostic.SA1206.severity = None
+
 ##################################################################################
 ## https://github.com/meziantou/Meziantou.Analyzer/tree/main/docs
 ## Meziantou.Analyzer

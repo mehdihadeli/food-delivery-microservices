@@ -17,5 +17,13 @@
   "terminal.integrated.defaultProfile.windows": "PowerShell",
   "terminal.integrated.defaultProfile.linux": "zsh",
   "powershell.cwd": "~",
-  "terminal.external.windowsExec": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe"
+  "terminal.external.windowsExec": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
+  "[jsonc]": {
+	"editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.smoothScrolling": true,
+  "editor.wordWrap": "on",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.guides.bracketPairs": true,
+  "explorer.experimental.fileNesting.enabled": true
 }

@@ -10,9 +10,9 @@ internal record ProductCreatedNotification(ProductCreated DomainEvent)
 
 internal class ProductCreatedHandler : IDomainNotificationEventHandler<ProductCreatedNotification>
 {
-    private readonly IBus _bus;
+    private readonly IExternalEventBus _bus;
 
-    public ProductCreatedHandler(IBus bus)
+    public ProductCreatedHandler(IExternalEventBus bus)
     {
         _bus = bus;
     }

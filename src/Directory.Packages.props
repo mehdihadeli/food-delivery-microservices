@@ -144,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="MassTransit" Version="8.2.3" />
+    <PackageVersion Include="MassTransit.Abstractions" Version="8.2.3" />
     <PackageVersion Include="MassTransit.RabbitMQ" Version="8.2.3" />
   </ItemGroup>
   <ItemGroup>

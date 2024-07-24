@@ -2,6 +2,7 @@ using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
+using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
 using BuildingBlocks.Email;
@@ -125,6 +126,11 @@ public static partial class WebApplicationBuilderExtensions
                 typeof(EfTxBehavior<,>)
             }
         );
+
+        builder.Services.AddHeaderPropagation(options =>
+        {
+            options.HeaderNames.Add(MessageHeaders.CorrelationId);
+        });
 
         builder.Services.AddPostgresMessagePersistence(builder.Configuration);
 

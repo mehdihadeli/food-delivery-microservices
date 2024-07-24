@@ -33,12 +33,12 @@ public static class StreamEventDataSerializationExtensions
         var eventData = streamEventData.DeserializeData();
         var metaData = streamEventData.DeserializeMetadata();
 
-        var type = typeof(StreamEvent<>).MakeGenericType(eventData.GetType());
+        var type = typeof(StreamEventEnvelope<>).MakeGenericType(eventData.GetType());
 
         return (StreamEvent)Activator.CreateInstance(type, eventData, metaData)!;
     }
 
-    public static StreamEventData ToJsonStreamEventData(this IStreamEvent @event)
+    public static StreamEventData ToJsonStreamEventData(this IStreamEventEnvelope @event)
     {
         return ToJsonStreamEventData(@event.Data, @event.Metadata);
     }

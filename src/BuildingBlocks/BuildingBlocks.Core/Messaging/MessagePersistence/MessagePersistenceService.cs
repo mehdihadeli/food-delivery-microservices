@@ -17,7 +17,7 @@ public class MessagePersistenceService : IMessagePersistenceService
     private readonly IMessagePersistenceRepository _messagePersistenceRepository;
     private readonly IMessageSerializer _messageSerializer;
     private readonly IMediator _mediator;
-    private readonly IBus _bus;
+    private readonly IExternalEventBus _bus;
     private readonly ISerializer _serializer;
 
     public MessagePersistenceService(
@@ -25,7 +25,7 @@ public class MessagePersistenceService : IMessagePersistenceService
         IMessagePersistenceRepository messagePersistenceRepository,
         IMessageSerializer messageSerializer,
         IMediator mediator,
-        IBus bus,
+        IExternalEventBus bus,
         ISerializer serializer
     )
     {
@@ -49,7 +49,7 @@ public class MessagePersistenceService : IMessagePersistenceService
         TMessageEnvelope messageEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TMessageEnvelope : MessageEnvelope
+        where TMessageEnvelope : EventEnvelope
     {
         await AddMessageCore(messageEnvelope, MessageDeliveryType.Outbox, cancellationToken);
     }
@@ -58,7 +58,7 @@ public class MessagePersistenceService : IMessagePersistenceService
         TMessageEnvelope messageEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TMessageEnvelope : MessageEnvelope
+        where TMessageEnvelope : EventEnvelope
     {
         await AddMessageCore(messageEnvelope, MessageDeliveryType.Inbox, cancellationToken);
     }
@@ -69,7 +69,7 @@ public class MessagePersistenceService : IMessagePersistenceService
     )
         where TCommand : class, IInternalCommand
     {
-        await AddMessageCore(new MessageEnvelope(internalCommand), MessageDeliveryType.Internal, cancellationToken);
+        await AddMessageCore(new EventEnvelope(internalCommand), MessageDeliveryType.Internal, cancellationToken);
     }
 
     public async Task AddNotificationAsync(
@@ -89,7 +89,7 @@ public class MessagePersistenceService : IMessagePersistenceService
     }
 
     private async Task AddMessageCore(
-        MessageEnvelope messageEnvelope,
+        EventEnvelope messageEnvelope,
         MessageDeliveryType deliveryType,
         CancellationToken cancellationToken = default
     )
@@ -165,7 +165,7 @@ public class MessagePersistenceService : IMessagePersistenceService
 
     private async Task ProcessOutbox(StoreMessage message, CancellationToken cancellationToken)
     {
-        MessageEnvelope? messageEnvelope = _messageSerializer.Deserialize<MessageEnvelope>(message.Data, true);
+        EventEnvelope? messageEnvelope = _messageSerializer.Deserialize<EventEnvelope>(message.Data, true);
 
         if (messageEnvelope is null || messageEnvelope.Message is null)
             return;
@@ -190,7 +190,7 @@ public class MessagePersistenceService : IMessagePersistenceService
 
     private async Task ProcessInternal(StoreMessage message, CancellationToken cancellationToken)
     {
-        MessageEnvelope? messageEnvelope = _messageSerializer.Deserialize<MessageEnvelope>(message.Data, true);
+        EventEnvelope? messageEnvelope = _messageSerializer.Deserialize<EventEnvelope>(message.Data, true);
 
         if (messageEnvelope is null || messageEnvelope.Message is null)
             return;

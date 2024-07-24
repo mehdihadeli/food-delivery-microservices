@@ -1,19 +1,16 @@
-using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Types.Extensions;
 
 namespace BuildingBlocks.Core.Messaging.Extensions;
 
 public static class HeadersExtensions
 {
-    public static void AddCorrelationId(this IDictionary<string, object?> header, string correlationId) =>
+    public static void AddCorrelationId(this IDictionary<string, object?> header, Guid correlationId) =>
         header.Add(MessageHeaders.CorrelationId, correlationId);
 
     public static Guid? GetCorrelationId(this IDictionary<string, object?> header)
     {
-        var id = header.Get<string>(MessageHeaders.CorrelationId);
-        Guid.TryParse(id, out Guid result);
-
-        return result;
+        var id = header.Get<Guid?>(MessageHeaders.CorrelationId);
+        return id;
     }
 
     public static void AddMessageName(this IDictionary<string, object?> header, string messageName) =>
@@ -28,15 +25,14 @@ public static class HeadersExtensions
     public static void AddMessageType(this IDictionary<string, object?> header, string messageType) =>
         header.Add(MessageHeaders.Type, messageType);
 
-    public static void AddMessageId(this IDictionary<string, object?> header, string messageId) =>
+    public static void AddMessageId(this IDictionary<string, object?> header, Guid messageId) =>
         header.Add(MessageHeaders.MessageId, messageId);
 
     public static Guid? GetMessageId(this IDictionary<string, object?> header)
     {
-        var id = header.Get<string>(MessageHeaders.MessageId);
-        Guid.TryParse(id, out Guid result);
+        var id = header.Get<Guid?>(MessageHeaders.MessageId);
 
-        return result;
+        return id;
     }
 
     public static void AddCausationId(this IDictionary<string, object?> header, string causationId) =>

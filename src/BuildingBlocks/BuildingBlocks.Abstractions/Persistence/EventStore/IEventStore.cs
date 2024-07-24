@@ -20,7 +20,7 @@ public interface IEventStore
     /// <param name="maxCount">Number of items to read.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
     /// <returns>Task with events for aggregate.</returns>
-    Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
+    Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         int maxCount = int.MaxValue,
@@ -34,7 +34,7 @@ public interface IEventStore
     /// <param name="fromVersion">All events after this should be returned.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
     /// <returns>Task with events for aggregate.</returns>
-    Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
+    Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         CancellationToken cancellationToken = default
@@ -49,7 +49,7 @@ public interface IEventStore
     /// <returns></returns>
     Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEvent @event,
+        IStreamEventEnvelope @event,
         CancellationToken cancellationToken = default
     );
 
@@ -63,7 +63,7 @@ public interface IEventStore
     /// <returns></returns>
     Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEvent @event,
+        IStreamEventEnvelope @event,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     );
@@ -78,7 +78,7 @@ public interface IEventStore
     /// <returns></returns>
     Task<AppendResult> AppendEventsAsync(
         string streamId,
-        IReadOnlyCollection<IStreamEvent> events,
+        IReadOnlyCollection<IStreamEventEnvelope> events,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     );

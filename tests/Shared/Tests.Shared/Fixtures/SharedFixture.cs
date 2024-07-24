@@ -29,7 +29,7 @@ using Tests.Shared.Extensions;
 using Tests.Shared.Factory;
 using WireMock.Server;
 using Xunit.Sdk;
-using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
+using IExternalEventBus = BuildingBlocks.Abstractions.Messaging.IExternalEventBus;
 
 namespace Tests.Shared.Fixtures;
 
@@ -106,8 +106,8 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         messageSink.OnMessage(new DiagnosticMessage("Constructing SharedFixture..."));
 
         //https://github.com/trbenning/serilog-sinks-xunit
-        Logger = new LoggerConfiguration().MinimumLevel
-            .Verbose()
+        Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
             .WriteTo.TestOutput(messageSink)
             .CreateLogger()
             .ForContext<SharedFixture<TEntryPoint>>();
@@ -380,7 +380,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         await ExecuteScopeAsync(async sp =>
         {
-            var bus = sp.GetRequiredService<IBus>();
+            var bus = sp.GetRequiredService<IExternalEventBus>();
 
             await bus.PublishAsync(message, headers, cancellationToken);
         });
@@ -511,8 +511,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
                 var res = filter.Any(x => x.MessageStatus == MessageStatus.Processed);
 
-                if (res is true)
-                { }
+                if (res is true) { }
 
                 return res;
             });

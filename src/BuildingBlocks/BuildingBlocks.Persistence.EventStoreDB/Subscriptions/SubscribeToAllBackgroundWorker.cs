@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Domain.Events;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 using BuildingBlocks.Core.Threading;
 using BuildingBlocks.Core.Types;

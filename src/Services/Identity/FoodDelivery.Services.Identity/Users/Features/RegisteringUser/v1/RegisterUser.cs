@@ -148,7 +148,7 @@ internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserR
         // publish our integration event and save to outbox should do in same transaction of our business logic actions. we could use TxBehaviour or ITxDbContextExecutes interface
         // This service is not DDD, so we couldn't use DomainEventPublisher to publish mapped integration events
         await _messagePersistenceService.AddPublishMessageAsync(
-            new MessageEnvelope<UserRegisteredV1>(userRegistered, new Dictionary<string, object?>()),
+            new EventEnvelope<UserRegisteredV1>(userRegistered, new Dictionary<string, object?>()),
             cancellationToken
         );
 

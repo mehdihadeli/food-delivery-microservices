@@ -2,6 +2,7 @@ using System.Threading.RateLimiting;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
 using BuildingBlocks.Email;
@@ -59,6 +60,11 @@ internal static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomOpenTelemetry();
 
+        builder.Services.AddHeaderPropagation(options =>
+        {
+            options.HeaderNames.Add(MessageHeaders.CorrelationId);
+        });
+
         if (builder.Environment.IsTest() == false)
         {
             builder.AddCustomHealthCheck(healthChecksBuilder =>
@@ -106,19 +112,17 @@ internal static partial class WebApplicationBuilderExtensions
         builder.Services.AddRateLimiter(options =>
         {
             // rate limiter that limits all to 10 requests per minute, per authenticated username (or hostname if not authenticated)
-            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
-                httpContext =>
-                    RateLimitPartition.GetFixedWindowLimiter(
-                        partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
-                        factory: partition =>
-                            new FixedWindowRateLimiterOptions
-                            {
-                                AutoReplenishment = true,
-                                PermitLimit = 10,
-                                QueueLimit = 0,
-                                Window = TimeSpan.FromMinutes(1)
-                            }
-                    )
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+                    factory: partition => new FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true,
+                        PermitLimit = 10,
+                        QueueLimit = 0,
+                        Window = TimeSpan.FromMinutes(1)
+                    }
+                )
             );
         });
 

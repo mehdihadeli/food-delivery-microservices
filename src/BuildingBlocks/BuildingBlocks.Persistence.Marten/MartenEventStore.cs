@@ -21,7 +21,7 @@ public class MartenEventStore : IEventStore
         return Task.FromResult(state != null);
     }
 
-    public async Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
+    public async Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         int maxCount = int.MaxValue,
@@ -31,12 +31,12 @@ public class MartenEventStore : IEventStore
         var events = await Filter(streamId, fromVersion?.Value, null).ToListAsync(cancellationToken);
 
         // events that we saved are IStreamEvent
-        var streamEvents = events.Select(ev => ev.Data).OfType<IStreamEvent>().ToImmutableList();
+        var streamEvents = events.Select(ev => ev.Data).OfType<IStreamEventEnvelope>().ToImmutableList();
 
         return streamEvents;
     }
 
-    public Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
+    public Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         CancellationToken cancellationToken = default
@@ -47,7 +47,7 @@ public class MartenEventStore : IEventStore
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEvent @event,
+        IStreamEventEnvelope @event,
         CancellationToken cancellationToken = default
     )
     {
@@ -61,7 +61,7 @@ public class MartenEventStore : IEventStore
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEvent @event,
+        IStreamEventEnvelope @event,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )
@@ -71,7 +71,7 @@ public class MartenEventStore : IEventStore
 
     public Task<AppendResult> AppendEventsAsync(
         string streamId,
-        IReadOnlyCollection<IStreamEvent> events,
+        IReadOnlyCollection<IStreamEventEnvelope> events,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )

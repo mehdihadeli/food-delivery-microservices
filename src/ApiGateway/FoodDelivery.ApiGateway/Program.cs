@@ -1,13 +1,16 @@
 using System.IdentityModel.Tokens.Jwt;
+using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Logging;
+using MassTransit;
 using Microsoft.IdentityModel.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SpectreConsole;
 using Yarp.ReverseProxy.Transforms;
+using MessageHeaders = BuildingBlocks.Core.Messaging.MessageHeaders;
 
-Log.Logger = new LoggerConfiguration().MinimumLevel
-    .Override("Microsoft", LogEventLevel.Information)
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
     .Enrich.FromLogContext()
     .WriteTo.SpectreConsole(
         "{Timestamp:HH:mm:ss} [{Level:u4}] {Message:lj}{NewLine}{Exception}",
@@ -24,8 +27,8 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 // https://microsoft.github.io/reverse-proxy/articles/index.html
 // https://microsoft.github.io/reverse-proxy/articles/authn-authz.html
 // https://microsoft.github.io/reverse-proxy/articles/transforms.html
-builder.Services
-    .AddReverseProxy()
+builder
+    .Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("yarp"))
     // .AddTransforms<AccessTokenTransformProvider>()
     .AddTransforms(transforms =>
@@ -33,11 +36,8 @@ builder.Services
         // https://microsoft.github.io/reverse-proxy/articles/transforms.html
         transforms.AddRequestTransform(transform =>
         {
-            var requestId = Guid.NewGuid().ToString("N");
-            var correlationId = Guid.NewGuid().ToString("N");
-
-            transform.ProxyRequest.Headers.Add("X-Request-InternalCommandId", requestId);
-            transform.ProxyRequest.Headers.Add("X-Correlation-InternalCommandId", correlationId);
+            // add correlation-id in the initial life cycle of the request
+            transform.ProxyRequest.Headers.Add(MessageHeaders.CorrelationId, NewId.NextGuid().ToString());
 
             return ValueTask.CompletedTask;
         });

@@ -4,8 +4,7 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?logoColor=white&style=for-the-badge)](http://commitizen.github.io/cz-cli/)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release&style=for-the-badge&logoColor=white)](https://github.com/semantic-release/semantic-release)
 
-[![Gitpod](https://img.shields.io/static/v1?style=for-the-badge&message=Open%20in%20Gitpod&color=222222&logo=Gitpod&logoColor=FFAE33&label=)](https://gitpod.io/https://github.com/mehdihadeli/food-delivery-microservices)
-[![Codespaces](https://img.shields.io/static/v1?style=for-the-badge&message=Open%20in%20GitHub%20Codespaces&color=181717&logo=GitHub&logoColor=FFFFFF&label=)](https://mehdihadeli-humble-space-couscous-5x5pqwwjx5c7664.github.dev)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/mehdihadeli/food-delivery-microservices)
 
 <!-- https://raw.githubusercontent.com/progfay/shields-with-icon/master/README.md -->
 
@@ -84,9 +83,8 @@ Thanks a bunch for supporting me!
 
 > This project is in progress, new features will be added over time.
 
-| Feature          | Architecture Pattern                  | Status         | CI-CD                                                                                                                                                                                                                                                                         |
-| ---------------- | ------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-
+| Feature | Architecture Pattern | Status | CI-CD |
+| ------- | -------------------- | ------ | ----- |
 
 ## Technologies - Libraries
 
@@ -166,7 +164,7 @@ npm pkg set scripts.prepare="husky install && dotnet tool restore"
 npm pkg set scripts.install-dev-cert-bash="curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
 ```
 
-``` json
+```json
 "scripts": {
 "prepare": "husky install && dotnet tool restore",
 "install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
@@ -276,6 +274,7 @@ For roslyn analizers I use serveral analyzers and config the in `.editorconfig` 
 - [Microsoft.VisualStudio.Threading.Analyzers](https://www.nuget.org/packages/Microsoft.VisualStudio.Threading.Analyzers)
 
 ## The Domain And Bounded Context - Service Boundary
+
 TODO
 
 ## Application Architecture
@@ -357,9 +356,11 @@ Now we could all of these things beside each other and it decrease jumping and d
 Keeping such a split works great with CQRS. It segregates our operations and slices the application code vertically instead of horizontally. In Our CQRS pattern each command/query handler is a separate slice. This is where you can reduce coupling between layers. Each handler can be a separated code unit, even copy/pasted. Thanks to that, we can tune down the specific method to not follow general conventions (e.g. use custom SQL query or even different storage). In a traditional layered architecture, when we change the core generic mechanism in one layer, it can impact all methods.
 
 ### High Level Structure
+
 TODO
 
 ## Vertical Slice Flow
+
 TODO
 
 ## Prerequisites

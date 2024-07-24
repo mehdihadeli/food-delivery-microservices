@@ -1,5 +1,4 @@
 using System.Text;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 using BuildingBlocks.Core.Persistence.EventStore;
 using BuildingBlocks.Core.Types;
@@ -29,7 +28,7 @@ public static class SerializationExtensions
         )!;
     }
 
-    public static EventData ToJsonEventData(this IStreamEvent @event)
+    public static EventData ToJsonEventData(this IStreamEventEnvelope @event)
     {
         return ToJsonEventData(@event.Data, @event.Metadata);
     }
@@ -53,7 +52,7 @@ public static class SerializationExtensions
         //     resolvedEvent.Event.EventId.ToString(),
         //     resolvedEvent.Event.EventNumber.ToInt64());
 
-        var type = typeof(StreamEvent<>).MakeGenericType(eventData.GetType());
+        var type = typeof(StreamEventEnvelope<>).MakeGenericType(eventData.GetType());
 
         return (StreamEvent?)Activator.CreateInstance(type, eventData, metaData);
     }

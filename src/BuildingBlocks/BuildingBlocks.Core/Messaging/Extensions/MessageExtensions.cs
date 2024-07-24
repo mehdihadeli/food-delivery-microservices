@@ -1,8 +1,6 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Reflection.Extensions;
-using BuildingBlocks.Core.Types.Extensions;
 
 namespace BuildingBlocks.Core.Messaging.Extensions;
 
@@ -16,10 +14,8 @@ public static class MessageExtensions
 
         var inheritsTypes = messageHandlerTypes
             .SelectMany(x => x.GetInterfaces())
-            .Where(
-                x =>
-                    x.GetInterfaces().Any(i => i.IsGenericType)
-                    && x.GetGenericTypeDefinition() == typeof(IMessageHandler<>)
+            .Where(x =>
+                x.GetInterfaces().Any(i => i.IsGenericType) && x.GetGenericTypeDefinition() == typeof(IMessageHandler<>)
             );
 
         foreach (var inheritsType in inheritsTypes)

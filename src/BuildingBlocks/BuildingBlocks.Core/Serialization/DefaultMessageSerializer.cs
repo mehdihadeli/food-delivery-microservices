@@ -10,7 +10,7 @@ public class DefaultMessageSerializer : DefaultSerializer, IMessageSerializer
 {
     public new string ContentType => "application/json";
 
-    public string Serialize(MessageEnvelope messageEnvelope)
+    public string Serialize(EventEnvelope messageEnvelope)
     {
         return JsonConvert.SerializeObject(messageEnvelope, new JsonSerializerSettings());
     }
@@ -35,9 +35,9 @@ public class DefaultMessageSerializer : DefaultSerializer, IMessageSerializer
         return deserializedData;
     }
 
-    public MessageEnvelope? Deserialize(string json)
+    public EventEnvelope? Deserialize(string json)
     {
-        return JsonConvert.DeserializeObject<MessageEnvelope>(json, CreateSerializerSettings());
+        return JsonConvert.DeserializeObject<EventEnvelope>(json, CreateSerializerSettings());
     }
 
     public IMessage? Deserialize(ReadOnlySpan<byte> data, string payloadType)

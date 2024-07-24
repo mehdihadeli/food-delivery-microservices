@@ -56,33 +56,36 @@
     // Configure properties specific to VS Code.
     "vscode": {
       "settings": {
-		  "git.autofetch": true,
-		  "files.autoSave": "onFocusChange",
-		  "editor.formatOnSave": true,
-		  "editor.suggest.snippetsPreventQuickSuggestions": false,
-		  "explorer.autoReveal": true,
-		  "resmon.show.cpufreq": false,
-		  "dotnet.defaultSolution": "food-delivery.sln",
-		  "dotnet.server.startTimeout": 60000,
-		  "omnisharp.projectLoadTimeout": 60,
-		  "workbench.colorTheme": "Visual Studio Light",
-		  "workbench.iconTheme": "material-icon-theme",
-		  "editor.minimap.enabled": false,
-		  "editor.fontFamily": "'MesloLGM Nerd Font', 'Droid Sans Mono', 'monospace', 'Droid Sans Fallback', 'Consolas'",
-		  "editor.fontSize": 14,
-		  "explorer.confirmDelete": false,
-		  "terminal.integrated.defaultProfile.windows": "PowerShell",
-		  "terminal.integrated.defaultProfile.linux": "zsh",
-		  "powershell.cwd": "~",
-		  "terminal.external.windowsExec": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
-		  "[jsonc]": {
-			"editor.defaultFormatter": "esbenp.prettier-vscode"
-		  },
-		  "editor.smoothScrolling": true,
-		  "editor.wordWrap": "on",
-		  "editor.defaultFormatter": "esbenp.prettier-vscode",
-		  "editor.guides.bracketPairs": true,
-		  "explorer.experimental.fileNesting.enabled": true
+        "git.autofetch": true,
+        "files.autoSave": "onFocusChange",
+        "editor.formatOnSave": true,
+        "editor.suggest.snippetsPreventQuickSuggestions": false,
+        "explorer.autoReveal": true,
+        "resmon.show.cpufreq": false,
+        "dotnet.defaultSolution": "food-delivery.sln",
+        "dotnet.server.startTimeout": 60000,
+        "omnisharp.projectLoadTimeout": 60,
+        "workbench.colorTheme": "Visual Studio Light",
+        "workbench.iconTheme": "material-icon-theme",
+        "editor.minimap.enabled": false,
+        "editor.fontFamily": "'MesloLGM Nerd Font', 'Droid Sans Mono', 'monospace', 'Droid Sans Fallback', 'Consolas'",
+        "editor.fontSize": 14,
+        "explorer.confirmDelete": false,
+        "terminal.integrated.defaultProfile.windows": "PowerShell",
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "powershell.cwd": "~",
+        "terminal.external.windowsExec": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "editor.smoothScrolling": true,
+        "editor.wordWrap": "on",
+        "editor.guides.bracketPairs": true,
+        "explorer.experimental.fileNesting.enabled": true,
+        "[csharp]": {
+          "editor.defaultFormatter": "csharpier.csharpier-vscode",
+          "editor.formatOnSave": true
+        }
       },
       "extensions": [
         "streetsidesoftware.code-spell-checker",
@@ -98,10 +101,11 @@
         "PKief.material-icon-theme",
         "EditorConfig.EditorConfig",
         "DavidAnson.vscode-markdownlint",
-		"IBM.output-colorizer", // Colorize your output/test logs
+        "IBM.output-colorizer", // Colorize your output/test logs
         "emmanuelbeziat.vscode-great-icons",
-		"esbenp.prettier-vscode",
-		"vscode-icons-team.vscode-icons",
+        "esbenp.prettier-vscode",
+        "vscode-icons-team.vscode-icons",
+        "csharpier.csharpier-vscode",
         "redhat.vscode-yaml"
       ]
     }

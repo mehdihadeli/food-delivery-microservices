@@ -1,6 +1,7 @@
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
 using BuildingBlocks.Email;
@@ -55,6 +56,11 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomCors();
 
         builder.AddCustomOpenTelemetry();
+
+        builder.Services.AddHeaderPropagation(options =>
+        {
+            options.HeaderNames.Add(MessageHeaders.CorrelationId);
+        });
 
         builder.Services.AddHttpContextAccessor();
 

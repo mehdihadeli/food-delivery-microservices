@@ -10,7 +10,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
+using IExternalEventBus = BuildingBlocks.Abstractions.Messaging.IExternalEventBus;
 
 namespace BuildingBlocks.Integration.MassTransit;
 
@@ -104,7 +104,7 @@ public static class Extensions
             );
         }
 
-        builder.Services.TryAddTransient<IBus, MassTransitBus>();
+        builder.Services.TryAddTransient<IExternalEventBus, MassTransitBus>();
 
         return builder;
     }

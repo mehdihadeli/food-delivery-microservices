@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" />
+    <PackageReference Include="MassTransit.Abstractions" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />

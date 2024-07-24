@@ -4,8 +4,8 @@ namespace BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 
 public interface IReadProjectionPublisher
 {
-    Task PublishAsync(IStreamEvent streamEvent, CancellationToken cancellationToken = default);
+    Task PublishAsync(IStreamEventEnvelope streamEvent, CancellationToken cancellationToken = default);
 
-    Task PublishAsync<T>(IStreamEvent<T> streamEvent, CancellationToken cancellationToken = default)
+    Task PublishAsync<T>(IStreamEventEnvelope<T> streamEvent, CancellationToken cancellationToken = default)
         where T : IDomainEvent;
 }

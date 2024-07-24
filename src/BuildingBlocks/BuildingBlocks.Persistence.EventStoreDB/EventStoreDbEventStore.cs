@@ -30,7 +30,7 @@ public class EventStoreDbEventStore : IEventStore
         return state == ReadState.Ok;
     }
 
-    public async Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
+    public async Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         int maxCount = int.MaxValue,
@@ -50,7 +50,7 @@ public class EventStoreDbEventStore : IEventStore
         return resolvedEvents.ToStreamEvents();
     }
 
-    public Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
+    public Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         CancellationToken cancellationToken = default
@@ -61,13 +61,13 @@ public class EventStoreDbEventStore : IEventStore
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEvent @event,
+        IStreamEventEnvelope @event,
         CancellationToken cancellationToken = default
     )
     {
         return AppendEventsAsync(
             streamId,
-            new List<IStreamEvent> { @event }.ToImmutableList(),
+            new List<IStreamEventEnvelope> { @event }.ToImmutableList(),
             ExpectedStreamVersion.NoStream,
             cancellationToken
         );
@@ -75,14 +75,14 @@ public class EventStoreDbEventStore : IEventStore
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEvent @event,
+        IStreamEventEnvelope @event,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )
     {
         return AppendEventsAsync(
             streamId,
-            new List<IStreamEvent> { @event }.ToImmutableList(),
+            new List<IStreamEventEnvelope> { @event }.ToImmutableList(),
             expectedRevision,
             cancellationToken
         );
@@ -90,7 +90,7 @@ public class EventStoreDbEventStore : IEventStore
 
     public async Task<AppendResult> AppendEventsAsync(
         string streamId,
-        IReadOnlyCollection<IStreamEvent> events,
+        IReadOnlyCollection<IStreamEventEnvelope> events,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )

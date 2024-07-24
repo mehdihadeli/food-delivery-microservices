@@ -1,9 +1,9 @@
-﻿using BuildingBlocks.Abstractions.Messaging.Context;
+﻿using BuildingBlocks.Abstractions.Events;
 
 namespace BuildingBlocks.Abstractions.Messaging;
 
 public interface IMessageHandler<in TMessage>
     where TMessage : class, IMessage
 {
-    Task HandleAsync(IConsumeContext<TMessage> messageContext, CancellationToken cancellationToken = default);
+    Task HandleAsync(IEventEnvelope<TMessage> eventEnvelope, CancellationToken cancellationToken = default);
 }

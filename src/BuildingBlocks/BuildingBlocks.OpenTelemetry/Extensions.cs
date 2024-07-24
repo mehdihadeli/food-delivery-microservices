@@ -11,6 +11,8 @@ using OpenTelemetry.Trace;
 
 namespace BuildingBlocks.OpenTelemetry;
 
+// Ref: https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-with-otel
+
 public static class Extensions
 {
     public static WebApplicationBuilder AddCustomOpenTelemetry(
@@ -26,8 +28,8 @@ public static class Extensions
 
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
 
-        builder.Services
-            .AddOpenTelemetry()
+        builder
+            .Services.AddOpenTelemetry()
             .WithTracing(tracerProviderBuilder =>
             {
                 tracerProviderBuilder
@@ -48,8 +50,8 @@ public static class Extensions
             SetLogExporters(options, o);
         });
 
-        builder.Services
-            .AddOpenTelemetry()
+        builder
+            .Services.AddOpenTelemetry()
             .WithMetrics(metrics =>
             {
                 metrics
@@ -92,10 +94,12 @@ public static class Extensions
                 break;
 
             case nameof(LogExporterType.OTLP):
-                loggerOptions.AddOtlpExporter((otelExporterOptions, logRecorderOptions) =>
-                 {
-                     otelExporterOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint);
-                 });
+                loggerOptions.AddOtlpExporter(
+                    (otelExporterOptions, logRecorderOptions) =>
+                    {
+                        otelExporterOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint);
+                    }
+                );
                 break;
             case nameof(LogExporterType.None):
                 break;

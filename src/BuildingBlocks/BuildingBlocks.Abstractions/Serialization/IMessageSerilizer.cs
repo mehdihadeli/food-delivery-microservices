@@ -7,21 +7,21 @@ public interface IMessageSerializer : ISerializer
     string ContentType { get; }
 
     /// <summary>
-    /// Serializes the given <see cref="MessageEnvelope"/> into a string
+    /// Serializes the given <see cref="EventEnvelope"/> into a string
     /// </summary>
     /// <param name="messageEnvelope">a messageEnvelope that implement IMessage interface.</param>
     /// <returns>a json string for serialized messageEnvelope.</returns>
-    string Serialize(MessageEnvelope messageEnvelope);
+    string Serialize(EventEnvelope messageEnvelope);
 
     string Serialize<TMessage>(TMessage message)
         where TMessage : IMessage;
 
     /// <summary>
-    /// Deserialize the given string into a <see cref="MessageEnvelope"/>
+    /// Deserialize the given string into a <see cref="EventEnvelope"/>
     /// </summary>
     /// <param name="json">a json data to deserialize to a messageEnvelope.</param>
     /// <returns>return a messageEnvelope type.</returns>
-    MessageEnvelope? Deserialize(string json);
+    EventEnvelope? Deserialize(string json);
 
     /// <summary>
     /// Deserialize the given byte array back into a message.

@@ -23,13 +23,13 @@ public interface IMessagePersistenceService
         TMessageEnvelope messageEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TMessageEnvelope : MessageEnvelope;
+        where TMessageEnvelope : EventEnvelope;
 
     Task AddReceivedMessageAsync<TMessageEnvelope>(
         TMessageEnvelope messageEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TMessageEnvelope : MessageEnvelope;
+        where TMessageEnvelope : EventEnvelope;
 
     Task AddInternalMessageAsync<TCommand>(TCommand internalCommand, CancellationToken cancellationToken = default)
         where TCommand : class, IInternalCommand;

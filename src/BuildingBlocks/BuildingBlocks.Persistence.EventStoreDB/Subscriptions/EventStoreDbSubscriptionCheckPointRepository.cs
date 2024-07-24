@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Core.Domain.Events.Internal;
+﻿using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Persistence.EventStoreDB.Extensions;
 using EventStore.Client;
 

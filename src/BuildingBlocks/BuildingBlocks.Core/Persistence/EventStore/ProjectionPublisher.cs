@@ -13,7 +13,10 @@ public class ReadProjectionPublisher : IReadProjectionPublisher
         _serviceProvider = serviceProvider;
     }
 
-    public async Task PublishAsync<T>(IStreamEvent<T> streamEvent, CancellationToken cancellationToken = default)
+    public async Task PublishAsync<T>(
+        IStreamEventEnvelope<T> streamEvent,
+        CancellationToken cancellationToken = default
+    )
         where T : IDomainEvent
     {
         using var scope = _serviceProvider.CreateScope();
@@ -24,7 +27,7 @@ public class ReadProjectionPublisher : IReadProjectionPublisher
         }
     }
 
-    public Task PublishAsync(IStreamEvent streamEvent, CancellationToken cancellationToken = default)
+    public Task PublishAsync(IStreamEventEnvelope streamEvent, CancellationToken cancellationToken = default)
     {
         var streamData = streamEvent.Data.GetType();
 

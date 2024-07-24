@@ -1,6 +1,7 @@
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
 using BuildingBlocks.Email;
@@ -80,6 +81,10 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomSerilog();
 
         builder.AddCustomOpenTelemetry();
+
+        builder.Services.AddHeaderPropagation(options => {
+            options.HeaderNames.Add(MessageHeaders.CorrelationId);
+        });
 
         // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
         builder.AddCustomRateLimit();

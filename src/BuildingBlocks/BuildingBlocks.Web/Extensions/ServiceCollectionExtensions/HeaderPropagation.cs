@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace BuildingBlocks.Web.Extensions;
 
+// We can also use builtin microsoft `Microsoft.AspNetCore.HeaderPropagation` package but it is just client based and for applying it to all clients we should create a HeaderPropagationMessageHandlerBuilderFilter for it.
 public static partial class ServiceCollectionExtensions
 {
     /// <summary>

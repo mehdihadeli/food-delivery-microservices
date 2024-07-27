@@ -3,6 +3,7 @@ using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Middlewares.CaptureExceptionMiddleware;
+using BuildingBlocks.Web.Middlewares.HeaderPropagation;
 using BuildingBlocks.Web.Middlewares.RequestLogContextMiddleware;
 using Serilog;
 
@@ -49,6 +50,8 @@ public static partial class WebApplicationExtensions
 
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.UseHeaderPropagation();
 
         await app.UsePostgresPersistenceMessage(app.Logger);
 

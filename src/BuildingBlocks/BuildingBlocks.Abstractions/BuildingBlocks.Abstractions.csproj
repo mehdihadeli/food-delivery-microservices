@@ -25,8 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="AutoMapper" />
+    <PackageReference Include="MediatR" />
     <PackageReference Include="MongoDB.Driver" />
   </ItemGroup>
 

@@ -106,7 +106,8 @@
         "esbenp.prettier-vscode",
         "vscode-icons-team.vscode-icons",
         "csharpier.csharpier-vscode",
-        "redhat.vscode-yaml"
+        "redhat.vscode-yaml",
+        "kennylong.kubernetes-yaml-formatter"
       ]
     }
   },

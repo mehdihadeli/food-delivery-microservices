@@ -1,0 +1,12 @@
+#!/bin/bash
+#https://blog.8bitbuddhism.com/2022/11/12/how-to-use-environment-variables-in-a-kubernetes-manifest/
+#https://medium.com/@peey/how-to-make-a-file-executable-in-linux-99f2070306b5
+ENV_FILE=.env
+
+source $ENV_FILE
+
+if [[ "$1" == "apply" ]] || [[ "$1" == "delete" ]]; then
+    envsubst < $3 | kubectl $1 $2 -
+else
+    kubectl "$@"
+fi

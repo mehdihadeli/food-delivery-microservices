@@ -1,0 +1,324 @@
+## This file should run with our kubectl shell command to substitute and replace environment variable with `envsubst`, so run this command, `./kubectl apply -f ./infrastructure.yaml`
+
+# - It is a recommended practice to put resources related to the same microservice or application tier into the same file, and to group all of the files associated with your application in the same directory
+# - kubernetes supports `substitute` and `replace` environment variable in kubernetes resource files but it only works for `env` section of our resource, actually we can use `$(VAR_NAME)` in the `value` of `env` attribute in the resource file. but we want to use environment variables in all attribute so we use `envsubst` approach. Then define these `environment variables` either by defining them in the `shell session` (will destroy after closing shell) or save them to a file (e.g. `.env`) and  then our resource will substitute with `envsubst < input.tmpl > output.text` (it is also possible to write your substitution to a new file). It is possible to pipe the output into other commands like `less` or `kubectl` for Kubernetes for example `envsubst < deploy.yml | kubectl apply -f -`.
+# - we can skip the company.com `prefix` if we don’t intend to `distribute` our resources outside of our company (as long as we don’t expect a `naming conflict` with another third-party package installed in our environment using the `same label` without a `prefix`).
+# - we can visualize and manage Kubernetes objects with more tools than kubectl and the dashboard. A common set of labels allows tools to work interoperable, describing objects in a common manner that all tools can understand.
+# - Shared labels and annotations share a common prefix: `app.kubernetes.io`. Labels `without` a prefix are `private` to users. The shared prefix ensures that shared labels do not `interfere` with `custom user labels`.
+# - find resources with label selector `kubectl get pods -l environment=production,tier=frontend`
+
+# https://kubernetes.io/docs/tasks/inject-data-application/define-interdependent-environment-variables/
+# https://skofgar.ch/dev/2020/08/how-to-quickly-replace-environment-variables-in-a-file/
+# https://blog.8bitbuddhism.com/2022/11/12/how-to-use-environment-variables-in-a-kubernetes-manifest/
+# https://blog.kubecost.com/blog/kubernetes-labels/
+# https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+# https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+# https://kubernetes.io/docs/reference/labels-annotations-taints/
+# https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/#using-labels-effectively
+# kubernetes.io/docs/concepts/cluster-administration/manage-deployment/
+# www.datree.io/resources/kubernetes-error-codes-field-is-immutable
+# https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/
+# https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+#######################################################
+#  RabbitMQ
+#######################################################
+# https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment-${ENVIRONMENT:-dev}
+  namespace: food-delivery
+  labels:
+    app.kubernetes.io/name: rabbitmq
+    app.kubernetes.io/component: message-queue
+    app.kubernetes.io/instance: rabbitmq-food-delivery
+    app.kubernetes.io/part-of: food-delivery
+    app.kubernetes.io/managed-by: kubernetes
+    food-delivery.mehdi.io/tier: backend
+    food-delivery.mehdi.io/environment: ${ENVIRONMENT:-dev}
+spec:
+  # creates a ReplicaSet that creates 1 replicated Pods
+  replicas: 1
+  # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
+  # The `.spec.selector` field in deployment defines how the created ReplicaSet finds which Pods to `manage`. In this case, we use set-based label selector to select matchLabels labels, and finding pods for these labels (pods labels defined in the pod `template` section)
+  selector:
+    # https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#resources-that-support-set-based-requirements
+    # matchLabels is a Set-based label selector
+    # `matchLabels` is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of `matchExpressions`, whose key field is "key", the operator is "In", and the values array contains only "value".
+    matchLabels:
+      app.kubernetes.io/name: rabbitmq
+      app.kubernetes.io/component: message-queue
+      food-delivery.mehdi.io/tier: backend
+      food-delivery.mehdi.io/environment: ${ENVIRONMENT:-dev}
+  # template uses for defining pod template
+  # https://kubernetes.io/docs/concepts/workloads/pods/
+  template:
+    # Pod metadata and its labels
+    metadata:
+      # Pod labels
+      labels:
+        app.kubernetes.io/name: rabbitmq
+        app.kubernetes.io/instance: rabbitmq-food-delivery
+        app.kubernetes.io/component: message-queue
+        app.kubernetes.io/part-of: food-delivery
+        app.kubernetes.io/managed-by: kubernetes
+        food-delivery.mehdi.io/tier: backend
+        food-delivery.mehdi.io/environment: ${ENVIRONMENT:-dev}
+    # Pod template's specification
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:management
+          # https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: ${RABBITMQ_PORT:-5672}
+              name: rabbitmq
+            - containerPort: ${RABBITMQ_API_PORT:-15672}
+              name: rabbitmq-api
+          # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes
+          # service doesn't route and send traffic to pod until its `readinessProbe` becomes `success` and pod goes to `ready` state
+          readinessProbe:
+            tcpSocket:
+              port: ${RABBITMQ_PORT:-5672}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 1
+          # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command
+          livenessProbe:
+            tcpSocket:
+              port: ${RABBITMQ_PORT:-5672}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 1
+      #https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy
+      #https://github.com/kubernetes/kubernetes/issues/24725
+      restartPolicy: Always
+---
+# https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/
+# `kubectl port-forward` allows using resource name, such as a `pod name` or `service name`, and forwards its port to `local port` or actually `http://127.0.0.1:<Forward_Port>` or `http://localhost:<Forward_Port>` or localhost ping -> `[::1]:<Forward_Port>`
+# for port forwarding rabbitmq ui service that is cluster ip we can use `kubectl port-forward service/rabbitmq-service-dev 15672:15672 -n food-delivery` and allow firewall to open `15672` port, this will proxy and forward traffic to a local port (http://127.0.0.1:15672 or http://localhost:15672 or localhost ping http://[::1]:15672)
+# we can create a ingress route for this also --> https://blog.knoldus.com/how-to-deploy-rabbit-mq-on-kubernetes/
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service-${ENVIRONMENT:-dev}
+  namespace: food-delivery
+  labels:
+    app.kubernetes.io/name: rabbitmq
+    app.kubernetes.io/instance: rabbitmq-food-delivery
+    app.kubernetes.io/component: message-queue
+    app.kubernetes.io/part-of: food-delivery
+    app.kubernetes.io/managed-by: kubernetes
+    food-delivery.mehdi.io/tier: backend
+    food-delivery.mehdi.io/environment: ${ENVIRONMENT:-dev}
+spec:
+  type: ClusterIP
+  # The set of Pods targeted by a Service is usually determined by a selector
+  # https://kubernetes.io/docs/concepts/services-networking/service/#services-in-kubernetes
+  selector:
+    app.kubernetes.io/name: rabbitmq
+    food-delivery.mehdi.io/tier: backend
+    app.kubernetes.io/component: message-queue
+    food-delivery.mehdi.io/environment: ${ENVIRONMENT:-dev}
+  # https://kubernetes.io/docs/concepts/services-networking/service/#multi-port-services
+  ports:
+    - name: rabbitmq
+      protocol: TCP
+      port: ${RABBITMQ_HOST_PORT:-5672}
+      # Port definitions in Pods have names, and you can reference these names in the targetPort attribute of a Service
+      targetPort: rabbitmq
+    - name: rabbitmq-api
+      protocol: TCP
+      # service port
+      port: ${RABBITMQ_HOST_API_PORT:-15672}
+      # pod container port - Port definitions in Pods have names, and you can reference these names in the targetPort attribute of a Service
+      targetPort: rabbitmq-api
+---
+# https://kubernetes.io/docs/concepts/services-networking/ingress/
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rabbitmq-ingress-${ENVIRONMENT:-dev}
+  namespace: food-delivery
+  labels:
+    app.kubernetes.io/name: rabbitmq
+    app.kubernetes.io/instance: rabbitmq-food-delivery
+    app.kubernetes.io/component: message-queue
+    app.kubernetes.io/part-of: food-delivery
+    app.kubernetes.io/managed-by: kubernetes
+    food-delivery.mehdi.io/tier: backend
+    food-delivery.mehdi.io/environment: ${ENVIRONMENT:-dev}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+    - host: local-services # Replace with your domain name
+      http:
+        paths:
+          # rabbit-ui doesn't work with sub path --> https://github.com/docker-library/rabbitmq/issues/249
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rabbitmq-service-${ENVIRONMENT:-dev}
+                port:
+                  name: rabbitmq-api
+
+#######################################################
+#  MongoDB
+#######################################################
+# https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-deployment-${ENVIRONMENT:-dev}
+  namespace: food-delivery
+  labels:
+    app.kubernetes.io/name: mongo
+    app.kubernetes.io/component: database
+    app.kubernetes.io/instance: mongo-food-delivery
+    app.kubernetes.io/part-of: food-delivery
+    app.kubernetes.io/managed-by: kubernetes
+    food-delivery.mehdi.io/tier: backend
+    food-delivery.mehdi.io/environment: ${ENVIRONMENT:-dev}
+spec:
+  # creates a ReplicaSet that creates 1 replicated Pods
+  replicas: 1
+  # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
+  # The `.spec.selector` field in deployment defines how the created ReplicaSet finds which Pods to `manage`. In this case, we use set-based label selector to select matchLabels labels, and finding pods for these labels (pods labels defined in the pod `template` section)
+  selector:
+    # https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#resources-that-support-set-based-requirements
+    # matchLabels is a Set-based label selector
+    # `matchLabels` is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of `matchExpressions`, whose key field is "key", the operator is "In", and the values array contains only "value".
+    matchLabels:
+      app.kubernetes.io/name: mongo
+      app.kubernetes.io/component: database
+      food-delivery.mehdi.io/tier: backend
+      food-delivery.mehdi.io/environment: ${ENVIRONMENT:-dev}
+  # template uses for defining pod template
+  # https://kubernetes.io/docs/concepts/workloads/pods/
+  template:
+    # Pod metadata and its labels
+    metadata:
+      # Pod labels
+      labels:
+        app.kubernetes.io/name: mongo
+        app.kubernetes.io/instance: mongo-food-delivery
+        app.kubernetes.io/component: database
+        app.kubernetes.io/part-of: food-delivery
+        app.kubernetes.io/managed-by: kubernetes
+        food-delivery.mehdi.io/tier: backend
+        food-delivery.mehdi.io/environment: ${ENVIRONMENT:-dev}
+    # Pod template's specification
+    spec:
+      containers:
+        - name: mongo
+          image: mongo
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: ${MONGO_USER:-admin}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: ${MONGO_PASS:-admin}
+          ports:
+            - containerPort: ${MONGO_PORT:-27017}
+              name: mongo
+          # https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
+          imagePullPolicy: IfNotPresent
+          # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes
+          # service doesn't route and send traffic to pod until its `readinessProbe` becomes `success` and pod goes to `ready` state
+          readinessProbe:
+            tcpSocket:
+              # container port name - https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#use-a-named-port
+              port: mongo
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command
+          livenessProbe:
+            exec:
+              command:
+                - mongo
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 30
+            periodSeconds: 20
+      #https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy
+      #https://github.com/kubernetes/kubernetes/issues/24725
+      restartPolicy: Always
+---
+# https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/
+# `kubectl port-forward` allows using resource name, such as a `pod name` or `service name`, and forwards its port to `local port` or actually `http://127.0.0.1:<Forward_Port>` or `http://localhost:<Forward_Port>` or localhost ping -> `[::1]:<Forward_Port>`
+# kubectl port-forward service/mongo-service-dev 27017:27017 -n food-delivery
+# we can create a ingress route for this also
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service-${ENVIRONMENT:-dev}
+  namespace: food-delivery
+  labels:
+    app.kubernetes.io/name: mongo
+    app.kubernetes.io/instance: mongo-food-delivery
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: food-delivery
+    app.kubernetes.io/managed-by: kubernetes
+    food-delivery.mehdi.io/tier: backend
+    food-delivery.mehdi.io/environment: ${ENVIRONMENT:-dev}
+spec:
+  type: ClusterIP
+  # The set of Pods targeted by a Service is usually determined by a selector
+  # https://kubernetes.io/docs/concepts/services-networking/service/#services-in-kubernetes
+  selector:
+    app.kubernetes.io/name: mongo
+    food-delivery.mehdi.io/tier: backend
+    app.kubernetes.io/component: database
+    food-delivery.mehdi.io/environment: ${ENVIRONMENT:-dev}
+  # https://kubernetes.io/docs/concepts/services-networking/service/#multi-port-services
+  ports:
+    - name: mongo
+      protocol: TCP
+      port: ${MONGO_HOST_PORT:-27017}
+      # Port definitions in Pods have names, and you can reference these names in the targetPort attribute of a Service
+      targetPort: mongo
+---
+# https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/#kind-ingressroutetcp
+# https://wirywolf.com/2022/07/postgresql-ingress-using-traefik-kubernetes-k3s.html
+# https://community.traefik.io/t/adding-entrypoints-to-a-helm-deployed-traefik-on-k3s/14813
+# https://community.traefik.io/t/tcp-on-kubernetes/1528/18
+# https://github.com/traefik/traefik/issues/7112
+# if we want to access mongo with traefik tcp route we should apply a `mongo` entrypoint inner our patch-value for traefik-helm, and now we can access to the node ip with `27017` tcp port --> <Node_Ip>:27017
+# valuesContent: |-
+#   ports:
+#     mongo:
+#       port: 27017
+#       expose: true
+#       protocol: TCP
+#       exposedPort: 27017
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: mongo-ingress-${ENVIRONMENT:-dev}
+  namespace: food-delivery
+spec:
+  # https://doc.traefik.io/traefik/routing/entrypoints/
+  entryPoints:
+    - mongo
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: mongo-service-${ENVIRONMENT:-dev}
+          port: ${MONGO_HOST_PORT:-27017}
+  ## needs tls for using domain
+  # - match: HostSNI(`local-mongo`)
+  #   services:
+  #   - name: mongo-service-${ENVIRONMENT:-dev}
+  #     port: ${MONGO_HOST_PORT:-27017}
+  # tls:
+  #   passthrough: true
+---
+

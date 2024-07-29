@@ -1,14 +1,15 @@
 using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Web.HeaderPropagation;
-using Microsoft.Extensions.Configuration;
 
 namespace BuildingBlocks.Core.Web.Extenions;
 
-/// <summary>
-/// Static helper class for <see cref="IConfiguration"/>.
-/// </summary>
 public static class CustomHeaderPropagationStoreExtensions
 {
+    /// <summary>
+    /// Get CorrelationId from header storage and throw if not exist.
+    /// </summary>
+    /// <param name="store"></param>
+    /// <returns>Guid.</returns>
     public static Guid GetCorrelationId(this CustomHeaderPropagationStore store)
     {
         store.Headers.TryGetValue(MessageHeaders.CausationId, out var cid);

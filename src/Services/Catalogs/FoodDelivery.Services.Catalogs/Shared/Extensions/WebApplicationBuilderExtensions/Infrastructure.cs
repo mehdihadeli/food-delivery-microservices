@@ -4,6 +4,7 @@ using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Registrations;
+using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Email;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
@@ -15,7 +16,6 @@ using BuildingBlocks.Security.Extensions;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
-using BuildingBlocks.Validation.Extensions;
 using BuildingBlocks.Web.Extensions;
 using FoodDelivery.Services.Catalogs.Products;
 
@@ -82,7 +82,8 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomOpenTelemetry();
 
-        builder.Services.AddHeaderPropagation(options => {
+        builder.Services.AddHeaderPropagation(options =>
+        {
             options.HeaderNames.Add(MessageHeaders.CorrelationId);
         });
 

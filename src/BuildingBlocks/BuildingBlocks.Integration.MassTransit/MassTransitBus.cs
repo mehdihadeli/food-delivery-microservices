@@ -1,6 +1,10 @@
 ﻿using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
+using BuildingBlocks.Core.Events;
+using BuildingBlocks.Core.Web.Extenions;
+using BuildingBlocks.Core.Web.HeaderPropagation;
 using MassTransit;
+using MassTransit.Serialization;
 
 namespace BuildingBlocks.Integration.MassTransit;
 
@@ -8,15 +12,27 @@ public class MassTransitBus : IExternalEventBus
 {
     private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly CustomHeaderPropagationStore _headerStore;
 
-    public MassTransitBus(ISendEndpointProvider sendEndpointProvider, IPublishEndpoint publishEndpoint)
+    public MassTransitBus(
+        ISendEndpointProvider sendEndpointProvider,
+        IPublishEndpoint publishEndpoint,
+        CustomHeaderPropagationStore headerStore
+    )
     {
         _sendEndpointProvider = sendEndpointProvider;
         _publishEndpoint = publishEndpoint;
+        _headerStore = headerStore;
     }
 
     public Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
-        where TMessage : class, IMessage { }
+        where TMessage : class, IMessage
+    {
+        var correlationId = _headerStore.GetCorrelationId();
+        var envelopeMessage = EventEnvelopeFactory.From<TMessage>(message, correlationId);
+
+        return PublishAsync(envelopeMessage, cancellationToken);
+    }
 
     public async Task PublishAsync<TMessage>(
         IEventEnvelope<TMessage> eventEnvelope,
@@ -105,6 +121,7 @@ public class MassTransitBus : IExternalEventBus
     {
         // https://masstransit.io/documentation/concepts/messages#message-headers
         // https://www.enterpriseintegrationpatterns.com/patterns/messaging/EnvelopeWrapper.html
+        // Just for filling masstransit related field but we have a separated envelope message.
         envelopeWrapperContext.MessageId = eventEnvelope.Metadata.MessageId;
         envelopeWrapperContext.CorrelationId = eventEnvelope.Metadata.CorrelationId;
 
@@ -124,6 +141,7 @@ public class MassTransitBus : IExternalEventBus
     {
         // https://masstransit.io/documentation/concepts/messages#message-headers
         // https://www.enterpriseintegrationpatterns.com/patterns/messaging/EnvelopeWrapper.html
+        // Just for filling masstransit related field but we have a separated envelope message.
         envelopeWrapperContext.MessageId = eventEnvelope.Metadata.MessageId;
         envelopeWrapperContext.CorrelationId = eventEnvelope.Metadata.CorrelationId;
 

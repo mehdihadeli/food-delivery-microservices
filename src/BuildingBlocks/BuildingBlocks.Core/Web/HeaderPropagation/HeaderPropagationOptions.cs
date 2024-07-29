@@ -1,4 +1,4 @@
-namespace BuildingBlocks.Web.HeaderPropagation;
+namespace BuildingBlocks.Core.Web.HeaderPropagation;
 
 public class CustomHeaderPropagationOptions
 {

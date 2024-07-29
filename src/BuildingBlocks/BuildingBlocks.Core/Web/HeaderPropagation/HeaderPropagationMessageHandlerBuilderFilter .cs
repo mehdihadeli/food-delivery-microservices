@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Options;
 
-namespace BuildingBlocks.Web.HeaderPropagation;
+namespace BuildingBlocks.Core.Web.HeaderPropagation;
 
 internal class HeaderPropagationMessageHandlerBuilderFilter : IHttpMessageHandlerBuilderFilter
 {

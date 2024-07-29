@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Primitives;
 
-namespace BuildingBlocks.Web.HeaderPropagation;
+namespace BuildingBlocks.Core.Web.HeaderPropagation;
 
 public class HeaderPropagationMessageHandler : DelegatingHandler
 {

@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Primitives;
 
-namespace BuildingBlocks.Web.HeaderPropagation;
+namespace BuildingBlocks.Core.Web.HeaderPropagation;
 
+// Ref: https://gist.github.com/davidfowl/c34633f1ddc519f030a1c0c5abe8e867
 public class CustomHeaderPropagationStore
 {
     private static readonly AsyncLocal<IDictionary<string, StringValues>?> _headers =

@@ -1,13 +1,13 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Shared.Contracts;
-using FluentValidation;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomerByCustomerId.v1;
+namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomerByCustomerId.V1;
 
 internal record GetCustomerByCustomerId(long CustomerId) : IQuery<GetCustomerByCustomerIdResult>
 {

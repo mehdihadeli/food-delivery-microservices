@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using System.Data;
 using System.Linq.Expressions;
 using BuildingBlocks.Abstractions.Domain;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Persistence.EfCore;
 using Microsoft.EntityFrameworkCore;
@@ -12,13 +12,14 @@ namespace BuildingBlocks.Core.Persistence.EfCore;
 
 // https://learn.microsoft.com/en-us/ef/core/saving/transactions
 // https://learn.microsoft.com/en-us/ef/core/saving/
-public abstract class EfDbContextBase : DbContext, IDbFacadeResolver, IDbContext, IDomainEventContext
+public abstract class EfDbContextBase(DbContextOptions options)
+    : DbContext(options),
+        IDbFacadeResolver,
+        IDbContext,
+        IDomainEventContext
 {
     // private readonly IDomainEventPublisher _domainEventPublisher;
     private IDbContextTransaction? _currentTransaction;
-
-    protected EfDbContextBase(DbContextOptions options)
-        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

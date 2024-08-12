@@ -181,6 +181,347 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodDelivery.Services.Catal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodDelivery.Services.Catalogs.DependencyTests", "tests\Services\Catalogs\FoodDelivery.Services.Catalogs.DependencyTests\FoodDelivery.Services.Catalogs.DependencyTests.csproj", "{38C7E337-91B3-4075-B3B6-7BCC9D5B87FA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution items", "{5B45D7EC-E61A-4122-92B0-54F626BD9E57}"
+	ProjectSection(SolutionItems) = preProject
+		.bash_aliases = .bash_aliases
+		.csharpierrc.yaml = .csharpierrc.yaml
+		.dockerignore = .dockerignore
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		.gitpod.Dockerfile = .gitpod.Dockerfile
+		.gitpod.yml = .gitpod.yml
+		.releaserc.yaml = .releaserc.yaml
+		back-merge.sh = back-merge.sh
+		commitlint.config.js = commitlint.config.js
+		CONTRIBUTION.md = CONTRIBUTION.md
+		food-delivery-microservices.sln = food-delivery-microservices.sln
+		global.json = global.json
+		LICENSE = LICENSE
+		nuget.config = nuget.config
+		package.json = package.json
+		package-lock.json = package-lock.json
+		pm2.json = pm2.json
+		pm2.yaml = pm2.yaml
+		readme.md = readme.md
+		set-output-last-version.sh = set-output-last-version.sh
+		set-output-next-version.sh = set-output-next-version.sh
+		stylecop.json = stylecop.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{AEB65E20-5226-4F94-B419-738FBF6B489E}"
+	ProjectSection(SolutionItems) = preProject
+		.config\dotnet-tools.json = .config\dotnet-tools.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".devcontainer", ".devcontainer", "{7510DB0D-28DF-42E6-9F94-99DB3A98B122}"
+	ProjectSection(SolutionItems) = preProject
+		.devcontainer\devcontainer.json = .devcontainer\devcontainer.json
+		.devcontainer\docker-compose.yaml = .devcontainer\docker-compose.yaml
+		.devcontainer\Dockerfile = .devcontainer\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{5CCF5A01-7F70-4BAE-9DBE-A6F9BD5730B0}"
+	ProjectSection(SolutionItems) = preProject
+		.github\dependabot.yml = .github\dependabot.yml
+		.github\multi-labeler.yml = .github\multi-labeler.yml
+		.github\pull_request_template.md = .github\pull_request_template.md
+		.github\release.yml = .github\release.yml
+		.github\release-drafter.yml = .github\release-drafter.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".husky", ".husky", "{F05D87C2-838B-42C4-9252-EBB4967EF642}"
+	ProjectSection(SolutionItems) = preProject
+		.husky\commit-msg = .husky\commit-msg
+		.husky\pre-commit = .husky\pre-commit
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{F0F40400-B956-4635-AA69-9442CEDBA8A5}"
+	ProjectSection(SolutionItems) = preProject
+		.vscode\launch.json = .vscode\launch.json
+		.vscode\settings.json = .vscode\settings.json
+		.vscode\tasks.json = .vscode\tasks.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_httpclients", "_httpclients", "{5144EAF5-27D7-4E0B-9E0E-9DC608B0E064}"
+	ProjectSection(SolutionItems) = preProject
+		_httpclients\http-client.env.json = _httpclients\http-client.env.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployments", "deployments", "{E184E2C6-B877-4C10-A2DE-13566A55B4B4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{6E36A896-6547-4742-B972-595CAF3A0736}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{AA98B429-64B3-4858-92D7-40E3AA5B716F}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\docker\base-run.sh = scripts\docker\base-run.sh
+		scripts\docker\debug-run.sh = scripts\docker\debug-run.sh
+		scripts\docker\dev-run.sh = scripts\docker\dev-run.sh
+		scripts\docker\prod-run.sh = scripts\docker\prod-run.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker-compose", "docker-compose", "{E3B52CE5-E2C2-49E0-8B84-53E796FD01DD}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\docker-compose\.env.catalogs.sample = deployments\docker-compose\.env.catalogs.sample
+		deployments\docker-compose\.env.cutomers.sample = deployments\docker-compose\.env.cutomers.sample
+		deployments\docker-compose\.env.dev.sample = deployments\docker-compose\.env.dev.sample
+		deployments\docker-compose\.env.identity.sample = deployments\docker-compose\.env.identity.sample
+		deployments\docker-compose\.env.prod = deployments\docker-compose\.env.prod
+		deployments\docker-compose\.env.prod.sample = deployments\docker-compose\.env.prod.sample
+		deployments\docker-compose\.env.sample = deployments\docker-compose\.env.sample
+		deployments\docker-compose\docker.txt = deployments\docker-compose\docker.txt
+		deployments\docker-compose\docker-compose.infrastructure.yaml = deployments\docker-compose\docker-compose.infrastructure.yaml
+		deployments\docker-compose\docker-compose.override.yaml = deployments\docker-compose\docker-compose.override.yaml
+		deployments\docker-compose\docker-compose.services.debug.yaml = deployments\docker-compose\docker-compose.services.debug.yaml
+		deployments\docker-compose\docker-compose.services.debug-win.yaml = deployments\docker-compose\docker-compose.services.debug-win.yaml
+		deployments\docker-compose\docker-compose.services.dev.yaml = deployments\docker-compose\docker-compose.services.dev.yaml
+		deployments\docker-compose\docker-compose.services.dev-win.yaml = deployments\docker-compose\docker-compose.services.dev-win.yaml
+		deployments\docker-compose\docker-compose.services.prod.yaml = deployments\docker-compose\docker-compose.services.prod.yaml
+		deployments\docker-compose\docker-compose.services.yaml = deployments\docker-compose\docker-compose.services.yaml
+		deployments\docker-compose\docker-compose.services-win.yaml = deployments\docker-compose\docker-compose.services-win.yaml
+		deployments\docker-compose\docker-compose.yaml = deployments\docker-compose\docker-compose.yaml
+		deployments\docker-compose\otel-collector-config.yaml = deployments\docker-compose\otel-collector-config.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "k8s", "k8s", "{85D116CF-A7FB-4BB0-867B-20BBF2F05AA0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tye", "tye", "{1501D3E0-DE68-46BC-BA3B-CF95792E4859}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\tye\tye.yaml = deployments\tye\tye.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "monitoring", "monitoring", "{253FB689-3496-47CB-8329-ACAF440E8262}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\docker-compose\monitoring\prometheus.yml = deployments\docker-compose\monitoring\prometheus.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kubernetes", "kubernetes", "{EFC9440B-9C7D-4804-ACAA-E36F53695638}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kubernetes\.env.prod = deployments\k8s\kubernetes\.env.prod
+		deployments\k8s\kubernetes\catalogs.yaml = deployments\k8s\kubernetes\catalogs.yaml
+		deployments\k8s\kubernetes\customers.yaml = deployments\k8s\kubernetes\customers.yaml
+		deployments\k8s\kubernetes\identity.yaml = deployments\k8s\kubernetes\identity.yaml
+		deployments\k8s\kubernetes\infrastructure.yaml = deployments\k8s\kubernetes\infrastructure.yaml
+		deployments\k8s\kubernetes\kubectl = deployments\k8s\kubernetes\kubectl
+		deployments\k8s\kubernetes\namespaces.yaml = deployments\k8s\kubernetes\namespaces.yaml
+		deployments\k8s\kubernetes\orders.yaml = deployments\k8s\kubernetes\orders.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kustomize", "kustomize", "{E024E314-6E4E-4703-91AA-3DBD3FB3405D}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\readme.md = deployments\k8s\kustomize\readme.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "food-delivery", "food-delivery", "{A5BE867E-106E-4BAB-9246-50302A7D6A0F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "base", "base", "{DB23F3C3-1BF9-46F8-93BA-9C0158E5B6AD}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\base\kustomization.yaml = deployments\k8s\kustomize\food-delivery\base\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "catalogs", "catalogs", "{5E9FFA15-573A-4735-ADB8-C86EABFC28A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "customers", "customers", "{754FB459-63B6-453E-AE66-47A25BB84CE9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "identity", "identity", "{4444CFD3-7DC7-4C63-8DE5-9D71E0939A2B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "orders", "orders", "{0139A70C-4C41-4FB6-91EB-8394F473DE50}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "base", "base", "{8E236E3B-9DF9-4A1F-BE75-D313199C1DBC}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\catalogs\base\kustomization.yaml = deployments\k8s\kustomize\food-delivery\catalogs\base\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "overlays", "overlays", "{654D0F95-6FDC-4953-9EB4-1C5CFE718218}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "overlays", "overlays", "{6948E739-EE79-4D6F-981B-B3A0DE7FE5C3}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\customers\overlays\kustomization.yaml = deployments\k8s\kustomize\food-delivery\customers\overlays\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "base", "base", "{217070AB-9C2A-4153-8B86-0BACAA287628}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\customers\base\kustomization.yaml = deployments\k8s\kustomize\food-delivery\customers\base\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "base", "base", "{F483DB10-5FAC-4490-9A30-E60956128218}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\identity\base\kustomization.yaml = deployments\k8s\kustomize\food-delivery\identity\base\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "base", "base", "{D9523BCB-18F0-4F78-85A6-6CF560E0A8A2}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\orders\base\kustomization.yaml = deployments\k8s\kustomize\food-delivery\orders\base\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "overlays", "overlays", "{2C212836-8828-4C23-A887-60AE633D6E00}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\orders\overlays\kustomization.yaml = deployments\k8s\kustomize\food-delivery\orders\overlays\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "overlays", "overlays", "{41737544-EFDD-4552-A2AD-220B0C8B4069}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\identity\overlays\kustomization.yaml = deployments\k8s\kustomize\food-delivery\identity\overlays\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{A0332545-FB22-4D23-B7E4-5525B9962AC8}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\orders\overlays\dev\kustomization.yaml = deployments\k8s\kustomize\food-delivery\orders\overlays\dev\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prod", "prod", "{FB59CB64-599B-4DEE-A203-3E0FDDC033BF}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\orders\overlays\prod\kustomization.yaml = deployments\k8s\kustomize\food-delivery\orders\overlays\prod\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{E36F8D8E-39E5-4D1C-B3A5-4D67519A9290}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\identity\overlays\dev\kustomization.yaml = deployments\k8s\kustomize\food-delivery\identity\overlays\dev\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prod", "prod", "{9BABA546-2BD1-4A64-8BDB-C63144FAABB9}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\identity\overlays\prod\kustomization.yaml = deployments\k8s\kustomize\food-delivery\identity\overlays\prod\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{394DE45D-B3C4-4DE6-B372-74BCC6F1D1D8}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\customers\overlays\dev\kustomization.yaml = deployments\k8s\kustomize\food-delivery\customers\overlays\dev\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prod", "prod", "{2643BBCE-69ED-44EE-A432-B5209F137C49}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\customers\overlays\prod\kustomization.yaml = deployments\k8s\kustomize\food-delivery\customers\overlays\prod\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{3398DF05-3D92-4D6F-8DDD-EDF636F0D1EA}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\catalogs\overlays\dev\kustomization.yaml = deployments\k8s\kustomize\food-delivery\catalogs\overlays\dev\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prod", "prod", "{FBF48A37-1D58-4EFA-8A4F-B552985E4FCF}"
+	ProjectSection(SolutionItems) = preProject
+		deployments\k8s\kustomize\food-delivery\catalogs\overlays\prod\kustomization.yaml = deployments\k8s\kustomize\food-delivery\catalogs\overlays\prod\kustomization.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "catalogs", "catalogs", "{11BFFEF6-1939-4F02-9D33-D04239E5B426}"
+	ProjectSection(SolutionItems) = preProject
+		_httpclients\catalogs\catalogs.rest = _httpclients\catalogs\catalogs.rest
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "customers", "customers", "{1FC95E92-6E6A-410D-A877-BA5E17989091}"
+	ProjectSection(SolutionItems) = preProject
+		_httpclients\customers\customers.rest = _httpclients\customers\customers.rest
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "identity", "identity", "{7A64EEAB-062D-4945-9776-15899BC17775}"
+	ProjectSection(SolutionItems) = preProject
+		_httpclients\identity\identity.rest = _httpclients\identity\identity.rest
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "orders", "orders", "{BCF07985-F668-4785-85BC-A0C9F8CCBF01}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rabbitmq", "rabbitmq", "{46C19566-2EB0-4A57-8F3F-A6A7696D41D2}"
+	ProjectSection(SolutionItems) = preProject
+		_httpclients\rabbitmq\rabbitmq.rest = _httpclients\rabbitmq\rabbitmq.rest
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{E5F31E21-01AC-4740-BD30-9E9CB9A727A6}"
+	ProjectSection(SolutionItems) = preProject
+		.devcontainer\scripts\post-create.sh = .devcontainer\scripts\post-create.sh
+		.devcontainer\scripts\setup-fonts.sh = .devcontainer\scripts\setup-fonts.sh
+		.devcontainer\scripts\update.sh = .devcontainer\scripts\update.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{7F21F925-1C6E-409F-8815-92F4DBA66810}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\app-version.yml = .github\workflows\app-version.yml
+		.github\workflows\back-merge.yml = .github\workflows\back-merge.yml
+		.github\workflows\catalogs.yml = .github\workflows\catalogs.yml
+		.github\workflows\conventional-commits.yml = .github\workflows\conventional-commits.yml
+		.github\workflows\customers.yml = .github\workflows\customers.yml
+		.github\workflows\first-interaction.yml = .github\workflows\first-interaction.yml
+		.github\workflows\gateway.yml = .github\workflows\gateway.yml
+		.github\workflows\identity.yml = .github\workflows\identity.yml
+		.github\workflows\labeler.yml = .github\workflows\labeler.yml
+		.github\workflows\reusable-build-test.yml = .github\workflows\reusable-build-test.yml
+		.github\workflows\reusable-build-test-push.yml = .github\workflows\reusable-build-test-push.yml
+		.github\workflows\reusable-deploy.yml = .github\workflows\reusable-deploy.yml
+		.github\workflows\reusable-release.yml = .github\workflows\reusable-release.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{05AB571B-C141-4520-A5E5-3C67488DD151}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app-version", "app-version", "{DA0C8039-D2B0-4A40-9DE8-DDC889ACC784}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\app-version\action.yml = .github\actions\app-version\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "back-merge", "back-merge", "{FF741A11-BCEB-4054-B6D6-50AE51B899B6}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\back-merge\action.yml = .github\actions\back-merge\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{3CD56C89-D7A7-4ADF-934B-E05596C4E3C3}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\build\action.yml = .github\actions\build\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build-test", "build-test", "{A5C8831C-2FF2-4102-98C0-8D74444A3946}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\build-test\action.yml = .github\actions\build-test\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy-azure", "deploy-azure", "{EAB3815E-3DEA-45AC-9C72-CD09B603EE4F}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\deploy-azure\action.yml = .github\actions\deploy-azure\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy-azure-image", "deploy-azure-image", "{0CEE5FB3-36B6-404F-A7AD-C9BE45B25919}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\deploy-azure-image\action.yml = .github\actions\deploy-azure-image\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker-build", "docker-build", "{E36CB9A5-4024-4311-B474-4C63AF690DE5}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\docker-build\action.yml = .github\actions\docker-build\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker-build-push", "docker-build-push", "{AB88D3B5-15BE-49D8-AD04-93BF8821231A}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\docker-build-push\action.yml = .github\actions\docker-build-push\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "drafter-release-note", "drafter-release-note", "{BCCFDF90-6EAB-49EA-8637-1FE381DDACDF}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\drafter-release-note\action.yml = .github\actions\drafter-release-note\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "formatting", "formatting", "{6FBDA4D8-A03D-4A55-9B43-958F795AE74E}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\formatting\action.yml = .github\actions\formatting\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "publish-app", "publish-app", "{F5FE8E48-4113-419D-8654-04785612788D}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\publish-app\action.yml = .github\actions\publish-app\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "semantic-release-note", "semantic-release-note", "{D619A926-66EC-4EAD-9A40-2A49E8E65597}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\semantic-release-note\action.yml = .github\actions\semantic-release-note\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6DA0B023-EEED-417A-AF01-A6C9A7E54B57}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\test\action.yml = .github\actions\test\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test-coverage", "test-coverage", "{29AEB77A-F6D1-4196-8ACE-538E558C064F}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\test-coverage\action.yml = .github\actions\test-coverage\action.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -523,6 +864,65 @@ Global
 		{08882BEC-26B6-4994-A6DD-A6066AA07CAF} = {FD68316B-FCDA-4241-8A32-2B2C0863CE7D}
 		{5284251C-2245-4BE9-9A7A-E014D2704763} = {FD68316B-FCDA-4241-8A32-2B2C0863CE7D}
 		{38C7E337-91B3-4075-B3B6-7BCC9D5B87FA} = {FD68316B-FCDA-4241-8A32-2B2C0863CE7D}
+		{AEB65E20-5226-4F94-B419-738FBF6B489E} = {5B45D7EC-E61A-4122-92B0-54F626BD9E57}
+		{7510DB0D-28DF-42E6-9F94-99DB3A98B122} = {5B45D7EC-E61A-4122-92B0-54F626BD9E57}
+		{5CCF5A01-7F70-4BAE-9DBE-A6F9BD5730B0} = {5B45D7EC-E61A-4122-92B0-54F626BD9E57}
+		{F05D87C2-838B-42C4-9252-EBB4967EF642} = {5B45D7EC-E61A-4122-92B0-54F626BD9E57}
+		{F0F40400-B956-4635-AA69-9442CEDBA8A5} = {5B45D7EC-E61A-4122-92B0-54F626BD9E57}
+		{5144EAF5-27D7-4E0B-9E0E-9DC608B0E064} = {5B45D7EC-E61A-4122-92B0-54F626BD9E57}
+		{E184E2C6-B877-4C10-A2DE-13566A55B4B4} = {5B45D7EC-E61A-4122-92B0-54F626BD9E57}
+		{6E36A896-6547-4742-B972-595CAF3A0736} = {5B45D7EC-E61A-4122-92B0-54F626BD9E57}
+		{AA98B429-64B3-4858-92D7-40E3AA5B716F} = {6E36A896-6547-4742-B972-595CAF3A0736}
+		{E3B52CE5-E2C2-49E0-8B84-53E796FD01DD} = {E184E2C6-B877-4C10-A2DE-13566A55B4B4}
+		{85D116CF-A7FB-4BB0-867B-20BBF2F05AA0} = {E184E2C6-B877-4C10-A2DE-13566A55B4B4}
+		{1501D3E0-DE68-46BC-BA3B-CF95792E4859} = {E184E2C6-B877-4C10-A2DE-13566A55B4B4}
+		{253FB689-3496-47CB-8329-ACAF440E8262} = {E3B52CE5-E2C2-49E0-8B84-53E796FD01DD}
+		{EFC9440B-9C7D-4804-ACAA-E36F53695638} = {85D116CF-A7FB-4BB0-867B-20BBF2F05AA0}
+		{E024E314-6E4E-4703-91AA-3DBD3FB3405D} = {85D116CF-A7FB-4BB0-867B-20BBF2F05AA0}
+		{A5BE867E-106E-4BAB-9246-50302A7D6A0F} = {E024E314-6E4E-4703-91AA-3DBD3FB3405D}
+		{DB23F3C3-1BF9-46F8-93BA-9C0158E5B6AD} = {A5BE867E-106E-4BAB-9246-50302A7D6A0F}
+		{5E9FFA15-573A-4735-ADB8-C86EABFC28A1} = {A5BE867E-106E-4BAB-9246-50302A7D6A0F}
+		{754FB459-63B6-453E-AE66-47A25BB84CE9} = {A5BE867E-106E-4BAB-9246-50302A7D6A0F}
+		{4444CFD3-7DC7-4C63-8DE5-9D71E0939A2B} = {A5BE867E-106E-4BAB-9246-50302A7D6A0F}
+		{0139A70C-4C41-4FB6-91EB-8394F473DE50} = {A5BE867E-106E-4BAB-9246-50302A7D6A0F}
+		{8E236E3B-9DF9-4A1F-BE75-D313199C1DBC} = {5E9FFA15-573A-4735-ADB8-C86EABFC28A1}
+		{654D0F95-6FDC-4953-9EB4-1C5CFE718218} = {5E9FFA15-573A-4735-ADB8-C86EABFC28A1}
+		{6948E739-EE79-4D6F-981B-B3A0DE7FE5C3} = {754FB459-63B6-453E-AE66-47A25BB84CE9}
+		{217070AB-9C2A-4153-8B86-0BACAA287628} = {754FB459-63B6-453E-AE66-47A25BB84CE9}
+		{F483DB10-5FAC-4490-9A30-E60956128218} = {4444CFD3-7DC7-4C63-8DE5-9D71E0939A2B}
+		{D9523BCB-18F0-4F78-85A6-6CF560E0A8A2} = {0139A70C-4C41-4FB6-91EB-8394F473DE50}
+		{2C212836-8828-4C23-A887-60AE633D6E00} = {0139A70C-4C41-4FB6-91EB-8394F473DE50}
+		{41737544-EFDD-4552-A2AD-220B0C8B4069} = {4444CFD3-7DC7-4C63-8DE5-9D71E0939A2B}
+		{A0332545-FB22-4D23-B7E4-5525B9962AC8} = {2C212836-8828-4C23-A887-60AE633D6E00}
+		{FB59CB64-599B-4DEE-A203-3E0FDDC033BF} = {2C212836-8828-4C23-A887-60AE633D6E00}
+		{E36F8D8E-39E5-4D1C-B3A5-4D67519A9290} = {41737544-EFDD-4552-A2AD-220B0C8B4069}
+		{9BABA546-2BD1-4A64-8BDB-C63144FAABB9} = {41737544-EFDD-4552-A2AD-220B0C8B4069}
+		{394DE45D-B3C4-4DE6-B372-74BCC6F1D1D8} = {6948E739-EE79-4D6F-981B-B3A0DE7FE5C3}
+		{2643BBCE-69ED-44EE-A432-B5209F137C49} = {6948E739-EE79-4D6F-981B-B3A0DE7FE5C3}
+		{3398DF05-3D92-4D6F-8DDD-EDF636F0D1EA} = {654D0F95-6FDC-4953-9EB4-1C5CFE718218}
+		{FBF48A37-1D58-4EFA-8A4F-B552985E4FCF} = {654D0F95-6FDC-4953-9EB4-1C5CFE718218}
+		{11BFFEF6-1939-4F02-9D33-D04239E5B426} = {5144EAF5-27D7-4E0B-9E0E-9DC608B0E064}
+		{1FC95E92-6E6A-410D-A877-BA5E17989091} = {5144EAF5-27D7-4E0B-9E0E-9DC608B0E064}
+		{7A64EEAB-062D-4945-9776-15899BC17775} = {5144EAF5-27D7-4E0B-9E0E-9DC608B0E064}
+		{BCF07985-F668-4785-85BC-A0C9F8CCBF01} = {5144EAF5-27D7-4E0B-9E0E-9DC608B0E064}
+		{46C19566-2EB0-4A57-8F3F-A6A7696D41D2} = {5144EAF5-27D7-4E0B-9E0E-9DC608B0E064}
+		{E5F31E21-01AC-4740-BD30-9E9CB9A727A6} = {7510DB0D-28DF-42E6-9F94-99DB3A98B122}
+		{7F21F925-1C6E-409F-8815-92F4DBA66810} = {5CCF5A01-7F70-4BAE-9DBE-A6F9BD5730B0}
+		{05AB571B-C141-4520-A5E5-3C67488DD151} = {5CCF5A01-7F70-4BAE-9DBE-A6F9BD5730B0}
+		{DA0C8039-D2B0-4A40-9DE8-DDC889ACC784} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{FF741A11-BCEB-4054-B6D6-50AE51B899B6} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{3CD56C89-D7A7-4ADF-934B-E05596C4E3C3} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{A5C8831C-2FF2-4102-98C0-8D74444A3946} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{EAB3815E-3DEA-45AC-9C72-CD09B603EE4F} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{0CEE5FB3-36B6-404F-A7AD-C9BE45B25919} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{E36CB9A5-4024-4311-B474-4C63AF690DE5} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{AB88D3B5-15BE-49D8-AD04-93BF8821231A} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{BCCFDF90-6EAB-49EA-8637-1FE381DDACDF} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{6FBDA4D8-A03D-4A55-9B43-958F795AE74E} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{F5FE8E48-4113-419D-8654-04785612788D} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{D619A926-66EC-4EAD-9A40-2A49E8E65597} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{6DA0B023-EEED-417A-AF01-A6C9A7E54B57} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{29AEB77A-F6D1-4196-8ACE-538E558C064F} = {05AB571B-C141-4520-A5E5-3C67488DD151}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD0585D6-CBA4-4818-86D8-0D914F18E390}

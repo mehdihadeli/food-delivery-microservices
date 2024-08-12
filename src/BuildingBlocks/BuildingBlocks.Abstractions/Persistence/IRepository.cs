@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Domain;
 
 namespace BuildingBlocks.Abstractions.Persistence;

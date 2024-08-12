@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
@@ -15,7 +15,7 @@ using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.V1;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/
@@ -148,15 +148,12 @@ internal class CreateProductHandler : ICommandHandler<CreateProduct, CreateProdu
         ) = command;
 
         var images = imageItems
-            ?.Select(
-                x =>
-                    new ProductImage(
-                        EntityId.Of(SnowFlakIdGenerator.NewId()),
-                        x.ImageUrl,
-                        x.IsMain,
-                        ProductId.Of(command.Id)
-                    )
-            )
+            ?.Select(x => new ProductImage(
+                EntityId.Of(SnowFlakIdGenerator.NewId()),
+                x.ImageUrl,
+                x.IsMain,
+                ProductId.Of(command.Id)
+            ))
             .ToList();
 
         // await _domainEventDispatcher.DispatchAsync(cancellationToken, new Events.Domain.CreatingProduct());
@@ -186,8 +183,8 @@ internal class CreateProductHandler : ICommandHandler<CreateProduct, CreateProdu
         await _catalogDbContext.Products.AddAsync(product, cancellationToken: cancellationToken);
         await _catalogDbContext.SaveChangesAsync(cancellationToken);
 
-        var created = await _catalogDbContext.Products
-            .Include(x => x.Brand)
+        var created = await _catalogDbContext
+            .Products.Include(x => x.Brand)
             .Include(x => x.Category)
             .Include(x => x.Supplier)
             .SingleOrDefaultAsync(x => x.Id == product.Id, cancellationToken: cancellationToken);

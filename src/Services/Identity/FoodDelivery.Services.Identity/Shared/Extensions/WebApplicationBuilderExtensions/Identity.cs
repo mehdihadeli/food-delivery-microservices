@@ -24,8 +24,8 @@ public static partial class WebApplicationBuilderExtensions
 
         if (postgresOptions.UseInMemory)
         {
-            builder.Services.AddDbContext<IdentityContext>(
-                options => options.UseInMemoryDatabase("Shop.Services.FoodDelivery.Services.Identity")
+            builder.Services.AddDbContext<IdentityContext>(options =>
+                options.UseInMemoryDatabase("Shop.Services.FoodDelivery.Services.Identity")
             );
 
             builder.Services.TryAddScoped<IDbFacadeResolver>(provider => provider.GetService<IdentityContext>()!);
@@ -45,8 +45,8 @@ public static partial class WebApplicationBuilderExtensions
         // https://github.com/IdentityServer/IdentityServer4/issues/1525
         // https://github.com/IdentityServer/IdentityServer4/issues/1525
         // some dependencies will add here if not registered before
-        builder.Services
-            .AddIdentity<ApplicationUser, ApplicationRole>(options =>
+        builder
+            .Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
                 // Password settings.
                 options.Password.RequireDigit = false;

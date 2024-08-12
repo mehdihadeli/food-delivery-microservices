@@ -1,13 +1,13 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.GettingClaims.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.GettingClaims.V1;
 
 internal static class GetClaimsEndpoint
 {
@@ -21,11 +21,11 @@ internal static class GetClaimsEndpoint
             .WithSummaryAndDescription(nameof(GetClaims).Humanize(), nameof(GetClaims).Humanize())
             .WithDisplayName(nameof(GetClaims).Humanize())
             .MapToApiVersion(1.0);
+
         // // Api Documentations will produce automatically by typed result in minimal apis.
         // // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses?#typedresults-vs-results
         // .Produces<GetClaimsResponse>(statusCode: StatusCodes.Status200OK)
         // .ProducesProblem(StatusCodes.Status401Unauthorized);
-
         async Task<Results<Ok<GetClaimsResponse>, ValidationProblem, UnAuthorizedHttpProblemResult>> Handle(
             [AsParameters] GetClaimsRequestParameters requestParameters
         )
@@ -44,7 +44,7 @@ internal static class GetClaimsEndpoint
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding#binding-precedence
 internal record GetClaimsRequestParameters(
     HttpContext HttpContext,
-    IQueryProcessor QueryProcessor,
+    IQueryBus QueryBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;

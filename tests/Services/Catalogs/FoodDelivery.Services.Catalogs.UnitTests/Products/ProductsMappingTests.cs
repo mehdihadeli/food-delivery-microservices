@@ -1,8 +1,8 @@
 using AutoBogus;
 using AutoMapper;
+using FluentAssertions;
 using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1;
 using FoodDelivery.Services.Catalogs.UnitTests.Common;
-using FluentAssertions;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Customers.UnitTests.Products;

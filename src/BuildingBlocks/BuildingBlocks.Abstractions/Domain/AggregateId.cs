@@ -8,10 +8,16 @@ public record AggregateId<T> : Identity<T>
         Value = value;
     }
 
-    public static implicit operator T(AggregateId<T> id) => id.Value;
+    public static implicit operator T(AggregateId<T> id)
+    {
+        return id.Value;
+    }
 
     // validations should be placed here instead of constructor
-    public static AggregateId<T> CreateAggregateId(T id) => new(id);
+    public static AggregateId<T> CreateAggregateId(T id)
+    {
+        return new AggregateId<T>(id);
+    }
 }
 
 public record AggregateId : AggregateId<long>
@@ -26,5 +32,8 @@ public record AggregateId : AggregateId<long>
         return new AggregateId(value);
     }
 
-    public static implicit operator long(AggregateId id) => id.Value;
+    public static implicit operator long(AggregateId id)
+    {
+        return id.Value;
+    }
 }

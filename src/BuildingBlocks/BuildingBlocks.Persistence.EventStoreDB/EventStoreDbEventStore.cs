@@ -7,18 +7,11 @@ using EventStore.Client;
 namespace BuildingBlocks.Persistence.EventStoreDB;
 
 // https://developers.eventstore.com/clients/dotnet/21.2/migration-to-gRPC.html
-public class EventStoreDbEventStore : IEventStore
+public class EventStoreDbEventStore(EventStoreClient grpcClient) : IEventStore
 {
-    private readonly EventStoreClient _grpcClient;
-
-    public EventStoreDbEventStore(EventStoreClient grpcClient)
-    {
-        _grpcClient = grpcClient;
-    }
-
     public async Task<bool> StreamExists(string streamId, CancellationToken cancellationToken = default)
     {
-        var read = _grpcClient.ReadStreamAsync(
+        var read = grpcClient.ReadStreamAsync(
             Direction.Forwards,
             streamId,
             StreamPosition.Start,
@@ -37,7 +30,7 @@ public class EventStoreDbEventStore : IEventStore
         CancellationToken cancellationToken = default
     )
     {
-        var readResult = _grpcClient.ReadStreamAsync(
+        var readResult = grpcClient.ReadStreamAsync(
             Direction.Forwards,
             streamId,
             fromVersion?.AsStreamPosition() ?? StreamPosition.Start,
@@ -99,7 +92,7 @@ public class EventStoreDbEventStore : IEventStore
 
         if (expectedRevision == ExpectedStreamVersion.NoStream)
         {
-            var result = await _grpcClient.AppendToStreamAsync(
+            var result = await grpcClient.AppendToStreamAsync(
                 streamId,
                 StreamState.NoStream,
                 eventsData,
@@ -114,7 +107,7 @@ public class EventStoreDbEventStore : IEventStore
 
         if (expectedRevision == ExpectedStreamVersion.Any)
         {
-            var result = await _grpcClient.AppendToStreamAsync(
+            var result = await grpcClient.AppendToStreamAsync(
                 streamId,
                 StreamState.Any,
                 eventsData,
@@ -128,7 +121,7 @@ public class EventStoreDbEventStore : IEventStore
         }
         else
         {
-            var result = await _grpcClient.AppendToStreamAsync(
+            var result = await grpcClient.AppendToStreamAsync(
                 streamId,
                 expectedRevision.AsStreamRevision(),
                 eventsData,
@@ -151,7 +144,7 @@ public class EventStoreDbEventStore : IEventStore
     )
         where TAggregate : class, IEventSourcedAggregate<TId>, new()
     {
-        var readResult = _grpcClient.ReadStreamAsync(
+        var readResult = grpcClient.ReadStreamAsync(
             Direction.Forwards,
             streamId,
             fromVersion.AsStreamPosition(),

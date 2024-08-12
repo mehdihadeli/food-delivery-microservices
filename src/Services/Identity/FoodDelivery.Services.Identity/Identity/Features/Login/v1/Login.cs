@@ -1,27 +1,27 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Utils;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Identity.Identity.Exceptions;
 using FoodDelivery.Services.Identity.Identity.Features.GeneratingJwtToken.v1;
 using FoodDelivery.Services.Identity.Identity.Features.GeneratingRefreshToken.v1;
 using FoodDelivery.Services.Identity.Shared.Data;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.Login.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.Login.V1;
 
 internal record Login(string UserNameOrEmail, string Password, bool Remember) : ICommand<LoginResult>, ITxRequest
 {
     /// <summary>
-    /// Login with in-line validator
+    /// Login with in-line validator.
     /// </summary>
     /// <param name="userNameOrEmail"></param>
     /// <param name="password"></param>
@@ -44,19 +44,19 @@ internal class LoginValidator : AbstractValidator<Login>
 
 internal class LoginHandler : ICommandHandler<Login, LoginResult>
 {
-    private readonly ICommandProcessor _commandProcessor;
+    private readonly ICommandBus _commandProcessor;
     private readonly IJwtService _jwtService;
     private readonly JwtOptions _jwtOptions;
     private readonly ILogger<LoginHandler> _logger;
-    private readonly IQueryProcessor _queryProcessor;
+    private readonly IQueryBus _queryBus;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IdentityContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public LoginHandler(
         UserManager<ApplicationUser> userManager,
-        ICommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
+        ICommandBus commandProcessor,
+        IQueryBus queryBus,
         IJwtService jwtService,
         IOptions<JwtOptions> jwtOptions,
         SignInManager<ApplicationUser> signInManager,
@@ -66,7 +66,7 @@ internal class LoginHandler : ICommandHandler<Login, LoginResult>
     {
         _userManager = userManager;
         _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
+        _queryBus = queryBus;
         _jwtService = jwtService;
         _signInManager = signInManager;
         _context = context;

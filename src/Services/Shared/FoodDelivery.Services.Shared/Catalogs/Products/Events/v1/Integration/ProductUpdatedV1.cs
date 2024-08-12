@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
 
-namespace FoodDelivery.Services.Shared.Catalogs.Products.Events.v1.Integration;
+namespace FoodDelivery.Services.Shared.Catalogs.Products.Events.V1.Integration;
 
 public record ProductUpdatedV1(long Id, string Name, long CategoryId, string CategoryName, int Stock) : IntegrationEvent
 {

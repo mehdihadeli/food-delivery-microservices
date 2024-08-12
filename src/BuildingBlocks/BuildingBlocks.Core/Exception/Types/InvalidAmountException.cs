@@ -1,12 +1,6 @@
 namespace BuildingBlocks.Core.Exception.Types;
 
-public class InvalidAmountException : BadRequestException
+public class InvalidAmountException(decimal amount) : BadRequestException($"Amount: '{amount}' is invalid.")
 {
-    public decimal Amount { get; }
-
-    public InvalidAmountException(decimal amount)
-        : base($"Amount: '{amount}' is invalid.")
-    {
-        Amount = amount;
-    }
+    public decimal Amount { get; } = amount;
 }

@@ -1,20 +1,20 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
-using BuildingBlocks.Core.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Paging;
+using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FluentValidation;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Sieve.Services;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.v1;
+namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.V1;
 
 internal record GetCustomers : PageQuery<GetCustomersResult>
 {

@@ -24,7 +24,7 @@ public static class SqlKataExtensions
         return result.ToImmutableList();
     }
 
-    public static Task<T> QueryOneAsync<T>(this IDbConnection connection)
+    public static Task<T?> QueryOneAsync<T>(this IDbConnection connection)
     {
         SqlResult compile = _postgresCompiler.Compile(new Query());
         return connection.QueryFirstOrDefaultAsync<T>(compile.Sql, compile.NamedBindings);

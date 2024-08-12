@@ -2,7 +2,7 @@ using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Core.Domain.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1.Events.Domain;
+namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.V1.Events.Domain;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/
@@ -51,6 +51,11 @@ internal record ProductStockReplenished(
         //         replenishedQuantity
         //     )
         // );
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductStockReplenished);
     }
 }
 

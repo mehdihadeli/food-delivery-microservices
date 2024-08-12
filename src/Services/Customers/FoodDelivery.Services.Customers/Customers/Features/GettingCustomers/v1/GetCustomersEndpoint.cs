@@ -1,6 +1,6 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -9,7 +9,7 @@ using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.v1;
+namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.V1;
 
 internal class GetCustomersEndpoint
     : IQueryMinimalEndpoint<
@@ -33,6 +33,7 @@ internal class GetCustomersEndpoint
             .WithName(nameof(GetCustomers))
             .WithSummaryAndDescription(nameof(GetCustomers).Humanize(), nameof(GetCustomers).Humanize())
             .WithDisplayName(nameof(GetCustomers).Humanize());
+
         // .Produces<GetCustomersResponse>("Customers fetched successfully.", StatusCodes.Status200OK)
         // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
         // .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -67,7 +68,7 @@ internal class GetCustomersEndpoint
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding#binding-precedence
 internal record GetCustomersRequestParameters(
     HttpContext HttpContext,
-    IQueryProcessor QueryProcessor,
+    IQueryBus QueryProcessor,
     IMapper Mapper,
     CancellationToken CancellationToken,
     int PageSize = 10,

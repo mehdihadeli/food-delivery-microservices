@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -7,7 +7,7 @@ using FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.V1;
 
 internal class CreateRestockSubscriptionEndpoint
     : ICommandMinimalEndpoint<
@@ -61,7 +61,7 @@ internal class CreateRestockSubscriptionEndpoint
 internal record CreateRestockSubscriptionRequestParameters(
     [FromBody] CreateRestockSubscriptionRequest Request,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandProcessor,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<CreateRestockSubscriptionRequest>;

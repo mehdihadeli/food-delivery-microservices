@@ -1,4 +1,4 @@
-﻿namespace BuildingBlocks.Core.Threading;
+namespace BuildingBlocks.Core.Threading;
 
 public static class NoSynchronizationContextScope
 {
@@ -9,15 +9,8 @@ public static class NoSynchronizationContextScope
         return new Disposable(context);
     }
 
-    public readonly struct Disposable : IDisposable
+    public readonly struct Disposable(SynchronizationContext? synchronizationContext) : IDisposable
     {
-        private readonly SynchronizationContext? _synchronizationContext;
-
-        public Disposable(SynchronizationContext? synchronizationContext)
-        {
-            _synchronizationContext = synchronizationContext;
-        }
-
-        public void Dispose() => SynchronizationContext.SetSynchronizationContext(_synchronizationContext);
+        public void Dispose() => SynchronizationContext.SetSynchronizationContext(synchronizationContext);
     }
 }

@@ -1,14 +1,14 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 
-namespace FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
+namespace FoodDelivery.Services.Identity.Users.Features.GettingUserById.V1;
 
 internal record GetUserById(Guid Id) : IQuery<GetUserByIdResult>
 {

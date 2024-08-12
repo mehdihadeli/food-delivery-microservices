@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 
 namespace BuildingBlocks.Abstractions.Caching;
 

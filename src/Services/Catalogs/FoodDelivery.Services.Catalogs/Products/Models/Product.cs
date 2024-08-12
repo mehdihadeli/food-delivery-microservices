@@ -65,7 +65,6 @@ public class Product : Aggregate<ProductId>
     // https://event-driven.io/en/how_to_validate_business_logic/
     // https://www.dandoescode.com/blog/domain-driven-design-patterns-for-aggregate-creation-mastery
     // https://www.kamilgrzybek.com/blog/posts/domain-model-validation
-
     public static Product Create(
         ProductId? id,
         Name? name,
@@ -90,16 +89,7 @@ public class Product : Aggregate<ProductId>
         // input validation will do in the `command` and our `value objects` before arriving to entity and makes or domain cleaner, here we just do business validation
         var product = new Product { Id = id.NotBeNull(), Stock = stock.NotBeNull() };
 
-        product.ChangeProductDetail(
-            name,
-            status,
-            type,
-            dimensions,
-            size,
-            color,
-            productInformation,
-            description
-        );
+        product.ChangeProductDetail(name, status, type, dimensions, size, color, productInformation, description);
 
         product.ChangePrice(price);
         product.AddProductImages(images);
@@ -132,7 +122,6 @@ public class Product : Aggregate<ProductId>
 
     // https://event-driven.io/en/property-sourcing/
     // https://stackoverflow.com/questions/59558931/should-there-be-an-update-event-per-property-or-an-update-event-per-entity-with
-
     public void ChangeProductDetail(
         Name? name,
         ProductStatus status,
@@ -289,7 +278,7 @@ public class Product : Aggregate<ProductId>
     /// <summary>
     /// Sets category.
     /// </summary>
-    /// <param name="categoryChecker">The checker for CategoryId</param>
+    /// <param name="categoryChecker">The checker for CategoryId.</param>
     /// <param name="categoryId">The categoryId to be changed.</param>
     public void ChangeCategory(AggregateFuncOperation<CategoryId?, bool>? categoryChecker, CategoryId? categoryId)
     {

@@ -25,8 +25,8 @@ public static partial class WebApplicationBuilderExtensions
         var option = configuration.BindOptions<PostgresOptions>();
         if (option.UseInMemory)
         {
-            services.AddDbContext<CatalogDbContext>(
-                options => options.UseInMemoryDatabase("FoodDelivery.Services.Catalogs")
+            services.AddDbContext<CatalogDbContext>(options =>
+                options.UseInMemoryDatabase("FoodDelivery.Services.Catalogs")
             );
 
             services.TryAddScoped<IDbFacadeResolver>(provider => provider.GetService<CatalogDbContext>()!);

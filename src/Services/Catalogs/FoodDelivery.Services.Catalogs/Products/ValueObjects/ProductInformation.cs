@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using BuildingBlocks.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.ValueObjects;

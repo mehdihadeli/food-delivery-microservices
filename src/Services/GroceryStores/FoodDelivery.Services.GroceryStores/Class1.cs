@@ -1,3 +1,3 @@
-﻿namespace FoodDelivery.Services.GroceryStores;
+namespace FoodDelivery.Services.GroceryStores;
 
 public class Class1 { }

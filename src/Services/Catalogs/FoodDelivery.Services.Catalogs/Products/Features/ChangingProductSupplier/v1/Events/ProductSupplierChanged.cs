@@ -3,7 +3,7 @@ using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Suppliers;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductSupplier.v1.Events;
+namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductSupplier.V1.Events;
 
 internal record ProductSupplierChanged(long SupplierId, long ProductId) : DomainEvent
 {
@@ -13,5 +13,10 @@ internal record ProductSupplierChanged(long SupplierId, long ProductId) : Domain
         productId.NotBeNegativeOrZero();
 
         return new ProductSupplierChanged(supplierId, productId);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductSupplierChanged);
     }
 }

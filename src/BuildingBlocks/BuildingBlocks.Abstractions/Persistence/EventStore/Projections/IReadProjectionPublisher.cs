@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 
 namespace BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 

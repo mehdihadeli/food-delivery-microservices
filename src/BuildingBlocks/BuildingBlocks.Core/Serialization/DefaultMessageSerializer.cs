@@ -1,6 +1,8 @@
 using System.Text;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Serialization;
+using BuildingBlocks.Core.Events;
 using BuildingBlocks.Core.Types;
 using Newtonsoft.Json;
 
@@ -10,9 +12,9 @@ public class DefaultMessageSerializer : DefaultSerializer, IMessageSerializer
 {
     public new string ContentType => "application/json";
 
-    public string Serialize(EventEnvelope messageEnvelope)
+    public string Serialize(IEventEnvelope eventEnvelope)
     {
-        return JsonConvert.SerializeObject(messageEnvelope, new JsonSerializerSettings());
+        return JsonConvert.SerializeObject(eventEnvelope, new JsonSerializerSettings());
     }
 
     public string Serialize<TMessage>(TMessage message)
@@ -35,9 +37,9 @@ public class DefaultMessageSerializer : DefaultSerializer, IMessageSerializer
         return deserializedData;
     }
 
-    public EventEnvelope? Deserialize(string json)
+    public IEventEnvelope? Deserialize(string json)
     {
-        return JsonConvert.DeserializeObject<EventEnvelope>(json, CreateSerializerSettings());
+        return JsonConvert.DeserializeObject<EventEnvelope<object>>(json, CreateSerializerSettings());
     }
 
     public IMessage? Deserialize(ReadOnlySpan<byte> data, string payloadType)

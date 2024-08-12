@@ -55,50 +55,48 @@ public class ProductMappers : Profile
         CreateMap<CreateProduct, Product>();
 
         CreateMap<CreateProductRequest, CreateProduct>()
-            .ConstructUsing(
-                req =>
-                    CreateProduct.Of(
-                        req.Name,
-                        req.Price,
-                        req.Stock,
-                        req.RestockThreshold,
-                        req.MaxStockThreshold,
-                        req.Status,
-                        req.Width,
-                        req.Height,
-                        req.Depth,
-                        req.Size,
-                        req.Color,
-                        req.ProductType,
-                        req.CategoryId,
-                        req.SupplierId,
-                        req.BrandId,
-                        req.Description,
-                        req.Images
-                    )
+            .ConstructUsing(req =>
+                CreateProduct.Of(
+                    req.Name,
+                    req.Price,
+                    req.Stock,
+                    req.RestockThreshold,
+                    req.MaxStockThreshold,
+                    req.Status,
+                    req.Width,
+                    req.Height,
+                    req.Depth,
+                    req.Size,
+                    req.Color,
+                    req.ProductType,
+                    req.CategoryId,
+                    req.SupplierId,
+                    req.BrandId,
+                    req.Description,
+                    req.Images
+                )
             );
 
         CreateMap<UpdateProductRequest, UpdateProduct>()
-            .ConstructUsing(
-                req =>
-                    UpdateProduct.Of(
-                        req.Id,
-                        req.Name,
-                        req.Price,
-                        req.RestockThreshold,
-                        req.MaxStockThreshold,
-                        req.Status,
-                        req.ProductType,
-                        req.ProductColor,
-                        req.Width,
-                        req.Height,
-                        req.Depth,
-                        req.Size,
-                        req.CategoryId,
-                        req.SupplierId,
-                        req.BrandId,
-                        req.Description
-                    )
+            .ConstructUsing(req =>
+                UpdateProduct.Of(
+                    req.Id,
+                    req.Name,
+                    req.Price,
+                    req.RestockThreshold,
+                    req.MaxStockThreshold,
+                    req.Status,
+                    req.ProductType,
+                    req.ProductColor,
+                    req.Width,
+                    req.Height,
+                    req.Depth,
+                    req.Size,
+                    req.CategoryId,
+                    req.SupplierId,
+                    req.BrandId,
+                    req.Description
+                )
             );
     }
 }

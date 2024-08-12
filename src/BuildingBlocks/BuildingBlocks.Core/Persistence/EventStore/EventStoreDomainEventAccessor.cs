@@ -1,17 +1,9 @@
-using BuildingBlocks.Abstractions.Domain.Events;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 
-namespace BuildingBlocks.Persistence.EventStoreDB;
+namespace BuildingBlocks.Core.Persistence.EventStore;
 
-public class EventStoreDomainEventAccessor : IDomainEventsAccessor
+public abstract class EventStoreDomainEventAccessor(IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore)
+    : IDomainEventsAccessor
 {
-    private readonly IAggregatesDomainEventsRequestStore _aggregatesDomainEventsStore;
-
-    public EventStoreDomainEventAccessor(IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore)
-    {
-        _aggregatesDomainEventsStore = aggregatesDomainEventsStore;
-    }
-
-    public IReadOnlyList<IDomainEvent> UnCommittedDomainEvents =>
-        _aggregatesDomainEventsStore.GetAllUncommittedEvents();
+    public IReadOnlyList<IDomainEvent> UnCommittedDomainEvents => aggregatesDomainEventsStore.GetAllUncommittedEvents();
 }

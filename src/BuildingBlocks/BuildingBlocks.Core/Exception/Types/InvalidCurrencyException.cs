@@ -1,12 +1,6 @@
 namespace BuildingBlocks.Core.Exception.Types;
 
-public class InvalidCurrencyException : BadRequestException
+public class InvalidCurrencyException(string currency) : BadRequestException($"Currency: '{currency}' is invalid.")
 {
-    public string Currency { get; }
-
-    public InvalidCurrencyException(string currency)
-        : base($"Currency: '{currency}' is invalid.")
-    {
-        Currency = currency;
-    }
+    public string Currency { get; } = currency;
 }

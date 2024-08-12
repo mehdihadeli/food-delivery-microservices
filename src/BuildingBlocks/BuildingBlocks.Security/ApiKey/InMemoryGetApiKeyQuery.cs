@@ -4,7 +4,7 @@ namespace BuildingBlocks.Security.ApiKey;
 
 public class InMemoryGetApiKeyQuery : IGetApiKeyQuery
 {
-    private readonly IDictionary<string, ApiKey> _apiKeys;
+    private readonly Dictionary<string, ApiKey> _apiKeys;
 
     public InMemoryGetApiKeyQuery()
     {
@@ -36,7 +36,7 @@ public class InMemoryGetApiKeyQuery : IGetApiKeyQuery
         _apiKeys = existingApiKeys.ToDictionary(x => x.Key, x => x);
     }
 
-    public Task<ApiKey> ExecuteAsync(string providedApiKey)
+    public Task<ApiKey?> ExecuteAsync(string providedApiKey)
     {
         _apiKeys.TryGetValue(providedApiKey, out var key);
         return Task.FromResult(key);

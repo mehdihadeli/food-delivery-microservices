@@ -1,12 +1,6 @@
 namespace BuildingBlocks.Core.Exception.Types;
 
-public class InvalidDateException : BadRequestException
+public class InvalidDateException(DateTime date) : BadRequestException($"Date: '{date}' is invalid.")
 {
-    public DateTime Date { get; }
-
-    public InvalidDateException(DateTime date)
-        : base($"Date: '{date}' is invalid.")
-    {
-        Date = date;
-    }
+    public DateTime Date { get; } = date;
 }

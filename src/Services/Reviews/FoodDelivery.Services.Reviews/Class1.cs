@@ -1,3 +1,3 @@
-﻿namespace FoodDelivery.Services.Reviews;
+namespace FoodDelivery.Services.Reviews;
 
 public class Class1 { }

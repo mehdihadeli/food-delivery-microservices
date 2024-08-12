@@ -14,7 +14,6 @@ public class RestockSubscriptionsConfigs : IModuleConfiguration
     {
         //// we could add event mappers manually, also they can find automatically by scanning assemblies
         // builder.Services.TryAddSingleton<IEventMapper, RestockSubscriptionsEventMapper>();
-
         return builder;
     }
 

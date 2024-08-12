@@ -1,8 +1,8 @@
 using System.Net.Http.Json;
 using BuildingBlocks.Web.Extensions;
+using FluentAssertions;
 using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Clients.Catalogs.Dtos;
-using FluentAssertions;
 using Tests.Shared.Helpers;
 using Tests.Shared.XunitCategories;
 

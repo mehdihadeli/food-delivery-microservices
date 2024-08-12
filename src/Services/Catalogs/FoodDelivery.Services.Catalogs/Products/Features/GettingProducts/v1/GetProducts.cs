@@ -1,19 +1,19 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
-using BuildingBlocks.Core.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Paging;
+using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Products.Models.Read;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Sieve.Services;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProducts.v1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProducts.V1;
 
 internal record GetProducts : PageQuery<GetProductsResult>
 {
@@ -67,8 +67,8 @@ internal class GetProductsHandler : IQueryHandler<GetProducts, GetProductsResult
 
     public async Task<GetProductsResult> Handle(GetProducts request, CancellationToken cancellationToken)
     {
-        var products = await _catalogDbContext.Products
-            .OrderByDescending(x => x.Created)
+        var products = await _catalogDbContext
+            .Products.OrderByDescending(x => x.Created)
             .AsNoTracking()
             .ApplyPagingAsync<Product, ProductReadModel>(
                 request,

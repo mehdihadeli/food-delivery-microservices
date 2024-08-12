@@ -1,48 +1,32 @@
 using System.Collections.Immutable;
-using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Core.Events.Extensions;
+using BuildingBlocks.Core.Extensions;
 
 namespace BuildingBlocks.Core.Events;
 
-public class DomainEventPublisher : IDomainEventPublisher
+public class DomainEventPublisher(
+    IMessagePersistenceService messagePersistenceService,
+    IDomainNotificationEventPublisher domainNotificationEventPublisher,
+    IDomainEventsAccessor domainEventsAccessor,
+    IInternalEventBus internalEventBus,
+    IMessageMetadataAccessor messageMetadataAccessor,
+    IServiceProvider serviceProvider
+) : IDomainEventPublisher
 {
-    private readonly IEventProcessor _eventProcessor;
-    private readonly IMessagePersistenceService _messagePersistenceService;
-    private readonly IDomainEventsAccessor _domainEventsAccessor;
-    private readonly IDomainNotificationEventPublisher _domainNotificationEventPublisher;
-    private readonly IServiceProvider _serviceProvider;
-
-    public DomainEventPublisher(
-        IEventProcessor eventProcessor,
-        IMessagePersistenceService messagePersistenceService,
-        IDomainNotificationEventPublisher domainNotificationEventPublisher,
-        IDomainEventsAccessor domainEventsAccessor,
-        IServiceProvider serviceProvider
-    )
-    {
-        _messagePersistenceService = messagePersistenceService;
-        _domainEventsAccessor = domainEventsAccessor;
-        _domainNotificationEventPublisher = Guard.Against.Null(
-            domainNotificationEventPublisher,
-            nameof(domainNotificationEventPublisher)
-        );
-        _eventProcessor = Guard.Against.Null(eventProcessor, nameof(eventProcessor));
-        _serviceProvider = Guard.Against.Null(serviceProvider, nameof(serviceProvider));
-    }
-
     public Task PublishAsync(IDomainEvent domainEvent, CancellationToken cancellationToken = default)
     {
-        return PublishAsync(new[] { domainEvent }, cancellationToken);
+        return PublishAsync([domainEvent,], cancellationToken);
     }
 
     public async Task PublishAsync(IDomainEvent[] domainEvents, CancellationToken cancellationToken = default)
     {
-        Guard.Against.Null(domainEvents, nameof(domainEvents));
+        domainEvents.NotBeNull();
 
-        if (!domainEvents.Any())
+        if (domainEvents.Length == 0)
             return;
 
         // https://github.com/dotnet-architecture/eShopOnContainers/issues/700#issuecomment-461807560
@@ -54,53 +38,54 @@ public class DomainEventPublisher : IDomainEventPublisher
         // Dispatch our domain events before commit
         var eventsToDispatch = domainEvents.ToList();
 
-        if (!eventsToDispatch.Any())
+        if (eventsToDispatch.Count == 0)
         {
-            eventsToDispatch = new List<IDomainEvent>(_domainEventsAccessor.UnCommittedDomainEvents);
+            eventsToDispatch = [.. domainEventsAccessor.UnCommittedDomainEvents,];
         }
 
-        await _eventProcessor.DispatchAsync(eventsToDispatch.ToArray(), cancellationToken);
+        // Dispatch events to internal broker
+        await internalEventBus.Publish(eventsToDispatch, cancellationToken);
 
         // Save wrapped integration and notification events to outbox for further processing after commit
         var wrappedNotificationEvents = eventsToDispatch.GetWrappedDomainNotificationEvents().ToArray();
-        await _domainNotificationEventPublisher.PublishAsync(wrappedNotificationEvents.ToArray(), cancellationToken);
+        await domainNotificationEventPublisher.PublishAsync(wrappedNotificationEvents.ToArray(), cancellationToken);
 
         var wrappedIntegrationEvents = eventsToDispatch.GetWrappedIntegrationEvents().ToArray();
         foreach (var wrappedIntegrationEvent in wrappedIntegrationEvents)
         {
-            await _messagePersistenceService.AddPublishMessageAsync(
-                new EventEnvelope(wrappedIntegrationEvent, new Dictionary<string, object?>()),
-                cancellationToken
-            );
+            var correlationId = messageMetadataAccessor.GetCorrelationId();
+            var cautionId = messageMetadataAccessor.GetCautionId();
+            var eventEnvelope = EventEnvelope.From(wrappedIntegrationEvent, correlationId, cautionId);
+            await messagePersistenceService.AddPublishMessageAsync(eventEnvelope, cancellationToken);
         }
 
-        var eventMappers = _serviceProvider.GetServices<IEventMapper>().ToImmutableList();
+        var eventMappers = serviceProvider.GetServices<IEventMapper>().ToImmutableList();
 
         // Save event mapper events into outbox for further processing after commit
-        var integrationEvents = GetIntegrationEvents(_serviceProvider, eventMappers, eventsToDispatch);
-        if (integrationEvents.Any())
+        var integrationEvents = GetIntegrationEvents(serviceProvider, eventMappers, eventsToDispatch);
+        if (!integrationEvents.IsEmpty)
         {
             foreach (var integrationEvent in integrationEvents)
             {
-                await _messagePersistenceService.AddPublishMessageAsync(
-                    new EventEnvelope(integrationEvent, new Dictionary<string, object?>()),
-                    cancellationToken
-                );
+                var correlationId = messageMetadataAccessor.GetCorrelationId();
+                var cautionId = messageMetadataAccessor.GetCautionId();
+                var eventEnvelope = EventEnvelope.From(integrationEvent, correlationId, cautionId);
+                await messagePersistenceService.AddPublishMessageAsync(eventEnvelope, cancellationToken);
             }
         }
 
-        var notificationEvents = GetNotificationEvents(_serviceProvider, eventMappers, eventsToDispatch);
+        var notificationEvents = GetNotificationEvents(serviceProvider, eventMappers, eventsToDispatch);
 
-        if (notificationEvents.Any())
+        if (!notificationEvents.IsEmpty)
         {
             foreach (var notification in notificationEvents)
             {
-                await _messagePersistenceService.AddNotificationAsync(notification, cancellationToken);
+                await messagePersistenceService.AddNotificationAsync(notification, cancellationToken);
             }
         }
     }
 
-    private IReadOnlyList<IDomainNotificationEvent> GetNotificationEvents(
+    private static ImmutableList<IDomainNotificationEvent> GetNotificationEvents(
         IServiceProvider serviceProvider,
         IReadOnlyList<IEventMapper> eventMappers,
         IReadOnlyList<IDomainEvent> eventsToDispatch
@@ -115,18 +100,18 @@ public class DomainEventPublisher : IDomainEventPublisher
             foreach (var eventMapper in eventMappers)
             {
                 var items = eventMapper.MapToDomainNotificationEvents(eventsToDispatch)?.ToList();
-                if (items is not null && items.Any())
+                if (items is not null && items.Count != 0)
                 {
                     notificationEvents.AddRange(items.Where(x => x is not null)!);
                 }
             }
         }
-        else if (notificationEventMappers.Any())
+        else if (!notificationEventMappers.IsEmpty)
         {
             foreach (var notificationEventMapper in notificationEventMappers)
             {
                 var items = notificationEventMapper.MapToDomainNotificationEvents(eventsToDispatch)?.ToList();
-                if (items is not null && items.Any())
+                if (items is not null && items.Count != 0)
                 {
                     notificationEvents.AddRange(items.Where(x => x is not null)!);
                 }
@@ -136,7 +121,7 @@ public class DomainEventPublisher : IDomainEventPublisher
         return notificationEvents.ToImmutableList();
     }
 
-    private static IReadOnlyList<IIntegrationEvent> GetIntegrationEvents(
+    private static ImmutableList<IIntegrationEvent> GetIntegrationEvents(
         IServiceProvider serviceProvider,
         IReadOnlyList<IEventMapper> eventMappers,
         IReadOnlyList<IDomainEvent> eventsToDispatch
@@ -151,18 +136,18 @@ public class DomainEventPublisher : IDomainEventPublisher
             foreach (var eventMapper in eventMappers)
             {
                 var items = eventMapper.MapToIntegrationEvents(eventsToDispatch)?.ToList();
-                if (items is not null && items.Any())
+                if (items is not null && items.Count != 0)
                 {
                     integrationEvents.AddRange(items.Where(x => x is not null)!);
                 }
             }
         }
-        else if (integrationEventMappers.Any())
+        else if (!integrationEventMappers.IsEmpty)
         {
             foreach (var integrationEventMapper in integrationEventMappers)
             {
                 var items = integrationEventMapper.MapToIntegrationEvents(eventsToDispatch)?.ToList();
-                if (items is not null && items.Any())
+                if (items is not null && items.Count != 0)
                 {
                     integrationEvents.AddRange(items.Where(x => x is not null)!);
                 }

@@ -7,22 +7,17 @@ using Microsoft.Extensions.Options;
 
 namespace BuildingBlocks.Caching.Behaviours;
 
-public class InvalidateCachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class InvalidateCachingBehavior<TRequest, TResponse>(
+    ILogger<InvalidateCachingBehavior<TRequest, TResponse>> logger,
+    IEasyCachingProviderFactory cachingProviderFactory,
+    IOptions<CacheOptions> cacheOptions
+) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : class
 {
-    private readonly ILogger<InvalidateCachingBehavior<TRequest, TResponse>> _logger;
-    private readonly IEasyCachingProvider _cacheProvider;
-
-    public InvalidateCachingBehavior(
-        ILogger<InvalidateCachingBehavior<TRequest, TResponse>> logger,
-        IEasyCachingProviderFactory cachingProviderFactory,
-        IOptions<CacheOptions> cacheOptions
-    )
-    {
-        _logger = logger;
-        _cacheProvider = cachingProviderFactory.GetCachingProvider(cacheOptions.Value.DefaultCacheType);
-    }
+    private readonly IEasyCachingProvider _cacheProvider = cachingProviderFactory.GetCachingProvider(
+        cacheOptions.Value.DefaultCacheType
+    );
 
     public async Task<TResponse> Handle(
         TRequest request,
@@ -42,7 +37,7 @@ public class InvalidateCachingBehavior<TRequest, TResponse> : IPipelineBehavior<
         foreach (var cacheKey in cacheKeys)
         {
             await _cacheProvider.RemoveAsync(cacheKey, cancellationToken);
-            _logger.LogDebug("Cache data with cache key: {CacheKey} invalidated", cacheKey);
+            logger.LogDebug("Cache data with cache key: {CacheKey} invalidated", cacheKey);
         }
 
         return response;

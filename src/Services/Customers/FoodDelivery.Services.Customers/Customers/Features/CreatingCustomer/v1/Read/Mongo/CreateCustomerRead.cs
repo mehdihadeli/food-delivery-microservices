@@ -1,13 +1,13 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Core.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
-using FluentValidation;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
+namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.V1.Read.Mongo;
 
 public record CreateCustomerRead(
     long CustomerId,

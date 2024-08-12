@@ -2,14 +2,14 @@ using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Core.Domain.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Shared.Data;
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.V1;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/
@@ -83,6 +83,11 @@ internal record ProductUpdated(
             )
         );
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductUpdated);
+    }
 }
 
 internal class ProductUpdatedValidator : AbstractValidator<ProductUpdated>
@@ -129,8 +134,8 @@ internal class ProductUpdatedHandler : IDomainEventHandler<ProductUpdated>
 
         if (existed is not null)
         {
-            var product = await _dbContext.Products
-                .Include(x => x.Brand)
+            var product = await _dbContext
+                .Products.Include(x => x.Brand)
                 .Include(x => x.Category)
                 .Include(x => x.Supplier)
                 .SingleOrDefaultAsync(x => x.Id == notification.Id, cancellationToken);

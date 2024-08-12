@@ -1,18 +1,18 @@
 using System.Security.Claims;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Identity.Identity.Exceptions;
 using FoodDelivery.Services.Identity.Identity.Features.GeneratingJwtToken.v1;
 using FoodDelivery.Services.Identity.Identity.Features.GeneratingRefreshToken.v1;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.V1;
 
 internal record RefreshToken(string AccessTokenData, string RefreshTokenData) : ICommand<RefreshTokenResult>
 {
@@ -39,14 +39,14 @@ internal class RefreshTokenValidator : AbstractValidator<RefreshToken>
 
 internal class RefreshTokenHandler : ICommandHandler<RefreshToken, RefreshTokenResult>
 {
-    private readonly ICommandProcessor _commandProcessor;
+    private readonly ICommandBus _commandProcessor;
     private readonly IJwtService _jwtService;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public RefreshTokenHandler(
         IJwtService jwtService,
         UserManager<ApplicationUser> userManager,
-        ICommandProcessor commandProcessor
+        ICommandBus commandProcessor
     )
     {
         _jwtService = jwtService;

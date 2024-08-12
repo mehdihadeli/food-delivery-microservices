@@ -1,7 +1,5 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
-using BuildingBlocks.Core.CQRS.Queries;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Persistence.EfCore;
 using FoodDelivery.Services.Identity.Shared.Models;
@@ -31,8 +29,8 @@ public static class UserManagerExtensions
     {
         // https://benjii.me/2018/01/expression-projection-magic-entity-framework-core/
         // we don't use include for loading nested navigation because with mapping we load them explicitly
-        return await userManager.Users
-            .OrderByDescending(x => x.CreatedAt)
+        return await userManager
+            .Users.OrderByDescending(x => x.CreatedAt)
             .AsNoTracking()
             .ApplyPagingAsync<ApplicationUser, TResult>(
                 request,
@@ -47,8 +45,8 @@ public static class UserManagerExtensions
         Guid userId
     )
     {
-        return await userManager.Users
-            .Include(u => u.UserRoles)
+        return await userManager
+            .Users.Include(u => u.UserRoles)
             .ThenInclude(ur => ur.Role)
             .Include(x => x.AccessTokens)
             .Include(x => x.RefreshTokens)
@@ -60,8 +58,8 @@ public static class UserManagerExtensions
         string userName
     )
     {
-        return await userManager.Users
-            .Include(u => u.UserRoles)
+        return await userManager
+            .Users.Include(u => u.UserRoles)
             .ThenInclude(ur => ur.Role)
             .Include(x => x.AccessTokens)
             .Include(x => x.RefreshTokens)
@@ -73,8 +71,8 @@ public static class UserManagerExtensions
         string email
     )
     {
-        return await userManager.Users
-            .Include(u => u.UserRoles)
+        return await userManager
+            .Users.Include(u => u.UserRoles)
             .ThenInclude(ur => ur.Role)
             .Include(x => x.RefreshTokens)
             .FirstOrDefaultAsync(x => x.Email == email);

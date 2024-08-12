@@ -1,12 +1,12 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Security.Jwt;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.GeneratingJwtToken.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.GeneratingJwtToken.V1;
 
 internal record GenerateJwtToken(ApplicationUser User, string RefreshToken) : ICommand<GenerateJwtTokenResult>
 {

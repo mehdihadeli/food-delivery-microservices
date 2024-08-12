@@ -1,11 +1,11 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription.V1;
 
 public record DeleteRestockSubscription(long Id) : ITxCommand
 {
@@ -42,8 +42,8 @@ internal class DeleteRestockSubscriptionHandler : ICommandHandler<DeleteRestockS
     {
         command.NotBeNull();
 
-        var exists = await _customersDbContext.RestockSubscriptions
-            .IgnoreAutoIncludes()
+        var exists = await _customersDbContext
+            .RestockSubscriptions.IgnoreAutoIncludes()
             .SingleOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
 
         if (exists is null)

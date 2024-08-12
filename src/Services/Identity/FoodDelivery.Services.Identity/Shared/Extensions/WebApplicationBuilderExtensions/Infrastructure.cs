@@ -1,9 +1,10 @@
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
+using BuildingBlocks.Caching.Extensions;
+using BuildingBlocks.Core;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Persistence.EfCore;
-using BuildingBlocks.Core.Registrations;
 using BuildingBlocks.Email;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
@@ -11,12 +12,13 @@ using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.OpenTelemetry;
 using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Security.Extensions;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
 using BuildingBlocks.Validation.Extensions;
 using BuildingBlocks.Web.Extensions;
+using BuildingBlocks.Web.RateLimit;
+using BuildingBlocks.Web.Versioning;
 using FoodDelivery.Services.Identity.Users;
 
 namespace FoodDelivery.Services.Identity.Shared.Extensions.WebApplicationBuilderExtensions;

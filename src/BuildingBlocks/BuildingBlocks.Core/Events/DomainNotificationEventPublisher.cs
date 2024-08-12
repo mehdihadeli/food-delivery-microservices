@@ -1,26 +1,19 @@
-using Ardalis.GuardClauses;
 using BuildingBlocks.Abstractions.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Core.Extensions;
 
 namespace BuildingBlocks.Core.Events;
 
-public class DomainNotificationEventPublisher : IDomainNotificationEventPublisher
+public class DomainNotificationEventPublisher(IMessagePersistenceService messagePersistenceService)
+    : IDomainNotificationEventPublisher
 {
-    private readonly IMessagePersistenceService _messagePersistenceService;
-
-    public DomainNotificationEventPublisher(IMessagePersistenceService messagePersistenceService)
-    {
-        _messagePersistenceService = messagePersistenceService;
-    }
-
     public Task PublishAsync(
         IDomainNotificationEvent domainNotificationEvent,
         CancellationToken cancellationToken = default
     )
     {
-        Guard.Against.Null(domainNotificationEvent, nameof(domainNotificationEvent));
-
-        return _messagePersistenceService.AddNotificationAsync(domainNotificationEvent, cancellationToken);
+        domainNotificationEvent.NotBeNull();
+        return messagePersistenceService.AddNotificationAsync(domainNotificationEvent, cancellationToken);
     }
 
     public async Task PublishAsync(
@@ -28,11 +21,11 @@ public class DomainNotificationEventPublisher : IDomainNotificationEventPublishe
         CancellationToken cancellationToken = default
     )
     {
-        Guard.Against.Null(domainNotificationEvents, nameof(domainNotificationEvents));
+        domainNotificationEvents.NotBeNull();
 
         foreach (var domainNotificationEvent in domainNotificationEvents)
         {
-            await _messagePersistenceService.AddNotificationAsync(domainNotificationEvent, cancellationToken);
+            await messagePersistenceService.AddNotificationAsync(domainNotificationEvent, cancellationToken);
         }
     }
 }

@@ -1,30 +1,29 @@
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
 
 namespace BuildingBlocks.Abstractions.Serialization;
 
 public interface IMessageSerializer : ISerializer
 {
-    string ContentType { get; }
-
     /// <summary>
-    /// Serializes the given <see cref="EventEnvelope"/> into a string
+    ///     Serializes the given <see cref="IEventEnvelope" /> into a string.
     /// </summary>
-    /// <param name="messageEnvelope">a messageEnvelope that implement IMessage interface.</param>
+    /// <param name="eventEnvelope">a messageEnvelope that implement IMessage interface.</param>
     /// <returns>a json string for serialized messageEnvelope.</returns>
-    string Serialize(EventEnvelope messageEnvelope);
+    string Serialize(IEventEnvelope eventEnvelope);
 
     string Serialize<TMessage>(TMessage message)
         where TMessage : IMessage;
 
     /// <summary>
-    /// Deserialize the given string into a <see cref="EventEnvelope"/>
+    ///     Deserialize the given string into a <see cref="IEventEnvelope" />.
     /// </summary>
     /// <param name="json">a json data to deserialize to a messageEnvelope.</param>
     /// <returns>return a messageEnvelope type.</returns>
-    EventEnvelope? Deserialize(string json);
+    IEventEnvelope? Deserialize(string json);
 
     /// <summary>
-    /// Deserialize the given byte array back into a message.
+    ///     Deserialize the given byte array back into a message.
     /// </summary>
     /// <param name="data"></param>
     /// <param name="payloadType"></param>
@@ -32,7 +31,7 @@ public interface IMessageSerializer : ISerializer
     IMessage? Deserialize(ReadOnlySpan<byte> data, string payloadType);
 
     /// <summary>
-    ///  Deserialize the given string into a <see cref="TMessage"/>.
+    ///     Deserialize the given string into a <see cref="TMessage" />.
     /// </summary>
     /// <param name="message"></param>
     /// <typeparam name="TMessage"></typeparam>
@@ -41,7 +40,7 @@ public interface IMessageSerializer : ISerializer
         where TMessage : IMessage;
 
     /// <summary>
-    /// Deserialize the given string into a object.
+    ///     Deserialize the given string into a object.
     /// </summary>
     /// <param name="payload"></param>
     /// <param name="payloadType"></param>

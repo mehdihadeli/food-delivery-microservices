@@ -1,17 +1,17 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 using FoodDelivery.Services.Shared.Catalogs.Products.Events.v1.Integration;
 using MassTransit;
 
-namespace FoodDelivery.Services.Customers.Products.Features.ReplenishingProductStock.v1.Events.Integration.External;
+namespace FoodDelivery.Services.Customers.Products.Features.ReplenishingProductStock.V1.Events.Integration.External;
 
 public class ProductStockReplenishedConsumer : IConsumer<ProductStockReplenishedV1>
 {
-    private readonly ICommandProcessor _commandProcessor;
+    private readonly ICommandBus _commandProcessor;
     private readonly ILogger<ProductStockReplenishedConsumer> _logger;
 
     public ProductStockReplenishedConsumer(
-        ICommandProcessor commandProcessor,
+        ICommandBus commandProcessor,
         ILogger<ProductStockReplenishedConsumer> logger
     )
     {

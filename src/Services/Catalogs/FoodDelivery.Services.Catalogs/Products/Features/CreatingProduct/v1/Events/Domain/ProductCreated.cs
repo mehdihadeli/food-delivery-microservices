@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
@@ -11,7 +11,7 @@ using FoodDelivery.Services.Catalogs.Shared.Data;
 using FoodDelivery.Services.Catalogs.Suppliers;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Domain;
+namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.V1.Events.Domain;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/
@@ -102,8 +102,8 @@ internal class ProductCreatedHandler : IDomainEventHandler<ProductCreated>
 
         if (existed is null)
         {
-            var product = await _dbContext.Products
-                .Include(x => x.Brand)
+            var product = await _dbContext
+                .Products.Include(x => x.Brand)
                 .Include(x => x.Category)
                 .Include(x => x.Supplier)
                 .SingleOrDefaultAsync(x => x.Id == notification.Id, cancellationToken);

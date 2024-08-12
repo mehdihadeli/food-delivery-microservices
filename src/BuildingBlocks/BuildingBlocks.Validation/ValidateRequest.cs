@@ -20,8 +20,8 @@ public class ValidateRequest<T>
     public bool IsValid => Validation.IsValid;
 
     public IDictionary<string, string[]> Errors =>
-        Validation.Errors
-            .GroupBy(x => x.PropertyName)
+        Validation
+            .Errors.GroupBy(x => x.PropertyName)
             .ToDictionary(x => x.Key, x => x.Select(e => e.ErrorMessage).ToArray());
 
     public void Deconstruct(out bool isValid, out T value)

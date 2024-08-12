@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Core.Domain.Events.Internal;
 using BuildingBlocks.Core.Extensions;
@@ -8,18 +8,24 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Write;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription.V1;
 
-public record RestockSubscriptionDeleted(long RestockSubscriptionId) : DomainEvent;
+public record RestockSubscriptionDeleted(long RestockSubscriptionId) : DomainEvent
+{
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as RestockSubscriptionDeleted);
+    }
+}
 
 internal class RestockSubscriptionDeletedHandler : IDomainEventHandler<RestockSubscriptionDeleted>
 {
-    private readonly ICommandProcessor _commandProcessor;
+    private readonly ICommandBus _commandProcessor;
     private readonly IMapper _mapper;
     private readonly CustomersDbContext _customersDbContext;
 
     public RestockSubscriptionDeletedHandler(
-        ICommandProcessor commandProcessor,
+        ICommandBus commandProcessor,
         IMapper mapper,
         CustomersDbContext customersDbContext
     )
@@ -32,10 +38,10 @@ internal class RestockSubscriptionDeletedHandler : IDomainEventHandler<RestockSu
     public async Task Handle(RestockSubscriptionDeleted notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
+
         // var isDeleted = (bool)_customersDbContext.Entry(notification.RestockSubscription)
         //     .Property("IsDeleted")
         //     .CurrentValue!;
-
         var restockSubscription = await _customersDbContext.RestockSubscriptions.FirstOrDefaultAsync(
             x => x.Id == notification.RestockSubscriptionId,
             cancellationToken

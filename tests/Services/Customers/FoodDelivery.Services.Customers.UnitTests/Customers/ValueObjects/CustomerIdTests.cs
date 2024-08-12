@@ -1,6 +1,6 @@
 using Bogus;
-using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FluentAssertions;
+using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Customers.UnitTests.Customers.ValueObjects;

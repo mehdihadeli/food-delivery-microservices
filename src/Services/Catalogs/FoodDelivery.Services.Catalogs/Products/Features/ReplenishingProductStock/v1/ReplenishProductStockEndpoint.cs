@@ -1,12 +1,12 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.V1;
 
 // POST api/v1/catalog/products/{productId}/replenish-stock
 internal static class ReplenishProductStockEndpoint
@@ -51,7 +51,7 @@ internal record ReplenishProductStockRequestParameters(
     [FromBody] ReplenishProductStockRequest Request,
     [FromRoute] long ProductId,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<ReplenishProductStockRequest>;

@@ -2,7 +2,7 @@ using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
 using FoodDelivery.Services.Identity.Shared.Models;
 
-namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.v1.Events.Integration;
+namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.V1.Events.Integration;
 
 public record UserStateUpdated(Guid UserId, UserState OldUserState, UserState NewUserState) : IntegrationEvent
 {

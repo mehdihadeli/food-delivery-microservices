@@ -41,11 +41,10 @@ public class EventStoreDbEventStoreTests : IClassFixture<IntegrationFixture>
         shoppingCart.MarkUncommittedDomainEventAsCommitted();
 
         var streamEvents = uncommittedEvents
-            .Select(
-                x =>
-                    x.ToStreamEvent(
-                        new StreamEventMetadata(x.EventId.ToString(), (ulong)x.AggregateSequenceNumber, null, null)
-                    )
+            .Select(x =>
+                x.ToStreamEvent(
+                    new StreamEventMetadata(x.EventId.ToString(), (ulong)x.AggregateSequenceNumber, null, null)
+                )
             )
             .ToImmutableList();
 
@@ -93,11 +92,10 @@ public class EventStoreDbEventStoreTests : IClassFixture<IntegrationFixture>
         aggregate.MarkUncommittedDomainEventAsCommitted();
 
         var streamEvent = uncommittedEvents
-            .Select(
-                x =>
-                    x.ToStreamEvent(
-                        new StreamEventMetadata(x.EventId.ToString(), (ulong)x.AggregateSequenceNumber, null, null)
-                    )
+            .Select(x =>
+                x.ToStreamEvent(
+                    new StreamEventMetadata(x.EventId.ToString(), (ulong)x.AggregateSequenceNumber, null, null)
+                )
             )
             .ToImmutableList()
             .First();
@@ -162,11 +160,10 @@ public class EventStoreDbEventStoreTests : IClassFixture<IntegrationFixture>
         shoppingCart.MarkUncommittedDomainEventAsCommitted();
 
         var streamEvents = uncommittedEvents
-            .Select(
-                x =>
-                    x.ToStreamEvent(
-                        new StreamEventMetadata(x.EventId.ToString(), (ulong)x.AggregateSequenceNumber, null, null)
-                    )
+            .Select(x =>
+                x.ToStreamEvent(
+                    new StreamEventMetadata(x.EventId.ToString(), (ulong)x.AggregateSequenceNumber, null, null)
+                )
             )
             .ToImmutableList();
 

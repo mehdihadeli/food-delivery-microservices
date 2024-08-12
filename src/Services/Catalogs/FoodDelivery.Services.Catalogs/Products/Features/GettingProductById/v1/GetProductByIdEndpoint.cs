@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -7,7 +7,7 @@ using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.v1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.V1;
 
 // GET api/v1/catalog/products/{id}
 internal static class GetProductByIdEndpoint
@@ -53,7 +53,7 @@ internal static class GetProductByIdEndpoint
 internal record GetProductByIdRequestParameters(
     [FromRoute] long Id,
     HttpContext HttpContext,
-    IQueryProcessor QueryProcessor,
+    IQueryBus QueryBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;

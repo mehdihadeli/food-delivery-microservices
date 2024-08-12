@@ -1,7 +1,7 @@
 namespace BuildingBlocks.Abstractions.Persistence;
 
 /// <summary>
-/// The unit of work pattern.
+///     The unit of work pattern.
 /// </summary>
 public interface IUnitOfWork : IDisposable
 {

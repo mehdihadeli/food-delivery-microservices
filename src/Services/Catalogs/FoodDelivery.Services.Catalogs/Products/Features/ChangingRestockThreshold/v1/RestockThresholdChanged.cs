@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Domain.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingRestockThreshold.v1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingRestockThreshold.V1;
 
 internal record RestockThresholdChanged(long ProductId, int RestockThreshold) : DomainEvent
 {
@@ -11,5 +11,10 @@ internal record RestockThresholdChanged(long ProductId, int RestockThreshold) : 
         restockThreshold.NotBeNegativeOrZero();
 
         return new RestockThresholdChanged(productId, restockThreshold);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as RestockThresholdChanged);
     }
 }

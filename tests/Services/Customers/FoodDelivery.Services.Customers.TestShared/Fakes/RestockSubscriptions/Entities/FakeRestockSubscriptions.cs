@@ -15,14 +15,13 @@ public sealed class FakeRestockSubscriptions : Faker<RestockSubscription>
 
         // we should not instantiate customer aggregate manually because it is possible we break aggregate invariant in creating a customer, and it is better we
         // create a customer with its factory method
-        CustomInstantiator(
-            f =>
-                RestockSubscription.Create(
-                    RestockSubscriptionId.Of(id++),
-                    CustomerId.Of(id++),
-                    ProductInformation.Of(ProductId.Of(f.Random.Number(1, 100)), f.Commerce.ProductName()),
-                    Email.Of(f.Internet.Email())
-                )
+        CustomInstantiator(f =>
+            RestockSubscription.Create(
+                RestockSubscriptionId.Of(id++),
+                CustomerId.Of(id++),
+                ProductInformation.Of(ProductId.Of(f.Random.Number(1, 100)), f.Commerce.ProductName()),
+                Email.Of(f.Internet.Email())
+            )
         );
     }
 }

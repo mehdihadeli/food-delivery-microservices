@@ -11,7 +11,7 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
     public IClientSessionHandle? Session { get; set; }
     public IMongoDatabase Database { get; }
     public IMongoClient MongoClient { get; }
-    protected readonly IList<Func<Task>> _commands;
+    protected readonly IList<Func<Task>> Commands;
 
     public MongoDbContext(MongoOptions options)
     {
@@ -20,7 +20,7 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
         Database = MongoClient.GetDatabase(databaseName);
 
         // Every command will be stored and it'll be processed at SaveChanges
-        _commands = new List<Func<Task>>();
+        Commands = new List<Func<Task>>();
     }
 
     public IMongoCollection<T> GetCollection<T>(string? name = null)
@@ -38,7 +38,7 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var result = _commands.Count;
+        var result = Commands.Count;
 
         // Standalone servers do not support transactions.
         using (Session = await MongoClient.StartSessionAsync(cancellationToken: cancellationToken))
@@ -58,19 +58,19 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
             catch (Exception ex)
             {
                 await Session.AbortTransactionAsync(cancellationToken);
-                _commands.Clear();
+                Commands.Clear();
                 throw;
             }
         }
 
-        _commands.Clear();
+        Commands.Clear();
 
         return result;
     }
 
     private async Task SaveAction()
     {
-        var commandTasks = _commands.Select(c => c());
+        var commandTasks = Commands.Select(c => c());
 
         await Task.WhenAll(commandTasks);
     }
@@ -96,7 +96,7 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
 
     public void AddCommand(Func<Task> func)
     {
-        _commands.Add(func);
+        Commands.Add(func);
     }
 
     public async Task ExecuteTransactionalAsync(Func<Task> action, CancellationToken cancellationToken = default)

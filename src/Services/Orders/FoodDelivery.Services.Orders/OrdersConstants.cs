@@ -1,6 +1,6 @@
 namespace FoodDelivery.Services.Orders;
 
-public class OrdersConstants
+public static class OrdersConstants
 {
     public static class Role
     {

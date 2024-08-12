@@ -1,4 +1,4 @@
-using BuildingBlocks.Web.HeaderPropagation;
+using BuildingBlocks.Core.Web.HeaderPropagation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -9,33 +9,33 @@ public class HeaderPropagationMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly CustomHeaderPropagationOptions _options;
-    private readonly CustomHeaderPropagationStore _customHeaderPropagationStore;
+    private readonly HeaderPropagationStore _headerPropagationStore;
 
     public HeaderPropagationMiddleware(
         RequestDelegate next,
         IOptions<CustomHeaderPropagationOptions> options,
-        CustomHeaderPropagationStore customHeaderPropagationStore
+        HeaderPropagationStore headerPropagationStore
     )
     {
         ArgumentNullException.ThrowIfNull(next);
         ArgumentNullException.ThrowIfNull(options);
-        ArgumentNullException.ThrowIfNull(customHeaderPropagationStore);
+        ArgumentNullException.ThrowIfNull(headerPropagationStore);
 
         _next = next;
         _options = options.Value;
-        _customHeaderPropagationStore = customHeaderPropagationStore;
+        _headerPropagationStore = headerPropagationStore;
     }
 
     public Task Invoke(HttpContext context)
     {
         foreach (var headerName in _options.HeaderNames)
         {
-            if (!_customHeaderPropagationStore.Headers.ContainsKey(headerName))
+            if (!_headerPropagationStore.Headers.ContainsKey(headerName))
             {
                 context.Request.Headers.TryGetValue(headerName, out var value);
                 if (!StringValues.IsNullOrEmpty(value))
                 {
-                    _customHeaderPropagationStore.Headers.Add(headerName, value);
+                    _headerPropagationStore.Headers.Add(headerName, value);
                 }
             }
         }

@@ -1,8 +1,8 @@
 using BuildingBlocks.Persistence.Mongo;
+using FoodDelivery.Services.Orders.Orders.Models.Reads;
 using Humanizer;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using FoodDelivery.Services.Orders.Orders.Models.Reads;
 
 namespace FoodDelivery.Services.Orders.Shared.Data;
 

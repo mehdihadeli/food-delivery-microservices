@@ -1,65 +1,52 @@
+using System.Reflection;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Core.Messaging.Extensions;
 using BuildingBlocks.Core.Types;
 using BuildingBlocks.Core.Types.Extensions;
 using Humanizer;
-using MessageHeaders = BuildingBlocks.Core.Messaging.MessageHeaders;
 
 namespace BuildingBlocks.Core.Events;
 
-internal record EventEnvelope<T>(T Data, IEventEnvelopeMetadata Metadata) : IEventEnvelope<T>
-    where T : class
+internal record EventEnvelope<T>(T Data, IEventEnvelopeMetadata? Metadata) : IEventEnvelope<T>
+    where T : notnull
 {
     object IEventEnvelope.Data => Data;
 }
 
-internal record EventEnvelope(object Data, IEventEnvelopeMetadata Metadata) : IEventEnvelope;
-
-public static class EventEnvelopeFactory
+public static class EventEnvelope
 {
-    public static IEventEnvelope From(object data, IEventEnvelopeMetadata metadata)
+    public static IEventEnvelope From(object data, IEventEnvelopeMetadata? metadata)
     {
-        //TODO: Get rid of reflection!
         var type = typeof(EventEnvelope<>).MakeGenericType(data.GetType());
         return (IEventEnvelope)Activator.CreateInstance(type, data, metadata)!;
     }
 
-    public static IEventEnvelope From<TMessage>(TMessage data, IEventEnvelopeMetadata metadata)
-        where TMessage : class, IMessage
+    public static IEventEnvelope<TMessage> From<TMessage>(TMessage data, IEventEnvelopeMetadata? metadata)
+        where TMessage : IMessage
     {
-        if (!metadata.Headers.ContainsKey(MessageHeaders.MessageId))
-        {
-            var messageId = data.MessageId;
-            metadata.Headers.AddMessageId(messageId);
-        }
-
-        if (!metadata.Headers.ContainsKey(MessageHeaders.CorrelationId))
-        {
-            // correlation will generate in the start point and will transfer with header propagation in api-gateway.
-            metadata.Headers.AddCorrelationId(metadata.CorrelationId);
-        }
-
-        metadata.Headers.AddMessageName(metadata.Name);
-        metadata.Headers.AddMessageType(metadata.MessageType);
-        metadata.Headers.AddCreatedUnixTime(
-            metadata.CreatedUnixTime ?? DateTimeExtensions.ToUnixTimeSecond(DateTime.Now)
-        );
-
         return new EventEnvelope<TMessage>(data, metadata);
     }
 
-    public static IEventEnvelope From<TMessage>(TMessage data, Guid correlationId)
-        where TMessage : class, IMessage
+    public static IEventEnvelope From(object data, Guid correlationId, Guid? cautionId = null)
+    {
+        var methodInfo = typeof(EventEnvelope).GetMethod(nameof(From), BindingFlags.NonPublic | BindingFlags.Static);
+        var genericMethod = methodInfo.MakeGenericMethod(data.GetType());
+
+        return (IEventEnvelope)genericMethod.Invoke(null, new object[] { data, correlationId, cautionId });
+    }
+
+    public static IEventEnvelope<TMessage> From<TMessage>(TMessage data, Guid correlationId, Guid? cautionId = null)
+        where TMessage : IMessage
     {
         var envelopeMetadata = new EventEnvelopeMetadata(
             data.MessageId,
             correlationId,
             TypeMapper.GetTypeName(data.GetType()),
-            data.GetType().Name.Underscore()
+            data.GetType().Name.Underscore(),
+            cautionId
         )
         {
-            CreatedUnixTime = DateTimeExtensions.ToUnixTimeSecond(DateTime.Now),
+            CreatedUnixTime = DateTime.Now.ToUnixTimeSecond(),
         };
 
         return From(data, envelopeMetadata);

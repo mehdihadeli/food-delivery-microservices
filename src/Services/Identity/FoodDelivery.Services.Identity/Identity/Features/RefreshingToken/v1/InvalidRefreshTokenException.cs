@@ -1,6 +1,6 @@
 using BuildingBlocks.Core.Exception.Types;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.V1;
 
 public class InvalidRefreshTokenException : BadRequestException
 {

@@ -1,3 +1,3 @@
-﻿namespace FoodDelivery.Services.Search;
+namespace FoodDelivery.Services.Search;
 
 public class Class1 { }

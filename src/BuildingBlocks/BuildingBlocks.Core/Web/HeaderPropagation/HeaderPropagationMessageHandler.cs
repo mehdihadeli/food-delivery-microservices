@@ -5,12 +5,12 @@ namespace BuildingBlocks.Core.Web.HeaderPropagation;
 public class HeaderPropagationMessageHandler : DelegatingHandler
 {
     private readonly CustomHeaderPropagationOptions _options;
-    private readonly CustomHeaderPropagationStore _customHeaderPropagationStore;
+    private readonly HeaderPropagationStore _headerPropagationStore;
 
-    public HeaderPropagationMessageHandler(CustomHeaderPropagationOptions options, CustomHeaderPropagationStore headers)
+    public HeaderPropagationMessageHandler(CustomHeaderPropagationOptions options, HeaderPropagationStore headers)
     {
         _options = options;
-        _customHeaderPropagationStore = headers;
+        _headerPropagationStore = headers;
     }
 
     protected override Task<HttpResponseMessage> SendAsync(
@@ -21,7 +21,7 @@ public class HeaderPropagationMessageHandler : DelegatingHandler
         foreach (var headerName in _options.HeaderNames)
         {
             // Get the incoming header value
-            _customHeaderPropagationStore.Headers.TryGetValue(headerName, out var headerValue);
+            _headerPropagationStore.Headers.TryGetValue(headerName, out var headerValue);
             if (StringValues.IsNullOrEmpty(headerValue))
             {
                 continue;

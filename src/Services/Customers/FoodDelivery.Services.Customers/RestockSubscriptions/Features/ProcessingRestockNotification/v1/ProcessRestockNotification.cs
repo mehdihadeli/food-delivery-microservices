@@ -1,11 +1,11 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.V1;
 
 public record ProcessRestockNotification(long ProductId, int CurrentStock) : ITxCommand
 {
@@ -31,12 +31,12 @@ internal class ProcessRestockNotificationValidator : AbstractValidator<ProcessRe
 internal class ProcessRestockNotificationHandler : ICommandHandler<ProcessRestockNotification>
 {
     private readonly CustomersDbContext _customersDbContext;
-    private readonly ICommandProcessor _commandProcessor;
+    private readonly ICommandBus _commandProcessor;
     private readonly ILogger<ProcessRestockNotificationHandler> _logger;
 
     public ProcessRestockNotificationHandler(
         CustomersDbContext customersDbContext,
-        ICommandProcessor commandProcessor,
+        ICommandBus commandProcessor,
         ILogger<ProcessRestockNotificationHandler> logger
     )
     {
@@ -49,8 +49,8 @@ internal class ProcessRestockNotificationHandler : ICommandHandler<ProcessRestoc
     {
         command.NotBeNull();
 
-        var subscribedCustomers = _customersDbContext.RestockSubscriptions.Where(
-            x => x.ProductInformation.Id == command.ProductId && !x.Processed
+        var subscribedCustomers = _customersDbContext.RestockSubscriptions.Where(x =>
+            x.ProductInformation.Id == command.ProductId && !x.Processed
         );
 
         if (!await subscribedCustomers.AnyAsync(cancellationToken: cancellationToken))

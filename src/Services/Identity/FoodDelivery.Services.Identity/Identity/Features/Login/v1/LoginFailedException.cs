@@ -1,6 +1,6 @@
 using BuildingBlocks.Core.Exception.Types;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.Login.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.Login.V1;
 
 public class LoginFailedException : AppException
 {

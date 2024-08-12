@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 
 namespace FoodDelivery.Services.Catalogs.Suppliers.Data;
 

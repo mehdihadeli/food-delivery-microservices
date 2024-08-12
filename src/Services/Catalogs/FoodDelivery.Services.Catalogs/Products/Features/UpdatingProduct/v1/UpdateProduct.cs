@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
@@ -20,7 +20,7 @@ using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 using FoodDelivery.Services.Catalogs.Suppliers.Exceptions.Application;
 using MediatR;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.V1;
 
 internal record UpdateProduct(
     long Id,
@@ -126,7 +126,8 @@ internal class UpdateProductCommandHandler : ICommandHandler<UpdateProduct>
         ICatalogDbContext catalogDbContext,
         ICategoryChecker categoryChecker,
         IBrandChecker brandChecker,
-        ISupplierChecker supplierChecker)
+        ISupplierChecker supplierChecker
+    )
     {
         _catalogDbContext = catalogDbContext;
         _categoryChecker = categoryChecker;
@@ -175,11 +176,23 @@ internal class UpdateProductCommandHandler : ICommandHandler<UpdateProduct>
         if (supplier is null)
             throw new SupplierNotFoundException(supplierId);
 
-        product.ChangeCategory(async cid => await _catalogDbContext.CategoryExistsAsync(cid!, cancellationToken: cancellationToken), CategoryId.Of(categoryId));
+        product.ChangeCategory(
+            async cid => await _catalogDbContext.CategoryExistsAsync(cid!, cancellationToken: cancellationToken),
+            CategoryId.Of(categoryId)
+        );
         product.ChangeBrand(_brandChecker, BrandId.Of(brandId));
         product.ChangeSupplier(_supplierChecker, SupplierId.Of(supplierId));
 
-        product.ChangeProductDetail(Name.Of(name), productStatus, productType, Dimensions.Of(width, height, depth), Size.Of(size), color, null, description);
+        product.ChangeProductDetail(
+            Name.Of(name),
+            productStatus,
+            productType,
+            Dimensions.Of(width, height, depth),
+            Size.Of(size),
+            color,
+            null,
+            description
+        );
         product.ChangePrice(Price.Of(price));
         product.ChangeMaxStockThreshold(maxStockThreshold);
         product.ChangeRestockThreshold(restockThreshold);

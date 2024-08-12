@@ -6,24 +6,22 @@ namespace BuildingBlocks.Core.Web.HeaderPropagation;
 internal class HeaderPropagationMessageHandlerBuilderFilter : IHttpMessageHandlerBuilderFilter
 {
     private readonly CustomHeaderPropagationOptions _options;
-    private readonly CustomHeaderPropagationStore _customHeaderPropagationStore;
+    private readonly HeaderPropagationStore _headerPropagationStore;
 
     public HeaderPropagationMessageHandlerBuilderFilter(
         IOptions<CustomHeaderPropagationOptions> options,
-        CustomHeaderPropagationStore header
+        HeaderPropagationStore header
     )
     {
         _options = options.Value;
-        _customHeaderPropagationStore = header;
+        _headerPropagationStore = header;
     }
 
     public Action<HttpMessageHandlerBuilder> Configure(Action<HttpMessageHandlerBuilder> next)
     {
         return builder =>
         {
-            builder.AdditionalHandlers.Add(
-                new HeaderPropagationMessageHandler(_options, _customHeaderPropagationStore)
-            );
+            builder.AdditionalHandlers.Add(new HeaderPropagationMessageHandler(_options, _headerPropagationStore));
             next(builder);
         };
     }

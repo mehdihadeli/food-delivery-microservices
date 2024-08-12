@@ -3,8 +3,5 @@ using BuildingBlocks.Persistence.EfCore.Postgres;
 
 namespace BuildingBlocks.Messaging.Persistence.Postgres;
 
-public class MessagePersistenceDbContextDesignFactory : DbContextDesignFactoryBase<MessagePersistenceDbContext>
-{
-    public MessagePersistenceDbContextDesignFactory()
-        : base("ConnectionStrings:PostgresMessaging") { }
-}
+public class MessagePersistenceDbContextDesignFactory()
+    : DbContextDesignFactoryBase<MessagePersistenceDbContext>("ConnectionStrings:PostgresMessaging");

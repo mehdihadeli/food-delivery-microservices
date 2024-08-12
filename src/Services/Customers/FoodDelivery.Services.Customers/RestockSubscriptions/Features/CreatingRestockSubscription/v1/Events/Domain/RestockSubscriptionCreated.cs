@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Core.Domain.Events.Internal;
 using BuildingBlocks.Core.Extensions;
@@ -8,7 +8,7 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Write;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.Shared.Extensions;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Events.Domain;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.V1.Events.Domain;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/
@@ -63,14 +63,19 @@ public record RestockSubscriptionCreated(
             Processed
         );
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as RestockSubscriptionCreated);
+    }
 }
 
 internal class RestockSubscriptionCreatedHandler : IDomainEventHandler<RestockSubscriptionCreated>
 {
-    private readonly ICommandProcessor _commandProcessor;
+    private readonly ICommandBus _commandProcessor;
     private readonly CustomersDbContext _customersDbContext;
 
-    public RestockSubscriptionCreatedHandler(ICommandProcessor commandProcessor, CustomersDbContext customersDbContext)
+    public RestockSubscriptionCreatedHandler(ICommandBus commandProcessor, CustomersDbContext customersDbContext)
     {
         _commandProcessor = commandProcessor;
         _customersDbContext = customersDbContext;

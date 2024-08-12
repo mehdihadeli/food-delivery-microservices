@@ -19,7 +19,6 @@ internal class CustomersConfigs : IModuleConfiguration
 
         //// we could add event mappers manually, also they can find automatically by scanning assemblies
         // builder.Services.TryAddSingleton<IIntegrationEventMapper, CustomersEventMapper>();
-
         return builder;
     }
 

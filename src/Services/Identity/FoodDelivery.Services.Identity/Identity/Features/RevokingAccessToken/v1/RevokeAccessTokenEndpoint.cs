@@ -1,12 +1,12 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Minimal.Extensions;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.V1;
 
 public static class RevokeAccessTokenEndpoint
 {
@@ -55,7 +55,7 @@ public record RevokeAccessTokenRequest(string? AccessToken);
 internal record RevokeAccessTokenRequestParameters(
     [FromBody] RevokeAccessTokenRequest Request,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandProcessor,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RevokeAccessTokenRequest>;

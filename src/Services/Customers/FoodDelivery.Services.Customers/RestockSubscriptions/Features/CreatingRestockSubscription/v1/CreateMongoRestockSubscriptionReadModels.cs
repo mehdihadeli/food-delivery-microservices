@@ -1,11 +1,11 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Core.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Read;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.V1;
 
 public record CreateMongoRestockSubscriptionReadModels(
     long RestockSubscriptionId,

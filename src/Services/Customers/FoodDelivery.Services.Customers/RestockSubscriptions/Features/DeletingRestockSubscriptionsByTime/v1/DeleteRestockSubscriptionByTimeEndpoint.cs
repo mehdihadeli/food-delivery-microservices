@@ -1,12 +1,12 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime.V1;
 
 internal class DeleteRestockSubscriptionByTimeEndpoint
     : ICommandMinimalEndpoint<
@@ -56,7 +56,7 @@ internal class DeleteRestockSubscriptionByTimeEndpoint
 internal record DeleteRestockSubscriptionByTimeRequestParameters(
     [FromBody] DeleteRestockSubscriptionByTimeRequest Request,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandProcessor,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<DeleteRestockSubscriptionByTimeRequest>;

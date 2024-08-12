@@ -1,10 +1,10 @@
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using AutoBogus;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
 using BuildingBlocks.Core.Types;
@@ -340,7 +340,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         return await ExecuteScopeAsync(async sp =>
         {
-            var commandProcessor = sp.GetRequiredService<ICommandProcessor>();
+            var commandProcessor = sp.GetRequiredService<ICommandBus>();
 
             return await commandProcessor.SendAsync(request, cancellationToken);
         });
@@ -351,7 +351,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         await ExecuteScopeAsync(async sp =>
         {
-            var commandProcessor = sp.GetRequiredService<ICommandProcessor>();
+            var commandProcessor = sp.GetRequiredService<ICommandBus>();
 
             await commandProcessor.SendAsync(request, cancellationToken);
         });
@@ -365,7 +365,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         return await ExecuteScopeAsync(async sp =>
         {
-            var queryProcessor = sp.GetRequiredService<IQueryProcessor>();
+            var queryProcessor = sp.GetRequiredService<IQueryBus>();
 
             return await queryProcessor.SendAsync(query, cancellationToken);
         });

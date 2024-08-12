@@ -1,12 +1,12 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
-using FluentValidation;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GetRestockSubscriptionById.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GetRestockSubscriptionById.V1;
 
 public record GetRestockSubscriptionById(Guid Id) : IQuery<GetRestockSubscriptionByIdResult>
 {

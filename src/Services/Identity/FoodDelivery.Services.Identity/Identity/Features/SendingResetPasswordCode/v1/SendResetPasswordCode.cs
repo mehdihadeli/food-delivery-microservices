@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.SendingResetPasswordCode.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.SendingResetPasswordCode.V1;
 
 public record SendResetPasswordCode : ICommand { }

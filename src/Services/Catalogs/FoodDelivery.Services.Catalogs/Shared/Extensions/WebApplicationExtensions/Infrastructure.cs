@@ -2,8 +2,9 @@ using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.Web.Extensions;
-using BuildingBlocks.Web.Middlewares.CaptureExceptionMiddleware;
+using BuildingBlocks.Web.Middlewares.CaptureException;
 using BuildingBlocks.Web.Middlewares.HeaderPropagation;
+using BuildingBlocks.Web.RateLimit;
 using Serilog;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Extensions.WebApplicationExtensions;

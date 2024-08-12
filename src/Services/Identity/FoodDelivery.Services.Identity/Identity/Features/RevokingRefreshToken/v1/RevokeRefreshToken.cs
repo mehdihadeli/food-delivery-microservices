@@ -1,11 +1,11 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Identity.Identity.Exceptions;
 using FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.v1;
 using FoodDelivery.Services.Identity.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RevokingRefreshToken.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RevokingRefreshToken.V1;
 
 internal record RevokeRefreshToken(string RefreshToken) : ICommand
 {

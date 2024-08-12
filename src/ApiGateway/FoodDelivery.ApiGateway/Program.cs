@@ -56,7 +56,7 @@ app.MapGet(
     "/",
     async (HttpContext context) =>
     {
-        await context.Response.WriteAsync($"FoodDelivery Gateway");
+        await context.Response.WriteAsync("FoodDelivery Api Gateway");
     }
 );
 

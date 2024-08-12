@@ -11,11 +11,10 @@ public static class ServiceTypeSelectorExtensions
         {
             var types = t.GetInterfaces()
                 .Where(p => p.IsGenericType && p.GetGenericTypeDefinition() == closedType)
-                .Select(
-                    implementedInterface =>
-                        implementedInterface.GenericTypeArguments.Any(a => a.IsTypeDefinition)
-                            ? implementedInterface
-                            : implementedInterface.GetGenericTypeDefinition()
+                .Select(implementedInterface =>
+                    implementedInterface.GenericTypeArguments.Any(a => a.IsTypeDefinition)
+                        ? implementedInterface
+                        : implementedInterface.GetGenericTypeDefinition()
                 )
                 .Distinct();
             var result = types.ToList();

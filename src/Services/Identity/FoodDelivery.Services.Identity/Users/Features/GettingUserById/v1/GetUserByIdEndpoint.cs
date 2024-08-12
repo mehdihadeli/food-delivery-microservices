@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -7,7 +7,7 @@ using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
+namespace FoodDelivery.Services.Identity.Users.Features.GettingUserById.V1;
 
 public static class GetUserByIdEndpoint
 {
@@ -44,7 +44,7 @@ public static class GetUserByIdEndpoint
 internal record GetUserByIdRequestParameters(
     [FromRoute] Guid UserId,
     HttpContext HttpContext,
-    IQueryProcessor QueryProcessor,
+    IQueryBus QueryBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;

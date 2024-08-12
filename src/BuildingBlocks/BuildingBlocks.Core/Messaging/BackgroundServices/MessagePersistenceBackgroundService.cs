@@ -1,7 +1,7 @@
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Types;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
-using BuildingBlocks.Core.Web.Extenions;
+using BuildingBlocks.Core.Web.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,42 +9,27 @@ using Microsoft.Extensions.Options;
 namespace BuildingBlocks.Core.Messaging.BackgroundServices;
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services
-public class MessagePersistenceBackgroundService : BackgroundService
+public class MessagePersistenceBackgroundService(
+    ILogger<MessagePersistenceBackgroundService> logger,
+    IOptions<MessagePersistenceOptions> options,
+    IServiceProvider serviceProvider,
+    IHostApplicationLifetime lifetime,
+    IMachineInstanceInfo machineInstanceInfo
+) : BackgroundService
 {
-    private readonly ILogger<MessagePersistenceBackgroundService> _logger;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IHostApplicationLifetime _lifetime;
-    private readonly MessagePersistenceOptions _options;
-    private readonly IMachineInstanceInfo _machineInstanceInfo;
-
-    private Task? _executingTask;
-
-    public MessagePersistenceBackgroundService(
-        ILogger<MessagePersistenceBackgroundService> logger,
-        IOptions<MessagePersistenceOptions> options,
-        IServiceProvider serviceProvider,
-        IHostApplicationLifetime lifetime,
-        IMachineInstanceInfo machineInstanceInfo
-    )
-    {
-        _logger = logger;
-        _serviceProvider = serviceProvider;
-        _lifetime = lifetime;
-        _options = options.Value;
-        _machineInstanceInfo = machineInstanceInfo;
-    }
+    private readonly MessagePersistenceOptions _options = options.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (!await _lifetime.WaitForAppStartup(stoppingToken))
+        if (!await lifetime.WaitForAppStartup(stoppingToken))
         {
             return;
         }
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "MessagePersistence Background Service is starting on client '{@ClientId}' and group '{@ClientGroup}'",
-            _machineInstanceInfo.ClientId,
-            _machineInstanceInfo.ClientGroup
+            machineInstanceInfo.ClientId,
+            machineInstanceInfo.ClientGroup
         );
 
         await ProcessAsync(stoppingToken);
@@ -52,10 +37,10 @@ public class MessagePersistenceBackgroundService : BackgroundService
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation(
+        logger.LogInformation(
             "MessagePersistence Background Service is stopping on client '{@ClientId}' and group '{@ClientGroup}'",
-            _machineInstanceInfo.ClientId,
-            _machineInstanceInfo.ClientGroup
+            machineInstanceInfo.ClientId,
+            machineInstanceInfo.ClientGroup
         );
 
         return base.StopAsync(cancellationToken);
@@ -65,7 +50,7 @@ public class MessagePersistenceBackgroundService : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            await using (var scope = _serviceProvider.CreateAsyncScope())
+            await using (var scope = serviceProvider.CreateAsyncScope())
             {
                 var service = scope.ServiceProvider.GetRequiredService<IMessagePersistenceService>();
                 await service.ProcessAllAsync(stoppingToken);

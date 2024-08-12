@@ -1,14 +1,14 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Extensions;
-using FluentValidation;
 using MediatR;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.V1;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/

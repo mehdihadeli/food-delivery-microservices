@@ -1,14 +1,14 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
-using BuildingBlocks.Core.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Paging;
+using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
-using FluentValidation;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptions.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptions.V1;
 
 internal record GetRestockSubscriptions : PageQuery<GetRestockSubscriptionsResult>
 {

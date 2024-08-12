@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -7,7 +7,7 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GetRestockSubscriptionById.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GetRestockSubscriptionById.V1;
 
 internal class GetRestockSubscriptionByIdEndpoint
     : IQueryMinimalEndpoint<
@@ -62,7 +62,7 @@ internal class GetRestockSubscriptionByIdEndpoint
 internal record GetRestockSubscriptionByIdRequestParameters(
     [FromRoute] Guid Id,
     HttpContext HttpContext,
-    IQueryProcessor QueryProcessor,
+    IQueryBus QueryProcessor,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;

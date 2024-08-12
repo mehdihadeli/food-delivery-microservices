@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -7,7 +7,7 @@ using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomerByCustomerId.v1;
+namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomerByCustomerId.V1;
 
 internal class GetCustomerByCustomerIdEndpointEndpoint
     : IQueryMinimalEndpoint<
@@ -33,6 +33,7 @@ internal class GetCustomerByCustomerIdEndpointEndpoint
                 nameof(GetCustomerByCustomerId).Humanize(),
                 nameof(GetCustomerByCustomerId).Humanize()
             );
+
         // .Produces<GetCustomerByCustomerIdResponse>("Customer fetched successfully.", StatusCodes.Status200OK)
         // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
         // .ProducesProblem(StatusCodes.Status404NotFound)
@@ -62,7 +63,7 @@ internal class GetCustomerByCustomerIdEndpointEndpoint
 internal record GetCustomerByCustomerIdRequestParameters(
     [FromRoute] long CustomerId,
     HttpContext HttpContext,
-    IQueryProcessor QueryProcessor,
+    IQueryBus QueryProcessor,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;

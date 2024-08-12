@@ -1,3 +1,3 @@
-﻿namespace FoodDelivery.Services.Carts;
+namespace FoodDelivery.Services.Carts;
 
 public class Class1 { }

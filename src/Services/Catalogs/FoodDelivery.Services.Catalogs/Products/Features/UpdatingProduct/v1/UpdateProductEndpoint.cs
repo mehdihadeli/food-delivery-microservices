@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -7,7 +7,7 @@ using FoodDelivery.Services.Catalogs.Products.Models;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.V1;
 
 // PUT api/v1/catalog/products/{id}
 public static class UpdateProductEndpoint
@@ -52,7 +52,7 @@ internal record UpdateProductRequestParameters(
     [FromBody] UpdateProductRequest Request,
     [FromRoute] long Id,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<UpdateProductRequest>;

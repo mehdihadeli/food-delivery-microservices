@@ -1,12 +1,12 @@
 using AutoBogus;
 using AutoMapper;
+using FluentAssertions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Read;
 using FoodDelivery.Services.Customers.TestShared.Fakes.RestockSubscriptions.Entities;
 using FoodDelivery.Services.Customers.UnitTests.Common;
-using FluentAssertions;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Customers.UnitTests.RestockSubscriptions;

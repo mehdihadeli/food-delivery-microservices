@@ -5,41 +5,41 @@ using BuildingBlocks.Abstractions.Persistence.EventStore;
 using MediatR;
 using Polly;
 
-namespace BuildingBlocks.Core.Domain.Events;
+namespace BuildingBlocks.Core.Events;
 
-public class InternalEventBus : IInternalEventBus
+public class InternalEventBus(IMediator mediator, AsyncPolicy policy) : IInternalEventBus
 {
-    private readonly IMediator _mediator;
     private static readonly ConcurrentDictionary<Type, MethodInfo> _publishMethods = new();
-    private readonly AsyncPolicy _policy;
-
-    public InternalEventBus(IMediator mediator, AsyncPolicy policy)
-    {
-        _mediator = mediator;
-        _policy = policy;
-    }
 
     public async Task Publish(IEvent @event, CancellationToken ct)
     {
-        var policy = Policy.Handle<System.Exception>().RetryAsync(2);
+        var retryAsync = Policy.Handle<System.Exception>().RetryAsync(2);
 
-        await policy.ExecuteAsync(c => _mediator.Publish(@event, c), ct);
+        await retryAsync.ExecuteAsync(c => mediator.Publish(@event, c), ct);
     }
 
-    public async Task Publish<T>(EventEnvelope<T> eventEnvelope, CancellationToken ct)
+    public async Task Publish(IEnumerable<IEvent> eventsData, CancellationToken ct)
+    {
+        foreach (var eventData in eventsData)
+        {
+            await Publish(eventData, ct).ConfigureAwait(false);
+        }
+    }
+
+    public async Task Publish<T>(IEventEnvelope<T> eventEnvelope, CancellationToken ct)
         where T : class
     {
-        await _policy.ExecuteAsync(
+        await policy.ExecuteAsync(
             c =>
             {
                 // TODO: using metadata for tracing ang monitoring here
-                return _mediator.Publish(eventEnvelope.Data, c);
+                return mediator.Publish(eventEnvelope.Data, c);
             },
             ct
         );
     }
 
-    public Task Publish(EventEnvelope eventEnvelope, CancellationToken ct)
+    public Task Publish(IEventEnvelope eventEnvelope, CancellationToken ct)
     {
         // calling generic `Publish<T>` in `InternalEventBus` class
         var genericPublishMethod = _publishMethods.GetOrAdd(
@@ -47,7 +47,7 @@ public class InternalEventBus : IInternalEventBus
             eventType =>
                 typeof(InternalEventBus)
                     .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                    .Single(m => m.Name == nameof(Publish) && m.GetGenericArguments().Any())
+                    .First(m => m.Name == nameof(Publish) && m.GetGenericArguments().Length != 0)
                     .MakeGenericMethod(eventType)
         );
 
@@ -57,11 +57,11 @@ public class InternalEventBus : IInternalEventBus
     public async Task Publish<T>(IStreamEventEnvelope<T> streamEvent, CancellationToken ct)
         where T : IDomainEvent
     {
-        await _policy.ExecuteAsync(
+        await policy.ExecuteAsync(
             c =>
             {
                 // TODO: using metadata for tracing ang monitoring here
-                return _mediator.Publish(streamEvent.Data, c);
+                return mediator.Publish(streamEvent.Data, c);
             },
             ct
         );
@@ -75,7 +75,7 @@ public class InternalEventBus : IInternalEventBus
             eventType =>
                 typeof(InternalEventBus)
                     .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                    .Single(m => m.Name == nameof(Publish) && m.GetGenericArguments().Any())
+                    .First(m => m.Name == nameof(Publish) && m.GetGenericArguments().Length != 0)
                     .MakeGenericMethod(eventType)
         );
 

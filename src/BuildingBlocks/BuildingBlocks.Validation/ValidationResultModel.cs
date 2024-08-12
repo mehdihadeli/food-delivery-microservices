@@ -9,8 +9,8 @@ public class ValidationResultModel
 {
     public ValidationResultModel(ValidationResult? validationResult = null)
     {
-        Errors = validationResult?.Errors
-            .Select(error => new ValidationError(error.PropertyName, error.ErrorMessage))
+        Errors = validationResult
+            ?.Errors.Select(error => new ValidationError(error.PropertyName, error.ErrorMessage))
             .ToList();
         Message = JsonConvert.SerializeObject(Errors);
     }

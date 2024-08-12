@@ -1,25 +1,18 @@
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 using BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 
 namespace BuildingBlocks.Core.Persistence.EventStore;
 
-public class ReadProjectionPublisher : IReadProjectionPublisher
+public class ReadProjectionPublisher(IServiceProvider serviceProvider) : IReadProjectionPublisher
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public ReadProjectionPublisher(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
     public async Task PublishAsync<T>(
         IStreamEventEnvelope<T> streamEvent,
         CancellationToken cancellationToken = default
     )
         where T : IDomainEvent
     {
-        using var scope = _serviceProvider.CreateScope();
+        using var scope = serviceProvider.CreateScope();
         var projections = scope.ServiceProvider.GetRequiredService<IEnumerable<IHaveReadProjection>>();
         foreach (var projection in projections)
         {
@@ -33,9 +26,9 @@ public class ReadProjectionPublisher : IReadProjectionPublisher
 
         var method = typeof(IReadProjectionPublisher)
             .GetMethods()
-            .Single(m => m.Name == nameof(PublishAsync) && m.GetGenericArguments().Any())
+            .First(m => m.Name == nameof(PublishAsync) && m.GetGenericArguments().Length != 0)
             .MakeGenericMethod(streamData);
 
-        return (Task)method.Invoke(this, new object[] { streamEvent, cancellationToken })!;
+        return (Task)method.Invoke(this, [streamEvent, cancellationToken,])!;
     }
 }

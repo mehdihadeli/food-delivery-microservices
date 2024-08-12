@@ -32,6 +32,7 @@ public abstract record EnumerationRecord<T>(int Value, string DisplayName) : ICo
                     );
                 }
             }
+
             return items;
         });
     }
@@ -54,6 +55,7 @@ public abstract record EnumerationRecord<T>(int Value, string DisplayName) : ICo
         {
             return matchingItem;
         }
+
         throw new InvalidOperationException($"'{value}' is not a valid value in {typeof(T)}");
     }
 
@@ -63,6 +65,7 @@ public abstract record EnumerationRecord<T>(int Value, string DisplayName) : ICo
         {
             return matchingItem;
         }
+
         throw new InvalidOperationException($"'{displayName}' is not a valid display name in {typeof(T)}");
     }
 

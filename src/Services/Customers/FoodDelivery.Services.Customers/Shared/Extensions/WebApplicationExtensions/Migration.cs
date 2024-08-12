@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Abstractions.Persistence;
 
 namespace FoodDelivery.Services.Catalogs;
 

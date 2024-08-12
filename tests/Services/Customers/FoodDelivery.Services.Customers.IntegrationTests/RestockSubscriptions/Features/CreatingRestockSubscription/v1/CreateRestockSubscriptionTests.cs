@@ -1,9 +1,9 @@
+using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
 using FoodDelivery.Services.Customers.TestShared.Fixtures;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
@@ -41,11 +41,10 @@ public class CreateRestockSubscriptionTests : CustomerServiceIntegrationTestBase
         createdCustomerSubscriptionResponse.RestockSubscriptionId.Should().BeGreaterThan(0);
         createdCustomerSubscriptionResponse.RestockSubscriptionId.Should().Be(command.Id);
 
-        var createdRestockSubscription = await SharedFixture.ExecuteEfDbContextAsync(
-            async db =>
-                await db.RestockSubscriptions.SingleOrDefaultAsync(
-                    x => x.Id == createdCustomerSubscriptionResponse.RestockSubscriptionId
-                )
+        var createdRestockSubscription = await SharedFixture.ExecuteEfDbContextAsync(async db =>
+            await db.RestockSubscriptions.SingleOrDefaultAsync(x =>
+                x.Id == createdCustomerSubscriptionResponse.RestockSubscriptionId
+            )
         );
 
         createdRestockSubscription.Should().NotBeNull();

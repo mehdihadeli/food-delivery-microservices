@@ -1,12 +1,12 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
+namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.V1;
 
 internal class CreateCustomerEndpoint
     : ICommandMinimalEndpoint<
@@ -29,6 +29,7 @@ internal class CreateCustomerEndpoint
             .WithName(nameof(CreateCustomer))
             .WithDisplayName(nameof(CreateCustomer).Humanize())
             .WithSummaryAndDescription(nameof(CreateCustomer).Humanize(), nameof(CreateCustomer).Humanize());
+
         // .Produces<CreateCustomerRequest>("Customer created successfully.", StatusCodes.Status201Created)
         // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
         // .ProducesProblem("UnAuthorized request.", StatusCodes.Status401Unauthorized)
@@ -59,7 +60,7 @@ internal class CreateCustomerEndpoint
 internal record CreateCustomerRequestParameters(
     [FromBody] CreateCustomerRequest Request,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandProcessor,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<CreateCustomerRequest>;

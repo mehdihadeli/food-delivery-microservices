@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
@@ -7,7 +7,7 @@ using FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
+namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.V1;
 
 public static class RegisterUserEndpoint
 {
@@ -50,7 +50,7 @@ public static class RegisterUserEndpoint
 internal record RegisterUserRequestParameters(
     [FromBody] RegisterUserRequest Request,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandProcessor,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RegisterUserRequest>;

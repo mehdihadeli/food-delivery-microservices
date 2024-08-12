@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace BuildingBlocks.Persistence.EfCore.Postgres;
 
 public class PostgresOptions

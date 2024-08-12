@@ -64,8 +64,4 @@
     <PackageReference Include="FluentValidation.AspNetCore" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Web\Extensions" />
-  </ItemGroup>
-
 </Project>

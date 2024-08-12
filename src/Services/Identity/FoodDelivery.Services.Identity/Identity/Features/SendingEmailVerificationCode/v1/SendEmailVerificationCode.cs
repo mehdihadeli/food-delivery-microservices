@@ -1,6 +1,6 @@
 using System.Globalization;
 using System.Security.Cryptography;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Email;
@@ -10,7 +10,7 @@ using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.SendingEmailVerificationCode.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.SendingEmailVerificationCode.V1;
 
 internal record SendEmailVerificationCode(string Email) : ICommand
 {

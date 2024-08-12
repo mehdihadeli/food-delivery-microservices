@@ -1,15 +1,15 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using FoodDelivery.Services.Shared.Identity.Users.Events.v1.Integration;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using UserState = FoodDelivery.Services.Identity.Shared.Models.UserState;
 
-namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
+namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.V1;
 
 public record RegisterUser(
     string FirstName,
@@ -79,10 +79,9 @@ internal class RegisterUserValidator : AbstractValidator<RegisterUser>
                 {
                     if (
                         roles != null
-                        && !roles.All(
-                            x =>
-                                x.Contains(IdentityConstants.Role.Admin, StringComparison.Ordinal)
-                                || x.Contains(IdentityConstants.Role.User, StringComparison.Ordinal)
+                        && !roles.All(x =>
+                            x.Contains(IdentityConstants.Role.Admin, StringComparison.Ordinal)
+                            || x.Contains(IdentityConstants.Role.User, StringComparison.Ordinal)
                         )
                     )
                     {

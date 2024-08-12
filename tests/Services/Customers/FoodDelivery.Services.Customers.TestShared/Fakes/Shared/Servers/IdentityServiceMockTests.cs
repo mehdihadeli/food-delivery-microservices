@@ -1,9 +1,9 @@
 using System.Net.Http.Json;
 using BuildingBlocks.Web.Extensions;
+using FluentAssertions;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity.Dtos;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Events;
-using FluentAssertions;
 using Tests.Shared.Helpers;
 using Tests.Shared.XunitCategories;
 

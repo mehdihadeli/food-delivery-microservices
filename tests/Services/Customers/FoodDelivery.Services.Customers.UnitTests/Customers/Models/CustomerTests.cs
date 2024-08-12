@@ -1,8 +1,8 @@
+using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
-using FluentAssertions;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Customers.UnitTests.Customers.Models.Customer;

@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.Read.Mongo;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
@@ -6,7 +7,6 @@ using FoodDelivery.Services.Customers.Shared.Contracts;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
 using FoodDelivery.Services.Customers.UnitTests.Common;
-using FluentAssertions;
 using NSubstitute;
 using Tests.Shared.XunitCategories;
 
@@ -35,15 +35,15 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
         var existCustomer = new FakeCustomerReadModel().Generate();
         var updateCustomer = Mapper.Map<Customer>(fakeUpdateCustomerReadCommand);
 
-        _customersReadUnitOfWork.CustomersRepository
-            .FindOneAsync(
+        _customersReadUnitOfWork
+            .CustomersRepository.FindOneAsync(
                 Arg.Is<Expression<Func<Customer, bool>>>(exp => exp.Compile()(existCustomer) == true),
                 Arg.Any<CancellationToken>()
             )
             .Returns(existCustomer);
 
-        _customersReadUnitOfWork.CustomersRepository
-            .UpdateAsync(Arg.Is(updateCustomer), Arg.Any<CancellationToken>())
+        _customersReadUnitOfWork
+            .CustomersRepository.UpdateAsync(Arg.Is(updateCustomer), Arg.Any<CancellationToken>())
             .Returns(updateCustomer);
         var handler = new UpdateCustomerReadHandler(_customersReadUnitOfWork, Mapper);
 
@@ -51,12 +51,12 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
         var res = await handler.Handle(fakeUpdateCustomerReadCommand, CancellationToken.None);
 
         // Assert
-        await _customersReadUnitOfWork.CustomersRepository
-            .Received(1)
+        await _customersReadUnitOfWork
+            .CustomersRepository.Received(1)
             .UpdateAsync(Arg.Is(updateCustomer), Arg.Any<CancellationToken>());
         await _customersReadUnitOfWork.Received(1).CommitAsync(Arg.Any<CancellationToken>());
-        await _customersReadUnitOfWork.CustomersRepository
-            .Received(1)
+        await _customersReadUnitOfWork
+            .CustomersRepository.Received(1)
             .FindOneAsync(
                 Arg.Is<Expression<Func<Customer, bool>>>(exp => exp.Compile()(existCustomer) == true),
                 Arg.Any<CancellationToken>()
@@ -73,8 +73,8 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
         // Arrange
         var fakeUpdateCustomerReadCommand = new FakeUpdateCustomerRead().Generate();
 
-        _customersReadUnitOfWork.CustomersRepository
-            .FindOneAsync(Arg.Any<Expression<Func<Customer, bool>>>(), Arg.Any<CancellationToken>())
+        _customersReadUnitOfWork
+            .CustomersRepository.FindOneAsync(Arg.Any<Expression<Func<Customer, bool>>>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<Customer?>(null));
 
         var handler = new UpdateCustomerReadHandler(_customersReadUnitOfWork, Mapper);
@@ -86,8 +86,8 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
         //https://fluentassertions.com/exceptions/
         await act.Should().ThrowAsync<CustomerNotFoundException>();
 
-        await _customersReadUnitOfWork.CustomersRepository
-            .Received(1)
+        await _customersReadUnitOfWork
+            .CustomersRepository.Received(1)
             .FindOneAsync(Arg.Any<Expression<Func<Customer, bool>>>(), Arg.Any<CancellationToken>());
     }
 }

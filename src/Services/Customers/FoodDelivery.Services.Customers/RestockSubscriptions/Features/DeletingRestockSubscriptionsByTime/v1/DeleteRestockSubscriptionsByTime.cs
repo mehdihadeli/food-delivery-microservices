@@ -1,4 +1,5 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using System.Runtime.InteropServices;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Domain;
@@ -6,7 +7,7 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRe
 using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime.V1;
 
 public record DeleteRestockSubscriptionsByTime(DateTime? From = null, DateTime? To = null) : ITxCommand;
 
@@ -14,13 +15,13 @@ internal class DeleteRestockSubscriptionsByTimeHandler : ICommandHandler<DeleteR
 {
     private readonly CustomersDbContext _customersDbContext;
     private readonly IDomainEventPublisher _domainEventPublisher;
-    private readonly ICommandProcessor _commandProcessor;
+    private readonly ICommandBus _commandProcessor;
     private readonly ILogger<DeleteRestockSubscriptionsByTimeHandler> _logger;
 
     public DeleteRestockSubscriptionsByTimeHandler(
         CustomersDbContext customersDbContext,
         IDomainEventPublisher domainEventPublisher,
-        ICommandProcessor commandProcessor,
+        ICommandBus commandProcessor,
         ILogger<DeleteRestockSubscriptionsByTimeHandler> logger
     )
     {
@@ -34,13 +35,12 @@ internal class DeleteRestockSubscriptionsByTimeHandler : ICommandHandler<DeleteR
     {
         command.NotBeNull();
 
-        var exists = await _customersDbContext.RestockSubscriptions
-            .Where(
-                x =>
-                    (command.From == null && command.To == null)
-                    || (command.From == null && x.Created <= command.To)
-                    || (command.To == null && x.Created >= command.From)
-                    || (x.Created >= command.From && x.Created <= command.To)
+        var exists = await _customersDbContext
+            .RestockSubscriptions.Where(x =>
+                (command.From == null && command.To == null)
+                || (command.From == null && x.Created <= command.To)
+                || (command.To == null && x.Created >= command.From)
+                || (x.Created >= command.From && x.Created <= command.To)
             )
             .ToListAsync(cancellationToken: cancellationToken);
 
@@ -52,8 +52,7 @@ internal class DeleteRestockSubscriptionsByTimeHandler : ICommandHandler<DeleteR
         // {
         //     restockSubscription.Delete();
         // }
-
-        foreach (var restockSubscription in exists)
+        foreach (var restockSubscription in CollectionsMarshal.AsSpan(exists))
         {
             _customersDbContext.Entry(restockSubscription).State = EntityState.Deleted;
             _customersDbContext.Entry(restockSubscription.ProductInformation).State = EntityState.Unchanged;

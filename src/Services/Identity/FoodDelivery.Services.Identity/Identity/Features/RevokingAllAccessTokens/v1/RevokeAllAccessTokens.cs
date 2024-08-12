@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.v1;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
@@ -6,7 +6,7 @@ using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAllAccessTokens.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAllAccessTokens.V1;
 
 internal record RevokeAllAccessTokens(string UserName) : ICommand
 {

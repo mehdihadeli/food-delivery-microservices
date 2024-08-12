@@ -1,6 +1,6 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Caching;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Web.Extensions;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.Logout.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.Logout.V1;
 
 public static class LogoutEndpoint
 {
@@ -21,7 +21,7 @@ public static class LogoutEndpoint
             .MapPost("/logout", Handle)
             .RequireAuthorization()
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses?#typedresults-vs-results
-            //.Produces(StatusCodes.Status200OK)
+            // .Produces(StatusCodes.Status200OK)
             .WithName("Logout")
             .WithDisplayName("Logout".Humanize())
             .WithSummaryAndDescription("Logout".Humanize(), "Logout".Humanize())
@@ -63,7 +63,7 @@ public static class LogoutEndpoint
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding#binding-precedence
 internal record LogoutRequestParameters(
     [FromBody] HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandProcessor,
     IMapper Mapper,
     IEasyCachingProviderFactory CachingProviderFactory,
     IOptions<JwtOptions> JwtOptions,

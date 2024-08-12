@@ -1,6 +1,6 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -9,7 +9,7 @@ using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Users.Features.GettingUsers.v1;
+namespace FoodDelivery.Services.Identity.Users.Features.GettingUsers.V1;
 
 internal static class GetUsersEndpoint
 {
@@ -57,7 +57,7 @@ internal static class GetUsersEndpoint
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding#binding-precedence
 internal record GetUsersRequestParameters(
     HttpContext HttpContext,
-    IQueryProcessor QueryProcessor,
+    IQueryBus QueryBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : PageRequest, IHttpQuery;

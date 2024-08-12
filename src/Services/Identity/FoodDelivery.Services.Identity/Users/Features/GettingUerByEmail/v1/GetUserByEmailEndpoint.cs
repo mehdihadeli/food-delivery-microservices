@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -7,7 +7,7 @@ using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Users.Features.GettingUerByEmail.v1;
+namespace FoodDelivery.Services.Identity.Users.Features.GettingUerByEmail.V1;
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
@@ -47,7 +47,7 @@ public static class GetUserByEmailEndpoint
 internal record GetUserByEmailRequestParameters(
     [FromRoute] string Email,
     HttpContext HttpContext,
-    IQueryProcessor QueryProcessor,
+    IQueryBus QueryBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;

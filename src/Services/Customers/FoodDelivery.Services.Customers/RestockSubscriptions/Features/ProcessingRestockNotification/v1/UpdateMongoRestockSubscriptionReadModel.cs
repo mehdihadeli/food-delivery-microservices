@@ -1,11 +1,11 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Core.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.V1;
 
 public record UpdateMongoRestockSubscriptionReadModel(
     long RestockSubscriptionId,

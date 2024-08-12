@@ -1,6 +1,6 @@
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.GettingClaims.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.GettingClaims.V1;
 
 internal record GetClaims : IQuery<GetClaimsResult>
 {
@@ -18,9 +18,11 @@ internal class GetClaimsQueryHandler : IQueryHandler<GetClaims, GetClaimsResult>
 
     public Task<GetClaimsResult> Handle(GetClaims request, CancellationToken cancellationToken)
     {
-        var claims = _httpContextAccessor.HttpContext?.User.Claims.Select(
-            x => new ClaimDto { Type = x.Type, Value = x.Value }
-        );
+        var claims = _httpContextAccessor.HttpContext?.User.Claims.Select(x => new ClaimDto
+        {
+            Type = x.Type,
+            Value = x.Value
+        });
 
         return Task.FromResult(new GetClaimsResult(claims));
     }

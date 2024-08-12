@@ -16,7 +16,7 @@ public class Order : Aggregate<OrderId>
 
     public static Order Create(CustomerInfo customerInfo, ProductInfo productInfo)
     {
-        //TODO: Complete order domain model
+        // TODO: Complete order domain model
         return new Order { Customer = customerInfo, Product = productInfo };
     }
 }

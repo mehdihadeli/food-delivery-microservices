@@ -1,4 +1,4 @@
-﻿using FoodDelivery.Services.Orders.Customers.Features.CreatingCustomer.v1.Events.External;
+using FoodDelivery.Services.Orders.Customers.Features.CreatingCustomer.v1.Events.External;
 using FoodDelivery.Services.Shared.Customers.Customers.Events.v1.Integration;
 using Humanizer;
 using MassTransit;

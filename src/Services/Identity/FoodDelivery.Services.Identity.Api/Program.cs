@@ -4,6 +4,7 @@ using BuildingBlocks.Core.Web;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Minimal.Extensions;
+using BuildingBlocks.Web.Modules;
 using BuildingBlocks.Web.Modules.Extensions;
 using FoodDelivery.Services.Identity;
 using FoodDelivery.Services.Identity.Api.Middlewares;
@@ -33,6 +34,7 @@ builder.Host.UseDefaultServiceProvider(
         // CreateDefaultBuilder and WebApplicationBuilder in minimal apis sets `ServiceProviderOptions.ValidateScopes` and `ServiceProviderOptions.ValidateOnBuild` to true if the app's environment is Development.
         // check dependencies are used in a valid life time scope
         options.ValidateScopes = isDevMode;
+
         // validate dependencies on the startup immediately instead of waiting for using the service - Issue with masstransit #85
         // options.ValidateOnBuild = isDevMode;
     }
@@ -74,7 +76,6 @@ await app.ConfigureModules();
 // https://stackoverflow.com/questions/57846127/what-are-the-differences-between-app-userouting-and-app-useendpoints
 // in .net 6 and above we don't need UseRouting and UseEndpoints but if ordering is important we should write it
 // app.UseRouting();
-
 app.UseRevokeAccessTokenMiddleware();
 
 /*----------------- Module Routes Setup ------------------*/

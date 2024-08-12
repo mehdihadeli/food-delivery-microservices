@@ -1,11 +1,11 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Security.Jwt;
 using EasyCaching.Core;
 using Microsoft.Extensions.Options;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.V1;
 
 internal record RevokeAccessToken(string Token, string UserName) : ICommand
 {

@@ -1,17 +1,17 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
-using BuildingBlocks.Core.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Paging;
+using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Sieve.Services;
 
-namespace FoodDelivery.Services.Identity.Users.Features.GettingUsers.v1;
+namespace FoodDelivery.Services.Identity.Users.Features.GettingUsers.V1;
 
 internal record GetUsers : PageQuery<GetUsersResult>
 {

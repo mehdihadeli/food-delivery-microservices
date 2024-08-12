@@ -1,7 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using FoodDelivery.Services.Orders.Orders.Models;
 using FoodDelivery.Services.Orders.Orders.ValueObjects;
 using FoodDelivery.Services.Orders.Shared.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Orders.Shared.Extensions;
 

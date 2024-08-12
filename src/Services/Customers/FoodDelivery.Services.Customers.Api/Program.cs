@@ -4,6 +4,7 @@ using BuildingBlocks.Core.Web;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Minimal.Extensions;
+using BuildingBlocks.Web.Modules;
 using BuildingBlocks.Web.Modules.Extensions;
 using FoodDelivery.Services.Customers;
 using Spectre.Console;
@@ -33,6 +34,7 @@ builder.Host.UseDefaultServiceProvider(
         // CreateDefaultBuilder and WebApplicationBuilder in minimal apis sets `ServiceProviderOptions.ValidateScopes` and `ServiceProviderOptions.ValidateOnBuild` to true if the app's environment is Development.
         // check dependencies are used in a valid life time scope
         options.ValidateScopes = isDevMode;
+
         // validate dependencies on the startup immediately instead of waiting for using the service - Issue with masstransit #85
         // options.ValidateOnBuild = isDevMode;
     }

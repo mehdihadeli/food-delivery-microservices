@@ -1,4 +1,4 @@
-﻿namespace BuildingBlocks.Abstractions.Scheduler;
+namespace BuildingBlocks.Abstractions.Scheduler;
 
 public interface IScheduler : ICommandScheduler, IMessageScheduler
 {

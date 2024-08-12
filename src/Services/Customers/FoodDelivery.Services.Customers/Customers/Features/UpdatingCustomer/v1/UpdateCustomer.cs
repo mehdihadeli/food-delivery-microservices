@@ -1,13 +1,13 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Domain.ValueObjects;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FluentValidation;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
+namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.V1;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/
@@ -15,7 +15,6 @@ namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1
 // https://buildplease.com/pages/vos-in-events/
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
-
 public sealed record UpdateCustomer(
     long Id,
     string FirstName,

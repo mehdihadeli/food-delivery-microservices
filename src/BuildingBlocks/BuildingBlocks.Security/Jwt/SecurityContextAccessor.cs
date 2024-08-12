@@ -4,29 +4,27 @@ using Microsoft.Extensions.Logging;
 
 namespace BuildingBlocks.Security.Jwt;
 
-public class SecurityContextAccessor : ISecurityContextAccessor
+public class SecurityContextAccessor(IHttpContextAccessor httpContextAccessor, ILogger<SecurityContextAccessor> logger)
+    : ISecurityContextAccessor
 {
-    private readonly ILogger<SecurityContextAccessor> _logger;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<SecurityContextAccessor> _logger =
+        logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IHttpContextAccessor _httpContextAccessor =
+        httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
 
-    public SecurityContextAccessor(IHttpContextAccessor httpContextAccessor, ILogger<SecurityContextAccessor> logger)
-    {
-        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
-    public string UserId
+    public string? UserId
     {
         get
         {
-            var userId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             return userId;
         }
     }
 
-    public string JwtToken
+    public string? JwtToken
     {
-        get { return _httpContextAccessor.HttpContext?.Request?.Headers["Authorization"]; }
+        get { return _httpContextAccessor.HttpContext?.Request.Headers["Authorization"]; }
     }
 
     public bool IsAuthenticated

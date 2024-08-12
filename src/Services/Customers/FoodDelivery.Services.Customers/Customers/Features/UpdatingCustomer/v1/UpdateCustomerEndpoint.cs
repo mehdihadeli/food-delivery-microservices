@@ -1,10 +1,10 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using Humanizer;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
+namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.V1;
 
 internal class UpdateCustomerEndpoint : ICommandMinimalEndpoint<UpdateCustomerRequest, UpdateCustomerRequestParameters>
 {
@@ -21,6 +21,7 @@ internal class UpdateCustomerEndpoint : ICommandMinimalEndpoint<UpdateCustomerRe
             .WithName(nameof(UpdateCustomer))
             .WithDisplayName(nameof(UpdateCustomer).Humanize())
             .WithSummaryAndDescription(nameof(UpdateCustomer).Humanize(), nameof(UpdateCustomer).Humanize());
+
         // .Produces("Customer updated successfully.", StatusCodes.Status204NoContent)
         // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
         // .ProducesProblem("UnAuthorized request.", StatusCodes.Status401Unauthorized)
@@ -47,7 +48,7 @@ internal record UpdateCustomerRequestParameters(
     [FromBody] UpdateCustomerRequest Request,
     [FromRoute] long Id,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandProcessor,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<UpdateCustomerRequest>;

@@ -1,9 +1,10 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Domain.ValueObjects;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Products;
@@ -13,10 +14,9 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Write;
 using FoodDelivery.Services.Customers.RestockSubscriptions.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.V1;
 
 public record CreateRestockSubscription(long CustomerId, long ProductId, string Email)
     : ITxCreateCommand<CreateRestockSubscriptionResult>
@@ -93,8 +93,8 @@ internal class CreateRestockSubscriptionHandler
         if (product!.AvailableStock > 0)
             throw new ProductHasStockException(product.Id, product.AvailableStock, product.Name);
 
-        var alreadySubscribed = _customersDbContext.RestockSubscriptions.Any(
-            x => x.Email.Value == request.Email && x.ProductInformation.Id == request.ProductId && x.Processed == false
+        var alreadySubscribed = _customersDbContext.RestockSubscriptions.Any(x =>
+            x.Email.Value == request.Email && x.ProductInformation.Id == request.ProductId && x.Processed == false
         );
 
         if (alreadySubscribed)

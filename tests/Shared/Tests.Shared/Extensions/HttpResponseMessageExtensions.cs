@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using FluentAssertions.Primitives;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tests.Shared.Extensions;
 
@@ -18,8 +18,8 @@ public static class HttpResponseMessageExtensions
         object expectedProblem
     )
     {
-        var responseProblemDetails = assertions.Subject.Content
-            .ReadFromJsonAsync<ProblemDetails>()
+        var responseProblemDetails = assertions
+            .Subject.Content.ReadFromJsonAsync<ProblemDetails>()
             .GetAwaiter()
             .GetResult();
         responseProblemDetails.Should().BeEquivalentTo(expectedProblem);
@@ -41,8 +41,8 @@ public static class HttpResponseMessageExtensions
         string? title = null
     )
     {
-        var responseProblemDetails = assertions.Subject.Content
-            .ReadFromJsonAsync<ProblemDetails>()
+        var responseProblemDetails = assertions
+            .Subject.Content.ReadFromJsonAsync<ProblemDetails>()
             .GetAwaiter()
             .GetResult();
         responseProblemDetails.Should().NotBeNull();
@@ -67,8 +67,8 @@ public static class HttpResponseMessageExtensions
         ProblemDetails expectedProblemDetails
     )
     {
-        var responseProblemDetails = assertions.Subject.Content
-            .ReadFromJsonAsync<ProblemDetails>()
+        var responseProblemDetails = assertions
+            .Subject.Content.ReadFromJsonAsync<ProblemDetails>()
             .GetAwaiter()
             .GetResult();
         responseProblemDetails.Should().NotBeNull();

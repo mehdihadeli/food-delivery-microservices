@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
@@ -114,7 +114,7 @@ public static class EndpointRouteBuilderExtensions
         // we can't generalize all possible type results for auto generating open-api metadata, because it might show unwanted response type as metadata
         async Task<Ok<TResponse>> Handle([AsParameters] TRequestParameters requestParameters)
         {
-            var queryProcessor = requestParameters.QueryProcessor;
+            var queryProcessor = requestParameters.QueryBus;
             var mapper = requestParameters.Mapper;
             var cancellationToken = requestParameters.CancellationToken;
 

@@ -1,12 +1,12 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.V1;
 
 public static class VerifyEmailEndpoint
 {
@@ -47,7 +47,7 @@ internal record VerifyEmailRequest(string? Email, string? Code);
 internal record VerifyEmailRequestParameters(
     [FromBody] VerifyEmailRequest Request,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandProcessor,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<VerifyEmailRequest>;

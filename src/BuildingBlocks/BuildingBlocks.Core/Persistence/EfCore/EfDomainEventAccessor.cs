@@ -1,30 +1,20 @@
-using BuildingBlocks.Abstractions.CQRS.Events;
-using BuildingBlocks.Abstractions.CQRS.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 
 namespace BuildingBlocks.Core.Persistence.EfCore;
 
-public class EfDomainEventAccessor : IDomainEventsAccessor
+public class EfDomainEventAccessor(
+    IDomainEventContext domainEventContext,
+    IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore
+) : IDomainEventsAccessor
 {
-    private readonly IDomainEventContext _domainEventContext;
-    private readonly IAggregatesDomainEventsRequestStore _aggregatesDomainEventsStore;
-
-    public EfDomainEventAccessor(
-        IDomainEventContext domainEventContext,
-        IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore
-    )
-    {
-        _domainEventContext = domainEventContext;
-        _aggregatesDomainEventsStore = aggregatesDomainEventsStore;
-    }
-
     public IReadOnlyList<IDomainEvent> UnCommittedDomainEvents
     {
         get
         {
-            _ = _aggregatesDomainEventsStore.GetAllUncommittedEvents();
+            _ = aggregatesDomainEventsStore.GetAllUncommittedEvents();
 
             // Or
-            return _domainEventContext.GetAllUncommittedEvents();
+            return domainEventContext.GetAllUncommittedEvents();
         }
     }
 }

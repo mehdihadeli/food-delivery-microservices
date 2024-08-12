@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BuildingBlocks.Resiliency;
 using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity;

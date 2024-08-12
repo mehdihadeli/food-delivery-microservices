@@ -88,18 +88,17 @@ public class CustomersMapping : Profile
         CreateMap<CustomerUpdated, UpdateCustomerRead>();
 
         CreateMap<UpdateCustomerRequest, UpdateCustomer>()
-            .ConstructUsing(
-                req =>
-                    UpdateCustomer.Of(
-                        0,
-                        req.FirstName,
-                        req.LastName,
-                        req.Email,
-                        req.PhoneNumber,
-                        req.BirthDate,
-                        req.Address,
-                        req.Nationality
-                    )
+            .ConstructUsing(req =>
+                UpdateCustomer.Of(
+                    0,
+                    req.FirstName,
+                    req.LastName,
+                    req.Email,
+                    req.PhoneNumber,
+                    req.BirthDate,
+                    req.Address,
+                    req.Nationality
+                )
             );
     }
 }

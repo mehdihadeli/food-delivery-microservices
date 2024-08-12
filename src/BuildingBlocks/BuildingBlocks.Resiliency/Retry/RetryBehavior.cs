@@ -30,7 +30,6 @@ public class RetryBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TR
 
         // var retryAttr = typeof(TRequest).GetCustomAttribute<RetryPolicyAttribute>();
         if (retryHandler == null)
-
             // No retry handler found, continue through pipeline
             return await next();
 

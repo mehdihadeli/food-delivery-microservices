@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 namespace BuildingBlocks.Core.Reflection;
@@ -28,9 +29,8 @@ public static class ReflectionUtilities
         var inputAssembly = assembly ?? Assembly.GetExecutingAssembly();
         return inputAssembly
             .GetTypes()
-            .Where(
-                type =>
-                    typeof(TInterface).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract && type.IsClass
+            .Where(type =>
+                typeof(TInterface).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract && type.IsClass
             );
     }
 
@@ -74,8 +74,8 @@ public static class ReflectionUtilities
         if (referencedAssemblies == null)
             return null;
 
-        return AppDomain.CurrentDomain
-            .GetAssemblies()
+        return AppDomain
+            .CurrentDomain.GetAssemblies()
             .Where(a => referencedAssemblies.Contains(a.FullName))
             .SelectMany(a => a.GetTypes().Where(x => x.FullName == typeName || x.Name == typeName))
             .FirstOrDefault();
@@ -83,8 +83,8 @@ public static class ReflectionUtilities
 
     public static Type? GetFirstMatchingTypeFromCurrentDomainAssemblies(string typeName)
     {
-        return AppDomain.CurrentDomain
-            .GetAssemblies()
+        return AppDomain
+            .CurrentDomain.GetAssemblies()
             .SelectMany(a => a.GetTypes().Where(x => x.FullName == typeName || x.Name == typeName))
             .FirstOrDefault();
     }
@@ -132,7 +132,7 @@ public static class ReflectionUtilities
         };
         var callArguments = new List<ParameterExpression>();
 
-        foreach (var a in argumentPairs)
+        foreach (var a in CollectionsMarshal.AsSpan(argumentPairs))
         {
             if (a.Source == a.Destination)
             {
@@ -168,7 +168,7 @@ public static class ReflectionUtilities
 
     /// <summary>
     /// Getting all assemblies containing application part
-    /// Ref: https://learn.microsoft.com/en-us/aspnet/core/mvc/advanced/app-parts?view=aspnetcore-7.0 , https://stackoverflow.com/questions/71571852/how-can-i-get-applicationpartattribute-within-net5-class-library
+    /// Ref: https://learn.microsoft.com/en-us/aspnet/core/mvc/advanced/app-parts?view=aspnetcore-7.0 , https://stackoverflow.com/questions/71571852/how-can-i-get-applicationpartattribute-within-net5-class-library.
     /// </summary>
     /// <param name="rootAssembly"></param>
     /// <returns></returns>
@@ -186,7 +186,7 @@ public static class ReflectionUtilities
 
     /// <summary>
     /// Get and load, all assemblies from bin folder.
-    /// Ref: https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/
+    /// Ref: https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/.
     /// </summary>
     /// <returns></returns>
     public static IReadOnlyList<Assembly> GetBinDirectoryAssemblies()
@@ -201,7 +201,7 @@ public static class ReflectionUtilities
 
     /// <summary>
     /// Get All referenced assemblies of root assembly(EntryAssembly if not provide) and loading them explicitly because assemblies will load lazily based on their dependent assembly code use in dependency graph (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet).
-    /// Ref: https://stackoverflow.com/a/10253634/581476, https://www.davidguida.net/how-to-find-all-application-assemblies, https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/
+    /// Ref: https://stackoverflow.com/a/10253634/581476, https://www.davidguida.net/how-to-find-all-application-assemblies, https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/.
     /// </summary>
     /// <param name="rootAssembly"></param>
     /// <returns></returns>
@@ -240,7 +240,7 @@ public static class ReflectionUtilities
 
     /// <summary>
     /// Get All referenced assemblies of root assembly type and loading them explicitly because assemblies will load lazily based on their dependent assembly code use in dependency graph (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet).
-    /// Ref: https://stackoverflow.com/a/10253634/581476, https://www.davidguida.net/how-to-find-all-application-assemblies, https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/
+    /// Ref: https://stackoverflow.com/a/10253634/581476, https://www.davidguida.net/how-to-find-all-application-assemblies, https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/.
     /// </summary>
     /// <returns></returns>
     public static IReadOnlyList<Assembly> GetReferencedAssembliesFromRootType<T>()
@@ -252,7 +252,7 @@ public static class ReflectionUtilities
 
     /// <summary>
     /// Get All referenced assemblies of root assembly type and loading them explicitly because assemblies will load lazily based on their dependent assembly code use in dependency graph (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet).
-    /// Ref: https://stackoverflow.com/a/10253634/581476, https://www.davidguida.net/how-to-find-all-application-assemblies, https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/
+    /// Ref: https://stackoverflow.com/a/10253634/581476, https://www.davidguida.net/how-to-find-all-application-assemblies, https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/.
     /// </summary>
     /// <param name="rootType"></param>
     /// <returns></returns>

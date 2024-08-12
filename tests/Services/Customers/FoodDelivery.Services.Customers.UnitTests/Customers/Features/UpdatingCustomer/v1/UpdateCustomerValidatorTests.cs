@@ -1,9 +1,9 @@
 using Bogus;
+using FluentAssertions;
+using FluentValidation.TestHelper;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
 using FoodDelivery.Services.Customers.UnitTests.Common;
-using FluentAssertions;
-using FluentValidation.TestHelper;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Customers.UnitTests.Customers.Features.UpdatingCustomer.v1;

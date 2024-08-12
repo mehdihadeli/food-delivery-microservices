@@ -1,5 +1,4 @@
 using BuildingBlocks.Abstractions.Domain;
-using BuildingBlocks.Abstractions.Events.Internal;
 
 namespace BuildingBlocks.Abstractions.Events;
 

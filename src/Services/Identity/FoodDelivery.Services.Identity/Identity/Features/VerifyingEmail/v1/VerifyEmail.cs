@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1.Exceptions;
@@ -8,7 +8,7 @@ using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.V1;
 
 public record VerifyEmail(string Email, string Code) : ICommand
 {

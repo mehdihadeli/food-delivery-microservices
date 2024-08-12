@@ -9,6 +9,5 @@ public class UnauthorizedProblemDetails : ProblemDetails
         Title = "UnauthorizedException";
         Detail = details;
         Status = 401;
-        Type = "https://httpstatuses.com/401";
     }
 }

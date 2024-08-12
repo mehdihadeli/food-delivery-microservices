@@ -1,6 +1,6 @@
 using FoodDelivery.Services.Catalogs.Products.Models;
 
-namespace FoodDelivery.Services.Catalogs.Products.Dtos.v1;
+namespace FoodDelivery.Services.Catalogs.Products.Dtos.V1;
 
 public record ProductDto(
     long Id,

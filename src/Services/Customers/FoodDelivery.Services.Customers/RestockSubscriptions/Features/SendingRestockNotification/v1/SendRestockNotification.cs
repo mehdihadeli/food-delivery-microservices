@@ -1,15 +1,15 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.CQRS.Commands;
+using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Email;
 using BuildingBlocks.Email.Options;
-using FoodDelivery.Services.Customers.Shared.Data;
 using FluentValidation;
+using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification.V1;
 
 public record SendRestockNotification(long RestockSubscriptionId, int CurrentStock) : InternalCommand, ITxRequest;
 

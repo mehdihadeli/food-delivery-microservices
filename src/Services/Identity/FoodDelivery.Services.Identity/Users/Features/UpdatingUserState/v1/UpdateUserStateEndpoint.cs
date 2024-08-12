@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -7,7 +7,7 @@ using FoodDelivery.Services.Identity.Shared.Models;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.v1;
+namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.V1;
 
 internal static class UpdateUserStateEndpoint
 {
@@ -45,7 +45,7 @@ internal record UpdateUserStateRequestParameters(
     [FromBody] UpdateUserStateRequest Request,
     [FromRoute] Guid UserId,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandProcessor,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<UpdateUserStateRequest>;

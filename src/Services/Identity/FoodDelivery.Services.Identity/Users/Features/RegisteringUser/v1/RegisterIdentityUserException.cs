@@ -1,6 +1,6 @@
 using BuildingBlocks.Core.Exception.Types;
 
-namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
+namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.V1;
 
 public class RegisterIdentityUserException : AppException
 {

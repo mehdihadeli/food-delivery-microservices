@@ -1,16 +1,16 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Domain.ValueObjects;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Models;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FluentValidation;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
+namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.V1;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/

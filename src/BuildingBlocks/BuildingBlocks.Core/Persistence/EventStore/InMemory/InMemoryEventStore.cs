@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
+using BuildingBlocks.Core.Persistence.EventStore.Extenions;
 
 namespace BuildingBlocks.Core.Persistence.EventStore.InMemory;
 

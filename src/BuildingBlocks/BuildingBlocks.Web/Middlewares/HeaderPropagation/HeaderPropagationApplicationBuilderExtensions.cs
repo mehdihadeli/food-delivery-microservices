@@ -1,4 +1,4 @@
-using BuildingBlocks.Web.HeaderPropagation;
+using BuildingBlocks.Core.Web.HeaderPropagation;
 using Microsoft.AspNetCore.Builder;
 
 namespace BuildingBlocks.Web.Middlewares.HeaderPropagation;
@@ -9,10 +9,10 @@ public static class HeaderPropagationApplicationBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(app);
 
-        if (app.ApplicationServices.GetService<CustomHeaderPropagationStore>() == null)
+        if (app.ApplicationServices.GetService<HeaderPropagationStore>() == null)
         {
             throw new InvalidOperationException(
-                $"CustomHeaderPropagationStore not registered. Please add it with AddHeaderPropagation"
+                "CustomHeaderPropagationStore not registered. Please add it with AddHeaderPropagation"
             );
         }
 

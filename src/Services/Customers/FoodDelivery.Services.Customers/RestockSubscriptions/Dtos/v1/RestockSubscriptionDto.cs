@@ -1,4 +1,4 @@
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.V1;
 
 public record RestockSubscriptionDto
 {

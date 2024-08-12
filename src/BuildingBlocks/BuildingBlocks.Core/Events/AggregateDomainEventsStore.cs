@@ -1,6 +1,6 @@
+using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Events.Internal;
-using BuildingBlocks.Abstractions.Domain;
 
 namespace BuildingBlocks.Core.Events;
 

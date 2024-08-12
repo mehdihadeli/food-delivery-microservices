@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
 
-namespace FoodDelivery.Services.Shared.Identity.Users.Events.v1.Integration;
+namespace FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
 
 public record UserRegisteredV1(
     Guid IdentityId,

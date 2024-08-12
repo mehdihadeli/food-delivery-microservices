@@ -1,3 +1,3 @@
-namespace FoodDelivery.Services.Customers.Customers.Dtos.v1;
+namespace FoodDelivery.Services.Customers.Customers.Dtos.V1;
 
 public class CustomerDto { }

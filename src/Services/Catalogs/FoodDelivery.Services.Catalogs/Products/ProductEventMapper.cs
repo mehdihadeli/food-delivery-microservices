@@ -28,8 +28,8 @@ public class ProductEventMapper : IEventMapper
             // Materialize domain event to integration event
             case ProductCreated productCreated:
             {
-                var product = _catalogDbContext.Products
-                    .Include(x => x.Brand)
+                var product = _catalogDbContext
+                    .Products.Include(x => x.Brand)
                     .Include(x => x.Category)
                     .Include(x => x.Supplier)
                     .FirstOrDefault(x => x.Id == productCreated.Id);
@@ -48,8 +48,8 @@ public class ProductEventMapper : IEventMapper
 
             case ProductUpdated productUpdated:
             {
-                var product = _catalogDbContext.Products
-                    .Include(x => x.Brand)
+                var product = _catalogDbContext
+                    .Products.Include(x => x.Brand)
                     .Include(x => x.Category)
                     .Include(x => x.Supplier)
                     .FirstOrDefault(x => x.Id == productUpdated.Id);

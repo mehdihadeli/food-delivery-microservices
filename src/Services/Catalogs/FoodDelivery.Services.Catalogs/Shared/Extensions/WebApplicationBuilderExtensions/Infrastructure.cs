@@ -1,10 +1,10 @@
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
+using BuildingBlocks.Caching.Extensions;
+using BuildingBlocks.Core;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Persistence.EfCore;
-using BuildingBlocks.Core.Registrations;
-using BuildingBlocks.Core.Web.Extenions;
 using BuildingBlocks.Email;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
@@ -12,12 +12,14 @@ using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.OpenTelemetry;
 using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Security.Extensions;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
 using BuildingBlocks.Web.Extensions;
+using BuildingBlocks.Web.RateLimit;
+using BuildingBlocks.Web.Versioning;
 using FoodDelivery.Services.Catalogs.Products;
+using ServiceCollectionExtensions = BuildingBlocks.Core.Web.HeaderPropagation.ServiceCollectionExtensions;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Extensions.WebApplicationBuilderExtensions;
 
@@ -82,10 +84,13 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomOpenTelemetry();
 
-        builder.Services.AddHeaderPropagation(options =>
-        {
-            options.HeaderNames.Add(MessageHeaders.CorrelationId);
-        });
+        ServiceCollectionExtensions.AddHeaderPropagation(
+            builder.Services,
+            options =>
+            {
+                options.HeaderNames.Add(MessageHeaders.CorrelationId);
+            }
+        );
 
         // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
         builder.AddCustomRateLimit();

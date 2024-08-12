@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Reflection;
 using BuildingBlocks.Abstractions.Types;
 
@@ -12,7 +12,7 @@ namespace BuildingBlocks.Core.Types.Collections
     /// <summary>
     /// Extends <see cref="List{T}"/> to add restriction a specific base type.
     /// </summary>
-    /// <typeparam name="TBaseType">Base Type of <see cref="Type"/>s in this list</typeparam>
+    /// <typeparam name="TBaseType">Base Type of <see cref="Type"/>s in this list.</typeparam>
     public class TypeList<TBaseType> : ITypeList<TBaseType>
     {
         /// <summary>
@@ -44,6 +44,7 @@ namespace BuildingBlocks.Core.Types.Collections
         private readonly List<Type> _typeList;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TypeList{TBaseType}"/> class.
         /// Creates a new <see cref="TypeList{T}"/> object.
         /// </summary>
         public TypeList()

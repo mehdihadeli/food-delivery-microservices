@@ -12,7 +12,6 @@ using OpenTelemetry.Trace;
 namespace BuildingBlocks.OpenTelemetry;
 
 // Ref: https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-with-otel
-
 public static class Extensions
 {
     public static WebApplicationBuilder AddCustomOpenTelemetry(
@@ -97,7 +96,7 @@ public static class Extensions
                 loggerOptions.AddOtlpExporter(
                     (otelExporterOptions, logRecorderOptions) =>
                     {
-                        otelExporterOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint);
+                        otelExporterOptions.Endpoint = new Uri(options.OtlpOptions.OTLPEndpoint);
                     }
                 );
                 break;
@@ -123,7 +122,7 @@ public static class Extensions
             case nameof(MetricsExporterType.OTLP):
                 metrics.AddOtlpExporter(otlpOptions =>
                 {
-                    otlpOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint);
+                    otlpOptions.Endpoint = new Uri(options.OtlpOptions.OTLPEndpoint);
                 });
                 break;
             case nameof(MetricsExporterType.None):
@@ -142,7 +141,7 @@ public static class Extensions
             case nameof(TracingExporterType.OTLP):
                 tracerProviderBuilder.AddOtlpExporter(otlpOptions =>
                 {
-                    otlpOptions.Endpoint = new Uri(options.OTLPOptions.OTLPEndpoint);
+                    otlpOptions.Endpoint = new Uri(options.OtlpOptions.OTLPEndpoint);
                 });
                 break;
             case nameof(TracingExporterType.Zipkin):

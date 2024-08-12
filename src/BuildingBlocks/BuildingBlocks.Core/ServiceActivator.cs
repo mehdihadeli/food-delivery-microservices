@@ -1,9 +1,9 @@
-﻿namespace BuildingBlocks.Core;
+namespace BuildingBlocks.Core;
 
 /// <summary>
 /// Add static service resolver to use when dependencies injection is not available
 /// Ref https://www.davidezoccarato.cloud/resolving-instances-with-asp-net-core-di-in-static-classes/
-/// Ref https://stackoverflow.com/a/55678060/581476
+/// Ref https://stackoverflow.com/a/55678060/581476.
 /// </summary>
 public static class ServiceActivator
 {

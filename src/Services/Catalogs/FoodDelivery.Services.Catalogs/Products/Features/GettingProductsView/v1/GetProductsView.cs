@@ -1,17 +1,16 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.CQRS.Queries;
 using BuildingBlocks.Core.Paging;
+using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
 using Dapper;
+using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
-using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.v1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.V1;
 
 internal record GetProductsView : PageQuery<GetProductsViewResult>
 {

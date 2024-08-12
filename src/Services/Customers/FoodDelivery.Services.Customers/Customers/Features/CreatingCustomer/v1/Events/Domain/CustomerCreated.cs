@@ -1,13 +1,13 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Domain.Events.Internal;
 using BuildingBlocks.Core.Domain.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
-using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
 using FluentValidation;
+using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
+namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.V1.Events.Domain;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/
@@ -73,6 +73,11 @@ public record CustomerCreated(
         //     nationality
         // );
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as CustomerCreated);
+    }
 }
 
 internal class CustomerCreatedValidator : AbstractValidator<CustomerCreated>
@@ -96,10 +101,10 @@ internal class CustomerCreatedValidator : AbstractValidator<CustomerCreated>
 
 internal class CustomerCreatedHandler : IDomainEventHandler<CustomerCreated>
 {
-    private readonly ICommandProcessor _commandProcessor;
+    private readonly ICommandBus _commandProcessor;
     private readonly IMapper _mapper;
 
-    public CustomerCreatedHandler(ICommandProcessor commandProcessor, IMapper mapper)
+    public CustomerCreatedHandler(ICommandBus commandProcessor, IMapper mapper)
     {
         _commandProcessor = commandProcessor;
         _mapper = mapper;

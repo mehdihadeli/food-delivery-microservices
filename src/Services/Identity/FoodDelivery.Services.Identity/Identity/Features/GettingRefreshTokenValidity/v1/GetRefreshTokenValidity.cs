@@ -1,9 +1,9 @@
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Identity.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.GettingRefreshTokenValidity.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.GettingRefreshTokenValidity.V1;
 
 internal record GetRefreshTokenValidity(Guid UserId, string RefreshToken) : IQuery<bool>
 {

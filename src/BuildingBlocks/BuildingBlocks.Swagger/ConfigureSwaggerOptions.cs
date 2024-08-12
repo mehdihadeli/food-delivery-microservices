@@ -9,16 +9,17 @@ namespace BuildingBlocks.Swagger;
 
 public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
-    private readonly IApiVersionDescriptionProvider provider;
+    private readonly IApiVersionDescriptionProvider _provider;
     private readonly SwaggerOptions? _options;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
     /// </summary>
     /// <param name="provider">The <see cref="IApiVersionDescriptionProvider">provider</see> used to generate Swagger documents.</param>
+    /// <param name="options"></param>
     public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider, IOptions<SwaggerOptions> options)
     {
-        this.provider = provider;
+        _provider = provider;
         _options = options.Value;
     }
 
@@ -27,7 +28,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
         // add a swagger document for each discovered API version
         // note: you might choose to skip or document deprecated API versions differently
-        foreach (var description in provider.ApiVersionDescriptions)
+        foreach (var description in _provider.ApiVersionDescriptions)
         {
             options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
         }
@@ -50,32 +51,29 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
             text.Append("This API version has been deprecated.");
         }
 
-        if (description.SunsetPolicy is SunsetPolicy policy)
+        if (description.SunsetPolicy is { } policy)
         {
-            if (policy.Date is DateTimeOffset when)
+            if (policy.Date is { } when)
             {
-                text.Append(" The API will be sunset on ").Append(when.Date.ToShortDateString()).Append('.');
+                text.Append("The API will be sunset on").Append(when.Date.ToShortDateString()).Append('.');
             }
 
             if (policy.HasLinks)
             {
                 text.AppendLine();
 
-                for (var i = 0; i < policy.Links.Count; i++)
+                foreach (var link in policy.Links)
                 {
-                    var link = policy.Links[i];
+                    if (link.Type != "text/html")
+                        continue;
+                    text.AppendLine();
 
-                    if (link.Type == "text/html")
+                    if (link.Title.HasValue)
                     {
-                        text.AppendLine();
-
-                        if (link.Title.HasValue)
-                        {
-                            text.Append(link.Title.Value).Append(": ");
-                        }
-
-                        text.Append(link.LinkTarget.OriginalString);
+                        text.Append(link.Title.Value).Append(": ");
                     }
+
+                    text.Append(link.LinkTarget.OriginalString);
                 }
             }
         }

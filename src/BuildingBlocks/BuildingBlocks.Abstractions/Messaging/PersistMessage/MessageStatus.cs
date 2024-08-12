@@ -3,5 +3,5 @@ namespace BuildingBlocks.Abstractions.Messaging.PersistMessage;
 public enum MessageStatus
 {
     Stored = 1,
-    Processed = 2
+    Processed = 2,
 }

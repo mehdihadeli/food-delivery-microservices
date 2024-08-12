@@ -10,14 +10,9 @@ using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegiste
 
 namespace BuildingBlocks.Security.Jwt;
 
-public class JwtService : IJwtService
+public class JwtService(IOptions<JwtOptions> jwtOptions) : IJwtService
 {
-    private readonly JwtOptions _jwtOptions;
-
-    public JwtService(IOptions<JwtOptions> jwtOptions)
-    {
-        _jwtOptions = jwtOptions.Value;
-    }
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
     public GenerateTokenResult GenerateJwtToken(
         string userName,

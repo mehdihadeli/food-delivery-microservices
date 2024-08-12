@@ -1,6 +1,6 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,16 +13,14 @@ public abstract class BaseController : Controller
     private IMapper? _mapper;
 
     private IMediator _mediator;
-    private ICommandProcessor _commandProcessor;
-    private IQueryProcessor _queryProcessor;
+    private ICommandBus _commandBus;
+    private IQueryBus _queryBus;
 
     protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>()!;
 
-    protected IQueryProcessor? QueryProcessor =>
-        _queryProcessor ??= HttpContext.RequestServices.GetService<IQueryProcessor>()!;
+    protected IQueryBus? QueryProcessor => _queryBus ??= HttpContext.RequestServices.GetService<IQueryBus>()!;
 
-    protected ICommandProcessor CommandProcessor =>
-        _commandProcessor ??= HttpContext.RequestServices.GetService<ICommandProcessor>()!;
+    protected ICommandBus CommandBus => _commandBus ??= HttpContext.RequestServices.GetService<ICommandBus>()!;
 
     protected IMapper Mapper => (_mapper ??= HttpContext.RequestServices.GetService<IMapper>())!;
 }

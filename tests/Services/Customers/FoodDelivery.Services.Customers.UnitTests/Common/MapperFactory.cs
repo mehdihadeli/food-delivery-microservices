@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FoodDelivery.Services.Customers.Customers;
 using FoodDelivery.Services.Customers.RestockSubscriptions;
 

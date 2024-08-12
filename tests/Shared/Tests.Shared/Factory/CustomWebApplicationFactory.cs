@@ -1,4 +1,3 @@
-using BuildingBlocks.Security.Extensions;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Web.Extensions;
 using Microsoft.AspNetCore.Authentication;
@@ -254,8 +253,8 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
 
         httpContextAccessorMock.HttpContext.Request.Host = new HostString("localhost", 5000);
         httpContextAccessorMock.HttpContext.Request.Scheme = "http";
-        var res = httpContextAccessorMock.HttpContext
-            .AuthenticateAsync(Constants.AuthConstants.Scheme)
+        var res = httpContextAccessorMock
+            .HttpContext.AuthenticateAsync(Constants.AuthConstants.Scheme)
             .GetAwaiter()
             .GetResult();
         httpContextAccessorMock.HttpContext.User = res.Ticket?.Principal!;

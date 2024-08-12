@@ -1,4 +1,4 @@
-﻿using FoodDelivery.Services.Customers.Products.Features.CreatingProduct.v1.Events.Integration.External;
+using FoodDelivery.Services.Customers.Products.Features.CreatingProduct.v1.Events.Integration.External;
 using FoodDelivery.Services.Customers.Products.Features.ReplenishingProductStock.v1.Events.Integration.External;
 using FoodDelivery.Services.Shared.Catalogs.Products.Events.v1.Integration;
 using Humanizer;

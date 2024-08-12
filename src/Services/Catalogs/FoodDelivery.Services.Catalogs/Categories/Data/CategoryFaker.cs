@@ -17,10 +17,11 @@ public sealed class CategoryFaker : Faker<Category>
             var generatedCid = CategoryId.Of(categoryId++);
             return Category.Create(
                 generatedCid,
-               CategoryName.Of(f.Commerce.Categories(1).First()),
-               CategoryCode.Of(f.Random.Number(1000, 5000).ToString()),
+                CategoryName.Of(f.Commerce.Categories(1).First()),
+                CategoryCode.Of(f.Random.Number(1000, 5000).ToString()),
                 new CategoryImage(EntityId.Of(imageId), f.Internet.Url(), f.Random.Bool(), generatedCid),
-                 f.Commerce.ProductDescription());
+                f.Commerce.ProductDescription()
+            );
         });
     }
 }

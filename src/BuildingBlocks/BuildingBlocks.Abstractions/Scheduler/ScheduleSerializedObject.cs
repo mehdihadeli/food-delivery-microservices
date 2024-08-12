@@ -1,4 +1,4 @@
-﻿namespace BuildingBlocks.Abstractions.Scheduler;
+namespace BuildingBlocks.Abstractions.Scheduler;
 
 public class ScheduleSerializedObject
 {
@@ -10,9 +10,9 @@ public class ScheduleSerializedObject
         AssemblyName = assemblyName;
     }
 
-    public string FullTypeName { get; private set; }
+    public string FullTypeName { get; }
     public string Data { get; private set; }
-    public string AdditionalDescription { get; private set; }
+    public string AdditionalDescription { get; }
     public string AssemblyName { get; private set; }
 
     public override string ToString()

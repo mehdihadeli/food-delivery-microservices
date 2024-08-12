@@ -9,8 +9,8 @@ public static partial class WebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddCustomIdentityServer(this WebApplicationBuilder builder)
     {
-        builder.Services
-            .AddIdentityServer(options =>
+        builder
+            .Services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;

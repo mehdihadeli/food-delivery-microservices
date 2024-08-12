@@ -1,7 +1,6 @@
 using BuildingBlocks.Abstractions.Web.Problem;
 using BuildingBlocks.Core.Domain.Exceptions;
 using BuildingBlocks.Core.Exception.Types;
-using BuildingBlocks.Validation;
 using Microsoft.AspNetCore.Http;
 
 namespace BuildingBlocks.Web.Problem;

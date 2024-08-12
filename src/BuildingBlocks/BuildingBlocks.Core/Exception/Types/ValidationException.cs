@@ -1,10 +1,4 @@
-using BuildingBlocks.Core.Exception.Types;
-using Microsoft.AspNetCore.Http;
+namespace BuildingBlocks.Core.Exception.Types;
 
-namespace BuildingBlocks.Validation;
-
-public class ValidationException : BadRequestException
-{
-    public ValidationException(string message, Exception? innerException = null, params string[] errors)
-        : base(message, innerException, errors) { }
-}
+public class ValidationException(string message, System.Exception? innerException = null, params string[] errors)
+    : BadRequestException(message, innerException, errors);

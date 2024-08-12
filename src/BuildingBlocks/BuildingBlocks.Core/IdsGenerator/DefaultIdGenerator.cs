@@ -1,4 +1,3 @@
-using Ardalis.GuardClauses;
 using IdGen;
 
 namespace BuildingBlocks.Core.IdsGenerator;
@@ -15,12 +14,10 @@ public class SnowFlakIdGenerator : BuildingBlocks.Abstractions.Core.IIdGenerator
         return _generator.CreateId();
     }
 
-    private static IdGenerator? _generator;
+    private static readonly IdGenerator _generator = new((int)DateTime.Now.Ticks, GetOptions());
 
-    public static void Configure(int generatorId)
+    public static IdGeneratorOptions GetOptions()
     {
-        Guard.Against.NegativeOrZero(generatorId, nameof(generatorId));
-
         // Let's say we take jan 17st 2022 as our epoch
         var epoch = new DateTime(2022, 1, 17, 0, 0, 0, DateTimeKind.Local);
 
@@ -31,8 +28,6 @@ public class SnowFlakIdGenerator : BuildingBlocks.Abstractions.Core.IIdGenerator
         // Prepare options
         var options = new IdGeneratorOptions(structure, new DefaultTimeSource(epoch));
 
-        // Create an IdGenerator with it's generator-id set to 0, our custom epoch
-        // and id-structure
-        _generator = new IdGenerator(0, options);
+        return options;
     }
 }

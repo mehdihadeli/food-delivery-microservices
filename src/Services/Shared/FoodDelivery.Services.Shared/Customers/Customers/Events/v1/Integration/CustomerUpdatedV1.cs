@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
 
-namespace FoodDelivery.Services.Shared.Customers.Customers.Events.v1.Integration;
+namespace FoodDelivery.Services.Shared.Customers.Customers.Events.V1.Integration;
 
 public record CustomerUpdatedV1(
     long Id,

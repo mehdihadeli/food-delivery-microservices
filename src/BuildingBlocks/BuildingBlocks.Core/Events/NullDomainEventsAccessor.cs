@@ -5,5 +5,5 @@ namespace BuildingBlocks.Core.Events;
 
 public class NullDomainEventsAccessor : IDomainEventsAccessor
 {
-    public IReadOnlyList<IDomainEvent> UnCommittedDomainEvents { get; }
+    public IReadOnlyList<IDomainEvent> UnCommittedDomainEvents { get; } = new List<IDomainEvent>();
 }

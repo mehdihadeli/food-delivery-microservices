@@ -159,15 +159,17 @@ npm install husky --save-dev
 - For working `dotnet tools restore` commands to install and update local packages we should have a valid `nuget.config` file in the root of our project. we can create a `nuget.config` file with using `dotnet new nugetconfig` command.
 
 ```bash
-npm pkg set scripts.prepare="husky install && dotnet tool restore"
+npm pkg set scripts.prepare="husky && dotnet tool restore"
 
 npm pkg set scripts.install-dev-cert-bash="curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
 ```
 
 ```json
-"scripts": {
-"prepare": "husky install && dotnet tool restore",
-"install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
+{
+  "scripts": {
+    "prepare": "husky && dotnet tool restore",
+    "install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
+  }
 }
 ```
 
@@ -206,7 +208,20 @@ npm run install-dev-cert-bash
 
 ### Formatting
 
-For formatting I use [belav/csharpier](https://github.com/belav/csharpier) but you can also use `dotnet format`, you can integrate it with your [prefered IDE](https://csharpier.com/docs/Editors).
+For formatting, I use mix of [belav/csharpier](https://github.com/belav/csharpier) and [dotnet format](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-format).
+
+- You can integrate csharpier with your [prefered IDE](https://csharpier.com/docs/Editors).
+- You can use [your IDE watcher](https://dev.to/tsotsi1/dotnet-c-code-format-on-jetbrain-ide-rider-504i) on save for applying `dotnet format` rules. For Rider it is like this:
+```bash
+FileType: C#
+Scope: Open Files
+Program: Write dotnet
+Arguments: format $SolutionPath$ -verbosity diagnostic --include $FileRelativePath$
+
+Advanced (Options)
+Disabled all advanced option checkboxes.
+All other values were left default
+```
 
 Here I configured a husky hook for formatting:
 
@@ -222,25 +237,18 @@ npm init
 npm install husky --save-dev
 ```
 
-2. Install Husky:
-
-```bash
-npm install husky --save-dev
-```
-
 3. Install manifest file with `dotnet new tool-manifest` because it doesn't exist at first time and then install our required packages as dependency with [dotnet tool install](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-install), that will add to [dotnet-tools.json](.config/dotnet-tools.json) file in a `.config` directory:
 
 ```bash
 dotnet new tool-manifest
 
 dotnet tool install csharpier
-dotnet tool install dotnet-format
 ```
 
 4. Add `prepare` command for installing and activating `husky hooks` and `restoring` our [dotnet tools](.config/dotnet-tools.json) in the previous step to the [package.json](package.json) file:
 
 ```bash
-npm pkg set scripts.prepare="husky install && dotnet tool restore"
+npm pkg set scripts.prepare="husky && dotnet tool restore"
 ```
 
 5. Create the Husky folder:
@@ -252,10 +260,8 @@ mkdir .husky
 6. Link Husky and formatting tools:
 
 ```bash
-npx husky add .husky/pre-commit "dotnet format"
-
-# Or using csharpier
-npx husky add .husky/pre-commit "dotnet csharpier ."
+npx husky add .husky/pre-commit "dotnet format --verbosity diagnostic"
+npx husky add .husky/pre-commit "dotnet csharpier . && git add -A ."
 ```
 
 7. Activate and installing all husky hooks with this command:

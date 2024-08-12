@@ -1,4 +1,4 @@
-namespace FoodDelivery.Services.Identity.Identity.Dtos.v1;
+namespace FoodDelivery.Services.Identity.Identity.Dtos.V1;
 
 public record RefreshTokenDto
 {

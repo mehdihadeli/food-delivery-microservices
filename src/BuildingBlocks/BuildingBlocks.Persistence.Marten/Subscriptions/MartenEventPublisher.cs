@@ -1,18 +1,11 @@
-﻿using Marten;
+using Marten;
 using Marten.Events;
 using MediatR;
 
 namespace BuildingBlocks.Persistence.Marten.Subscriptions;
 
-public class MartenEventPublisher : IMartenEventsConsumer
+public class MartenEventPublisher(IMediator mediator) : IMartenEventsConsumer
 {
-    private readonly IMediator _mediator;
-
-    public MartenEventPublisher(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     public async Task ConsumeAsync(
         IDocumentOperations documentOperations,
         IReadOnlyList<StreamAction> streamActions,
@@ -21,7 +14,7 @@ public class MartenEventPublisher : IMartenEventsConsumer
     {
         foreach (var @event in streamActions.SelectMany(streamAction => streamAction.Events))
         {
-            await _mediator.Publish(@event, cancellationToken);
+            await mediator.Publish(@event, cancellationToken);
         }
     }
 }

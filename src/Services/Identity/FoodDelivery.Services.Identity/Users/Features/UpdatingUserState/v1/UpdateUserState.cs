@@ -1,14 +1,14 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.v1.Events.Integration;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 
-namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.v1;
+namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.V1;
 
 internal record UpdateUserState(Guid UserId, UserState State) : ITxCommand
 {
@@ -22,7 +22,7 @@ internal record UpdateUserState(Guid UserId, UserState State) : ITxCommand
     {
         return new UpdateUserStateValidator().HandleValidation(new UpdateUserState(userId, state));
     }
-};
+}
 
 internal class UpdateUserStateValidator : AbstractValidator<UpdateUserState>
 {

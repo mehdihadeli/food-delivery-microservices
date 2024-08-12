@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Utils;
 using FoodDelivery.Services.Identity.Identity.Dtos.v1;
@@ -6,7 +6,7 @@ using FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.v1;
 using FoodDelivery.Services.Identity.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.GeneratingRefreshToken.v1;
+namespace FoodDelivery.Services.Identity.Identity.Features.GeneratingRefreshToken.V1;
 
 internal record GenerateRefreshToken(Guid UserId, string? Token = null) : ICommand<GenerateRefreshTokenResult>
 {

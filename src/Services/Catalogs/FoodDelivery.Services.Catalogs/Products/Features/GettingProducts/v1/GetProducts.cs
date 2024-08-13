@@ -6,7 +6,7 @@ using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
-using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
+using FoodDelivery.Services.Catalogs.Products.Dtos.V1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Products.Models.Read;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
@@ -52,32 +52,22 @@ internal class GetProductsValidator : AbstractValidator<GetProducts>
     }
 }
 
-internal class GetProductsHandler : IQueryHandler<GetProducts, GetProductsResult>
+internal class GetProductsHandler(IMapper mapper, ICatalogDbContext catalogDbContext, ISieveProcessor sieveProcessor)
+    : IQueryHandler<GetProducts, GetProductsResult>
 {
-    private readonly ICatalogDbContext _catalogDbContext;
-    private readonly ISieveProcessor _sieveProcessor;
-    private readonly IMapper _mapper;
-
-    public GetProductsHandler(IMapper mapper, ICatalogDbContext catalogDbContext, ISieveProcessor sieveProcessor)
-    {
-        _catalogDbContext = catalogDbContext;
-        _sieveProcessor = sieveProcessor;
-        _mapper = mapper;
-    }
-
     public async Task<GetProductsResult> Handle(GetProducts request, CancellationToken cancellationToken)
     {
-        var products = await _catalogDbContext
+        var products = await catalogDbContext
             .Products.OrderByDescending(x => x.Created)
             .AsNoTracking()
             .ApplyPagingAsync<Product, ProductReadModel>(
                 request,
-                _mapper.ConfigurationProvider,
-                _sieveProcessor,
+                mapper.ConfigurationProvider,
+                sieveProcessor,
                 cancellationToken: cancellationToken
             );
 
-        var result = products.MapTo<ProductDto>(_mapper);
+        var result = products.MapTo<ProductDto>(mapper);
 
         return new GetProductsResult(result);
     }

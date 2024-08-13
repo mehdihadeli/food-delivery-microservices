@@ -3,7 +3,7 @@ using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
-using FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.v1;
+using FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.V1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;

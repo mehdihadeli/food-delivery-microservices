@@ -34,28 +34,20 @@ internal class ReplenishingProductStockValidator : AbstractValidator<ReplenishPr
     }
 }
 
-internal class ReplenishingProductStockHandler : ICommandHandler<ReplenishProductStock>
+internal class ReplenishingProductStockHandler(ICatalogDbContext catalogDbContext)
+    : ICommandHandler<ReplenishProductStock>
 {
-    private readonly ICatalogDbContext _catalogDbContext;
-
-    public ReplenishingProductStockHandler(ICatalogDbContext catalogDbContext)
-    {
-        _catalogDbContext = catalogDbContext;
-    }
-
-    public async Task<Unit> Handle(ReplenishProductStock command, CancellationToken cancellationToken)
+    public async Task Handle(ReplenishProductStock command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
         var (productId, quantity) = command;
 
-        var product = await _catalogDbContext.FindProductByIdAsync(ProductId.Of(productId));
+        var product = await catalogDbContext.FindProductByIdAsync(ProductId.Of(productId));
         if (product is null)
             throw new ProductNotFoundException(productId);
 
         product.ReplenishStock(quantity);
-        await _catalogDbContext.SaveChangesAsync(cancellationToken);
-
-        return Unit.Value;
+        await catalogDbContext.SaveChangesAsync(cancellationToken);
     }
 }

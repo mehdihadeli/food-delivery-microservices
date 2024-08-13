@@ -33,30 +33,21 @@ internal class DebitProductStockValidator : AbstractValidator<DebitProductStock>
     }
 }
 
-internal class DebitProductStockHandler : ICommandHandler<DebitProductStock>
+internal class DebitProductStockHandler(ICatalogDbContext catalogDbContext) : ICommandHandler<DebitProductStock>
 {
-    private readonly ICatalogDbContext _catalogDbContext;
-
-    public DebitProductStockHandler(ICatalogDbContext catalogDbContext)
-    {
-        _catalogDbContext = catalogDbContext;
-    }
-
-    public async Task<Unit> Handle(DebitProductStock command, CancellationToken cancellationToken)
+    public async Task Handle(DebitProductStock command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
         var (productId, quantity) = command;
 
-        var product = await _catalogDbContext.Products.FirstOrDefaultAsync(x => x.Id == productId, cancellationToken);
+        var product = await catalogDbContext.Products.FirstOrDefaultAsync(x => x.Id == productId, cancellationToken);
 
         if (product is null)
             throw new ProductNotFoundException(productId);
 
         product.DebitStock(quantity);
 
-        await _catalogDbContext.SaveChangesAsync(cancellationToken);
-
-        return Unit.Value;
+        await catalogDbContext.SaveChangesAsync(cancellationToken);
     }
 }

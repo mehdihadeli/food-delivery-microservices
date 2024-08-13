@@ -13,4 +13,9 @@ public record TestDomainEvent(string Data) : DomainEvent
     {
         return Equals(obj as TestDomainEvent);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as TestDomainEvent);
+    }
 }

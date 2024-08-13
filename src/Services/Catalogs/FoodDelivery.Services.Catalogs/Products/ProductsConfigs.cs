@@ -1,13 +1,13 @@
-using BuildingBlocks.Abstractions.Domain.Events;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
 using FoodDelivery.Services.Catalogs.Products.Data;
-using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1;
-using FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1;
-using FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.v1;
-using FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.v1;
-using FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1;
-using FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
+using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.V1;
+using FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.V1;
+using FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.V1;
+using FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.V1;
+using FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.V1;
+using FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.V1;
 using FoodDelivery.Services.Catalogs.Shared;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

@@ -83,6 +83,11 @@ public record CustomerCreated(
     {
         return Equals(obj as CustomerCreated);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as CustomerCreated);
+    }
 }
 
 internal class CustomerCreatedValidator : AbstractValidator<CustomerCreated>

@@ -10,7 +10,7 @@ public class MemoryPackObjectSerializer(MemoryPackSerializerOptions options) : I
 
     public string Serialize(object obj)
     {
-        return System.Text.Encoding.UTF8.GetString(MemoryPackSerializer.Serialize(obj, options));
+        return Encoding.UTF8.GetString(MemoryPackSerializer.Serialize(obj, options));
     }
 
     public T? Deserialize<T>(string payload)

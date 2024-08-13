@@ -13,8 +13,8 @@ public static class HostApplicationLifetimeExtensions
         var startedSource = new TaskCompletionSource();
         var cancelledSource = new TaskCompletionSource();
 
-        using var reg1 = lifetime.ApplicationStarted.Register(() => startedSource.SetResult());
-        using var reg2 = stoppingToken.Register(() => cancelledSource.SetResult());
+        await using var reg1 = lifetime.ApplicationStarted.Register(() => startedSource.SetResult());
+        await using var reg2 = stoppingToken.Register(() => cancelledSource.SetResult());
 
         Task completedTask = await Task.WhenAny(startedSource.Task, cancelledSource.Task).ConfigureAwait(false);
 

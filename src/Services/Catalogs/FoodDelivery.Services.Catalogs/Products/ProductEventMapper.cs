@@ -1,26 +1,20 @@
-using BuildingBlocks.Abstractions.Domain.Events;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Abstractions.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Core.Extensions;
-using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Domain;
-using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Notification;
-using FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1.Events.Domain;
-using FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1.Events.Domain;
-using FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
+using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.V1.Events.Domain;
+using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.V1.Events.Notification;
+using FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.V1.Events.Domain;
+using FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.V1.Events.Domain;
+using FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.V1;
 using FoodDelivery.Services.Catalogs.Shared.Data;
+using FoodDelivery.Services.Shared.Catalogs.Products.Events.V1.Integration;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Catalogs.Products;
 
-public class ProductEventMapper : IEventMapper
+public class ProductEventMapper(CatalogDbContext catalogDbContext) : IEventMapper
 {
-    private readonly CatalogDbContext _catalogDbContext;
-
-    public ProductEventMapper(CatalogDbContext catalogDbContext)
-    {
-        _catalogDbContext = catalogDbContext;
-    }
-
     public IIntegrationEvent? MapToIntegrationEvent(IDomainEvent domainEvent)
     {
         switch (domainEvent)
@@ -28,7 +22,7 @@ public class ProductEventMapper : IEventMapper
             // Materialize domain event to integration event
             case ProductCreated productCreated:
             {
-                var product = _catalogDbContext
+                var product = catalogDbContext
                     .Products.Include(x => x.Brand)
                     .Include(x => x.Category)
                     .Include(x => x.Supplier)
@@ -37,7 +31,7 @@ public class ProductEventMapper : IEventMapper
                 product.NotBeNull();
                 product.Category.NotBeNull();
 
-                return Services.Shared.Catalogs.Products.Events.v1.Integration.ProductCreatedV1.Of(
+                return ProductCreatedV1.Of(
                     productCreated.Id,
                     productCreated.Name,
                     productCreated.CategoryId,
@@ -48,7 +42,7 @@ public class ProductEventMapper : IEventMapper
 
             case ProductUpdated productUpdated:
             {
-                var product = _catalogDbContext
+                var product = catalogDbContext
                     .Products.Include(x => x.Brand)
                     .Include(x => x.Category)
                     .Include(x => x.Supplier)
@@ -57,7 +51,7 @@ public class ProductEventMapper : IEventMapper
                 product.NotBeNull();
                 product.Category.NotBeNull();
 
-                return Services.Shared.Catalogs.Products.Events.v1.Integration.ProductUpdatedV1.Of(
+                return ProductUpdatedV1.Of(
                     productUpdated.Id,
                     productUpdated.Name,
                     productUpdated.CategoryId,
@@ -67,13 +61,13 @@ public class ProductEventMapper : IEventMapper
             }
 
             case ProductStockDebited productStockDebited:
-                return Services.Shared.Catalogs.Products.Events.v1.Integration.ProductStockDebitedV1.Of(
+                return ProductStockDebitedV1.Of(
                     productStockDebited.ProductId,
                     productStockDebited.AvailableStock,
                     productStockDebited.DebitQuantity
                 );
             case ProductStockReplenished productStockReplenished:
-                return Services.Shared.Catalogs.Products.Events.v1.Integration.ProductStockReplenishedV1.Of(
+                return ProductStockReplenishedV1.Of(
                     productStockReplenished.ProductId,
                     productStockReplenished.AvailableStock,
                     productStockReplenished.ReplenishedQuantity

@@ -5,7 +5,7 @@ using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
-using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
+using FoodDelivery.Services.Catalogs.Products.Dtos.V1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -20,9 +20,9 @@ public static class GetProductsViewEndpoint
             .MapGet("/products-view/{page}/{pageSize}", Handle)
             .WithTags(ProductsConfigs.Tag)
             // .RequireAuthorization()
-            .WithDisplayName(nameof(v1.GetProductsView).Humanize())
-            .WithSummaryAndDescription(nameof(v1.GetProductsView).Humanize(), nameof(v1.GetProductsView).Humanize())
-            .WithName(nameof(v1.GetProductsView))
+            .WithDisplayName(nameof(GetProductsView).Humanize())
+            .WithSummaryAndDescription(nameof(GetProductsView).Humanize(), nameof(GetProductsView).Humanize())
+            .WithName(nameof(GetProductsView))
             // .Produces<GetProductsViewResult>(StatusCodes.Status200OK)
             // .ProducesProblem(StatusCodes.Status401Unauthorized)
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)

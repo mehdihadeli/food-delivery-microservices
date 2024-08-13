@@ -7,7 +7,7 @@ using Humanizer;
 
 namespace BuildingBlocks.Core.Events;
 
-internal record EventEnvelope<T>(T Data, IEventEnvelopeMetadata? Metadata) : IEventEnvelope<T>
+public record EventEnvelope<T>(T Data, IEventEnvelopeMetadata? Metadata) : IEventEnvelope<T>
     where T : notnull
 {
     object IEventEnvelope.Data => Data;

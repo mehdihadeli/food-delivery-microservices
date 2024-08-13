@@ -1,7 +1,5 @@
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
-using FoodDelivery.Services.Catalogs.Categories;
-using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductCategory.V1.Events;
 
@@ -13,15 +11,5 @@ internal record ProductCategoryChanged(long CategoryId, long ProductId) : Domain
         productId.NotBeNegativeOrZero();
 
         return new ProductCategoryChanged(categoryId, productId);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as ProductCategoryChanged);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as ProductCategoryChanged);
     }
 }

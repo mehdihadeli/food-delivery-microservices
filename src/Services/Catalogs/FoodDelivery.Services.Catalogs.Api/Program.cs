@@ -1,11 +1,10 @@
 using Bogus;
 using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Web;
+using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Swagger;
-using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Modules;
-using BuildingBlocks.Web.Modules.Extensions;
 using FoodDelivery.Services.Catalogs;
 using Spectre.Console;
 

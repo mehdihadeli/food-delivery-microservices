@@ -5,7 +5,7 @@ using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
 using Dapper;
 using FluentValidation;
-using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
+using FoodDelivery.Services.Catalogs.Products.Dtos.V1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -44,20 +44,12 @@ internal class GetProductsViewValidator : AbstractValidator<GetProductsView>
     }
 }
 
-internal class GetProductsViewHandler : IRequestHandler<GetProductsView, GetProductsViewResult>
+internal class GetProductsViewHandler(IDbFacadeResolver facadeResolver, IMapper mapper)
+    : IRequestHandler<GetProductsView, GetProductsViewResult>
 {
-    private readonly IDbFacadeResolver _facadeResolver;
-    private readonly IMapper _mapper;
-
-    public GetProductsViewHandler(IDbFacadeResolver facadeResolver, IMapper mapper)
-    {
-        _facadeResolver = facadeResolver;
-        _mapper = mapper;
-    }
-
     public async Task<GetProductsViewResult> Handle(GetProductsView request, CancellationToken cancellationToken)
     {
-        await using var conn = _facadeResolver.Database.GetDbConnection();
+        await using var conn = facadeResolver.Database.GetDbConnection();
         var (pageNumber, pageSize, filters, sortOrder) = request;
         await conn.OpenAsync(cancellationToken);
         var results = await conn.QueryAsync<ProductView>(
@@ -66,7 +58,7 @@ internal class GetProductsViewHandler : IRequestHandler<GetProductsView, GetProd
             new { pageSize, pageNumber }
         );
 
-        var productViewDtos = _mapper.Map<IEnumerable<ProductViewDto>>(results);
+        var productViewDtos = mapper.Map<IEnumerable<ProductViewDto>>(results);
 
         return new GetProductsViewResult(productViewDtos);
     }

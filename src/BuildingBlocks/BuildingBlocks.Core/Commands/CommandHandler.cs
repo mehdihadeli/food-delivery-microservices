@@ -8,7 +8,7 @@ public abstract class CommandHandler<TCommand> : ICommandHandler<TCommand>
 {
     protected abstract Task<Unit> HandleCommandAsync(TCommand command, CancellationToken cancellationToken);
 
-    public Task<Unit> Handle(TCommand request, CancellationToken cancellationToken)
+    public Task Handle(TCommand request, CancellationToken cancellationToken)
     {
         return HandleCommandAsync(request, cancellationToken);
     }

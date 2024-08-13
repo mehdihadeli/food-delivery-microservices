@@ -1,10 +1,9 @@
-using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
 using BuildingBlocks.Caching.Extensions;
-using BuildingBlocks.Core;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Persistence.EfCore;
+using BuildingBlocks.Core.Web.Extensions;
+using BuildingBlocks.Core.Web.HeaderPropagation.Extensions;
 using BuildingBlocks.Email;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
@@ -15,11 +14,12 @@ using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
+using BuildingBlocks.Validation.Extensions;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.RateLimit;
 using BuildingBlocks.Web.Versioning;
 using FoodDelivery.Services.Catalogs.Products;
-using ServiceCollectionExtensions = BuildingBlocks.Core.Web.HeaderPropagation.ServiceCollectionExtensions;
+using MessageHeaders = BuildingBlocks.Core.Messaging.MessageHeaders;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Extensions.WebApplicationBuilderExtensions;
 
@@ -39,19 +39,19 @@ public static partial class WebApplicationBuilderExtensions
         );
 
         builder.Services.AddEmailService(builder.Configuration);
-        builder.Services.AddCqrs(
-            pipelines: new[]
-            {
-                typeof(StreamLoggingBehavior<,>),
-                typeof(LoggingBehavior<,>),
-                typeof(RequestValidationBehavior<,>),
-                typeof(StreamRequestValidationBehavior<,>),
-                typeof(StreamCachingBehavior<,>),
-                typeof(CachingBehavior<,>),
-                typeof(InvalidateCachingBehavior<,>),
-                typeof(EfTxBehavior<,>)
-            }
-        );
+
+        builder.Services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(typeof(CatalogsMetadata).Assembly);
+            cfg.AddOpenBehavior(typeof(StreamLoggingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(RequestValidationBehavior<,>));
+            cfg.AddOpenBehavior(typeof(StreamRequestValidationBehavior<,>));
+            cfg.AddOpenBehavior(typeof(StreamCachingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(InvalidateCachingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(EfTxBehavior<,>));
+        });
 
         // https://github.com/tonerdo/dotnet-env
         DotNetEnv.Env.TraversePath().Load();
@@ -84,13 +84,11 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomOpenTelemetry();
 
-        ServiceCollectionExtensions.AddHeaderPropagation(
-            builder.Services,
-            options =>
-            {
-                options.HeaderNames.Add(MessageHeaders.CorrelationId);
-            }
-        );
+        builder.Services.AddHeaderPropagation(options =>
+        {
+            options.HeaderNames.Add(MessageHeaders.CorrelationId);
+            options.HeaderNames.Add(MessageHeaders.CausationId);
+        });
 
         // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
         builder.AddCustomRateLimit();
@@ -116,13 +114,13 @@ public static partial class WebApplicationBuilderExtensions
                     .AddNpgSql(
                         postgresOptions.ConnectionString,
                         name: "CatalogsService-Postgres-Check",
-                        tags: new[] { "postgres", "infra", "database", "catalogs-service", "live", "ready" }
+                        tags: ["postgres", "infra", "database", "catalogs-service", "live", "ready",]
                     )
                     .AddRabbitMQ(
                         rabbitMqOptions.ConnectionString,
                         name: "CatalogsService-RabbitMQ-Check",
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "rabbitmq", "infra", "bus", "catalogs-service", "live", "ready" }
+                        tags: ["rabbitmq", "infra", "bus", "catalogs-service", "live", "ready",]
                     );
             });
         }

@@ -15,10 +15,12 @@ public static class DependencyInjectionExtensions
 
         configuration?.Invoke(serializerOptions);
 
-        var serializer = new MemoryPackObjectSerializer(serializerOptions);
-
-        services.Replace(ServiceDescriptor.Transient<ISerializer>(x => serializer));
-        services.Replace(ServiceDescriptor.Transient<ISerializer, MemoryPackMessageSerializer>());
+        services.Replace(
+            ServiceDescriptor.Transient<ISerializer>(_ => new MemoryPackObjectSerializer(serializerOptions))
+        );
+        services.Replace(
+            ServiceDescriptor.Transient<IMessageSerializer>(_ => new MemoryPackMessageSerializer(serializerOptions))
+        );
 
         return services;
     }

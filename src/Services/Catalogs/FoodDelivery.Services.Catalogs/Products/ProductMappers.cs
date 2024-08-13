@@ -1,10 +1,10 @@
 using AutoMapper;
-using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
-using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1;
-using FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.v1;
-using FoodDelivery.Services.Catalogs.Products.Features.GettingProducts.v1;
-using FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.v1;
-using FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
+using FoodDelivery.Services.Catalogs.Products.Dtos.V1;
+using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.V1;
+using FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.V1;
+using FoodDelivery.Services.Catalogs.Products.Features.GettingProducts.V1;
+using FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.V1;
+using FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.V1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Products.Models.Read;
 

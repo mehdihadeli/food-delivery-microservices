@@ -1,9 +1,9 @@
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
-using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
+using FoodDelivery.Services.Catalogs.Products.Dtos.V1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Shared.Data;
@@ -83,16 +83,6 @@ internal record ProductUpdated(
             )
         );
     }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as ProductUpdated);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as ProductUpdated);
-    }
 }
 
 internal class ProductUpdatedValidator : AbstractValidator<ProductUpdated>
@@ -119,27 +109,20 @@ internal class ProductUpdatedValidator : AbstractValidator<ProductUpdated>
     }
 }
 
-internal class ProductUpdatedHandler : IDomainEventHandler<ProductUpdated>
+internal class ProductUpdatedHandler(CatalogDbContext dbContext) : IDomainEventHandler<ProductUpdated>
 {
-    private readonly CatalogDbContext _dbContext;
-
-    public ProductUpdatedHandler(CatalogDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task Handle(ProductUpdated notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
 
-        var existed = await _dbContext.ProductsView.FirstOrDefaultAsync(
+        var existed = await dbContext.ProductsView.FirstOrDefaultAsync(
             x => x.ProductId == notification.Id,
             cancellationToken
         );
 
         if (existed is not null)
         {
-            var product = await _dbContext
+            var product = await dbContext
                 .Products.Include(x => x.Brand)
                 .Include(x => x.Category)
                 .Include(x => x.Supplier)
@@ -157,8 +140,8 @@ internal class ProductUpdatedHandler : IDomainEventHandler<ProductUpdated>
             existed.BrandId = product.BrandId;
             existed.BrandName = product.Brand?.Name ?? string.Empty;
 
-            _dbContext.Set<ProductView>().Update(existed);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            dbContext.Set<ProductView>().Update(existed);
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
     }
 }

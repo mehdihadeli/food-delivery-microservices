@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.V1.Events.Domain;
@@ -45,16 +45,6 @@ public record ProductStockDebited(
         //         debitQuantity
         //     )
         // );
-    }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as ProductStockDebited);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as ProductStockDebited);
     }
 }
 

@@ -73,6 +73,11 @@ public record RestockSubscriptionCreated(
     {
         return Equals(obj as RestockSubscriptionCreated);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as RestockSubscriptionCreated);
+    }
 }
 
 internal class RestockSubscriptionCreatedHandler : IDomainEventHandler<RestockSubscriptionCreated>

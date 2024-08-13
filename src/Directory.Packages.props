@@ -156,8 +156,8 @@
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="AutoMapper" Version="12.0.1" />
-    <PackageVersion Include="MediatR" Version="11.0.0" />
+    <PackageVersion Include="AutoMapper" Version="13.0.1" />
+    <PackageVersion Include="MediatR" Version="12.4.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Bogus" Version="35.5.1" />

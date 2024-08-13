@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Bogus;
 using BuildingBlocks.Abstractions.Domain;
 using FoodDelivery.Services.Catalogs.Categories.ValueObjects;

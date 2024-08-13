@@ -47,6 +47,11 @@ internal record ProductRestockThresholdReached(
     {
         return Equals(obj as ProductRestockThresholdReached);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductRestockThresholdReached);
+    }
 }
 
 internal class ProductRestockThresholdReachedHandler : IDomainEventHandler<ProductRestockThresholdReached>

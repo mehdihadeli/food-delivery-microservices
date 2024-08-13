@@ -19,4 +19,9 @@ internal record ProductSupplierChanged(long SupplierId, long ProductId) : Domain
     {
         return Equals(obj as ProductSupplierChanged);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductSupplierChanged);
+    }
 }

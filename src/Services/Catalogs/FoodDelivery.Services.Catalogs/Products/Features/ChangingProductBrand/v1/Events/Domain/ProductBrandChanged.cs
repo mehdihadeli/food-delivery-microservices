@@ -19,4 +19,9 @@ internal record ProductBrandChanged(long BrandId, long ProductId) : DomainEvent
     {
         return Equals(obj as ProductBrandChanged);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductBrandChanged);
+    }
 }

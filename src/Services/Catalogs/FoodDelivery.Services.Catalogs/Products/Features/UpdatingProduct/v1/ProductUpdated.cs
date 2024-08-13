@@ -88,6 +88,11 @@ internal record ProductUpdated(
     {
         return Equals(obj as ProductUpdated);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductUpdated);
+    }
 }
 
 internal class ProductUpdatedValidator : AbstractValidator<ProductUpdated>

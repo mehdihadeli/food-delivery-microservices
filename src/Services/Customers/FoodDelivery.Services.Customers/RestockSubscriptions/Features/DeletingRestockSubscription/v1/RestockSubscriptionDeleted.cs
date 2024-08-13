@@ -16,6 +16,11 @@ public record RestockSubscriptionDeleted(long RestockSubscriptionId) : DomainEve
     {
         return Equals(obj as RestockSubscriptionDeleted);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as RestockSubscriptionDeleted);
+    }
 }
 
 internal class RestockSubscriptionDeletedHandler : IDomainEventHandler<RestockSubscriptionDeleted>

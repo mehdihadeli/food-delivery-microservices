@@ -57,6 +57,11 @@ internal record ProductStockReplenished(
     {
         return Equals(obj as ProductStockReplenished);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductStockReplenished);
+    }
 }
 
 internal class ProductStockReplenishedHandler : IDomainEventHandler<ProductStockReplenished>

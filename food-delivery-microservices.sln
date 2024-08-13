@@ -522,6 +522,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test-coverage", "test-cover
 		.github\actions\test-coverage\action.yml = .github\actions\test-coverage\action.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Serialization", "src\BuildingBlocks\BuildingBlocks.Serialization\BuildingBlocks.Serialization.csproj", "{DB8543CF-E427-463E-BF94-D0E91ABC16F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -772,6 +774,10 @@ Global
 		{38C7E337-91B3-4075-B3B6-7BCC9D5B87FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38C7E337-91B3-4075-B3B6-7BCC9D5B87FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38C7E337-91B3-4075-B3B6-7BCC9D5B87FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB8543CF-E427-463E-BF94-D0E91ABC16F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB8543CF-E427-463E-BF94-D0E91ABC16F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB8543CF-E427-463E-BF94-D0E91ABC16F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB8543CF-E427-463E-BF94-D0E91ABC16F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -923,6 +929,7 @@ Global
 		{D619A926-66EC-4EAD-9A40-2A49E8E65597} = {05AB571B-C141-4520-A5E5-3C67488DD151}
 		{6DA0B023-EEED-417A-AF01-A6C9A7E54B57} = {05AB571B-C141-4520-A5E5-3C67488DD151}
 		{29AEB77A-F6D1-4196-8ACE-538E558C064F} = {05AB571B-C141-4520-A5E5-3C67488DD151}
+		{DB8543CF-E427-463E-BF94-D0E91ABC16F5} = {AC8D1CE6-BAF8-4A05-8F87-232598A756C3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD0585D6-CBA4-4818-86D8-0D914F18E390}

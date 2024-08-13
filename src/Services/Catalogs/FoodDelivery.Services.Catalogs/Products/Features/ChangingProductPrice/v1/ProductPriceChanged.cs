@@ -17,4 +17,9 @@ public record ProductPriceChanged(decimal Price) : DomainEvent
     {
         return Equals(obj as ProductPriceChanged);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductPriceChanged);
+    }
 }

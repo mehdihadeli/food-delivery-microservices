@@ -21,6 +21,11 @@ public record RestockNotificationProcessed(long Id, DateTime ProcessedTime) : Do
     {
         return Equals(obj as RestockNotificationProcessed);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as RestockNotificationProcessed);
+    }
 }
 
 internal class RestockNotificationProcessedHandler : IDomainEventHandler<RestockNotificationProcessed>

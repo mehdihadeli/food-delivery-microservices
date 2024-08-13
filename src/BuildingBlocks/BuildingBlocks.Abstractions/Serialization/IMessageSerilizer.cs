@@ -1,49 +1,23 @@
 using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Messaging;
 
 namespace BuildingBlocks.Abstractions.Serialization;
 
-public interface IMessageSerializer : ISerializer
+public interface IMessageSerializer
 {
+    string ContentType { get; }
+
     /// <summary>
-    ///     Serializes the given <see cref="IEventEnvelope" /> into a string.
+    /// Serializes the given <see cref="IEventEnvelope" /> into a string.
     /// </summary>
     /// <param name="eventEnvelope">a messageEnvelope that implement IMessage interface.</param>
     /// <returns>a json string for serialized messageEnvelope.</returns>
     string Serialize(IEventEnvelope eventEnvelope);
 
-    string Serialize<TMessage>(TMessage message)
-        where TMessage : IMessage;
-
     /// <summary>
-    ///     Deserialize the given string into a <see cref="IEventEnvelope" />.
+    /// Deserialize the given payload into a <see cref="IEventEnvelope" />.
     /// </summary>
-    /// <param name="json">a json data to deserialize to a messageEnvelope.</param>
+    /// <param name="eventEnvelope">a json data to deserialize to a messageEnvelope.</param>
     /// <returns>return a messageEnvelope type.</returns>
-    IEventEnvelope? Deserialize(string json);
-
-    /// <summary>
-    ///     Deserialize the given byte array back into a message.
-    /// </summary>
-    /// <param name="data"></param>
-    /// <param name="payloadType"></param>
-    /// <returns></returns>
-    IMessage? Deserialize(ReadOnlySpan<byte> data, string payloadType);
-
-    /// <summary>
-    ///     Deserialize the given string into a <see cref="TMessage" />.
-    /// </summary>
-    /// <param name="message"></param>
-    /// <typeparam name="TMessage"></typeparam>
-    /// <returns></returns>
-    TMessage? Deserialize<TMessage>(string message)
-        where TMessage : IMessage;
-
-    /// <summary>
-    ///     Deserialize the given string into a object.
-    /// </summary>
-    /// <param name="payload"></param>
-    /// <param name="payloadType"></param>
-    /// <returns></returns>
-    object? Deserialize(string payload, string payloadType);
+    IEventEnvelope? Deserialize(string eventEnvelope);
+    IEventEnvelope? Deserialize(string eventEnvelope, Type messageType);
 }

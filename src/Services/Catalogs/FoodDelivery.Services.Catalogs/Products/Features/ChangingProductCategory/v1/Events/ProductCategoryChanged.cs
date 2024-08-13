@@ -19,4 +19,9 @@ internal record ProductCategoryChanged(long CategoryId, long ProductId) : Domain
     {
         return Equals(obj as ProductCategoryChanged);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductCategoryChanged);
+    }
 }

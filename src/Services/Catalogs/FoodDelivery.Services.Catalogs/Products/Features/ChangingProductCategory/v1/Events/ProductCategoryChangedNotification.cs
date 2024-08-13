@@ -10,4 +10,9 @@ public record ProductCategoryChangedNotification(CategoryId CategoryId, ProductI
     {
         return Equals(obj as ProductCategoryChangedNotification);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductCategoryChangedNotification);
+    }
 }

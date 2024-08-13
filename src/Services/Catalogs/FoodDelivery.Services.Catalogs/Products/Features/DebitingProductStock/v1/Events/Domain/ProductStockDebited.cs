@@ -51,6 +51,11 @@ public record ProductStockDebited(
     {
         return Equals(obj as ProductStockDebited);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProductStockDebited);
+    }
 }
 
 internal class ProductStockDebitedHandler : IDomainEventHandler<ProductStockDebited>

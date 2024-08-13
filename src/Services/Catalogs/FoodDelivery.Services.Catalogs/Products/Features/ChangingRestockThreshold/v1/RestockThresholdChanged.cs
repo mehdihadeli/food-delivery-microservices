@@ -17,4 +17,9 @@ internal record RestockThresholdChanged(long ProductId, int RestockThreshold) : 
     {
         return Equals(obj as RestockThresholdChanged);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as RestockThresholdChanged);
+    }
 }

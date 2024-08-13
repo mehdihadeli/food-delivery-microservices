@@ -67,6 +67,11 @@ public record CustomerUpdated(
     {
         return Equals(obj as CustomerUpdated);
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as CustomerUpdated);
+    }
 }
 
 internal class CustomerUpdatedValidator : AbstractValidator<CustomerUpdated>

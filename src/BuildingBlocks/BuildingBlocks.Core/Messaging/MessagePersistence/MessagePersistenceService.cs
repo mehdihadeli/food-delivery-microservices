@@ -165,7 +165,9 @@ public class MessagePersistenceService(
 
     private async Task ProcessOutbox(StoreMessage storeMessage, CancellationToken cancellationToken)
     {
-        var messageEnvelope = messageSerializer.Deserialize<IEventEnvelope>(storeMessage.Data, true);
+        var messageType = TypeMapper.GetType(storeMessage.DataType);
+
+        var messageEnvelope = messageSerializer.Deserialize(storeMessage.Data, messageType);
 
         if (messageEnvelope is null)
             return;
@@ -182,7 +184,7 @@ public class MessagePersistenceService(
 
     private async Task ProcessInternal(StoreMessage storeMessage, CancellationToken cancellationToken)
     {
-        var messageEnvelope = messageSerializer.Deserialize<IEventEnvelope>(storeMessage.Data, true);
+        var messageEnvelope = messageSerializer.Deserialize(storeMessage.Data);
 
         if (messageEnvelope is null)
             return;

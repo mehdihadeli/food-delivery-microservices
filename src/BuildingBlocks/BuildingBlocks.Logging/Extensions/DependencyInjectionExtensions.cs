@@ -1,13 +1,17 @@
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollection;
+using Elastic.Channels;
+using Elastic.Ingest.Elasticsearch;
+using Elastic.Ingest.Elasticsearch.DataStreams;
+using Elastic.Serilog.Sinks;
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Serilog.Exceptions;
 using Serilog.Exceptions.Core;
 using Serilog.Exceptions.EntityFrameworkCore.Destructurers;
-using Serilog.Formatting.Elasticsearch;
-using Serilog.Sinks.Elasticsearch;
+using Serilog.Settings.Configuration;
 using Serilog.Sinks.Grafana.Loki;
+using Serilog.Sinks.Spectre;
 
 namespace BuildingBlocks.Logging;
 
@@ -51,40 +55,37 @@ public static class DependencyInjectionExtensions
                     );
 
                 // https://github.com/serilog/serilog-settings-configuration
-                loggerConfiguration.ReadFrom.Configuration(context.Configuration, sectionName: nameof(SerilogOptions));
+                loggerConfiguration.ReadFrom.Configuration(
+                    context.Configuration,
+                    new ConfigurationReaderOptions { SectionName = nameof(SerilogOptions), }
+                );
 
                 if (serilogOptions.UseConsole)
                 {
-                    if (serilogOptions.UseElasticsearchJsonFormatter)
-                    {
-                        // https://github.com/serilog/serilog-sinks-async
-                        // https://github.com/serilog-contrib/serilog-sinks-elasticsearch#elasticsearch-formatters
-                        loggerConfiguration.WriteTo.Async(writeTo =>
-                            writeTo.Console(new ExceptionAsObjectJsonFormatter(renderMessage: true))
-                        );
-                    }
-                    else
-                    {
-                        // https://github.com/serilog/serilog-sinks-async
-                        loggerConfiguration.WriteTo.Async(writeTo =>
-                            writeTo.Console(outputTemplate: serilogOptions.LogTemplate)
-                        );
-                    }
+                    // https://github.com/serilog/serilog-sinks-async
+                    loggerConfiguration.WriteTo.Async(writeTo =>
+                        // https://github.com/lucadecamillis/serilog-sinks-spectre
+                        writeTo.Spectre(outputTemplate: serilogOptions.LogTemplate)
+                    );
                 }
 
                 // https://github.com/serilog/serilog-sinks-async
                 if (!string.IsNullOrEmpty(serilogOptions.ElasticSearchUrl))
                 {
                     // elasticsearch sink internally is async
-                    // https://github.com/serilog-contrib/serilog-sinks-elasticsearch
+                    // https://www.nuget.org/packages/Elastic.Serilog.Sinks
                     loggerConfiguration.WriteTo.Elasticsearch(
-                        new(new Uri(serilogOptions.ElasticSearchUrl))
+                        new[] { new Uri(serilogOptions.ElasticSearchUrl) },
+                        opts =>
                         {
-                            AutoRegisterTemplate = true,
-                            AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
-                            CustomFormatter = new ExceptionAsObjectJsonFormatter(renderMessage: true),
-                            IndexFormat =
+                            opts.DataStream = new DataStreamName(
                                 $"{builder.Environment.ApplicationName}-{builder.Environment.EnvironmentName}-{DateTime.Now:yyyy-MM}"
+                            );
+                            opts.BootstrapMethod = BootstrapMethod.Failure;
+                            opts.ConfigureChannel = channelOpts =>
+                            {
+                                channelOpts.BufferOptions = new BufferOptions { ExportMaxConcurrency = 10 };
+                            };
                         }
                     );
                 }
@@ -98,7 +99,7 @@ public static class DependencyInjectionExtensions
                         {
                             new LokiLabel { Key = "service", Value = "food-delivery" }
                         },
-                        new[] { "app" }
+                        ["app",]
                     );
                 }
 

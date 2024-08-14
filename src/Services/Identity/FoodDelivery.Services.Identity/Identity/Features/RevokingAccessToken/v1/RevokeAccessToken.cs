@@ -5,7 +5,7 @@ using BuildingBlocks.Security.Jwt;
 using EasyCaching.Core;
 using Microsoft.Extensions.Options;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.v1;
 
 internal record RevokeAccessToken(string Token, string UserName) : ICommand
 {
@@ -24,22 +24,18 @@ internal record RevokeAccessToken(string Token, string UserName) : ICommand
     }
 }
 
-internal class RevokeAccessTokenHandler : ICommandHandler<RevokeAccessToken>
+internal class RevokeAccessTokenHandler(
+    IEasyCachingProviderFactory cachingProviderFactory,
+    IOptions<JwtOptions> jwtOptions,
+    IOptions<CacheOptions> cacheOptions
+) : ICommandHandler<RevokeAccessToken>
 {
-    private readonly IEasyCachingProvider _cachingProvider;
-    private readonly JwtOptions _jwtOptions;
+    private readonly IEasyCachingProvider _cachingProvider = cachingProviderFactory.GetCachingProvider(
+        cacheOptions.Value.DefaultCacheType
+    );
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
-    public RevokeAccessTokenHandler(
-        IEasyCachingProviderFactory cachingProviderFactory,
-        IOptions<JwtOptions> jwtOptions,
-        IOptions<CacheOptions> cacheOptions
-    )
-    {
-        _cachingProvider = cachingProviderFactory.GetCachingProvider(cacheOptions.Value.DefaultCacheType);
-        _jwtOptions = jwtOptions.Value;
-    }
-
-    public async Task<Unit> Handle(RevokeAccessToken command, CancellationToken cancellationToken)
+    public async Task Handle(RevokeAccessToken command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
         command.Token.NotBeNullOrWhiteSpace();
@@ -53,7 +49,5 @@ internal class RevokeAccessTokenHandler : ICommandHandler<RevokeAccessToken>
             TimeSpan.FromSeconds(_jwtOptions.TokenLifeTimeSecond),
             cancellationToken
         );
-
-        return Unit.Value;
     }
 }

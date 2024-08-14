@@ -12,7 +12,7 @@ using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.v1;
 
 internal record RefreshToken(string AccessTokenData, string RefreshTokenData) : ICommand<RefreshTokenResult>
 {
@@ -37,48 +37,37 @@ internal class RefreshTokenValidator : AbstractValidator<RefreshToken>
     }
 }
 
-internal class RefreshTokenHandler : ICommandHandler<RefreshToken, RefreshTokenResult>
+internal class RefreshTokenHandler(
+    IJwtService jwtService,
+    UserManager<ApplicationUser> userManager,
+    ICommandBus commandBus
+) : ICommandHandler<RefreshToken, RefreshTokenResult>
 {
-    private readonly ICommandBus _commandProcessor;
-    private readonly IJwtService _jwtService;
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public RefreshTokenHandler(
-        IJwtService jwtService,
-        UserManager<ApplicationUser> userManager,
-        ICommandBus commandProcessor
-    )
-    {
-        _jwtService = jwtService;
-        _userManager = userManager;
-        _commandProcessor = commandProcessor;
-    }
-
     public async Task<RefreshTokenResult> Handle(RefreshToken command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
         // invalid token/signing key was passed and we can't extract user claims
-        var userClaimsPrincipal = _jwtService.GetPrincipalFromToken(command.AccessTokenData);
+        var userClaimsPrincipal = jwtService.GetPrincipalFromToken(command.AccessTokenData);
 
         if (userClaimsPrincipal is null)
             throw new InvalidTokenException(userClaimsPrincipal);
 
         var userId = userClaimsPrincipal.FindFirstValue(JwtRegisteredClaimNames.NameId);
 
-        var identityUser = await _userManager.FindByIdAsync(userId);
+        var identityUser = await userManager.FindByIdAsync(userId);
 
         if (identityUser == null)
             throw new IdentityUserNotFoundException(userId);
 
         var refreshToken = (
-            await _commandProcessor.SendAsync(
+            await commandBus.SendAsync(
                 GenerateRefreshToken.Of(identityUser.Id, command.RefreshTokenData),
                 cancellationToken
             )
         ).RefreshToken;
 
-        var accessToken = await _commandProcessor.SendAsync(
+        var accessToken = await commandBus.SendAsync(
             GenerateJwtToken.Of(identityUser, refreshToken.Token),
             cancellationToken
         );

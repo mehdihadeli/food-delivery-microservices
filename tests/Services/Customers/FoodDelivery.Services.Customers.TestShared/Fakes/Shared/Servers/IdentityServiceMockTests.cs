@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Web.Extensions;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity;
@@ -11,12 +12,9 @@ namespace FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Servers;
 
 public class IdentityServiceMockTests
 {
-    private readonly IdentityServiceMock _identityServiceMock;
-
-    public IdentityServiceMockTests()
-    {
-        _identityServiceMock = IdentityServiceMock.Start(ConfigurationHelper.BindOptions<IdentityApiClientOptions>());
-    }
+    private readonly IdentityServiceMock _identityServiceMock = IdentityServiceMock.Start(
+        ConfigurationHelper.BindOptions<IdentityApiClientOptions>()
+    );
 
     [Fact]
     public async Task root_address()

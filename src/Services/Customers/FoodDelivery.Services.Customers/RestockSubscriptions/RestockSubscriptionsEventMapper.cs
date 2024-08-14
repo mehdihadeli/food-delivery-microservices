@@ -1,7 +1,7 @@
-using BuildingBlocks.Abstractions.Domain.Events;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Events.Domain;
+using FoodDelivery.Services.Shared.Customers.RestockSubscriptions.Events.V1.Integration;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions;
 
@@ -16,11 +16,7 @@ public class RestockSubscriptionsEventMapper : IIntegrationEventMapper
     {
         return domainEvent switch
         {
-            RestockSubscriptionCreated e
-                => new Services.Shared.Customers.RestockSubscriptions.Events.v1.Integration.RestockSubscriptionCreatedV1(
-                    e.Id,
-                    e.Email
-                ),
+            RestockSubscriptionCreated e => new RestockSubscriptionCreatedV1(e.Id, e.Email),
             _ => null
         };
     }

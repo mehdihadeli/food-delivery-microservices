@@ -6,7 +6,7 @@ using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RevokingRefreshToken.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RevokingRefreshToken.v1;
 
 public static class RevokeRefreshTokenEndpoint
 {
@@ -30,10 +30,10 @@ public static class RevokeRefreshTokenEndpoint
             [AsParameters] RevokeRefreshTokenRequestParameters requestParameters
         )
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = RevokeRefreshToken.Of(request.RefreshToken);
-            await commandProcessor.SendAsync(command, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
 
             return TypedResults.NoContent();
         }
@@ -47,7 +47,7 @@ public record RevokeRefreshTokenRequest(string? RefreshToken);
 internal record RevokeRefreshTokenRequestParameters(
     [FromBody] RevokeRefreshTokenRequest Request,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RevokeRefreshTokenRequest>;

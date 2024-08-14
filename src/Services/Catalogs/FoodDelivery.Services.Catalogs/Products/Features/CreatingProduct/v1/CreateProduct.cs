@@ -15,7 +15,7 @@ using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/

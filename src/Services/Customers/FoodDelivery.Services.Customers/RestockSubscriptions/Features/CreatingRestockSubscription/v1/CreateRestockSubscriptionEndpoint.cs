@@ -7,7 +7,7 @@ using FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.V1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 
 internal class CreateRestockSubscriptionEndpoint
     : ICommandMinimalEndpoint<
@@ -42,11 +42,11 @@ internal class CreateRestockSubscriptionEndpoint
         Results<CreatedAtRoute<CreateRestockSubscriptionResponse>, UnAuthorizedHttpProblemResult, ValidationProblem>
     > HandleAsync([AsParameters] CreateRestockSubscriptionRequestParameters requestParameters)
     {
-        var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+        var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
         var command = CreateRestockSubscription.Of(request.CustomerId, request.ProductId, request.Email);
 
-        var result = await commandProcessor.SendAsync(command, cancellationToken);
+        var result = await commandBus.SendAsync(command, cancellationToken);
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -61,7 +61,7 @@ internal class CreateRestockSubscriptionEndpoint
 internal record CreateRestockSubscriptionRequestParameters(
     [FromBody] CreateRestockSubscriptionRequest Request,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<CreateRestockSubscriptionRequest>;

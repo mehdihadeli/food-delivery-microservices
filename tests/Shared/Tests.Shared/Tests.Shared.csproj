@@ -22,7 +22,6 @@
     <PackageReference Include="Testcontainers.RabbitMq" />
     <PackageReference Include="WireMock.Net" />
     <PackageReference Include="Hypothesist" />
-    <PackageReference Include="Hypothesist.MassTransit" />
     <PackageReference Include="MassTransit" />
     <PackageReference Include="Verify.Xunit" />
     <PackageReference Include="XunitContext" />

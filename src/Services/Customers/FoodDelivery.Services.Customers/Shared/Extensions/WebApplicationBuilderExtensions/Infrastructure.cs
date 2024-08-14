@@ -1,11 +1,10 @@
-using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
 using BuildingBlocks.Caching.Extensions;
-using BuildingBlocks.Core;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Persistence.EfCore;
+using BuildingBlocks.Core.Web.Extensions;
+using BuildingBlocks.Core.Web.HeaderPropagation.Extensions;
 using BuildingBlocks.Email;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
@@ -53,52 +52,52 @@ public static partial class WebApplicationBuilderExtensions
         // https://github.com/tonerdo/dotnet-env
         DotNetEnv.Env.TraversePath().Load();
 
-        if (builder.Environment.IsTest() == false)
-        {
-            builder.AddCustomHealthCheck(healthChecksBuilder =>
-            {
-                var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>();
-                var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
-                var mongoOptions = builder.Configuration.BindOptions<MongoOptions>();
-                var identityApiClientOptions = builder.Configuration.BindOptions<IdentityApiClientOptions>(
-                    "IdentityApiClientOptions"
-                );
-                var catalogsApiClientOptions = builder.Configuration.BindOptions<CatalogsApiClientOptions>();
-
-                healthChecksBuilder
-                    .AddNpgSql(
-                        postgresOptions.ConnectionString,
-                        name: "CustomersService-Postgres-Check",
-                        tags: new[] { "postgres", "database", "infra", "customers-service", "live", "ready" }
-                    )
-                    .AddRabbitMQ(
-                        rabbitMqOptions.ConnectionString,
-                        name: "CustomersService-RabbitMQ-Check",
-                        timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "rabbitmq", "bus", "infra", "customers-service", "live", "ready" }
-                    )
-                    .AddMongoDb(
-                        mongoOptions.ConnectionString,
-                        mongoDatabaseName: mongoOptions.DatabaseName,
-                        "CustomersService-Mongo-Check",
-                        tags: new[] { "mongodb", "database", "infra", "customers-service", "live", "ready" }
-                    )
-                    .AddUrlGroup(
-                        new List<Uri> { new($"{catalogsApiClientOptions.BaseApiAddress}/healthz") },
-                        name: "Catalogs-Downstream-API-Check",
-                        failureStatus: HealthStatus.Unhealthy,
-                        timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "uris", "downstream-services", "customers-service", "live", "ready" }
-                    )
-                    .AddUrlGroup(
-                        new List<Uri> { new($"{identityApiClientOptions.BaseApiAddress}/healthz") },
-                        name: "Identity-Downstream-API-Check",
-                        failureStatus: HealthStatus.Unhealthy,
-                        timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "uris", "downstream-services", "customers-service", "live", "ready" }
-                    );
-            });
-        }
+        // if (builder.Environment.IsTest() == false)
+        // {
+        //     builder.AddCustomHealthCheck(healthChecksBuilder =>
+        //     {
+        //         var postgresOptions = builder.Configuration.BindOptions<PostgresOptions>();
+        //         var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
+        //         var mongoOptions = builder.Configuration.BindOptions<MongoOptions>();
+        //         var identityApiClientOptions = builder.Configuration.BindOptions<IdentityApiClientOptions>(
+        //             "IdentityApiClientOptions"
+        //         );
+        //         var catalogsApiClientOptions = builder.Configuration.BindOptions<CatalogsApiClientOptions>();
+        //
+        //         healthChecksBuilder
+        //             .AddNpgSql(
+        //                 postgresOptions.ConnectionString,
+        //                 name: "CustomersService-Postgres-Check",
+        //                 tags: ["postgres", "database", "infra", "customers-service", "live", "ready",]
+        //             )
+        //             .AddRabbitMQ(
+        //                 rabbitMqOptions.ConnectionString,
+        //                 name: "CustomersService-RabbitMQ-Check",
+        //                 timeout: TimeSpan.FromSeconds(3),
+        //                 tags: ["rabbitmq", "bus", "infra", "customers-service", "live", "ready",]
+        //             )
+        //             .AddMongoDb(
+        //                 mongoOptions.ConnectionString,
+        //                 mongoDatabaseName: mongoOptions.DatabaseName,
+        //                 "CustomersService-Mongo-Check",
+        //                 tags: ["mongodb", "database", "infra", "customers-service", "live", "ready",]
+        //             )
+        //             .AddUrlGroup(
+        //                 new List<Uri> { new($"{catalogsApiClientOptions.BaseApiAddress}/healthz") },
+        //                 name: "Catalogs-Downstream-API-Check",
+        //                 failureStatus: HealthStatus.Unhealthy,
+        //                 timeout: TimeSpan.FromSeconds(3),
+        //                 tags: ["uris", "downstream-services", "customers-service", "live", "ready",]
+        //             )
+        //             .AddUrlGroup(
+        //                 new List<Uri> { new($"{identityApiClientOptions.BaseApiAddress}/healthz") },
+        //                 name: "Identity-Downstream-API-Check",
+        //                 failureStatus: HealthStatus.Unhealthy,
+        //                 timeout: TimeSpan.FromSeconds(3),
+        //                 tags: ["uris", "downstream-services", "customers-service", "live", "ready",]
+        //             );
+        //     });
+        // }
 
         builder.Services.AddEmailService(builder.Configuration);
 
@@ -112,22 +111,25 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomCors();
 
         builder.AddCustomVersioning();
-        builder.AddCustomSwagger();
+        builder.AddCustomSwagger(cfg =>
+        {
+            cfg.Name = "Customers Apis";
+            cfg.Title = "Customers Apis";
+        });
         builder.Services.AddHttpContextAccessor();
 
-        builder.Services.AddCqrs(
-            pipelines: new[]
-            {
-                typeof(LoggingBehavior<,>),
-                typeof(StreamLoggingBehavior<,>),
-                typeof(RequestValidationBehavior<,>),
-                typeof(StreamRequestValidationBehavior<,>),
-                typeof(StreamCachingBehavior<,>),
-                typeof(CachingBehavior<,>),
-                typeof(InvalidateCachingBehavior<,>),
-                typeof(EfTxBehavior<,>)
-            }
-        );
+        builder.Services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.AddOpenStreamBehavior(typeof(StreamLoggingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(RequestValidationBehavior<,>));
+            cfg.AddOpenStreamBehavior(typeof(StreamRequestValidationBehavior<,>));
+            cfg.AddOpenStreamBehavior(typeof(StreamCachingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(InvalidateCachingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(EfTxBehavior<,>));
+        });
 
         builder.Services.AddHeaderPropagation(options =>
         {

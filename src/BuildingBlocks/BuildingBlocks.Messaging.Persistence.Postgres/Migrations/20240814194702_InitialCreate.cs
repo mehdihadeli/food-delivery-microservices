@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -14,24 +14,22 @@ namespace BuildingBlocks.Messaging.Persistence.Postgres.Migrations
             migrationBuilder.EnsureSchema(name: "messaging");
 
             migrationBuilder.CreateTable(
-                name: "StoreMessages",
+                name: "store_messages",
                 schema: "messaging",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    datatype = table.Column<string>(name: "data_type", type: "text", nullable: false),
+                    data_type = table.Column<string>(type: "text", nullable: false),
                     data = table.Column<string>(type: "text", nullable: false),
-                    created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    retrycount = table.Column<int>(name: "retry_count", type: "integer", nullable: false),
-                    messagestatus = table.Column<string>(
-                        name: "message_status",
+                    created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    retry_count = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    message_status = table.Column<string>(
                         type: "character varying(50)",
                         unicode: false,
                         maxLength: 50,
                         nullable: false
                     ),
-                    deliverytype = table.Column<string>(
-                        name: "delivery_type",
+                    delivery_type = table.Column<string>(
                         type: "character varying(50)",
                         unicode: false,
                         maxLength: 50,
@@ -48,7 +46,7 @@ namespace BuildingBlocks.Messaging.Persistence.Postgres.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(name: "StoreMessages", schema: "messaging");
+            migrationBuilder.DropTable(name: "store_messages", schema: "messaging");
         }
     }
 }

@@ -6,7 +6,7 @@ using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.Login.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.Login.v1;
 
 internal static class LoginEndpoint
 {
@@ -32,11 +32,11 @@ internal static class LoginEndpoint
             Results<Ok<LoginResponse>, InternalHttpProblemResult, ForbiddenHttpProblemResult, ValidationProblem>
         > Handle([AsParameters] LoginRequestParameters requestParameters)
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = Login.Of(request.UserNameOrEmail, request.Password, request.Remember);
 
-            var result = await commandProcessor.SendAsync(command, cancellationToken);
+            var result = await commandBus.SendAsync(command, cancellationToken);
 
             var response = mapper.Map<LoginResponse>(result);
 
@@ -52,7 +52,7 @@ internal static class LoginEndpoint
 internal record LoginRequestParameters(
     [FromBody] LoginRequest Request,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<LoginRequest>;

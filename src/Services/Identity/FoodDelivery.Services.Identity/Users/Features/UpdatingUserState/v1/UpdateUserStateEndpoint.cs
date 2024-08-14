@@ -7,7 +7,7 @@ using FoodDelivery.Services.Identity.Shared.Models;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.V1;
+namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.v1;
 
 internal static class UpdateUserStateEndpoint
 {
@@ -29,10 +29,10 @@ internal static class UpdateUserStateEndpoint
             [AsParameters] UpdateUserStateRequestParameters requestParameters
         )
         {
-            var (request, userId, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, userId, context, commandBus, mapper, cancellationToken) = requestParameters;
             var command = UpdateUserState.Of(userId, request.UserState);
 
-            await commandProcessor.SendAsync(command, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
 
             return TypedResults.NoContent();
         }
@@ -45,7 +45,7 @@ internal record UpdateUserStateRequestParameters(
     [FromBody] UpdateUserStateRequest Request,
     [FromRoute] Guid UserId,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<UpdateUserStateRequest>;

@@ -5,11 +5,11 @@ using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
-using FoodDelivery.Services.Catalogs.Products.Dtos.V1;
+using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProducts.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProducts.v1;
 
 internal static class GetProductsEndpoint
 {

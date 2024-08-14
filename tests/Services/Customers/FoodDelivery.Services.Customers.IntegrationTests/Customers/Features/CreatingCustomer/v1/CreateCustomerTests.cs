@@ -1,4 +1,3 @@
-using System.Net;
 using BuildingBlocks.Core.Exception.Types;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
@@ -6,7 +5,7 @@ using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fixtures;
-using FoodDelivery.Services.Shared.Customers.Customers.Events.v1.Integration;
+using FoodDelivery.Services.Shared.Customers.Customers.Events.V1.Integration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
@@ -16,18 +15,11 @@ using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests.Customers.Features.CreatingCustomer.v1;
 
-public class CreateCustomerTests : CustomerServiceIntegrationTestBase
+public class CreateCustomerTests(
+    SharedFixtureWithEfCoreAndMongo<Api.CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
+    ITestOutputHelper outputHelper
+) : CustomerServiceIntegrationTestBase(sharedFixture, outputHelper)
 {
-    public CreateCustomerTests(
-        SharedFixtureWithEfCoreAndMongo<
-            Api.CustomersApiMetadata,
-            CustomersDbContext,
-            CustomersReadDbContext
-        > sharedFixture,
-        ITestOutputHelper outputHelper
-    )
-        : base(sharedFixture, outputHelper) { }
-
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
     public async Task can_create_new_customer_with_valid_input_in_postgres_db()

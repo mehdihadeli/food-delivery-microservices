@@ -1,5 +1,4 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -7,7 +6,7 @@ using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.GettingClaims.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.GettingClaims.v1;
 
 internal static class GetClaimsEndpoint
 {

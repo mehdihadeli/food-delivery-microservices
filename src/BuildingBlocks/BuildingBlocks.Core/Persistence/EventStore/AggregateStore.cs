@@ -10,7 +10,7 @@ namespace BuildingBlocks.Core.Persistence.EventStore;
 
 public abstract class AggregateStore(
     IEventStore eventStore,
-    IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore
+    IAggregatesDomainEventsRequestStorage aggregatesDomainEventsStorage
 ) : IAggregateStore
 {
     public async Task<TAggregate?> GetAsync<TAggregate, TId>(
@@ -65,7 +65,7 @@ public abstract class AggregateStore(
 
         var result = await eventStore.AppendEventsAsync(streamName, streamEvents, version, cancellationToken);
 
-        aggregatesDomainEventsStore.AddEvents(events);
+        aggregatesDomainEventsStorage.AddEvents(events);
 
         aggregate.MarkUncommittedDomainEventAsCommitted();
 

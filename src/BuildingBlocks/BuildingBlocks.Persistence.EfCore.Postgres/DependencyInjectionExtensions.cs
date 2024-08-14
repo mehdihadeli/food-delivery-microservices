@@ -80,8 +80,6 @@ public static class DependencyInjectionExtensions
         services.AddPostgresRepositories(assembliesToScan);
         services.AddPostgresUnitOfWork(assembliesToScan);
 
-        services.Replace(ServiceDescriptor.Scoped<IDomainEventsAccessor, EfDomainEventAccessor>());
-
         return services;
     }
 

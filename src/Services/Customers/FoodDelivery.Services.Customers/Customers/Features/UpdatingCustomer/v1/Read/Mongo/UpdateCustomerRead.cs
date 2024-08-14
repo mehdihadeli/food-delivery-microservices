@@ -7,7 +7,7 @@ using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.Read.Mongo;
+namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Read.Mongo;
 
 internal record UpdateCustomerRead(
     Guid Id,
@@ -78,24 +78,17 @@ internal class UpdateCustomerReadValidator : AbstractValidator<UpdateCustomerRea
     }
 }
 
-internal class UpdateCustomerReadHandler : ICommandHandler<UpdateCustomerRead>
+internal class UpdateCustomerReadHandler(ICustomersReadUnitOfWork customersReadUnitOfWork, IMapper mapper)
+    : ICommandHandler<UpdateCustomerRead>
 {
-    private readonly ICustomersReadUnitOfWork _customersReadUnitOfWork;
-    private readonly IMapper _mapper;
-
     // totally we don't need to unit test our handlers according jimmy bogard blogs and videos and we should extract our business to domain or seperated class so we don't need repository pattern for test, but for a sample I use it here
     // https://www.reddit.com/r/dotnet/comments/rxuqrb/testing_mediator_handlers/
-    public UpdateCustomerReadHandler(ICustomersReadUnitOfWork customersReadUnitOfWork, IMapper mapper)
-    {
-        _customersReadUnitOfWork = customersReadUnitOfWork;
-        _mapper = mapper;
-    }
 
-    public async Task<Unit> Handle(UpdateCustomerRead command, CancellationToken cancellationToken)
+    public async Task Handle(UpdateCustomerRead command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
-        var existingCustomer = await _customersReadUnitOfWork.CustomersRepository.FindOneAsync(
+        var existingCustomer = await customersReadUnitOfWork.CustomersRepository.FindOneAsync(
             x => x.CustomerId == command.CustomerId,
             cancellationToken
         );
@@ -105,12 +98,10 @@ internal class UpdateCustomerReadHandler : ICommandHandler<UpdateCustomerRead>
             throw new CustomerNotFoundException(command.CustomerId);
         }
 
-        var updateCustomer = _mapper.Map(command, existingCustomer);
+        var updateCustomer = mapper.Map(command, existingCustomer);
 
-        await _customersReadUnitOfWork.CustomersRepository.UpdateAsync(updateCustomer, cancellationToken);
+        await customersReadUnitOfWork.CustomersRepository.UpdateAsync(updateCustomer, cancellationToken);
 
-        await _customersReadUnitOfWork.CommitAsync(cancellationToken);
-
-        return Unit.Value;
+        await customersReadUnitOfWork.CommitAsync(cancellationToken);
     }
 }

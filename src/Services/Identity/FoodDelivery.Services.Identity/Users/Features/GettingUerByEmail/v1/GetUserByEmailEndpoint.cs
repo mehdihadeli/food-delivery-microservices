@@ -7,7 +7,7 @@ using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Users.Features.GettingUerByEmail.V1;
+namespace FoodDelivery.Services.Identity.Users.Features.GettingUerByEmail.v1;
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis

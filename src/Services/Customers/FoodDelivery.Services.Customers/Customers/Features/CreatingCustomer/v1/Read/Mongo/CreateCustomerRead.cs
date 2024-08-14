@@ -7,7 +7,7 @@ using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.V1.Read.Mongo;
+namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
 
 public record CreateCustomerRead(
     long CustomerId,
@@ -80,28 +80,19 @@ internal class CreateCustomerReadValidator : AbstractValidator<CreateCustomerRea
     }
 }
 
-internal class CreateCustomerReadHandler : ICommandHandler<CreateCustomerRead>
+internal class CreateCustomerReadHandler(IMapper mapper, ICustomersReadUnitOfWork unitOfWork)
+    : ICommandHandler<CreateCustomerRead>
 {
-    private readonly IMapper _mapper;
-    private readonly ICustomersReadUnitOfWork _unitOfWork;
-
-    // totally we don't need to unit test our handlers according jimmy bogard blogs and videos and we should extract our business to domain or seperated class so we don't need repository pattern for test, but for a sample I use it here
+    // totally we don't need to unit test our handlers according jimmy bogard blogs and videos, and we should extract our business to domain or seperated class so we don't need repository pattern for test, but for a sample I use it here
     // https://www.reddit.com/r/dotnet/comments/rxuqrb/testing_mediator_handlers/
-    public CreateCustomerReadHandler(IMapper mapper, ICustomersReadUnitOfWork unitOfWork)
-    {
-        _mapper = mapper;
-        _unitOfWork = unitOfWork;
-    }
 
-    public async Task<Unit> Handle(CreateCustomerRead command, CancellationToken cancellationToken)
+    public async Task Handle(CreateCustomerRead command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
-        var readModel = _mapper.Map<Customer>(command);
+        var readModel = mapper.Map<Customer>(command);
 
-        await _unitOfWork.CustomersRepository.AddAsync(readModel, cancellationToken: cancellationToken);
-        await _unitOfWork.CommitAsync(cancellationToken);
-
-        return Unit.Value;
+        await unitOfWork.CustomersRepository.AddAsync(readModel, cancellationToken: cancellationToken);
+        await unitOfWork.CommitAsync(cancellationToken);
     }
 }

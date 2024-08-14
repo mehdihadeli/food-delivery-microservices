@@ -1,14 +1,9 @@
 using BuildingBlocks.Core.Exception.Types;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.Login.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.Login.v1;
 
-public class LoginFailedException : AppException
+public class LoginFailedException(string userNameOrEmail)
+    : AppException($"Login failed for username: {userNameOrEmail}")
 {
-    public LoginFailedException(string userNameOrEmail)
-        : base($"Login failed for username: {userNameOrEmail}")
-    {
-        UserNameOrEmail = userNameOrEmail;
-    }
-
-    public string UserNameOrEmail { get; }
+    public string UserNameOrEmail { get; } = userNameOrEmail;
 }

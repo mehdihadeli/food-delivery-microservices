@@ -1,6 +1,6 @@
 using BuildingBlocks.Core.Exception.Types;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.V1.Exceptions;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Exceptions;
 
 public class ProductHasStockException : AppException
 {

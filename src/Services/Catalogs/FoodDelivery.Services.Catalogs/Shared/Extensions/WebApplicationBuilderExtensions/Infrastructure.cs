@@ -42,12 +42,12 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.Services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssembly(typeof(CatalogsMetadata).Assembly);
-            cfg.AddOpenBehavior(typeof(StreamLoggingBehavior<,>));
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.AddOpenStreamBehavior(typeof(StreamLoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(RequestValidationBehavior<,>));
-            cfg.AddOpenBehavior(typeof(StreamRequestValidationBehavior<,>));
-            cfg.AddOpenBehavior(typeof(StreamCachingBehavior<,>));
+            cfg.AddOpenStreamBehavior(typeof(StreamRequestValidationBehavior<,>));
+            cfg.AddOpenStreamBehavior(typeof(StreamCachingBehavior<,>));
             cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
             cfg.AddOpenBehavior(typeof(InvalidateCachingBehavior<,>));
             cfg.AddOpenBehavior(typeof(EfTxBehavior<,>));
@@ -68,7 +68,11 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomVersioning();
 
-        builder.AddCustomSwagger();
+        builder.AddCustomSwagger(cfg =>
+        {
+            cfg.Name = "Catalogs Apis";
+            cfg.Title = "Catalogs Apis";
+        });
 
         builder.AddCustomCors();
 

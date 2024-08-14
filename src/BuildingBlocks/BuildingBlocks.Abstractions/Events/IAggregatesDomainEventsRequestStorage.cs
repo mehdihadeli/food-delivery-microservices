@@ -2,7 +2,7 @@ using BuildingBlocks.Abstractions.Domain;
 
 namespace BuildingBlocks.Abstractions.Events;
 
-public interface IAggregatesDomainEventsRequestStore
+public interface IAggregatesDomainEventsRequestStorage
 {
     IReadOnlyList<IDomainEvent> AddEventsFromAggregate<T>(T aggregate)
         where T : IHaveAggregate;

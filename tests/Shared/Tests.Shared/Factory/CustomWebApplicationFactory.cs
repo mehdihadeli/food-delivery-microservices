@@ -1,7 +1,6 @@
+using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Security.Jwt;
-using BuildingBlocks.Web.Extensions;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -13,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Serilog;
 using Serilog.Events;
-using Tests.Shared.Auth;
 using WebMotions.Fake.Authentication.JwtBearer;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 

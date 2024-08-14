@@ -3,6 +3,7 @@ using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Core.Messaging;
+using BuildingBlocks.Core.Persistence.EventStore;
 using BuildingBlocks.Core.Reflection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -23,9 +24,8 @@ internal static class DependencyInjectionExtensions
             .AddTransient<IInternalEventBus, InternalEventBus>()
             .AddTransient<IExternalEventBus, NullExternalEventBus>();
 
-        services.AddScoped<IDomainEventsAccessor, NullDomainEventsAccessor>();
-
-        services.TryAddTransient<IAggregatesDomainEventsRequestStore, AggregatesDomainEventsStore>();
+        services.AddTransient<IAggregatesDomainEventsRequestStorage, AggregatesDomainEventsStorage>();
+        services.AddScoped<IDomainEventsAccessor, DomainEventAccessor>();
 
         RegisterEventMappers(services, assemblies);
 

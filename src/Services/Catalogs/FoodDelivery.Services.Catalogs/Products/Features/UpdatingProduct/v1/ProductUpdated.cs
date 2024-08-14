@@ -3,13 +3,13 @@ using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
-using FoodDelivery.Services.Catalogs.Products.Dtos.V1;
+using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/

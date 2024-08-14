@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollection;

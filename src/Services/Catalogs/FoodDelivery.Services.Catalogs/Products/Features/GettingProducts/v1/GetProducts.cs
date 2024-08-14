@@ -6,14 +6,14 @@ using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
-using FoodDelivery.Services.Catalogs.Products.Dtos.V1;
+using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Products.Models.Read;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Sieve.Services;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProducts.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProducts.v1;
 
 internal record GetProducts : PageQuery<GetProductsResult>
 {

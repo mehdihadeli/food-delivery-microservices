@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
-using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.Read.Mongo;
+using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Read.Mongo;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
@@ -48,7 +48,7 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
         var handler = new UpdateCustomerReadHandler(_customersReadUnitOfWork, Mapper);
 
         // Act
-        var res = await handler.Handle(fakeUpdateCustomerReadCommand, CancellationToken.None);
+        await handler.Handle(fakeUpdateCustomerReadCommand, CancellationToken.None);
 
         // Assert
         await _customersReadUnitOfWork
@@ -61,7 +61,6 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
                 Arg.Is<Expression<Func<Customer, bool>>>(exp => exp.Compile()(existCustomer) == true),
                 Arg.Any<CancellationToken>()
             );
-        res.Should().NotBeNull();
         existCustomer.Id.Should().Be(fakeUpdateCustomerReadCommand.Id);
         existCustomer.CustomerId.Should().Be(fakeUpdateCustomerReadCommand.CustomerId);
     }
@@ -80,7 +79,7 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
         var handler = new UpdateCustomerReadHandler(_customersReadUnitOfWork, Mapper);
 
         // Act
-        Func<Task> act = async () => _ = await handler.Handle(fakeUpdateCustomerReadCommand, CancellationToken.None);
+        Func<Task> act = async () => await handler.Handle(fakeUpdateCustomerReadCommand, CancellationToken.None);
 
         // Assert
         //https://fluentassertions.com/exceptions/

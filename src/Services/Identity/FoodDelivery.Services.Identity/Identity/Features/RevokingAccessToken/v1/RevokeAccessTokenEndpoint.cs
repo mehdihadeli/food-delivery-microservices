@@ -1,12 +1,12 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Extensions;
+using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Web.Minimal.Extensions;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.v1;
 
 public static class RevokeAccessTokenEndpoint
 {
@@ -27,13 +27,13 @@ public static class RevokeAccessTokenEndpoint
             [AsParameters] RevokeAccessTokenRequestParameters requestParameters
         )
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
             var token = string.IsNullOrWhiteSpace(request.AccessToken)
                 ? GetTokenFromHeader(context)
                 : request.AccessToken;
 
             var command = RevokeAccessToken.Of(token, context.User.Identity!.Name!);
-            await commandProcessor.SendAsync(command, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -41,9 +41,10 @@ public static class RevokeAccessTokenEndpoint
         }
     }
 
-    private static string GetTokenFromHeader(HttpContext context)
+    private static string? GetTokenFromHeader(HttpContext context)
     {
         var authorizationHeader = context.Request.Headers.Get<string>("authorization");
+
         return authorizationHeader;
     }
 }
@@ -55,7 +56,7 @@ public record RevokeAccessTokenRequest(string? AccessToken);
 internal record RevokeAccessTokenRequestParameters(
     [FromBody] RevokeAccessTokenRequest Request,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RevokeAccessTokenRequest>;

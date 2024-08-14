@@ -7,7 +7,7 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionBySubscriptionId.V1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionBySubscriptionId.v1;
 
 internal class GetRestockSubscriptionBySubscriptionIdEndpoint
     : IQueryMinimalEndpoint<
@@ -67,7 +67,7 @@ internal class GetRestockSubscriptionBySubscriptionIdEndpoint
 internal record GetRestockSubscriptionBySubscriptionIdRequestParameters(
     [FromRoute] long RestockSubscriptionId,
     HttpContext HttpContext,
-    IQueryBus QueryProcessor,
+    IQueryBus QueryBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;

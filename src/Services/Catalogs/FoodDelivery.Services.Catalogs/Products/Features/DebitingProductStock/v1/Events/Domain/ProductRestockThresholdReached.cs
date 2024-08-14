@@ -3,7 +3,7 @@ using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.V1.Events.Domain;
+namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1.Events.Domain;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/

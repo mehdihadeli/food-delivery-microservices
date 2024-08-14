@@ -8,7 +8,7 @@ using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptions.V1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptions.v1;
 
 internal record GetRestockSubscriptions : PageQuery<GetRestockSubscriptionsResult>
 {
@@ -54,28 +54,20 @@ internal class GetRestockSubscriptionsValidator : AbstractValidator<GetRestockSu
     }
 }
 
-internal class GeRestockSubscriptionsHandler : IQueryHandler<GetRestockSubscriptions, GetRestockSubscriptionsResult>
+internal class GeRestockSubscriptionsHandler(CustomersReadUnitOfWork customersReadUnitOfWork, IMapper mapper)
+    : IQueryHandler<GetRestockSubscriptions, GetRestockSubscriptionsResult>
 {
-    private readonly CustomersReadUnitOfWork _customersReadUnitOfWork;
-    private readonly IMapper _mapper;
-
-    public GeRestockSubscriptionsHandler(CustomersReadUnitOfWork customersReadUnitOfWork, IMapper mapper)
-    {
-        _customersReadUnitOfWork = customersReadUnitOfWork;
-        _mapper = mapper;
-    }
-
     public async Task<GetRestockSubscriptionsResult> Handle(
         GetRestockSubscriptions query,
         CancellationToken cancellationToken
     )
     {
-        var restockSubscriptions = await _customersReadUnitOfWork.RestockSubscriptionsRepository.GetByPageFilter<
+        var restockSubscriptions = await customersReadUnitOfWork.RestockSubscriptionsRepository.GetByPageFilter<
             RestockSubscriptionDto,
             DateTime
         >(
             query,
-            _mapper.ConfigurationProvider,
+            mapper.ConfigurationProvider,
             sortExpression: x => x.Created,
             predicate: x =>
                 x.IsDeleted == false

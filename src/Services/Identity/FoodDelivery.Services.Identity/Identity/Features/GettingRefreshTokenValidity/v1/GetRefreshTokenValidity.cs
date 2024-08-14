@@ -3,7 +3,7 @@ using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Identity.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.GettingRefreshTokenValidity.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.GettingRefreshTokenValidity.v1;
 
 internal record GetRefreshTokenValidity(Guid UserId, string RefreshToken) : IQuery<bool>
 {

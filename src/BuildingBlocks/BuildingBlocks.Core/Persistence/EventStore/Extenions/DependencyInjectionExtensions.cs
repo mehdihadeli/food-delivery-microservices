@@ -27,8 +27,6 @@ public static class DependencyInjectionExtensions
                 ? scanAssemblies
                 : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).ToArray();
 
-        services.Replace(ServiceDescriptor.Scoped<IDomainEventsAccessor, EventStoreDomainEventAccessor>());
-
         services
             .AddSingleton<IAggregateStore, AggregateStore>()
             .AddSingleton<TEventStore, TEventStore>()

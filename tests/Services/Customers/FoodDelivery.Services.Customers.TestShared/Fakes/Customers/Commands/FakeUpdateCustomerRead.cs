@@ -1,5 +1,5 @@
 using AutoBogus;
-using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.Read.Mongo;
+using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Read.Mongo;
 
 namespace FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
 

@@ -6,7 +6,7 @@ using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.SendingEmailVerificationCode.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.SendingEmailVerificationCode.v1;
 
 public static class SendEmailVerificationCodeEndpoint
 {
@@ -31,10 +31,10 @@ public static class SendEmailVerificationCodeEndpoint
             [AsParameters] SendEmailVerificationCodeRequestParameters requestParameters
         )
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
             var command = SendEmailVerificationCode.Of(request.Email);
 
-            await commandProcessor.SendAsync(command, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
 
             return TypedResults.NoContent();
         }
@@ -48,7 +48,7 @@ public record SendEmailVerificationCodeRequest(string? Email);
 internal record SendEmailVerificationCodeRequestParameters(
     [FromBody] SendEmailVerificationCodeRequest Request,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<SendEmailVerificationCodeRequest>;

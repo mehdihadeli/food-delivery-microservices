@@ -5,7 +5,7 @@ using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.V1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 
 public record UpdateMongoRestockSubscriptionReadModel(
     long RestockSubscriptionId,
@@ -18,22 +18,14 @@ public record UpdateMongoRestockSubscriptionReadModel(
     bool IsDeleted = false
 ) : InternalCommand;
 
-internal class UpdateMongoRestockSubscriptionReadModelHandler : ICommandHandler<UpdateMongoRestockSubscriptionReadModel>
+internal class UpdateMongoRestockSubscriptionReadModelHandler(CustomersReadUnitOfWork unitOfWork, IMapper mapper)
+    : ICommandHandler<UpdateMongoRestockSubscriptionReadModel>
 {
-    private readonly CustomersReadUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-
-    public UpdateMongoRestockSubscriptionReadModelHandler(CustomersReadUnitOfWork unitOfWork, IMapper mapper)
-    {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-    }
-
-    public async Task<Unit> Handle(UpdateMongoRestockSubscriptionReadModel command, CancellationToken cancellationToken)
+    public async Task Handle(UpdateMongoRestockSubscriptionReadModel command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
-        var existingSubscription = await _unitOfWork.RestockSubscriptionsRepository.FindOneAsync(
+        var existingSubscription = await unitOfWork.RestockSubscriptionsRepository.FindOneAsync(
             x => x.RestockSubscriptionId == command.RestockSubscriptionId,
             cancellationToken
         );
@@ -54,9 +46,7 @@ internal class UpdateMongoRestockSubscriptionReadModelHandler : ICommandHandler<
             IsDeleted = command.IsDeleted
         };
 
-        await _unitOfWork.RestockSubscriptionsRepository.UpdateAsync(existingSubscription, cancellationToken);
-        await _unitOfWork.CommitAsync(cancellationToken);
-
-        return Unit.Value;
+        await unitOfWork.RestockSubscriptionsRepository.UpdateAsync(existingSubscription, cancellationToken);
+        await unitOfWork.CommitAsync(cancellationToken);
     }
 }

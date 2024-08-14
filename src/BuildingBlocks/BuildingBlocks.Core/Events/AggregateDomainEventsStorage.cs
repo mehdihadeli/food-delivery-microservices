@@ -1,10 +1,9 @@
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Events.Internal;
 
 namespace BuildingBlocks.Core.Events;
 
-public class AggregatesDomainEventsStore : IAggregatesDomainEventsRequestStore
+public class AggregatesDomainEventsStorage : IAggregatesDomainEventsRequestStorage
 {
     private readonly List<IDomainEvent> _uncommittedDomainEvents = new();
 

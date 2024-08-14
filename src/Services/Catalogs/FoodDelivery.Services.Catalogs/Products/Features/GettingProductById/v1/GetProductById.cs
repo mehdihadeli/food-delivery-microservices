@@ -4,13 +4,13 @@ using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
-using FoodDelivery.Services.Catalogs.Products.Dtos.V1;
+using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Extensions;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.v1;
 
 internal record GetProductById(long Id) : CacheQuery<GetProductById, GetProductByIdResult>
 {

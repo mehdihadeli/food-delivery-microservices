@@ -16,7 +16,7 @@ using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.V1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 
 public record CreateRestockSubscription(long CustomerId, long ProductId, string Email)
     : ITxCreateCommand<CreateRestockSubscriptionResult>
@@ -50,27 +50,13 @@ internal class CreateRestockSubscriptionValidator : AbstractValidator<CreateRest
     }
 }
 
-internal class CreateRestockSubscriptionHandler
-    : ICommandHandler<CreateRestockSubscription, CreateRestockSubscriptionResult>
+internal class CreateRestockSubscriptionHandler(
+    CustomersDbContext customersDbContext,
+    ICatalogApiClient catalogApiClient,
+    IMapper mapper,
+    ILogger<CreateRestockSubscriptionHandler> logger
+) : ICommandHandler<CreateRestockSubscription, CreateRestockSubscriptionResult>
 {
-    private readonly CustomersDbContext _customersDbContext;
-    private readonly ICatalogApiClient _catalogApiClient;
-    private readonly IMapper _mapper;
-    private readonly ILogger<CreateRestockSubscriptionHandler> _logger;
-
-    public CreateRestockSubscriptionHandler(
-        CustomersDbContext customersDbContext,
-        ICatalogApiClient catalogApiClient,
-        IMapper mapper,
-        ILogger<CreateRestockSubscriptionHandler> logger
-    )
-    {
-        _customersDbContext = customersDbContext;
-        _catalogApiClient = catalogApiClient;
-        _mapper = mapper;
-        _logger = logger;
-    }
-
     public async Task<CreateRestockSubscriptionResult> Handle(
         CreateRestockSubscription request,
         CancellationToken cancellationToken
@@ -78,7 +64,7 @@ internal class CreateRestockSubscriptionHandler
     {
         request.NotBeNull();
 
-        var existsCustomer = await _customersDbContext.Customers.AnyAsync(
+        var existsCustomer = await customersDbContext.Customers.AnyAsync(
             x => x.Id == CustomerId.Of(request.CustomerId),
             cancellationToken: cancellationToken
         );
@@ -88,12 +74,12 @@ internal class CreateRestockSubscriptionHandler
             throw new CustomerNotFoundException(request.CustomerId);
         }
 
-        var product = await _catalogApiClient.GetProductByIdAsync(request.ProductId, cancellationToken);
+        var product = await catalogApiClient.GetProductByIdAsync(request.ProductId, cancellationToken);
 
         if (product!.AvailableStock > 0)
             throw new ProductHasStockException(product.Id, product.AvailableStock, product.Name);
 
-        var alreadySubscribed = _customersDbContext.RestockSubscriptions.Any(x =>
+        var alreadySubscribed = customersDbContext.RestockSubscriptions.Any(x =>
             x.Email.Value == request.Email && x.ProductInformation.Id == request.ProductId && x.Processed == false
         );
 
@@ -107,16 +93,16 @@ internal class CreateRestockSubscriptionHandler
             Email.Of(request.Email)
         );
 
-        await _customersDbContext.AddAsync(restockSubscription, cancellationToken);
+        await customersDbContext.AddAsync(restockSubscription, cancellationToken);
 
-        await _customersDbContext.SaveChangesAsync(cancellationToken);
+        await customersDbContext.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "RestockSubscription with id '{@InternalCommandId}' saved successfully",
             restockSubscription.Id
         );
 
-        var restockSubscriptionDto = _mapper.Map<RestockSubscriptionDto>(restockSubscription);
+        var restockSubscriptionDto = mapper.Map<RestockSubscriptionDto>(restockSubscription);
 
         return new CreateRestockSubscriptionResult(restockSubscriptionDto.Id);
     }

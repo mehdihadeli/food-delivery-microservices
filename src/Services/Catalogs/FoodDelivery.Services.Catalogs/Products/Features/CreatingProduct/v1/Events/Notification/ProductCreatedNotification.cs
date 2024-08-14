@@ -1,9 +1,9 @@
 using BuildingBlocks.Abstractions.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Core.Events.Internal;
-using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.V1.Events.Domain;
+using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Domain;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.V1.Events.Notification;
+namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Notification;
 
 internal record ProductCreatedNotification(ProductCreated DomainEvent)
     : DomainNotificationEventWrapper<ProductCreated>(DomainEvent);

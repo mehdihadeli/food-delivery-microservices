@@ -1,9 +1,6 @@
 using BuildingBlocks.Core.Exception.Types;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.V1.Exceptions;
+namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1.Exceptions;
 
-public class EmailAlreadyVerifiedException : ConflictException
-{
-    public EmailAlreadyVerifiedException(string email)
-        : base($"User with email {email} already verified.") { }
-}
+public class EmailAlreadyVerifiedException(string email)
+    : ConflictException($"User with email {email} already verified.");

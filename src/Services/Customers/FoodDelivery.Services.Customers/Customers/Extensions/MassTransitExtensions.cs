@@ -1,4 +1,4 @@
-using FoodDelivery.Services.Shared.Customers.Customers.Events.v1.Integration;
+using FoodDelivery.Services.Shared.Customers.Customers.Events.V1.Integration;
 using Humanizer;
 using MassTransit;
 using RabbitMQ.Client;

@@ -11,7 +11,7 @@ using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using Microsoft.AspNetCore.Identity;
 using Sieve.Services;
 
-namespace FoodDelivery.Services.Identity.Users.Features.GettingUsers.V1;
+namespace FoodDelivery.Services.Identity.Users.Features.GettingUsers.v1;
 
 internal record GetUsers : PageQuery<GetUsersResult>
 {
@@ -50,25 +50,15 @@ internal class GetUsersValidator : AbstractValidator<GetUsers>
     }
 }
 
-internal class GetUsersHandler : IQueryHandler<GetUsers, GetUsersResult>
+internal class GetUsersHandler(UserManager<ApplicationUser> userManager, IMapper mapper, ISieveProcessor sieveProcessor)
+    : IQueryHandler<GetUsers, GetUsersResult>
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IMapper _mapper;
-    private readonly ISieveProcessor _sieveProcessor;
-
-    public GetUsersHandler(UserManager<ApplicationUser> userManager, IMapper mapper, ISieveProcessor sieveProcessor)
-    {
-        _userManager = userManager;
-        _mapper = mapper;
-        _sieveProcessor = sieveProcessor;
-    }
-
     public async Task<GetUsersResult> Handle(GetUsers request, CancellationToken cancellationToken)
     {
-        var users = await _userManager.FindAllUsersByPageAsync<IdentityUserDto>(
+        var users = await userManager.FindAllUsersByPageAsync<IdentityUserDto>(
             request,
-            _mapper,
-            _sieveProcessor,
+            mapper,
+            sieveProcessor,
             cancellationToken
         );
 

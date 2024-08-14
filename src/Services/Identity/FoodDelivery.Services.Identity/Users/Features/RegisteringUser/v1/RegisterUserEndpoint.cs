@@ -7,7 +7,7 @@ using FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.V1;
+namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
 
 public static class RegisterUserEndpoint
 {
@@ -28,11 +28,11 @@ public static class RegisterUserEndpoint
             [AsParameters] RegisterUserRequestParameters requestParameters
         )
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = mapper.Map<RegisterUser>(request);
 
-            var result = await commandProcessor.SendAsync(command, cancellationToken);
+            var result = await commandBus.SendAsync(command, cancellationToken);
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -50,7 +50,7 @@ public static class RegisterUserEndpoint
 internal record RegisterUserRequestParameters(
     [FromBody] RegisterUserRequest Request,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RegisterUserRequest>;

@@ -6,7 +6,6 @@
 
     <ItemGroup>
       <PackageReference Include="MemoryPack" />
-      <PackageReference Include="MessagePack" />
     </ItemGroup>
 
 </Project>

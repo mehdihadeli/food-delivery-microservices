@@ -1,10 +1,10 @@
+using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Middlewares.CaptureException;
 using BuildingBlocks.Web.Middlewares.HeaderPropagation;
-using BuildingBlocks.Web.Middlewares.RequestLogContextMiddleware;
 using BuildingBlocks.Web.RateLimit;
 using FoodDelivery.Services.Catalogs;
 using Serilog;
@@ -45,8 +45,6 @@ public static partial class WebApplicationExtensions
             // https://andrewlock.net/using-serilog-aspnetcore-in-asp-net-core-3-excluding-health-check-endpoints-from-serilog-request-logging/#customising-the-log-level-used-for-serilog-request-logs
             opts.GetLevel = LogEnricher.GetLogLevel;
         });
-
-        app.UseRequestLogContextMiddleware();
 
         app.UseCustomCors();
 

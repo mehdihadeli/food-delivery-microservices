@@ -1,15 +1,15 @@
 using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Core.Events;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
-using FoodDelivery.Services.Shared.Identity.Users.Events.v1.Integration;
+using FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
 using Microsoft.AspNetCore.Identity;
 using UserState = FoodDelivery.Services.Identity.Shared.Models.UserState;
 
-namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.V1;
+namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
 
 public record RegisterUser(
     string FirstName,
@@ -94,21 +94,11 @@ internal class RegisterUserValidator : AbstractValidator<RegisterUser>
 
 // using transaction script instead of using domain business logic here
 // https://www.youtube.com/watch?v=PrJIMTZsbDw
-internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserResult>
+internal class RegisterUserHandler(
+    UserManager<ApplicationUser> userManager,
+    IMessagePersistenceService messagePersistenceService
+) : ICommandHandler<RegisterUser, RegisterUserResult>
 {
-    private readonly IMessagePersistenceService _messagePersistenceService;
-
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public RegisterUserHandler(
-        UserManager<ApplicationUser> userManager,
-        IMessagePersistenceService messagePersistenceService
-    )
-    {
-        _messagePersistenceService = messagePersistenceService;
-        _userManager = userManager;
-    }
-
     public async Task<RegisterUserResult> Handle(RegisterUser request, CancellationToken cancellationToken)
     {
         var applicationUser = new ApplicationUser
@@ -122,11 +112,11 @@ internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserR
             CreatedAt = request.CreatedAt,
         };
 
-        var identityResult = await _userManager.CreateAsync(applicationUser, request.Password);
+        var identityResult = await userManager.CreateAsync(applicationUser, request.Password);
         if (!identityResult.Succeeded)
             throw new RegisterIdentityUserException(string.Join(',', identityResult.Errors.Select(e => e.Description)));
 
-        var roleResult = await _userManager.AddToRolesAsync(
+        var roleResult = await userManager.AddToRolesAsync(
             applicationUser,
             request.Roles ?? new List<string> { IdentityConstants.Role.User }
         );
@@ -146,8 +136,8 @@ internal class RegisterUserHandler : ICommandHandler<RegisterUser, RegisterUserR
 
         // publish our integration event and save to outbox should do in same transaction of our business logic actions. we could use TxBehaviour or ITxDbContextExecutes interface
         // This service is not DDD, so we couldn't use DomainEventPublisher to publish mapped integration events
-        await _messagePersistenceService.AddPublishMessageAsync(
-            new EventEnvelope<UserRegisteredV1>(userRegistered, new Dictionary<string, object?>()),
+        await messagePersistenceService.AddPublishMessageAsync(
+            new EventEnvelope<UserRegisteredV1>(userRegistered),
             cancellationToken
         );
 

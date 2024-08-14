@@ -6,7 +6,7 @@ using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAllAccessTokens.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAllAccessTokens.v1;
 
 internal record RevokeAllAccessTokens(string UserName) : ICommand
 {
@@ -35,7 +35,7 @@ internal class RevokeAllAccessTokenHandler : ICommandHandler<RevokeAllAccessToke
         _userManager = userManager;
     }
 
-    public async Task<Unit> Handle(RevokeAllAccessTokens request, CancellationToken cancellationToken)
+    public async Task Handle(RevokeAllAccessTokens request, CancellationToken cancellationToken)
     {
         var appUser = await _userManager.FindByNameAsync(request.UserName);
         appUser.NotBeNull(new IdentityUserNotFoundException(request.UserName));
@@ -48,7 +48,5 @@ internal class RevokeAllAccessTokenHandler : ICommandHandler<RevokeAllAccessToke
         {
             await _mediator.Send(new RevokeAccessToken(accessToken.Token, appUser.UserName!), cancellationToken);
         }
-
-        return Unit.Value;
     }
 }

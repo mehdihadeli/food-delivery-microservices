@@ -106,11 +106,12 @@
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageVersion Include="Serilog.Sinks.Seq" Version="8.0.0" />
-    <PackageVersion Include="Serilog.Sinks.SpectreConsole" Version="0.3.3" />
+    <PackageVersion Include="Serilog.Sinks.Spectre" Version="0.5.0" />
     <PackageVersion Include="SerilogAnalyzer" Version="0.15.0" />
     <PackageVersion Include="SerilogTimings" Version="3.1.0" />
     <PackageVersion Include="Serilog.OpenTelemetry.ConsoleSink" Version="2.0.0" />
     <PackageVersion Include="Serilog.Sinks.Debug" Version="3.0.0" />
+    <PackageVersion Include="Elastic.Serilog.Sinks" Version="8.11.1" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="OpenTelemetry" Version="1.9.0" />

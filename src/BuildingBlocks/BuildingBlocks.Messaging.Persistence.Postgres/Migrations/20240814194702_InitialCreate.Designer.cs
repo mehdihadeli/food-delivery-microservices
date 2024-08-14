@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BuildingBlocks.Messaging.Persistence.Postgres.Migrations
 {
     [DbContext(typeof(MessagePersistenceDbContext))]
-    [Migration("20221120224353_InitialCreate")]
+    [Migration("20240814194702_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace BuildingBlocks.Messaging.Persistence.Postgres.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -33,7 +33,7 @@ namespace BuildingBlocks.Messaging.Persistence.Postgres.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("created");
 
                     b.Property<string>("Data")
@@ -61,13 +61,15 @@ namespace BuildingBlocks.Messaging.Persistence.Postgres.Migrations
                         .HasColumnName("message_status");
 
                     b.Property<int>("RetryCount")
-                        .HasColumnType("integer")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
                         .HasColumnName("retry_count");
 
                     b.HasKey("Id")
                         .HasName("pk_store_messages");
 
-                    b.ToTable("StoreMessages", "messaging");
+                    b.ToTable("store_messages", "messaging");
                 });
 #pragma warning restore 612, 618
         }

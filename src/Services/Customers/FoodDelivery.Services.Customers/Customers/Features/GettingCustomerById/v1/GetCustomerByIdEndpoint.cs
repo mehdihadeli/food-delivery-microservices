@@ -7,7 +7,7 @@ using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomerById.V1;
+namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomerById.v1;
 
 internal class GetCustomerByIdEndpointEndpoint
     : IQueryMinimalEndpoint<
@@ -61,7 +61,7 @@ internal class GetCustomerByIdEndpointEndpoint
 internal record GetCustomerByIdRequestParameters(
     [FromRoute] Guid Id,
     HttpContext HttpContext,
-    IQueryBus QueryProcessor,
+    IQueryBus QueryBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;

@@ -1,4 +1,4 @@
-namespace FoodDelivery.Services.Customers.Customers.Dtos.V1;
+namespace FoodDelivery.Services.Customers.Customers.Dtos.v1;
 
 public record CustomerReadDto
 {

@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <Folder Include="Shared\Data\Migrations" />
-    <Folder Include="Shared\Data\Migrations\Customers" />
   </ItemGroup>
 
   <ItemGroup>

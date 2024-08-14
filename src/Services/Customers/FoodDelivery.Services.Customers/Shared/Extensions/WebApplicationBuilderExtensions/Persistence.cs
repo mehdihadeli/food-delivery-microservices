@@ -1,8 +1,7 @@
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Persistence.Mongo;
-using FoodDelivery.Services.Catalogs.Shared.Data;
+using BuildingBlocks.Persistence.Mongo.Extensions;
 using FoodDelivery.Services.Customers.Customers.Data.Repositories.Mongo;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Data.Repositories.Mongo;
@@ -48,7 +47,7 @@ public static partial class WebApplicationBuilderExtensions
 
     private static void AddMongoReadStorage(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddMongoDbContext<CustomersReadDbContext>(configuration);
+        services.AddMongoDbContext<CustomersReadDbContext>();
         services.TryAddTransient<ICustomerReadRepository, CustomerReadRepository>();
         services.TryAddTransient<IRestockSubscriptionReadRepository, RestockSubscriptionReadRepository>();
         services.TryAddTransient<ICustomersReadUnitOfWork, CustomersReadUnitOfWork>();

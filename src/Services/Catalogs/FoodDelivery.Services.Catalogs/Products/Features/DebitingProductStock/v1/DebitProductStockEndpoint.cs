@@ -6,7 +6,7 @@ using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1;
 
 // POST api/v1/catalog/products/{productId}/debit-stock
 public static class DebitProductStockEndpoint
@@ -30,9 +30,9 @@ public static class DebitProductStockEndpoint
             Results<NoContent, UnAuthorizedHttpProblemResult, ValidationProblem, NotFoundHttpProblemResult>
         > Handle([AsParameters] DebitProductStockRequestParameters requestParameters)
         {
-            var (request, productId, context, commandProcessor, _, cancellationToken) = requestParameters;
+            var (request, productId, context, commandBus, _, cancellationToken) = requestParameters;
 
-            await commandProcessor.SendAsync(DebitProductStock.Of(productId, request.DebitQuantity), cancellationToken);
+            await commandBus.SendAsync(DebitProductStock.Of(productId, request.DebitQuantity), cancellationToken);
 
             return TypedResults.NoContent();
         }

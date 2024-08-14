@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
 {
     [DbContext(typeof(CustomersDbContext))]
-    [Migration("20240719224856_InitialCustomersMigration")]
+    [Migration("20240814202536_InitialCustomersMigration")]
     partial class InitialCustomersMigration
     {
         /// <inheritdoc />

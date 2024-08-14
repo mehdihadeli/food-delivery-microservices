@@ -10,7 +10,7 @@ using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Categories.Contracts;
 using FoodDelivery.Services.Catalogs.Categories.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
-using FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.V1;
+using FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
@@ -19,7 +19,7 @@ using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 using FoodDelivery.Services.Catalogs.Suppliers.Exceptions.Application;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 
 internal record UpdateProduct(
     long Id,

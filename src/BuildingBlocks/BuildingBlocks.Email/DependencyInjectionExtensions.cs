@@ -15,7 +15,7 @@ public static class DependencyInjectionExtensions
     )
     {
         var config = configuration.BindOptions<EmailOptions>(nameof(EmailOptions));
-        configureOptions?.Invoke(config ?? new EmailOptions());
+        configureOptions?.Invoke(config);
 
         if (provider == EmailProvider.SendGrid)
         {

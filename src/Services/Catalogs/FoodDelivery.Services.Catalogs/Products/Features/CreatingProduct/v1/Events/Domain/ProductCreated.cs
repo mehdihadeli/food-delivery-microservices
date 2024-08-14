@@ -3,7 +3,7 @@ using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
-using FoodDelivery.Services.Catalogs.Products.Dtos.V1;
+using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Products.ValueObjects;
@@ -11,7 +11,7 @@ using FoodDelivery.Services.Catalogs.Shared.Data;
 using FoodDelivery.Services.Catalogs.Suppliers;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.V1.Events.Domain;
+namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Domain;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/

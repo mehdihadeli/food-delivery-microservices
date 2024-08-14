@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using AutoBogus;
 using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Queries;
@@ -11,7 +12,6 @@ using BuildingBlocks.Core.Types;
 using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Persistence.Mongo;
-using DotNet.Testcontainers.Configurations;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using MassTransit;
@@ -340,9 +340,9 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         return await ExecuteScopeAsync(async sp =>
         {
-            var commandProcessor = sp.GetRequiredService<ICommandBus>();
+            var commandBus = sp.GetRequiredService<ICommandBus>();
 
-            return await commandProcessor.SendAsync(request, cancellationToken);
+            return await commandBus.SendAsync(request, cancellationToken);
         });
     }
 
@@ -351,9 +351,9 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         await ExecuteScopeAsync(async sp =>
         {
-            var commandProcessor = sp.GetRequiredService<ICommandBus>();
+            var commandBus = sp.GetRequiredService<ICommandBus>();
 
-            await commandProcessor.SendAsync(request, cancellationToken);
+            await commandBus.SendAsync(request, cancellationToken);
         });
     }
 
@@ -373,7 +373,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
     public async ValueTask PublishMessageAsync<TMessage>(
         TMessage message,
-        IDictionary<string, object?>? headers = null,
         CancellationToken cancellationToken = default
     )
         where TMessage : class, IMessage
@@ -382,7 +381,21 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         {
             var bus = sp.GetRequiredService<IExternalEventBus>();
 
-            await bus.PublishAsync(message, headers, cancellationToken);
+            await bus.PublishAsync(message, cancellationToken);
+        });
+    }
+
+    public async ValueTask PublishMessageAsync<TMessage>(
+        IEventEnvelope<TMessage> eventEnvelope,
+        CancellationToken cancellationToken = default
+    )
+        where TMessage : class, IMessage
+    {
+        await ExecuteScopeAsync(async sp =>
+        {
+            var bus = sp.GetRequiredService<IExternalEventBus>();
+
+            await bus.PublishAsync(eventEnvelope, cancellationToken);
         });
     }
 

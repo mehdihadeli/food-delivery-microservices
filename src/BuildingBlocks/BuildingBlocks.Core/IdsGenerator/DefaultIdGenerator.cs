@@ -1,3 +1,4 @@
+using Bogus;
 using IdGen;
 
 namespace BuildingBlocks.Core.IdsGenerator;
@@ -14,7 +15,7 @@ public class SnowFlakIdGenerator : BuildingBlocks.Abstractions.Core.IIdGenerator
         return _generator.CreateId();
     }
 
-    private static readonly IdGenerator _generator = new((int)DateTime.Now.Ticks, GetOptions());
+    private static readonly IdGenerator _generator = new(new Faker().Random.Number(0, 3), GetOptions());
 
     public static IdGeneratorOptions GetOptions()
     {

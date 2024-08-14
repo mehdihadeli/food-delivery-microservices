@@ -1,20 +1,15 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
-using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
-using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
-using FoodDelivery.Services.Customers.Shared.Data;
-using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 using Sieve.Services;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.V1;
+namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.v1;
 
 internal record GetCustomers : PageQuery<GetCustomersResult>
 {
@@ -48,24 +43,16 @@ internal class GetCustomersValidator : AbstractValidator<GetCustomers>
     }
 }
 
-internal class GetCustomersHandler : IQueryHandler<GetCustomers, GetCustomersResult>
+internal class GetCustomersHandler(ICustomersReadUnitOfWork unitOfWork, IMapper mapper, ISieveProcessor sieveProcessor)
+    : IQueryHandler<GetCustomers, GetCustomersResult>
 {
-    private readonly ICustomersReadUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-    private readonly ISieveProcessor _sieveProcessor;
-
-    public GetCustomersHandler(ICustomersReadUnitOfWork unitOfWork, IMapper mapper, ISieveProcessor sieveProcessor)
-    {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-        _sieveProcessor = sieveProcessor;
-    }
+    private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
     public async Task<GetCustomersResult> Handle(GetCustomers request, CancellationToken cancellationToken)
     {
-        var customer = await _unitOfWork.CustomersRepository.GetByPageFilter<CustomerReadDto, string>(
+        var customer = await unitOfWork.CustomersRepository.GetByPageFilter<CustomerReadDto, string>(
             request,
-            _mapper.ConfigurationProvider,
+            mapper.ConfigurationProvider,
             sortExpression: x => x.City!,
             cancellationToken: cancellationToken
         );

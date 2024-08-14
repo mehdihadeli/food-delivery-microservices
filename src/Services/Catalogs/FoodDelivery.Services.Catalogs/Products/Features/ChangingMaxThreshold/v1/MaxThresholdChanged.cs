@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingMaxThreshold.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingMaxThreshold.v1;
 
 internal record MaxThresholdChanged(long ProductId, int MaxThreshold) : DomainEvent
 {

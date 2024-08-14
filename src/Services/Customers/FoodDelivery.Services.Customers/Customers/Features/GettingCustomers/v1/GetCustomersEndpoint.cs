@@ -9,7 +9,7 @@ using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.V1;
+namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.v1;
 
 internal class GetCustomersEndpoint
     : IQueryMinimalEndpoint<
@@ -68,7 +68,7 @@ internal class GetCustomersEndpoint
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding#binding-precedence
 internal record GetCustomersRequestParameters(
     HttpContext HttpContext,
-    IQueryBus QueryProcessor,
+    IQueryBus QueryBus,
     IMapper Mapper,
     CancellationToken CancellationToken,
     int PageSize = 10,

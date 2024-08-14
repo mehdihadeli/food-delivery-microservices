@@ -1,6 +1,6 @@
 namespace BuildingBlocks.Email.Options;
 
-public abstract class MailKitOptions
+public class MailKitOptions
 {
     public required string Host { get; init; }
     public required int Port { get; init; }

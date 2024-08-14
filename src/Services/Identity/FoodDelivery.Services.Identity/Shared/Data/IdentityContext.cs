@@ -1,5 +1,5 @@
 using System.Data;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Humanizer;
@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace FoodDelivery.Services.Identity.Shared.Data;
 
-public class IdentityContext
+public class IdentityContext(DbContextOptions<IdentityContext> options)
     : IdentityDbContext<
         ApplicationUser,
         ApplicationRole,
@@ -20,14 +20,11 @@ public class IdentityContext
         IdentityUserLogin<Guid>,
         IdentityRoleClaim<Guid>,
         IdentityUserToken<Guid>
-    >,
+    >(options),
         IDbFacadeResolver,
         IDomainEventContext,
         ITxDbContextExecution
 {
-    public IdentityContext(DbContextOptions<IdentityContext> options)
-        : base(options) { }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

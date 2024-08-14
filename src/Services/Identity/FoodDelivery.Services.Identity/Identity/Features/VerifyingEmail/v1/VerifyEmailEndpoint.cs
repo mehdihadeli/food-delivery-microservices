@@ -6,7 +6,7 @@ using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1;
 
 public static class VerifyEmailEndpoint
 {
@@ -29,11 +29,11 @@ public static class VerifyEmailEndpoint
             [AsParameters] VerifyEmailRequestParameters requestParameters
         )
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = VerifyEmail.Of(request.Email, request.Code);
 
-            await commandProcessor.SendAsync(command, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
 
             return TypedResults.NoContent();
         }
@@ -47,7 +47,7 @@ internal record VerifyEmailRequest(string? Email, string? Code);
 internal record VerifyEmailRequestParameters(
     [FromBody] VerifyEmailRequest Request,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<VerifyEmailRequest>;

@@ -5,7 +5,7 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Applicatio
 using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription.V1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription.v1;
 
 public record DeleteRestockSubscription(long Id) : ITxCommand
 {
@@ -24,25 +24,16 @@ internal class DeleteRestockSubscriptionValidator : AbstractValidator<DeleteRest
     }
 }
 
-internal class DeleteRestockSubscriptionHandler : ICommandHandler<DeleteRestockSubscription>
+internal class DeleteRestockSubscriptionHandler(
+    CustomersDbContext customersDbContext,
+    ILogger<DeleteRestockSubscriptionHandler> logger
+) : ICommandHandler<DeleteRestockSubscription>
 {
-    private readonly CustomersDbContext _customersDbContext;
-    private readonly ILogger<DeleteRestockSubscriptionHandler> _logger;
-
-    public DeleteRestockSubscriptionHandler(
-        CustomersDbContext customersDbContext,
-        ILogger<DeleteRestockSubscriptionHandler> logger
-    )
-    {
-        _customersDbContext = customersDbContext;
-        _logger = logger;
-    }
-
-    public async Task<Unit> Handle(DeleteRestockSubscription command, CancellationToken cancellationToken)
+    public async Task Handle(DeleteRestockSubscription command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
-        var exists = await _customersDbContext
+        var exists = await customersDbContext
             .RestockSubscriptions.IgnoreAutoIncludes()
             .SingleOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
 
@@ -54,13 +45,11 @@ internal class DeleteRestockSubscriptionHandler : ICommandHandler<DeleteRestockS
         // for raising a deleted domain event
         exists!.Delete();
 
-        _customersDbContext.Entry(exists).State = EntityState.Deleted;
-        _customersDbContext.Entry(exists.ProductInformation).State = EntityState.Unchanged;
+        customersDbContext.Entry(exists).State = EntityState.Deleted;
+        customersDbContext.Entry(exists.ProductInformation).State = EntityState.Unchanged;
 
-        await _customersDbContext.SaveChangesAsync(cancellationToken);
+        await customersDbContext.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("RestockSubscription with id '{InternalCommandId} removed.'", command.Id);
-
-        return Unit.Value;
+        logger.LogInformation("RestockSubscription with id '{InternalCommandId} removed.'", command.Id);
     }
 }

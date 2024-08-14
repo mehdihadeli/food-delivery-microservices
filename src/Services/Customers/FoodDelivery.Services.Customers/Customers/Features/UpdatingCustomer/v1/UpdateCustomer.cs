@@ -7,7 +7,7 @@ using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Data;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.V1;
+namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/
@@ -73,24 +73,16 @@ internal class UpdateCustomerValidator : AbstractValidator<UpdateCustomer>
     }
 }
 
-internal class UpdateCustomerHandler : ICommandHandler<UpdateCustomer>
+internal class UpdateCustomerHandler(CustomersDbContext customersDbContext, ILogger<UpdateCustomerHandler> logger)
+    : ICommandHandler<UpdateCustomer>
 {
-    private readonly CustomersDbContext _customersDbContext;
-    private readonly ILogger<UpdateCustomerHandler> _logger;
-
-    public UpdateCustomerHandler(CustomersDbContext customersDbContext, ILogger<UpdateCustomerHandler> logger)
+    public async Task Handle(UpdateCustomer command, CancellationToken cancellationToken)
     {
-        _customersDbContext = customersDbContext;
-        _logger = logger;
-    }
-
-    public async Task<Unit> Handle(UpdateCustomer command, CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Updating customer");
+        logger.LogInformation("Updating customer");
 
         command.NotBeNull();
 
-        var customer = await _customersDbContext.Customers.FindAsync(
+        var customer = await customersDbContext.Customers.FindAsync(
             new object?[] { CustomerId.Of(command.Id) },
             cancellationToken: cancellationToken
         );
@@ -109,11 +101,10 @@ internal class UpdateCustomerHandler : ICommandHandler<UpdateCustomer>
             command.Nationality == null ? null : Nationality.Of(command.Nationality)
         );
 
-        await _customersDbContext.SaveChangesAsync(cancellationToken);
+        await customersDbContext.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Customer with Id: '{@CustomerId}' updated", customer.Id);
+        logger.LogInformation("Customer with Id: '{@CustomerId}' updated", customer.Id);
 
         // TODO: Update Identity user with new customer changes
-        return Unit.Value;
     }
 }

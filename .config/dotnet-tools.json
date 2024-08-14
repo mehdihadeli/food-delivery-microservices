@@ -9,13 +9,6 @@
       ],
       "rollForward": false
     },
-    "cake.tool": {
-      "version": "2.3.0",
-      "commands": [
-        "dotnet-cake"
-      ],
-      "rollForward": false
-    },
     "csharpier": {
       "version": "0.28.2",
       "commands": [
@@ -24,7 +17,7 @@
       "rollForward": false
     },
     "swashbuckle.aspnetcore.cli": {
-      "version": "6.6.2",
+      "version": "6.7.0",
       "commands": [
         "swagger"
       ],

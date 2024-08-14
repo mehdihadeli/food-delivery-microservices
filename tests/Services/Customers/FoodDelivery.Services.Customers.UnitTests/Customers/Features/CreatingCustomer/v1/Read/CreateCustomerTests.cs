@@ -1,4 +1,3 @@
-using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
@@ -37,13 +36,12 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
         var handler = new CreateCustomerReadHandler(Mapper, _customersReadUnitOfWork);
 
         // Act
-        var res = await handler.Handle(fakeCreateCustomerReadCommand, CancellationToken.None);
+        await handler.Handle(fakeCreateCustomerReadCommand, CancellationToken.None);
 
         // Assert
         await _customersReadUnitOfWork
             .CustomersRepository.Received(1)
             .AddAsync(Arg.Is(insertCustomer), Arg.Any<CancellationToken>());
         await _customersReadUnitOfWork.Received(1).CommitAsync(Arg.Any<CancellationToken>());
-        res.Should().NotBeNull();
     }
 }

@@ -6,7 +6,7 @@ using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.V1;
+namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 
 internal class CreateCustomerEndpoint
     : ICommandMinimalEndpoint<
@@ -39,11 +39,11 @@ internal class CreateCustomerEndpoint
         Results<CreatedAtRoute<CreateCustomerResponse>, UnAuthorizedHttpProblemResult, ValidationProblem>
     > HandleAsync(CreateCustomerRequestParameters requestParameters)
     {
-        var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+        var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
         var command = CreateCustomer.Of(request.Email);
 
-        var result = await commandProcessor.SendAsync(command, cancellationToken);
+        var result = await commandBus.SendAsync(command, cancellationToken);
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -60,7 +60,7 @@ internal class CreateCustomerEndpoint
 internal record CreateCustomerRequestParameters(
     [FromBody] CreateCustomerRequest Request,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<CreateCustomerRequest>;

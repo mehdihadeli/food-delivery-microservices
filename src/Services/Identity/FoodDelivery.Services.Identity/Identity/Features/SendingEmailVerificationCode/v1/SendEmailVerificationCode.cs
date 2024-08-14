@@ -10,44 +10,31 @@ using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.SendingEmailVerificationCode.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.SendingEmailVerificationCode.v1;
 
 internal record SendEmailVerificationCode(string Email) : ICommand
 {
     public static SendEmailVerificationCode Of(string? email) => new(email.NotBeEmptyOrNull());
 }
 
-internal class SendEmailVerificationCodeCommandHandler : ICommandHandler<SendEmailVerificationCode>
+internal class SendEmailVerificationCodeCommandHandler(
+    UserManager<ApplicationUser> userManager,
+    IdentityContext context,
+    IEmailSender emailSender,
+    ILogger<SendEmailVerificationCodeCommandHandler> logger
+) : ICommandHandler<SendEmailVerificationCode>
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IdentityContext _context;
-    private readonly IEmailSender _emailSender;
-    private readonly ILogger<SendEmailVerificationCodeCommandHandler> _logger;
-
-    public SendEmailVerificationCodeCommandHandler(
-        UserManager<ApplicationUser> userManager,
-        IdentityContext context,
-        IEmailSender emailSender,
-        ILogger<SendEmailVerificationCodeCommandHandler> logger
-    )
-    {
-        _userManager = userManager;
-        _context = context;
-        _emailSender = emailSender;
-        _logger = logger;
-    }
-
-    public async Task<Unit> Handle(SendEmailVerificationCode command, CancellationToken cancellationToken)
+    public async Task Handle(SendEmailVerificationCode command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
-        var identityUser = await _userManager.FindByEmailAsync(command.Email);
+        var identityUser = await userManager.FindByEmailAsync(command.Email);
 
         identityUser.NotBeNull(new IdentityUserNotFoundException(command.Email));
 
         if (identityUser.EmailConfirmed)
             throw new ConflictException("Email is already confirmed.");
 
-        bool isExists = await _context
+        bool isExists = await context
             .Set<EmailVerificationCode>()
             .AnyAsync(evc => evc.Email == command.Email && evc.SentAt.AddMinutes(5) > DateTime.Now, cancellationToken);
 
@@ -68,8 +55,8 @@ internal class SendEmailVerificationCodeCommandHandler : ICommandHandler<SendEma
             SentAt = DateTime.Now
         };
 
-        await _context.Set<EmailVerificationCode>().AddAsync(emailVerificationCode, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.Set<EmailVerificationCode>().AddAsync(emailVerificationCode, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
 
         (string Email, string VerificationCode) model = (command.Email, verificationCode);
 
@@ -80,10 +67,8 @@ internal class SendEmailVerificationCodeCommandHandler : ICommandHandler<SendEma
 
         EmailObject emailObject = new EmailObject(command.Email, subject, content);
 
-        await _emailSender.SendAsync(emailObject);
+        await emailSender.SendAsync(emailObject);
 
-        _logger.LogInformation("Verification email sent successfully for userId:{UserId}", identityUser.Id);
-
-        return Unit.Value;
+        logger.LogInformation("Verification email sent successfully for userId:{UserId}", identityUser.Id);
     }
 }

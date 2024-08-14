@@ -1,21 +1,5 @@
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Core.Events.Internal;
 
 namespace FoodDelivery.Services.Customers;
 
-public record TestDomainEvent(string Data) : DomainEvent
-{
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as TestDomainEvent);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as TestDomainEvent);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as TestDomainEvent);
-    }
-}
+public record TestDomainEvent(string Data) : DomainEvent;

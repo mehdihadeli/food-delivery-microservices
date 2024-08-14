@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using AutoMapper;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Resiliency;
 using BuildingBlocks.Web.Extensions;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity.Dtos;

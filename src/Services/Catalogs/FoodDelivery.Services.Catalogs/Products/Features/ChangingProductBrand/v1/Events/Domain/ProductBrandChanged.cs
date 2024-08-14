@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductBrand.V1.Events.Domain;
+namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductBrand.v1.Events.Domain;
 
 internal record ProductBrandChanged(long BrandId, long ProductId) : DomainEvent
 {

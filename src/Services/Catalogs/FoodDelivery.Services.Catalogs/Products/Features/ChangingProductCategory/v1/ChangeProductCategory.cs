@@ -1,6 +1,6 @@
 using BuildingBlocks.Abstractions.Commands;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductCategory.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductCategory.v1;
 
 internal record ChangeProductCategory : ITxCommand<ChangeProductCategoryResult>;
 

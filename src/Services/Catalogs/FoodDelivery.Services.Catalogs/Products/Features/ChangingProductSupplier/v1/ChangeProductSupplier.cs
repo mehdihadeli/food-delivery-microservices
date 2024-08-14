@@ -1,6 +1,6 @@
 using BuildingBlocks.Abstractions.Commands;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductSupplier.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductSupplier.v1;
 
 internal record ChangeProductSupplier : ITxCommand<ChangeProductSupplierResult>;
 

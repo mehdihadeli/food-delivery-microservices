@@ -1,13 +1,13 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
-using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.Read.Mongo;
+using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Read.Mongo;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.V1.Events.Domain;
+namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/
@@ -62,21 +62,6 @@ public record CustomerUpdated(
             )
         );
     }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as CustomerUpdated);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as CustomerUpdated);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as CustomerUpdated);
-    }
 }
 
 internal class CustomerUpdatedValidator : AbstractValidator<CustomerUpdated>
@@ -98,24 +83,15 @@ internal class CustomerUpdatedValidator : AbstractValidator<CustomerUpdated>
     }
 }
 
-internal class CustomerCreatedHandler : IDomainEventHandler<CustomerUpdated>
+internal class CustomerCreatedHandler(ICommandBus commandBus, IMapper mapper) : IDomainEventHandler<CustomerUpdated>
 {
-    private readonly ICommandBus _commandProcessor;
-    private readonly IMapper _mapper;
-
-    public CustomerCreatedHandler(ICommandBus commandProcessor, IMapper mapper)
-    {
-        _commandProcessor = commandProcessor;
-        _mapper = mapper;
-    }
-
     public Task Handle(CustomerUpdated notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
-        var mongoReadCommand = _mapper.Map<UpdateCustomerRead>(notification);
+        var mongoReadCommand = mapper.Map<UpdateCustomerRead>(notification);
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         // Schedule multiple read sides to execute here
-        return _commandProcessor.ScheduleAsync(new IInternalCommand[] { mongoReadCommand }, cancellationToken);
+        return commandBus.ScheduleAsync(new IInternalCommand[] { mongoReadCommand }, cancellationToken);
     }
 }

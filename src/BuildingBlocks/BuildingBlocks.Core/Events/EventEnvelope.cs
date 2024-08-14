@@ -7,7 +7,7 @@ using Humanizer;
 
 namespace BuildingBlocks.Core.Events;
 
-public record EventEnvelope<T>(T Data, IEventEnvelopeMetadata? Metadata) : IEventEnvelope<T>
+public record EventEnvelope<T>(T Data, IEventEnvelopeMetadata? Metadata = null) : IEventEnvelope<T>
     where T : notnull
 {
     object IEventEnvelope.Data => Data;
@@ -15,7 +15,7 @@ public record EventEnvelope<T>(T Data, IEventEnvelopeMetadata? Metadata) : IEven
 
 public static class EventEnvelope
 {
-    public static IEventEnvelope From(object data, IEventEnvelopeMetadata? metadata)
+    public static IEventEnvelope From(object data, IEventEnvelopeMetadata? metadata = null)
     {
         var type = typeof(EventEnvelope<>).MakeGenericType(data.GetType());
         return (IEventEnvelope)Activator.CreateInstance(type, data, metadata)!;

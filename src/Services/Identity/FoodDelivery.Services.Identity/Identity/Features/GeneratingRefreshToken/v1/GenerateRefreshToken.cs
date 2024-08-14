@@ -6,22 +6,16 @@ using FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.v1;
 using FoodDelivery.Services.Identity.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.GeneratingRefreshToken.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.GeneratingRefreshToken.v1;
 
 internal record GenerateRefreshToken(Guid UserId, string? Token = null) : ICommand<GenerateRefreshTokenResult>
 {
     public static GenerateRefreshToken Of(Guid userId, string? token = null) => new(userId.NotBeEmpty(), token);
 }
 
-internal class GenerateRefreshTokenHandler : ICommandHandler<GenerateRefreshToken, GenerateRefreshTokenResult>
+internal class GenerateRefreshTokenHandler(IdentityContext context)
+    : ICommandHandler<GenerateRefreshToken, GenerateRefreshTokenResult>
 {
-    private readonly IdentityContext _context;
-
-    public GenerateRefreshTokenHandler(IdentityContext context)
-    {
-        _context = context;
-    }
-
     public async Task<GenerateRefreshTokenResult> Handle(
         GenerateRefreshToken command,
         CancellationToken cancellationToken
@@ -29,7 +23,7 @@ internal class GenerateRefreshTokenHandler : ICommandHandler<GenerateRefreshToke
     {
         command.NotBeNull();
 
-        var refreshToken = await _context
+        var refreshToken = await context
             .Set<Shared.Models.RefreshToken>()
             .FirstOrDefaultAsync(rt => rt.UserId == command.UserId && rt.Token == command.Token, cancellationToken);
 
@@ -46,8 +40,8 @@ internal class GenerateRefreshTokenHandler : ICommandHandler<GenerateRefreshToke
                 CreatedByIp = IpUtilities.GetIpAddress()
             };
 
-            await _context.Set<Shared.Models.RefreshToken>().AddAsync(refreshToken, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.Set<Shared.Models.RefreshToken>().AddAsync(refreshToken, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
         else
         {
@@ -61,8 +55,8 @@ internal class GenerateRefreshTokenHandler : ICommandHandler<GenerateRefreshToke
             refreshToken.CreatedAt = DateTime.Now.AddDays(10);
             refreshToken.CreatedByIp = IpUtilities.GetIpAddress();
 
-            _context.Set<Shared.Models.RefreshToken>().Update(refreshToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            context.Set<Shared.Models.RefreshToken>().Update(refreshToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         // remove old refresh tokens from user
@@ -85,15 +79,15 @@ internal class GenerateRefreshTokenHandler : ICommandHandler<GenerateRefreshToke
         );
     }
 
-    private Task RemoveOldRefreshTokens(Guid userId, long? ttlRefreshToken = null)
+    private Task<int> RemoveOldRefreshTokens(Guid userId, long? ttlRefreshToken = null)
     {
-        var refreshTokens = _context
+        var refreshTokens = context
             .Set<global::FoodDelivery.Services.Identity.Shared.Models.RefreshToken>()
             .Where(rt => rt.UserId == userId);
 
         refreshTokens.ToList().RemoveAll(x => !x.IsRefreshTokenValid(ttlRefreshToken));
 
-        return _context.SaveChangesAsync();
+        return context.SaveChangesAsync();
     }
 }
 

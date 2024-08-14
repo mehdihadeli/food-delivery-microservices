@@ -1,14 +1,13 @@
 using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
-using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Write;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.Shared.Extensions;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.V1.Events.Domain;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Events.Domain;
 
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 // https://event-driven.io/en/how_to_validate_business_logic/
@@ -63,31 +62,16 @@ public record RestockSubscriptionCreated(
             Processed
         );
     }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as RestockSubscriptionCreated);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as RestockSubscriptionCreated);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as RestockSubscriptionCreated);
-    }
 }
 
 internal class RestockSubscriptionCreatedHandler : IDomainEventHandler<RestockSubscriptionCreated>
 {
-    private readonly ICommandBus _commandProcessor;
+    private readonly ICommandBus _commandBus;
     private readonly CustomersDbContext _customersDbContext;
 
-    public RestockSubscriptionCreatedHandler(ICommandBus commandProcessor, CustomersDbContext customersDbContext)
+    public RestockSubscriptionCreatedHandler(ICommandBus commandBus, CustomersDbContext customersDbContext)
     {
-        _commandProcessor = commandProcessor;
+        _commandBus = commandBus;
         _customersDbContext = customersDbContext;
     }
 
@@ -109,6 +93,6 @@ internal class RestockSubscriptionCreatedHandler : IDomainEventHandler<RestockSu
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         // Schedule multiple read sides to execute here
-        await _commandProcessor.ScheduleAsync(new IInternalCommand[] { mongoReadCommand }, cancellationToken);
+        await _commandBus.ScheduleAsync(new IInternalCommand[] { mongoReadCommand }, cancellationToken);
     }
 }

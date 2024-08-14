@@ -13,20 +13,26 @@ public static class DependencyInjectionExtensions
 {
     // https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/README.md
     // https://github.com/dotnet/aspnet-api-versioning/tree/88323136a97a59fcee24517a514c1a445530c7e2/examples/AspNetCore/WebApi/MinimalOpenApiExample
-    public static WebApplicationBuilder AddCustomSwagger(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddCustomSwagger(
+        this WebApplicationBuilder builder,
+        Action<SwaggerOptions>? configurator = null
+    )
     {
-        builder.Services.AddCustomSwagger();
+        builder.Services.AddCustomSwagger(configurator);
 
         return builder;
     }
 
-    public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
+    public static IServiceCollection AddCustomSwagger(
+        this IServiceCollection services,
+        Action<SwaggerOptions>? configurator = null
+    )
     {
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi
         services.AddEndpointsApiExplorer();
 
         services.TryAddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-        services.AddValidatedOptions<SwaggerOptions>();
+        services.AddValidatedOptions(configurator: configurator);
 
         services.AddSwaggerGen(options =>
         {

@@ -6,7 +6,7 @@ using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GetRestockSubscriptionById.V1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GetRestockSubscriptionById.v1;
 
 public record GetRestockSubscriptionById(Guid Id) : IQuery<GetRestockSubscriptionByIdResult>
 {
@@ -25,18 +25,9 @@ internal class GetRestockSubscriptionByIdValidator : AbstractValidator<GetRestoc
     }
 }
 
-internal class GetRestockSubscriptionByIdHandler
+internal class GetRestockSubscriptionByIdHandler(CustomersReadUnitOfWork unitOfWork, IMapper mapper)
     : IQueryHandler<GetRestockSubscriptionById, GetRestockSubscriptionByIdResult>
 {
-    private readonly CustomersReadUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-
-    public GetRestockSubscriptionByIdHandler(CustomersReadUnitOfWork unitOfWork, IMapper mapper)
-    {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-    }
-
     public async Task<GetRestockSubscriptionByIdResult> Handle(
         GetRestockSubscriptionById query,
         CancellationToken cancellationToken
@@ -44,7 +35,7 @@ internal class GetRestockSubscriptionByIdHandler
     {
         query.NotBeNull();
 
-        var restockSubscription = await _unitOfWork.RestockSubscriptionsRepository.FindOneAsync(
+        var restockSubscription = await unitOfWork.RestockSubscriptionsRepository.FindOneAsync(
             x => x.IsDeleted == false && x.Id == query.Id,
             cancellationToken
         );
@@ -54,7 +45,7 @@ internal class GetRestockSubscriptionByIdHandler
             throw new RestockSubscriptionNotFoundException(query.Id);
         }
 
-        var subscriptionDto = _mapper.Map<RestockSubscriptionDto>(restockSubscription);
+        var subscriptionDto = mapper.Map<RestockSubscriptionDto>(restockSubscription);
 
         return new GetRestockSubscriptionByIdResult(subscriptionDto);
     }

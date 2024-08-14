@@ -7,7 +7,7 @@ using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Users.Features.GettingUserById.V1;
+namespace FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
 
 public static class GetUserByIdEndpoint
 {

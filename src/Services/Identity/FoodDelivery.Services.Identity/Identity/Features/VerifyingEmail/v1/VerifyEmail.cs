@@ -8,7 +8,7 @@ using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1;
 
 public record VerifyEmail(string Email, string Code) : ICommand
 {
@@ -39,7 +39,7 @@ internal class VerifyEmailHandler : ICommandHandler<VerifyEmail>
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(VerifyEmail command, CancellationToken cancellationToken)
+    public async Task Handle(VerifyEmail command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
@@ -73,7 +73,5 @@ internal class VerifyEmailHandler : ICommandHandler<VerifyEmail>
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Email verified successfully for userId:{UserId}", user.Id);
-
-        return Unit.Value;
     }
 }

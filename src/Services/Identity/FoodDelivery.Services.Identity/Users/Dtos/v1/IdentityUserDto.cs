@@ -1,6 +1,6 @@
 using FoodDelivery.Services.Identity.Shared.Models;
 
-namespace FoodDelivery.Services.Identity.Users.Dtos.V1;
+namespace FoodDelivery.Services.Identity.Users.Dtos.v1;
 
 public class IdentityUserDto
 {

@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductPrice.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductPrice.v1;
 
 public record ProductPriceChanged(decimal Price) : DomainEvent
 {

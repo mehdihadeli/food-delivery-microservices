@@ -6,7 +6,7 @@ using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1;
 
 // POST api/v1/catalog/products/{productId}/replenish-stock
 internal static class ReplenishProductStockEndpoint
@@ -33,12 +33,9 @@ internal static class ReplenishProductStockEndpoint
             Results<NoContent, UnAuthorizedHttpProblemResult, ValidationProblem, NotFoundHttpProblemResult>
         > Handle([AsParameters] ReplenishProductStockRequestParameters requestParameters)
         {
-            var (request, productId, context, commandProcessor, _, cancellationToken) = requestParameters;
+            var (request, productId, context, commandBus, _, cancellationToken) = requestParameters;
 
-            await commandProcessor.SendAsync(
-                ReplenishProductStock.Of(productId, request.DebitQuantity),
-                cancellationToken
-            );
+            await commandBus.SendAsync(ReplenishProductStock.Of(productId, request.DebitQuantity), cancellationToken);
 
             return TypedResults.NoContent();
         }

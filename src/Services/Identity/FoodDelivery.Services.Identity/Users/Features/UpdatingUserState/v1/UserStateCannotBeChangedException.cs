@@ -2,7 +2,7 @@ using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Types.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 
-namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.V1;
+namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.v1;
 
 internal class UserStateCannotBeChangedException : AppException
 {

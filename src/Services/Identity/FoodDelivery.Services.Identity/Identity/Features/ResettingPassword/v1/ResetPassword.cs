@@ -1,5 +1,5 @@
 using BuildingBlocks.Abstractions.Commands;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.ResettingPassword.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.ResettingPassword.v1;
 
-public record ResetPassword : ICommand { }
+public record ResetPassword : ICommand;

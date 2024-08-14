@@ -15,8 +15,8 @@ internal static class DependencyInjectionExtensions
         var defaultSettings = CreateDefaultSerializerSettings();
         configuration?.Invoke(defaultSettings);
 
-        services.AddTransient<ISerializer, NewtonsoftObjectSerializer>();
-        services.AddTransient<IMessageSerializer, NewtonsoftMessageSerializer>();
+        services.AddTransient<ISerializer>(_ => new NewtonsoftObjectSerializer(defaultSettings));
+        services.AddTransient<IMessageSerializer>(_ => new NewtonsoftMessageSerializer(defaultSettings));
     }
 
     private static JsonSerializerSettings CreateDefaultSerializerSettings(bool camelCase = true, bool indented = false)

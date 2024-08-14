@@ -6,7 +6,7 @@ using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.v1;
 
 public static class RefreshTokenEndpoint
 {
@@ -27,11 +27,11 @@ public static class RefreshTokenEndpoint
             [AsParameters] RefreshTokenRequestParameters requestParameters
         )
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = RefreshToken.Of(request.AccessToken, request.RefreshToken);
 
-            var result = await commandProcessor.SendAsync(command, cancellationToken);
+            var result = await commandBus.SendAsync(command, cancellationToken);
 
             var response = mapper.Map<RefreshTokenResponse>(result);
 
@@ -47,7 +47,7 @@ public static class RefreshTokenEndpoint
 internal record RefreshTokenRequestParameters(
     [FromBody] RefreshTokenRequest Request,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RefreshTokenRequest>;

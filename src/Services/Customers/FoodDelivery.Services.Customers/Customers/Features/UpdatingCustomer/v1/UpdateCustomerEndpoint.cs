@@ -4,7 +4,7 @@ using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using Humanizer;
 
-namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.V1;
+namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
 
 internal class UpdateCustomerEndpoint : ICommandMinimalEndpoint<UpdateCustomerRequest, UpdateCustomerRequestParameters>
 {
@@ -29,12 +29,12 @@ internal class UpdateCustomerEndpoint : ICommandMinimalEndpoint<UpdateCustomerRe
 
     public async Task<IResult> HandleAsync(UpdateCustomerRequestParameters requestParameters)
     {
-        var (request, id, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+        var (request, id, context, commandBus, mapper, cancellationToken) = requestParameters;
 
         var command = mapper.Map<UpdateCustomer>(request);
         command = command with { Id = id };
 
-        await commandProcessor.SendAsync(command, cancellationToken);
+        await commandBus.SendAsync(command, cancellationToken);
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -48,7 +48,7 @@ internal record UpdateCustomerRequestParameters(
     [FromBody] UpdateCustomerRequest Request,
     [FromRoute] long Id,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<UpdateCustomerRequest>;

@@ -9,23 +9,17 @@ public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddConfigurationOptions<T>(
         this IServiceCollection services,
-        Action<T> configuration
+        string? key = null,
+        Action<T>? configurator = null
     )
         where T : class
     {
-        var key = typeof(T).Name;
+        var optionBuilder = services.AddOptions<T>().BindConfiguration(key ?? typeof(T).Name);
 
-        return services.AddConfigurationOptions(key, configuration);
-    }
-
-    public static IServiceCollection AddConfigurationOptions<T>(
-        this IServiceCollection services,
-        string key,
-        Action<T> configuration
-    )
-        where T : class
-    {
-        services.AddOptions<T>().BindConfiguration(key).Configure(configuration);
+        if (configurator is not null)
+        {
+            optionBuilder = optionBuilder.Configure(configurator);
+        }
 
         services.TryAddSingleton(x => x.GetRequiredService<IOptions<T>>().Value);
 
@@ -40,70 +34,53 @@ public static partial class ServiceCollectionExtensions
     {
         var key = typeof(T).Name;
 
-        return AddValidatedOptions<T>(services, key, RequiredConfigurationValidator.Validate, configurator);
+        return AddValidatedOptions(services, key, RequiredConfigurationValidator.Validate, configurator);
     }
 
     public static IServiceCollection AddValidationOptions<T>(
         this IServiceCollection services,
-        string key,
+        string? key = null,
         Action<T>? configurator = null
     )
         where T : class
     {
-        return AddValidatedOptions<T>(services, key, RequiredConfigurationValidator.Validate, configurator);
-    }
-
-    public static IServiceCollection AddConfigurationOptions<T>(this IServiceCollection services)
-        where T : class
-    {
-        return services.AddConfigurationOptions<T>(typeof(T).Name);
-    }
-
-    public static IServiceCollection AddConfigurationOptions<T>(this IServiceCollection services, string key)
-        where T : class
-    {
-        services.AddOptions<T>().BindConfiguration(key);
-
-        services.TryAddSingleton(x => x.GetRequiredService<IOptions<T>>().Value);
-
-        return services;
-    }
-
-    public static IServiceCollection AddValidatedOptions<T>(this IServiceCollection services)
-        where T : class
-    {
-        return AddValidatedOptions<T>(services, typeof(T).Name, RequiredConfigurationValidator.Validate);
-    }
-
-    public static IServiceCollection AddValidatedOptions<T>(this IServiceCollection services, string key)
-        where T : class
-    {
-        return AddValidatedOptions<T>(services, key, RequiredConfigurationValidator.Validate);
+        return AddValidatedOptions(
+            services,
+            key ?? typeof(T).Name,
+            RequiredConfigurationValidator.Validate,
+            configurator
+        );
     }
 
     public static IServiceCollection AddValidatedOptions<T>(
         this IServiceCollection services,
-        string key,
-        Func<T, bool> validator,
+        string? key = null,
+        Func<T, bool>? validator = null,
         Action<T>? configurator = null
     )
         where T : class
     {
+        if (validator is null)
+        {
+            validator = RequiredConfigurationValidator.Validate;
+        }
+
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options
         // https://thecodeblogger.com/2021/04/21/options-pattern-in-net-ioptions-ioptionssnapshot-ioptionsmonitor/
         // https://code-maze.com/aspnet-configuration-options/
         // https://code-maze.com/aspnet-configuration-options-validation/
         // https://dotnetdocs.ir/Post/42/difference-between-ioptions-ioptionssnapshot-and-ioptionsmonitor
         // https://andrewlock.net/adding-validation-to-strongly-typed-configuration-objects-in-dotnet-6/
-        var configuration = services.AddOptions<T>().BindConfiguration(key);
+
+        var optionBuilder = services.AddOptions<T>().BindConfiguration(key ?? typeof(T).Name);
 
         if (configurator is not null)
         {
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/#configure-options-with-a-delegate
-            configuration.Configure(configurator);
+            optionBuilder = optionBuilder.Configure(configurator);
         }
 
-        configuration.Validate(validator);
+        optionBuilder.Validate(validator);
 
         // IOptions itself registered as singleton
         services.TryAddSingleton(x => x.GetRequiredService<IOptions<T>>().Value);

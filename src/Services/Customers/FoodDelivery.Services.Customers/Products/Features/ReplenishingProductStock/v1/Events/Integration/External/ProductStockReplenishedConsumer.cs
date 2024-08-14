@@ -1,35 +1,25 @@
 using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Core.Events;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
-using FoodDelivery.Services.Shared.Catalogs.Products.Events.v1.Integration;
+using FoodDelivery.Services.Shared.Catalogs.Products.Events.V1.Integration;
 using MassTransit;
 
-namespace FoodDelivery.Services.Customers.Products.Features.ReplenishingProductStock.V1.Events.Integration.External;
+namespace FoodDelivery.Services.Customers.Products.Features.ReplenishingProductStock.v1.Events.Integration.External;
 
-public class ProductStockReplenishedConsumer : IConsumer<ProductStockReplenishedV1>
+public class ProductStockReplenishedConsumer(ICommandBus commandBus, ILogger<ProductStockReplenishedConsumer> logger)
+    : IConsumer<EventEnvelope<ProductStockReplenishedV1>>
 {
-    private readonly ICommandBus _commandProcessor;
-    private readonly ILogger<ProductStockReplenishedConsumer> _logger;
-
-    public ProductStockReplenishedConsumer(
-        ICommandBus commandProcessor,
-        ILogger<ProductStockReplenishedConsumer> logger
-    )
-    {
-        _commandProcessor = commandProcessor;
-        _logger = logger;
-    }
-
     // If this handler is called successfully, it will send a ACK to rabbitmq for removing message from the queue and if we have an exception it send an NACK to rabbitmq
     // and with NACK we can retry the message with re-queueing this message to the broker
-    public async Task Consume(ConsumeContext<ProductStockReplenishedV1> context)
+    public async Task Consume(ConsumeContext<EventEnvelope<ProductStockReplenishedV1>> context)
     {
-        var productStockReplenished = context.Message;
+        var productStockReplenished = context.Message.Data;
 
-        await _commandProcessor.SendAsync(
+        await commandBus.SendAsync(
             ProcessRestockNotification.Of(productStockReplenished.ProductId, productStockReplenished.NewStock)
         );
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Sending restock notification command for product {ProductId}",
             productStockReplenished.ProductId
         );

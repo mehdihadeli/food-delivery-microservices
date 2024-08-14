@@ -7,7 +7,7 @@ using FoodDelivery.Services.Catalogs.Products.Models;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 
 // PUT api/v1/catalog/products/{id}
 public static class UpdateProductEndpoint
@@ -32,12 +32,12 @@ public static class UpdateProductEndpoint
             [AsParameters] UpdateProductRequestParameters requestParameters
         )
         {
-            var (request, id, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, id, context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = mapper.Map<UpdateProduct>(request);
             command = command with { Id = id };
 
-            await commandProcessor.SendAsync(command, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types

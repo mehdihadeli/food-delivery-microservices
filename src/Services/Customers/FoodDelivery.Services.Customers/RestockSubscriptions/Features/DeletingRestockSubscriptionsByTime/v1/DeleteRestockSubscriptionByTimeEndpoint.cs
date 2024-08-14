@@ -6,7 +6,7 @@ using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime.V1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime.v1;
 
 internal class DeleteRestockSubscriptionByTimeEndpoint
     : ICommandMinimalEndpoint<
@@ -43,11 +43,11 @@ internal class DeleteRestockSubscriptionByTimeEndpoint
         Results<UnAuthorizedHttpProblemResult, NotFoundHttpProblemResult, NoContent, ValidationProblem>
     > HandleAsync([AsParameters] DeleteRestockSubscriptionByTimeRequestParameters requestParameters)
     {
-        var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+        var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
         var command = new DeleteRestockSubscriptionsByTime(request.From, request.To);
 
-        await commandProcessor.SendAsync(command, cancellationToken);
+        await commandBus.SendAsync(command, cancellationToken);
 
         return TypedResults.NoContent();
     }
@@ -56,7 +56,7 @@ internal class DeleteRestockSubscriptionByTimeEndpoint
 internal record DeleteRestockSubscriptionByTimeRequestParameters(
     [FromBody] DeleteRestockSubscriptionByTimeRequest Request,
     HttpContext HttpContext,
-    ICommandBus CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<DeleteRestockSubscriptionByTimeRequest>;

@@ -8,12 +8,12 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddMemoryPackSerialization(
         this IServiceCollection services,
-        Action<MemoryPackSerializerOptions>? configuration = null
+        Action<MemoryPackSerializerOptions>? configurator = null
     )
     {
         var serializerOptions = MemoryPackSerializerOptions.Default;
 
-        configuration?.Invoke(serializerOptions);
+        configurator?.Invoke(serializerOptions);
 
         services.Replace(
             ServiceDescriptor.Transient<ISerializer>(_ => new MemoryPackObjectSerializer(serializerOptions))

@@ -5,12 +5,12 @@ using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
 using Dapper;
 using FluentValidation;
-using FoodDelivery.Services.Catalogs.Products.Dtos.V1;
+using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.V1;
+namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.v1;
 
 internal record GetProductsView : PageQuery<GetProductsViewResult>
 {

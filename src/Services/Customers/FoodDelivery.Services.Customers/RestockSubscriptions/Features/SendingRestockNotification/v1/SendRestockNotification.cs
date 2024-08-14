@@ -9,7 +9,7 @@ using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification.V1;
+namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification.v1;
 
 public record SendRestockNotification(long RestockSubscriptionId, int CurrentStock) : InternalCommand, ITxRequest;
 
@@ -43,7 +43,7 @@ internal class SendRestockNotificationHandler : ICommandHandler<SendRestockNotif
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(SendRestockNotification command, CancellationToken cancellationToken)
+    public async Task Handle(SendRestockNotification command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
@@ -65,7 +65,5 @@ internal class SendRestockNotificationHandler : ICommandHandler<SendRestockNotif
 
             _logger.LogInformation("Restock notification sent to email {Email}", restockSubscription.Email);
         }
-
-        return Unit.Value;
     }
 }

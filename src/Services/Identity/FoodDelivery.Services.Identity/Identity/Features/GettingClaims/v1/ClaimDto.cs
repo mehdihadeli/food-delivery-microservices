@@ -1,4 +1,4 @@
-namespace FoodDelivery.Services.Identity.Identity.Features.GettingClaims.V1;
+namespace FoodDelivery.Services.Identity.Identity.Features.GettingClaims.v1;
 
 public class ClaimDto
 {

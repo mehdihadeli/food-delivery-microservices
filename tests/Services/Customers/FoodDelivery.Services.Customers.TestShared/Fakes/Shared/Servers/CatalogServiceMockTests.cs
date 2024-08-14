@@ -1,5 +1,5 @@
 using System.Net.Http.Json;
-using BuildingBlocks.Web.Extensions;
+using BuildingBlocks.Core.Web.Extensions;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Clients.Catalogs.Dtos;
@@ -10,12 +10,9 @@ namespace FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Servers;
 
 public class CatalogServiceMockTests
 {
-    private readonly CatalogsServiceMock _catalogsServiceMock;
-
-    public CatalogServiceMockTests()
-    {
-        _catalogsServiceMock = CatalogsServiceMock.Start(ConfigurationHelper.BindOptions<CatalogsApiClientOptions>());
-    }
+    private readonly CatalogsServiceMock _catalogsServiceMock = CatalogsServiceMock.Start(
+        ConfigurationHelper.BindOptions<CatalogsApiClientOptions>()
+    );
 
     [Fact]
     [CategoryTrait(TestCategory.Unit)]

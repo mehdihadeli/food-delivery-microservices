@@ -1,7 +1,5 @@
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
-using FoodDelivery.Services.Catalogs.Products.ValueObjects;
-using FoodDelivery.Services.Catalogs.Suppliers;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductSupplier.v1.Events;
 

@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Core.Events.Internal;
 
 namespace FoodDelivery.Services.Customers;
 

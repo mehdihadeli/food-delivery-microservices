@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FoodDelivery.Services.Catalogs.Products;
 
 namespace FoodDelivery.Services.Catalogs.UnitTests.Common;

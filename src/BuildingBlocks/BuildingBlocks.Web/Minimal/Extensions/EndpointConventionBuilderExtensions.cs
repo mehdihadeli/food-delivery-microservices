@@ -15,7 +15,7 @@ public static class EndpointConventionBuilderExtensions
         params string[] additionalContentTypes
     )
     {
-        // WithOpenApi should placed before versioning and other things - this fixed in Aps.Versioning.Http 7.0.0-preview.1
+        // WithOpenApi should place before versioning and other things - this fixed in Aps.Versioning.Http 7.0.0-preview.1
         builder.WithOpenApi(operation =>
         {
             operation.Responses[statusCode.ToString(CultureInfo.InvariantCulture)].Description = description;

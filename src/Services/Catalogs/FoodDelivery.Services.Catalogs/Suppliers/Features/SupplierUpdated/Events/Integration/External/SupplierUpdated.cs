@@ -1,14 +1,11 @@
-using BuildingBlocks.Abstractions.Domain.Events;
+using BuildingBlocks.Abstractions.Events;
+using FoodDelivery.Services.Shared.Catalogs.Suppliers.Events.V1.Integration;
 
 namespace FoodDelivery.Services.Catalogs.Suppliers.Features.SupplierUpdated.Events.Integration.External;
 
-public class SupplierUpdatedConsumer
-    : IEventHandler<FoodDelivery.Services.Shared.Catalogs.Suppliers.Events.v1.Integration.SupplierUpdatedV1>
+public class SupplierUpdatedConsumer : IEventHandler<SupplierUpdatedV1>
 {
-    public Task Handle(
-        FoodDelivery.Services.Shared.Catalogs.Suppliers.Events.v1.Integration.SupplierUpdatedV1 notification,
-        CancellationToken cancellationToken
-    )
+    public Task Handle(SupplierUpdatedV1 notification, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

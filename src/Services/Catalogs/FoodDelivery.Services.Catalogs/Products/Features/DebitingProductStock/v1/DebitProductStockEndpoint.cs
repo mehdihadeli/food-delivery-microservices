@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -30,9 +30,9 @@ public static class DebitProductStockEndpoint
             Results<NoContent, UnAuthorizedHttpProblemResult, ValidationProblem, NotFoundHttpProblemResult>
         > Handle([AsParameters] DebitProductStockRequestParameters requestParameters)
         {
-            var (request, productId, context, commandProcessor, _, cancellationToken) = requestParameters;
+            var (request, productId, context, commandBus, _, cancellationToken) = requestParameters;
 
-            await commandProcessor.SendAsync(DebitProductStock.Of(productId, request.DebitQuantity), cancellationToken);
+            await commandBus.SendAsync(DebitProductStock.Of(productId, request.DebitQuantity), cancellationToken);
 
             return TypedResults.NoContent();
         }
@@ -45,7 +45,7 @@ internal record DebitProductStockRequestParameters(
     [FromBody] DebitProductStockRequest Request,
     [FromRoute] long ProductId,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<DebitProductStockRequest>;

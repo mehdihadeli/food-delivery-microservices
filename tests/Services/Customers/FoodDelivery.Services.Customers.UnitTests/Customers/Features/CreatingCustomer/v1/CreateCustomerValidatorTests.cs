@@ -1,7 +1,7 @@
-using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
-using FoodDelivery.Services.Customers.UnitTests.Common;
 using FluentAssertions;
 using FluentValidation.TestHelper;
+using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
+using FoodDelivery.Services.Customers.UnitTests.Common;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Customers.UnitTests.Customers.Features.CreatingCustomer.v1;

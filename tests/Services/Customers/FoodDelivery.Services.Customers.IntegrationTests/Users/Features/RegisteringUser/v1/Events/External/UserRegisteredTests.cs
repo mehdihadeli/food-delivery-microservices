@@ -4,8 +4,8 @@ using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Events;
 using FoodDelivery.Services.Customers.TestShared.Fixtures;
 using FoodDelivery.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
-using FoodDelivery.Services.Shared.Customers.Customers.Events.v1.Integration;
-using FoodDelivery.Services.Shared.Identity.Users.Events.v1.Integration;
+using FoodDelivery.Services.Shared.Customers.Customers.Events.V1.Integration;
+using FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -35,7 +35,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
     public async Task should_consume_by_existing_consumer_through_the_broker()
     {
         // Act
-        await SharedFixture.PublishMessageAsync(_userRegistered, null, CancellationToken);
+        await SharedFixture.PublishMessageAsync(_userRegistered, CancellationToken);
 
         // Assert
         await SharedFixture.WaitForConsuming<UserRegisteredV1>();

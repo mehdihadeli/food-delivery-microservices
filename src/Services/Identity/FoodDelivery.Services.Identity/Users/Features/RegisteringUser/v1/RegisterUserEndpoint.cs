@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
@@ -28,11 +28,11 @@ public static class RegisterUserEndpoint
             [AsParameters] RegisterUserRequestParameters requestParameters
         )
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = mapper.Map<RegisterUser>(request);
 
-            var result = await commandProcessor.SendAsync(command, cancellationToken);
+            var result = await commandBus.SendAsync(command, cancellationToken);
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -50,7 +50,7 @@ public static class RegisterUserEndpoint
 internal record RegisterUserRequestParameters(
     [FromBody] RegisterUserRequest Request,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RegisterUserRequest>;

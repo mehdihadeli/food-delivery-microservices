@@ -1,8 +1,6 @@
-using BuildingBlocks.Security.Extensions;
+using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Security.Jwt;
-using BuildingBlocks.Web.Extensions;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -14,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Serilog;
 using Serilog.Events;
-using Tests.Shared.Auth;
 using WebMotions.Fake.Authentication.JwtBearer;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -254,8 +251,8 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
 
         httpContextAccessorMock.HttpContext.Request.Host = new HostString("localhost", 5000);
         httpContextAccessorMock.HttpContext.Request.Scheme = "http";
-        var res = httpContextAccessorMock.HttpContext
-            .AuthenticateAsync(Constants.AuthConstants.Scheme)
+        var res = httpContextAccessorMock
+            .HttpContext.AuthenticateAsync(Constants.AuthConstants.Scheme)
             .GetAwaiter()
             .GetResult();
         httpContextAccessorMock.HttpContext.User = res.Ticket?.Principal!;

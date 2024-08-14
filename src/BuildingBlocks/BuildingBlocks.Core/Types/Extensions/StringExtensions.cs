@@ -33,8 +33,7 @@ public static class StringExtensions
 
         strInput = strInput.Trim();
         if (
-            (strInput.StartsWith("{", StringComparison.Ordinal) && strInput.EndsWith("}", StringComparison.Ordinal))
-            || (strInput.StartsWith("[", StringComparison.Ordinal) && strInput.EndsWith("]", StringComparison.Ordinal))
+            (strInput.StartsWith('{') && strInput.EndsWith('}')) || (strInput.StartsWith('[') && strInput.EndsWith(']'))
         )
         {
             try

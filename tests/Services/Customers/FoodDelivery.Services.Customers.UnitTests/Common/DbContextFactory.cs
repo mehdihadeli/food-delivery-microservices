@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Core.Persistence.EfCore;
+using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Persistence.EfCore.Interceptors;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace BuildingBlocks.Persistence.Mongo;
 
 /// <summary>
-/// Hint: transaction not work on mongo standalone
+/// Hint: transaction not work on mongo standalone.
 /// </summary>
 /// <typeparam name="TRequest"></typeparam>
 /// <typeparam name="TResponse"></typeparam>

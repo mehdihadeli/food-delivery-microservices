@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -31,10 +31,10 @@ public static class SendEmailVerificationCodeEndpoint
             [AsParameters] SendEmailVerificationCodeRequestParameters requestParameters
         )
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
             var command = SendEmailVerificationCode.Of(request.Email);
 
-            await commandProcessor.SendAsync(command, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
 
             return TypedResults.NoContent();
         }
@@ -48,7 +48,7 @@ public record SendEmailVerificationCodeRequest(string? Email);
 internal record SendEmailVerificationCodeRequestParameters(
     [FromBody] SendEmailVerificationCodeRequest Request,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<SendEmailVerificationCodeRequest>;

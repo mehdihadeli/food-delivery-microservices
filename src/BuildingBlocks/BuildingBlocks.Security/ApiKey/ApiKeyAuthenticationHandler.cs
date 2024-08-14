@@ -10,37 +10,33 @@ using Microsoft.Extensions.Primitives;
 namespace BuildingBlocks.Security.ApiKey;
 
 // https://josef.codes/asp-net-core-protect-your-api-with-api-keys/
-public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationOptions>
+public class ApiKeyAuthenticationHandler(
+    IOptionsMonitor<ApiKeyAuthenticationOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder,
+    ISystemClock clock,
+    IGetApiKeyQuery getApiKeyQuery
+) : AuthenticationHandler<ApiKeyAuthenticationOptions>(options, logger, encoder, clock)
 {
     private const string ProblemDetailsContentType = "application/problem+json";
-    private readonly IGetApiKeyQuery _getApiKeyQuery;
-
-    public ApiKeyAuthenticationHandler(
-        IOptionsMonitor<ApiKeyAuthenticationOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder,
-        ISystemClock clock,
-        IGetApiKeyQuery getApiKeyQuery
-    )
-        : base(options, logger, encoder, clock)
-    {
-        _getApiKeyQuery = getApiKeyQuery ?? throw new ArgumentNullException(nameof(getApiKeyQuery));
-    }
+    private readonly IGetApiKeyQuery _getApiKeyQuery =
+        getApiKeyQuery ?? throw new ArgumentNullException(nameof(getApiKeyQuery));
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         StringValues apiKeyQueryValues = "";
-        StringValues apiKeyHeaderValues = "";
 
         if (
-            Request.Headers.TryGetValue(ApiKeyConstants.HeaderName, out apiKeyHeaderValues) == false
+            Request.Headers.TryGetValue(ApiKeyConstants.HeaderName, out var apiKeyHeaderValues) == false
             && Request.Query.TryGetValue(ApiKeyConstants.HeaderName, out apiKeyQueryValues) == false
         )
             return AuthenticateResult.NoResult();
 
         var providedApiKey = apiKeyHeaderValues.FirstOrDefault() ?? apiKeyQueryValues.FirstOrDefault();
 
-        if (apiKeyHeaderValues.Count == 0 && apiKeyQueryValues.Count == 0 || string.IsNullOrWhiteSpace(providedApiKey))
+        if (
+            (apiKeyHeaderValues.Count == 0 && apiKeyQueryValues.Count == 0) || string.IsNullOrWhiteSpace(providedApiKey)
+        )
             return AuthenticateResult.NoResult();
 
         var existingApiKey = await _getApiKeyQuery.ExecuteAsync(providedApiKey);

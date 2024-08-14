@@ -2,7 +2,7 @@ using System.Net;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity.Dtos;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Dtos;
-using FoodDelivery.Services.Shared.Identity.Users.Events.v1.Integration;
+using FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;

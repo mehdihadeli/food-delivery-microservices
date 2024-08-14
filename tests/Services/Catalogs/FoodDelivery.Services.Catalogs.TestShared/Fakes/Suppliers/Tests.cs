@@ -1,5 +1,5 @@
-using FoodDelivery.Services.Catalogs.Suppliers.Data;
 using FluentAssertions;
+using FoodDelivery.Services.Catalogs.Suppliers.Data;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Catalogs.TestShared.Fakes.Suppliers;

@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.Brands.Data;

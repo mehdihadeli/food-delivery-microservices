@@ -82,8 +82,8 @@ public static class ObjectExtensions
             .GetType()
             .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
             .Where(x => x.Name == methodName)
-            .FirstOrDefault(
-                x => x.GetParameters().Select(p => p.ParameterType).All(parameters.Select(p => p.GetType()).Contains)
+            .FirstOrDefault(x =>
+                x.GetParameters().Select(p => p.ParameterType).All(parameters.Select(p => p.GetType()).Contains)
             );
 
         if (method is null)
@@ -129,7 +129,7 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// Check if type is a value-type, primitive type  or string
+    /// Check if type is a value-type, primitive type  or string.
     /// </summary>
     public static bool IsPrimitiveType(this object obj)
     {

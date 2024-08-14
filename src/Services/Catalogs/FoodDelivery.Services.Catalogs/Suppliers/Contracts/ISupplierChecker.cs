@@ -1,4 +1,4 @@
-﻿namespace FoodDelivery.Services.Catalogs.Suppliers.Contracts;
+namespace FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 
 public interface ISupplierChecker
 {

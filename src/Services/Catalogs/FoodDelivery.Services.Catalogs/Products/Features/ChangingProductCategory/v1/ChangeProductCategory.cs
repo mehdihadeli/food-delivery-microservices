@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductCategory.v1;
 

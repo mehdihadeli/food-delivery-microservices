@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
+using BuildingBlocks.Core.Persistence.EventStore.Extenions;
 
 namespace BuildingBlocks.Core.Persistence.EventStore.InMemory;
 
@@ -13,7 +14,7 @@ public class InMemoryEventStore : IEventStore
         return Task.FromResult(_storage.ContainsKey(streamId));
     }
 
-    public Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
+    public Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         int maxCount = int.MaxValue,
@@ -22,10 +23,10 @@ public class InMemoryEventStore : IEventStore
     {
         var result = FindStream(streamId).GetEvents(fromVersion ?? StreamReadPosition.Start, maxCount);
 
-        return Task.FromResult<IEnumerable<IStreamEvent>>(result.Select(x => x.ToStreamEvent()));
+        return Task.FromResult<IEnumerable<IStreamEventEnvelope>>(result.Select(x => x.ToStreamEvent()));
     }
 
-    public Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
+    public Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         CancellationToken cancellationToken = default
@@ -36,7 +37,7 @@ public class InMemoryEventStore : IEventStore
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEvent @event,
+        IStreamEventEnvelope @event,
         CancellationToken cancellationToken = default
     )
     {
@@ -45,7 +46,7 @@ public class InMemoryEventStore : IEventStore
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEvent @event,
+        IStreamEventEnvelope @event,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )
@@ -55,7 +56,7 @@ public class InMemoryEventStore : IEventStore
 
     public Task<AppendResult> AppendEventsAsync(
         string streamId,
-        IReadOnlyCollection<IStreamEvent> events,
+        IReadOnlyCollection<IStreamEventEnvelope> events,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )

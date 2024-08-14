@@ -1,6 +1,6 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Core.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Read;
@@ -33,10 +33,7 @@ internal class CreateRestockSubscriptionReadModelHandler : ICommandHandler<Creat
         _mapper = mapper;
     }
 
-    public async Task<Unit> Handle(
-        CreateMongoRestockSubscriptionReadModels command,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(CreateMongoRestockSubscriptionReadModels command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
@@ -44,7 +41,5 @@ internal class CreateRestockSubscriptionReadModelHandler : ICommandHandler<Creat
 
         await _unitOfWork.RestockSubscriptionsRepository.AddAsync(readModel, cancellationToken: cancellationToken);
         await _unitOfWork.CommitAsync(cancellationToken);
-
-        return Unit.Value;
     }
 }

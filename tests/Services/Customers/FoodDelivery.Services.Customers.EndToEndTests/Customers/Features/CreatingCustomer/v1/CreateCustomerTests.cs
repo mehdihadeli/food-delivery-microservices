@@ -1,17 +1,18 @@
+using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Validation;
+using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Requests;
+using FoodDelivery.Services.Customers.TestShared.Fixtures;
+using Microsoft.AspNetCore.Mvc;
+using Tests.Shared.Extensions;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
 using Xunit.Abstractions;
-using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Requests;
-using FoodDelivery.Services.Customers.TestShared.Fixtures;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Tests.Shared.Extensions;
 
 namespace FoodDelivery.Services.Customers.EndToEndTests.Customers.Features.CreatingCustomer.v1;
 
@@ -31,8 +32,8 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
     public async Task can_returns_created_status_code_using_valid_dto_and_auth_credentials()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture.IdentityServiceMock
-            .SetupGetUserByEmail()
+        var fakeIdentityUser = CustomersServiceMockServersFixture
+            .IdentityServiceMock.SetupGetUserByEmail()
             .Response.UserIdentity;
         var fakeCreateCustomerRequest = new FakeCreateCustomerRequest(fakeIdentityUser!.Email).Generate();
         var route = Constants.Routes.Customers.Create;
@@ -49,8 +50,8 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
     public async Task can_returns_valid_response_using_valid_dto_and_auth_credentials()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture.IdentityServiceMock
-            .SetupGetUserByEmail()
+        var fakeIdentityUser = CustomersServiceMockServersFixture
+            .IdentityServiceMock.SetupGetUserByEmail()
             .Response.UserIdentity;
         var fakeCreateCustomerRequest = new FakeCreateCustomerRequest(fakeIdentityUser!.Email).Generate();
         var route = Constants.Routes.Customers.Create;

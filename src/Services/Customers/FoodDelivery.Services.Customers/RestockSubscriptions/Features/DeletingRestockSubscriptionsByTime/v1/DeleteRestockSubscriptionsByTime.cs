@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Domain;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
@@ -10,41 +10,27 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.Deleting
 
 public record DeleteRestockSubscriptionsByTime(DateTime? From = null, DateTime? To = null) : ITxCommand;
 
-internal class DeleteRestockSubscriptionsByTimeHandler : ICommandHandler<DeleteRestockSubscriptionsByTime>
+internal class DeleteRestockSubscriptionsByTimeHandler(
+    CustomersDbContext customersDbContext,
+    IDomainEventPublisher domainEventPublisher,
+    ICommandBus commandBus,
+    ILogger<DeleteRestockSubscriptionsByTimeHandler> logger
+) : ICommandHandler<DeleteRestockSubscriptionsByTime>
 {
-    private readonly CustomersDbContext _customersDbContext;
-    private readonly IDomainEventPublisher _domainEventPublisher;
-    private readonly ICommandProcessor _commandProcessor;
-    private readonly ILogger<DeleteRestockSubscriptionsByTimeHandler> _logger;
-
-    public DeleteRestockSubscriptionsByTimeHandler(
-        CustomersDbContext customersDbContext,
-        IDomainEventPublisher domainEventPublisher,
-        ICommandProcessor commandProcessor,
-        ILogger<DeleteRestockSubscriptionsByTimeHandler> logger
-    )
-    {
-        _customersDbContext = customersDbContext;
-        _domainEventPublisher = domainEventPublisher;
-        _commandProcessor = commandProcessor;
-        _logger = logger;
-    }
-
-    public async Task<Unit> Handle(DeleteRestockSubscriptionsByTime command, CancellationToken cancellationToken)
+    public async Task Handle(DeleteRestockSubscriptionsByTime command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
-        var exists = await _customersDbContext.RestockSubscriptions
-            .Where(
-                x =>
-                    (command.From == null && command.To == null)
-                    || (command.From == null && x.Created <= command.To)
-                    || (command.To == null && x.Created >= command.From)
-                    || (x.Created >= command.From && x.Created <= command.To)
+        var exists = await customersDbContext
+            .RestockSubscriptions.Where(x =>
+                (command.From == null && command.To == null)
+                || (command.From == null && x.Created <= command.To)
+                || (command.To == null && x.Created >= command.From)
+                || (x.Created >= command.From && x.Created <= command.To)
             )
             .ToListAsync(cancellationToken: cancellationToken);
 
-        if (exists.Any() == false)
+        if (exists.Count != 0 == false)
             throw new RestockSubscriptionDomainException("Not found any items to delete");
 
         // instead of directly use of `UpdateMongoRestockSubscriptionsReadModelByTime` we can use this code
@@ -52,23 +38,20 @@ internal class DeleteRestockSubscriptionsByTimeHandler : ICommandHandler<DeleteR
         // {
         //     restockSubscription.Delete();
         // }
-
         foreach (var restockSubscription in exists)
         {
-            _customersDbContext.Entry(restockSubscription).State = EntityState.Deleted;
-            _customersDbContext.Entry(restockSubscription.ProductInformation).State = EntityState.Unchanged;
+            customersDbContext.Entry(restockSubscription).State = EntityState.Deleted;
+            customersDbContext.Entry(restockSubscription.ProductInformation).State = EntityState.Unchanged;
         }
 
-        await _customersDbContext.SaveChangesAsync(cancellationToken);
+        await customersDbContext.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("'{Count}' RestockSubscriptions removed.'", exists.Count);
+        logger.LogInformation("'{Count}' RestockSubscriptions removed.'", exists.Count);
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
-        await _commandProcessor.SendAsync(
+        await commandBus.SendAsync(
             new UpdateMongoRestockSubscriptionsReadModelByTime(command.From, command.To, IsDeleted: true),
             cancellationToken
         );
-
-        return Unit.Value;
     }
 }

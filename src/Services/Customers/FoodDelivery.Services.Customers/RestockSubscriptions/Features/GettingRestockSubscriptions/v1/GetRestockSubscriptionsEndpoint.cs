@@ -1,6 +1,6 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -27,7 +27,6 @@ internal class GetRestockSubscriptionsEndpoint
     {
         // return app.MapQueryEndpoint<GetCustomersRequestParameters, GetCustomersResponse, GetCustomers,
         //         GetProductsResult>("/")
-
         return builder
             .MapGet("/", HandleAsync)
             .RequireAuthorization()
@@ -37,6 +36,7 @@ internal class GetRestockSubscriptionsEndpoint
                 nameof(GetRestockSubscriptions).Humanize()
             )
             .WithDisplayName(nameof(GetRestockSubscriptions).Humanize());
+
         // .Produces<GetCustomersResponse>("Customers fetched successfully.", StatusCodes.Status200OK)
         // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
         // .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -95,7 +95,7 @@ public record GetRestockSubscriptionsRequestParameters(
     DateTime? From,
     DateTime? To,
     HttpContext HttpContext,
-    IQueryProcessor QueryProcessor,
+    IQueryBus QueryBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery, IPageRequest;

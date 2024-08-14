@@ -4,7 +4,7 @@ namespace BuildingBlocks.Core.Domain;
 
 /// <summary>
 /// Enumeration class based on https://lostechies.com/jimmybogard/2008/08/12/enumeration-classes/
-/// https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/enumeration-classes-over-enum-types
+/// https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/enumeration-classes-over-enum-types.
 /// </summary>
 public abstract class Enumeration : IComparable
 {

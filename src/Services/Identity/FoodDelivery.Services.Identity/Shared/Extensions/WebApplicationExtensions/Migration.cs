@@ -1,6 +1,6 @@
-﻿using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Abstractions.Persistence;
 
-namespace FoodDelivery.Services.Catalogs;
+namespace FoodDelivery.Services.Identity.Shared.Extensions.WebApplicationExtensions;
 
 public static partial class WebApplicationExtensions
 {

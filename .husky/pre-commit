@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# dotnet format --verbosity diagnostic
 dotnet csharpier . && git add -A .

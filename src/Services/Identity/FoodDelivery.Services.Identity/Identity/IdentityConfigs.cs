@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Web.Extensions;
 using FoodDelivery.Services.Identity.Identity.Data;
 using FoodDelivery.Services.Identity.Identity.Features.GettingClaims.v1;
@@ -47,13 +48,10 @@ internal class IdentityConfigs : IModuleConfiguration
         var routeCategoryName = Tag;
         var identityVersionGroup = endpoints.NewVersionedApi(name: routeCategoryName).WithTags(Tag);
 
-        // create a new sub group for v1 version
-        var identityGroupV1 = identityVersionGroup
-            .MapGroup(IdentityPrefixUri)
-            .HasDeprecatedApiVersion(0.9)
-            .HasApiVersion(1.0);
+        // create a new subgroup for v1 version
+        var identityGroupV1 = identityVersionGroup.MapGroup(IdentityPrefixUri).HasApiVersion(1.0);
 
-        // create a new sub group for v2 version
+        // create a new subgroup for v2 version
         var identityGroupV2 = identityVersionGroup.MapGroup(IdentityPrefixUri).HasApiVersion(2.0);
 
         identityGroupV1

@@ -2,20 +2,18 @@ using BuildingBlocks.Abstractions.Persistence.EventStore;
 
 namespace BuildingBlocks.Core.Persistence.EventStore.InMemory;
 
-public class InMemoryStream
+public class InMemoryStream(string name)
 {
     private readonly List<StreamEventData> _events = new();
 
-    public InMemoryStream(string name) => StreamName = name;
-
     public int Version { get; private set; } = -1;
 
-    public string StreamName { get; }
+    public string StreamName { get; } = name;
 
     public void CheckVersion(ExpectedStreamVersion expectedVersion)
     {
         if (
-            (expectedVersion.Value == ExpectedStreamVersion.NoStream.Value && _events.Any() == false)
+            (expectedVersion.Value == ExpectedStreamVersion.NoStream.Value && _events.Count != 0 == false)
             || expectedVersion.Value == ExpectedStreamVersion.Any.Value
         )
             return;

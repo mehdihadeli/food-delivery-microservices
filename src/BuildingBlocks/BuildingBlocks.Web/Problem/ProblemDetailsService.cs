@@ -6,19 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace BuildingBlocks.Web.Problem;
 
 // https://www.strathweb.com/2022/08/problem-details-responses-everywhere-with-asp-net-core-and-net-7/
-public class ProblemDetailsService : IProblemDetailsService
+public class ProblemDetailsService(
+    IEnumerable<IProblemDetailsWriter> writers,
+    IEnumerable<IProblemDetailMapper>? problemDetailMappers = null
+) : IProblemDetailsService
 {
-    private readonly IEnumerable<IProblemDetailMapper>? _problemDetailMappers;
-    private readonly IProblemDetailsWriter[] _writers;
-
-    public ProblemDetailsService(
-        IEnumerable<IProblemDetailsWriter> writers,
-        IEnumerable<IProblemDetailMapper>? problemDetailMappers = null
-    )
-    {
-        _writers = writers.ToArray();
-        _problemDetailMappers = problemDetailMappers;
-    }
+    private readonly IProblemDetailsWriter[] _writers = writers.ToArray();
 
     public ValueTask WriteAsync(ProblemDetailsContext context)
     {
@@ -66,9 +59,9 @@ public class ProblemDetailsService : IProblemDetailsService
         IExceptionHandlerFeature exceptionFeature
     )
     {
-        if (_problemDetailMappers is { })
+        if (problemDetailMappers is { })
         {
-            foreach (var problemDetailMapper in _problemDetailMappers)
+            foreach (var problemDetailMapper in problemDetailMappers)
             {
                 var mappedStatusCode = problemDetailMapper.GetMappedStatusCodes(exceptionFeature.Error);
                 if (mappedStatusCode > 0)

@@ -1,13 +1,13 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
-using BuildingBlocks.Core.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Paging;
+using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Sieve.Services;
 
@@ -50,25 +50,15 @@ internal class GetUsersValidator : AbstractValidator<GetUsers>
     }
 }
 
-internal class GetUsersHandler : IQueryHandler<GetUsers, GetUsersResult>
+internal class GetUsersHandler(UserManager<ApplicationUser> userManager, IMapper mapper, ISieveProcessor sieveProcessor)
+    : IQueryHandler<GetUsers, GetUsersResult>
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IMapper _mapper;
-    private readonly ISieveProcessor _sieveProcessor;
-
-    public GetUsersHandler(UserManager<ApplicationUser> userManager, IMapper mapper, ISieveProcessor sieveProcessor)
-    {
-        _userManager = userManager;
-        _mapper = mapper;
-        _sieveProcessor = sieveProcessor;
-    }
-
     public async Task<GetUsersResult> Handle(GetUsers request, CancellationToken cancellationToken)
     {
-        var users = await _userManager.FindAllUsersByPageAsync<IdentityUserDto>(
+        var users = await userManager.FindAllUsersByPageAsync<IdentityUserDto>(
             request,
-            _mapper,
-            _sieveProcessor,
+            mapper,
+            sieveProcessor,
             cancellationToken
         );
 

@@ -1,7 +1,7 @@
+using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using FoodDelivery.Services.Identity.Shared.Models;
 
 namespace FoodDelivery.Services.Identity.Identity.Data.EntityConfigurations;
 

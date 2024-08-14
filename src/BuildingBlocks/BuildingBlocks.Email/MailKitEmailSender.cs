@@ -1,27 +1,26 @@
 using BuildingBlocks.Email.Options;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
 namespace BuildingBlocks.Email;
 
-public class MailKitEmailSender : IEmailSender
+public class MailKitEmailSender(IOptions<EmailOptions> config, ILogger<MailKitEmailSender> logger) : IEmailSender
 {
-    private readonly EmailOptions _config;
-    private readonly ILogger<MailKitEmailSender> _logger;
-
-    public MailKitEmailSender(IOptions<EmailOptions> config, ILogger<MailKitEmailSender> logger)
-    {
-        _config = config.Value;
-        _logger = logger;
-    }
+    private readonly EmailOptions _config = config.Value;
 
     public async Task SendAsync(EmailObject emailObject)
     {
         try
         {
+            if (_config.MimeKitOptions is null)
+            {
+                throw new Exception("MimeKitOptions is empty.");
+            }
+
             var email = new MimeMessage { Sender = MailboxAddress.Parse(emailObject.SenderEmail ?? _config.From) };
             email.To.Add(MailboxAddress.Parse(emailObject.ReceiverEmail));
             email.Subject = emailObject.Subject;
@@ -38,7 +37,7 @@ public class MailKitEmailSender : IEmailSender
             var response = await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
 
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Email sent. From: {From}, To: {To}, Subject: {Subject}, Content: {Content}",
                 _config.From,
                 emailObject.ReceiverEmail,
@@ -46,9 +45,9 @@ public class MailKitEmailSender : IEmailSender
                 emailObject.MailBody
             );
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex.Message, ex);
+            logger.LogError(ex.Message, ex);
         }
     }
 }

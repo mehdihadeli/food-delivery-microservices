@@ -8,7 +8,10 @@ public record EntityId<T> : Identity<T>
         return id.Value;
     }
 
-    public static EntityId<T> Of(T id) => new() { Value = id };
+    public static EntityId<T> Of(T id)
+    {
+        return new EntityId<T> { Value = id, };
+    }
 }
 
 public record EntityId : EntityId<long>
@@ -19,5 +22,8 @@ public record EntityId : EntityId<long>
         return id.Value;
     }
 
-    public new static EntityId Of(long id) => new() { Value = id };
+    public static new EntityId Of(long id)
+    {
+        return new EntityId { Value = id, };
+    }
 }

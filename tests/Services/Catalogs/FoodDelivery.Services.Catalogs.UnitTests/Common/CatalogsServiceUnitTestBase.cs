@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FoodDelivery.Services.Catalogs.Shared.Data;
 using FoodDelivery.Services.Customers.UnitTests;
 using Tests.Shared.XunitCategories;

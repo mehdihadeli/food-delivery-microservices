@@ -7,7 +7,7 @@ namespace BuildingBlocks.Resiliency.Fallback;
 // Ref: https://anderly.com/2019/12/12/cross-cutting-concerns-with-mediatr-pipeline-behaviors/
 
 /// <summary>
-/// MediatR Fallback Pipeline Behavior
+/// MediatR Fallback Pipeline Behavior.
 /// </summary>
 /// <typeparam name="TRequest"></typeparam>
 /// <typeparam name="TResponse"></typeparam>
@@ -34,7 +34,6 @@ public class FallbackBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest,
     {
         var fallbackHandler = _fallbackHandlers.FirstOrDefault();
         if (fallbackHandler == null)
-
             // No fallback handler found, continue through pipeline
             return await next();
 

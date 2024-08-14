@@ -1,40 +1,32 @@
-using System.Net;
 using BuildingBlocks.Core.Exception.Types;
+using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fixtures;
-using FoodDelivery.Services.Shared.Customers.Customers.Events.v1.Integration;
-using FluentAssertions;
+using FoodDelivery.Services.Shared.Customers.Customers.Events.V1.Integration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
 using Xunit.Abstractions;
-using MongoDB.Driver;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests.Customers.Features.CreatingCustomer.v1;
 
-public class CreateCustomerTests : CustomerServiceIntegrationTestBase
+public class CreateCustomerTests(
+    SharedFixtureWithEfCoreAndMongo<Api.CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
+    ITestOutputHelper outputHelper
+) : CustomerServiceIntegrationTestBase(sharedFixture, outputHelper)
 {
-    public CreateCustomerTests(
-        SharedFixtureWithEfCoreAndMongo<
-            Api.CustomersApiMetadata,
-            CustomersDbContext,
-            CustomersReadDbContext
-        > sharedFixture,
-        ITestOutputHelper outputHelper
-    )
-        : base(sharedFixture, outputHelper) { }
-
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
     public async Task can_create_new_customer_with_valid_input_in_postgres_db()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture.IdentityServiceMock
-            .SetupGetUserByEmail()
+        var fakeIdentityUser = CustomersServiceMockServersFixture
+            .IdentityServiceMock.SetupGetUserByEmail()
             .Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
@@ -46,8 +38,8 @@ public class CreateCustomerTests : CustomerServiceIntegrationTestBase
         createdCustomerResponse.CustomerId.Should().Be(command.Id);
         createdCustomerResponse.IdentityUserId.Should().Be(fakeIdentityUser.Id);
 
-        var createdCustomer = await SharedFixture.ExecuteEfDbContextAsync(
-            async db => await db.Customers.SingleOrDefaultAsync(x => x.Id == createdCustomerResponse.CustomerId)
+        var createdCustomer = await SharedFixture.ExecuteEfDbContextAsync(async db =>
+            await db.Customers.SingleOrDefaultAsync(x => x.Id == createdCustomerResponse.CustomerId)
         );
 
         createdCustomer.Should().NotBeNull();
@@ -77,8 +69,8 @@ public class CreateCustomerTests : CustomerServiceIntegrationTestBase
     public async Task must_throw_exception_when_customer_with_email_already_exists()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture.IdentityServiceMock
-            .SetupGetUserByEmail()
+        var fakeIdentityUser = CustomersServiceMockServersFixture
+            .IdentityServiceMock.SetupGetUserByEmail()
             .Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
@@ -97,8 +89,8 @@ public class CreateCustomerTests : CustomerServiceIntegrationTestBase
     public async Task can_save_mongo_customer_read_model_in_internal_persistence_message()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture.IdentityServiceMock
-            .SetupGetUserByEmail()
+        var fakeIdentityUser = CustomersServiceMockServersFixture
+            .IdentityServiceMock.SetupGetUserByEmail()
             .Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
@@ -114,8 +106,8 @@ public class CreateCustomerTests : CustomerServiceIntegrationTestBase
     public async Task can_create_new_mongo_customer_read_model_in_the_mongodb()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture.IdentityServiceMock
-            .SetupGetUserByEmail()
+        var fakeIdentityUser = CustomersServiceMockServersFixture
+            .IdentityServiceMock.SetupGetUserByEmail()
             .Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
@@ -141,8 +133,8 @@ public class CreateCustomerTests : CustomerServiceIntegrationTestBase
     public async Task can_publish_customer_created_integration_event_to_the_broker()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture.IdentityServiceMock
-            .SetupGetUserByEmail()
+        var fakeIdentityUser = CustomersServiceMockServersFixture
+            .IdentityServiceMock.SetupGetUserByEmail()
             .Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
@@ -158,8 +150,8 @@ public class CreateCustomerTests : CustomerServiceIntegrationTestBase
     public async Task can_save_customer_created_integration_event_in_the_outbox()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture.IdentityServiceMock
-            .SetupGetUserByEmail()
+        var fakeIdentityUser = CustomersServiceMockServersFixture
+            .IdentityServiceMock.SetupGetUserByEmail()
             .Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 

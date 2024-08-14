@@ -1,6 +1,5 @@
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
-using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductPrice.v1;
 

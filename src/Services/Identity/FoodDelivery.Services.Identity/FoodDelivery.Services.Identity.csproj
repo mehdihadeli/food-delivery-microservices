@@ -48,7 +48,6 @@
 
 <!--  https://devblogs.microsoft.com/nuget/introducing-central-package-management/-->
 <!--  <ItemGroup>-->
-<!--    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" VersionOverride="11.0.0"/>-->
 <!--    <PackageReference Include="AutoMapper" VersionOverride="11.0.0"/>-->
 <!--  </ItemGroup>-->
 

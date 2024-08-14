@@ -1,7 +1,6 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Minimal.Extensions;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -32,11 +31,11 @@ public static class RevokeAllAccessTokensEndpoint
             [AsParameters] RevokeAllTokensRequestParameters requestParameters
         )
         {
-            var (context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = RevokeAllAccessTokens.Of(context.User.Identity!.Name!);
 
-            await commandProcessor.SendAsync(command, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -47,7 +46,7 @@ public static class RevokeAllAccessTokensEndpoint
 
 internal record RevokeAllTokensRequestParameters(
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand;

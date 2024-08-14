@@ -3,12 +3,10 @@ using BuildingBlocks.Abstractions.Persistence.Mongo;
 
 namespace BuildingBlocks.Persistence.Mongo;
 
-public class MongoUnitOfWork<TContext> : IMongoUnitOfWork<TContext>, ITransactionAble
+public class MongoUnitOfWork<TContext>(TContext context) : IMongoUnitOfWork<TContext>, ITransactionAble
     where TContext : MongoDbContext
 {
-    public MongoUnitOfWork(TContext context) => Context = context;
-
-    public TContext Context { get; }
+    public TContext Context { get; } = context;
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {

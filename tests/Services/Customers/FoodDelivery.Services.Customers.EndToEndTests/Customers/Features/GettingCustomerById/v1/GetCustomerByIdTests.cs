@@ -1,10 +1,11 @@
+using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Validation;
+using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.GettingCustomerById.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Tests.Shared.Extensions;
 using Tests.Shared.Fixtures;

@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Domain.Events;
+using BuildingBlocks.Abstractions.Events;
 
 namespace BuildingBlocks.Abstractions.Messaging;
 

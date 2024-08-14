@@ -4,17 +4,11 @@ using Microsoft.Extensions.Logging;
 
 namespace BuildingBlocks.Logging;
 
-public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> logger)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : class
 {
-    private readonly ILogger<LoggingBehavior<TRequest, TResponse>> _logger;
-
-    public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger)
-    {
-        _logger = logger;
-    }
-
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
@@ -23,7 +17,7 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     {
         const string prefix = nameof(LoggingBehavior<TRequest, TResponse>);
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "[{Prefix}] Handle request '{RequestData}' and response '{ResponseData}'",
             prefix,
             typeof(TRequest).Name,
@@ -39,7 +33,7 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         var timeTaken = timer.Elapsed;
         if (timeTaken.Seconds > 3)
         {
-            _logger.LogWarning(
+            logger.LogWarning(
                 "[{PerfPossible}] The request '{RequestData}' took '{TimeTaken}' seconds",
                 prefix,
                 typeof(TRequest).Name,
@@ -48,7 +42,7 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         }
         else
         {
-            _logger.LogInformation(
+            logger.LogInformation(
                 "[{PerfPossible}] The request '{RequestData}' took '{TimeTaken}' seconds",
                 prefix,
                 typeof(TRequest).Name,
@@ -56,23 +50,17 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
             );
         }
 
-        _logger.LogInformation("[{Prefix}] Handled '{RequestData}'", prefix, typeof(TRequest).Name);
+        logger.LogInformation("[{Prefix}] Handled '{RequestData}'", prefix, typeof(TRequest).Name);
 
         return response;
     }
 }
 
-public class StreamLoggingBehavior<TRequest, TResponse> : IStreamPipelineBehavior<TRequest, TResponse>
+public class StreamLoggingBehavior<TRequest, TResponse>(ILogger<StreamLoggingBehavior<TRequest, TResponse>> logger)
+    : IStreamPipelineBehavior<TRequest, TResponse>
     where TRequest : IStreamRequest<TResponse>
     where TResponse : class
 {
-    private readonly ILogger<StreamLoggingBehavior<TRequest, TResponse>> _logger;
-
-    public StreamLoggingBehavior(ILogger<StreamLoggingBehavior<TRequest, TResponse>> logger)
-    {
-        _logger = logger;
-    }
-
     public async IAsyncEnumerable<TResponse> Handle(
         TRequest request,
         StreamHandlerDelegate<TResponse> next,
@@ -81,7 +69,7 @@ public class StreamLoggingBehavior<TRequest, TResponse> : IStreamPipelineBehavio
     {
         const string prefix = nameof(StreamLoggingBehavior<TRequest, TResponse>);
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "[{Prefix}] Handle request '{RequestData}' and response '{ResponseData}'",
             prefix,
             typeof(TRequest).Name,
@@ -97,7 +85,7 @@ public class StreamLoggingBehavior<TRequest, TResponse> : IStreamPipelineBehavio
             var timeTaken = timer.Elapsed;
             if (timeTaken.Seconds > 3)
             {
-                _logger.LogWarning(
+                logger.LogWarning(
                     "[{PerfPossible}] The request '{RequestData}' took '{TimeTaken}' seconds",
                     prefix,
                     typeof(TRequest).Name,
@@ -105,7 +93,7 @@ public class StreamLoggingBehavior<TRequest, TResponse> : IStreamPipelineBehavio
                 );
             }
 
-            _logger.LogInformation("[{Prefix}] Handled '{RequestData}'", prefix, typeof(TRequest).Name);
+            logger.LogInformation("[{Prefix}] Handled '{RequestData}'", prefix, typeof(TRequest).Name);
             yield return response;
         }
     }

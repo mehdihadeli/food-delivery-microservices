@@ -1,12 +1,12 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
-using BuildingBlocks.Core.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Paging;
+using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
-using FluentValidation;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptions.v1;
 
@@ -54,28 +54,20 @@ internal class GetRestockSubscriptionsValidator : AbstractValidator<GetRestockSu
     }
 }
 
-internal class GeRestockSubscriptionsHandler : IQueryHandler<GetRestockSubscriptions, GetRestockSubscriptionsResult>
+internal class GeRestockSubscriptionsHandler(CustomersReadUnitOfWork customersReadUnitOfWork, IMapper mapper)
+    : IQueryHandler<GetRestockSubscriptions, GetRestockSubscriptionsResult>
 {
-    private readonly CustomersReadUnitOfWork _customersReadUnitOfWork;
-    private readonly IMapper _mapper;
-
-    public GeRestockSubscriptionsHandler(CustomersReadUnitOfWork customersReadUnitOfWork, IMapper mapper)
-    {
-        _customersReadUnitOfWork = customersReadUnitOfWork;
-        _mapper = mapper;
-    }
-
     public async Task<GetRestockSubscriptionsResult> Handle(
         GetRestockSubscriptions query,
         CancellationToken cancellationToken
     )
     {
-        var restockSubscriptions = await _customersReadUnitOfWork.RestockSubscriptionsRepository.GetByPageFilter<
+        var restockSubscriptions = await customersReadUnitOfWork.RestockSubscriptionsRepository.GetByPageFilter<
             RestockSubscriptionDto,
             DateTime
         >(
             query,
-            _mapper.ConfigurationProvider,
+            mapper.ConfigurationProvider,
             sortExpression: x => x.Created,
             predicate: x =>
                 x.IsDeleted == false

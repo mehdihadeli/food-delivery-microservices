@@ -7,24 +7,18 @@ using Microsoft.Extensions.Options;
 namespace BuildingBlocks.Caching.Behaviours;
 
 // Ref: https://anderly.com/2019/12/12/cross-cutting-concerns-with-mediatr-pipeline-behaviors/
-public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class CachingBehavior<TRequest, TResponse>(
+    ILogger<CachingBehavior<TRequest, TResponse>> logger,
+    IEasyCachingProviderFactory cachingProviderFactory,
+    IOptions<CacheOptions> cacheOptions
+) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : class
 {
-    private readonly ILogger<CachingBehavior<TRequest, TResponse>> _logger;
-    private readonly IEasyCachingProvider _cacheProvider;
-    private readonly CacheOptions _cacheOptions;
-
-    public CachingBehavior(
-        ILogger<CachingBehavior<TRequest, TResponse>> logger,
-        IEasyCachingProviderFactory cachingProviderFactory,
-        IOptions<CacheOptions> cacheOptions
-    )
-    {
-        _cacheOptions = cacheOptions.Value;
-        _logger = logger;
-        _cacheProvider = cachingProviderFactory.GetCachingProvider(cacheOptions.Value.DefaultCacheType);
-    }
+    private readonly IEasyCachingProvider _cacheProvider = cachingProviderFactory.GetCachingProvider(
+        cacheOptions.Value.DefaultCacheType
+    );
+    private readonly CacheOptions _cacheOptions = cacheOptions.Value;
 
     public async Task<TResponse> Handle(
         TRequest request,
@@ -43,7 +37,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
         if (cachedResponse.Value != null)
         {
-            _logger.LogDebug(
+            logger.LogDebug(
                 "Response retrieved {TRequest} from cache. CacheKey: {CacheKey}",
                 typeof(TRequest).FullName,
                 cacheKey
@@ -62,7 +56,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
         await _cacheProvider.SetAsync(cacheKey, response, expiredTimeSpan, cancellationToken);
 
-        _logger.LogDebug(
+        logger.LogDebug(
             "Caching response for {TRequest} with cache key: {CacheKey}",
             typeof(TRequest).FullName,
             cacheKey

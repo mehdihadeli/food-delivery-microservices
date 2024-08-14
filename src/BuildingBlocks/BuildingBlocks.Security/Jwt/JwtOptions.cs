@@ -11,7 +11,7 @@ public class JwtOptions
     public bool CheckRevokedAccessTokens { get; set; }
     public GoogleExternalLogin? GoogleLoginConfigs { get; set; }
 
-    public class GoogleExternalLogin
+    public sealed class GoogleExternalLogin
     {
         public string ClientId { get; set; } = null!;
         public string ClientSecret { get; set; } = null!;

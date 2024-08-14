@@ -5,23 +5,16 @@ using Marten;
 
 namespace BuildingBlocks.Persistence.Marten;
 
-public class MartenEventStore : IEventStore
+public class MartenEventStore(IDocumentSession documentSession) : IEventStore
 {
-    private readonly IDocumentSession _documentSession;
-
-    public MartenEventStore(IDocumentSession documentSession)
-    {
-        _documentSession = documentSession;
-    }
-
     public Task<bool> StreamExists(string streamId, CancellationToken cancellationToken = default)
     {
-        var state = _documentSession.Events.FetchStreamState(streamId);
+        var state = documentSession.Events.FetchStreamState(streamId);
 
         return Task.FromResult(state != null);
     }
 
-    public async Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
+    public async Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         int maxCount = int.MaxValue,
@@ -31,12 +24,12 @@ public class MartenEventStore : IEventStore
         var events = await Filter(streamId, fromVersion?.Value, null).ToListAsync(cancellationToken);
 
         // events that we saved are IStreamEvent
-        var streamEvents = events.Select(ev => ev.Data).OfType<IStreamEvent>().ToImmutableList();
+        var streamEvents = events.Select(ev => ev.Data).OfType<IStreamEventEnvelope>().ToImmutableList();
 
         return streamEvents;
     }
 
-    public Task<IEnumerable<IStreamEvent>> GetStreamEventsAsync(
+    public Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         CancellationToken cancellationToken = default
@@ -47,21 +40,21 @@ public class MartenEventStore : IEventStore
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEvent @event,
+        IStreamEventEnvelope @event,
         CancellationToken cancellationToken = default
     )
     {
         // storing whole stream event with metadata because there is no way to store metadata separately
-        var result = _documentSession.Events.Append(streamId, @event);
+        var result = documentSession.Events.Append(streamId, @event);
 
-        var nextVersion = _documentSession.Events.FetchStream(streamId).Count;
+        var nextVersion = documentSession.Events.FetchStream(streamId).Count;
 
         return Task.FromResult(new AppendResult(-1, nextVersion));
     }
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEvent @event,
+        IStreamEventEnvelope @event,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )
@@ -71,13 +64,13 @@ public class MartenEventStore : IEventStore
 
     public Task<AppendResult> AppendEventsAsync(
         string streamId,
-        IReadOnlyCollection<IStreamEvent> events,
+        IReadOnlyCollection<IStreamEventEnvelope> events,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )
     {
         // storing whole stream event with metadata because there is no way to store metadata separately
-        var result = _documentSession.Events.Append(
+        var result = documentSession.Events.Append(
             streamId,
             expectedVersion: expectedRevision.Value,
             events: events.Cast<object>().ToArray()
@@ -97,7 +90,7 @@ public class MartenEventStore : IEventStore
     )
         where TAggregate : class, IEventSourcedAggregate<TId>, new()
     {
-        return _documentSession.Events.AggregateStreamAsync<TAggregate>(
+        return documentSession.Events.AggregateStreamAsync<TAggregate>(
             streamId,
             version: fromVersion.Value,
             null,
@@ -113,7 +106,7 @@ public class MartenEventStore : IEventStore
     )
         where TAggregate : class, IEventSourcedAggregate<TId>, new()
     {
-        return _documentSession.Events.AggregateStreamAsync<TAggregate>(
+        return documentSession.Events.AggregateStreamAsync<TAggregate>(
             streamId,
             version: StreamReadPosition.Start.Value,
             null,
@@ -123,12 +116,12 @@ public class MartenEventStore : IEventStore
 
     public Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        return _documentSession.SaveChangesAsync(cancellationToken);
+        return documentSession.SaveChangesAsync(cancellationToken);
     }
 
     private IQueryable<global::Marten.Events.IEvent> Filter(string streamId, long? version, DateTime? timestamp)
     {
-        var query = _documentSession.Events.QueryAllRawEvents().AsQueryable();
+        var query = documentSession.Events.QueryAllRawEvents().AsQueryable();
 
         query = query.Where(ev => ev.StreamKey == streamId);
 

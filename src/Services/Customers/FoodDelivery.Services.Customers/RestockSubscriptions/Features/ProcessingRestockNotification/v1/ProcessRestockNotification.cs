@@ -1,8 +1,8 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
@@ -28,33 +28,22 @@ internal class ProcessRestockNotificationValidator : AbstractValidator<ProcessRe
     }
 }
 
-internal class ProcessRestockNotificationHandler : ICommandHandler<ProcessRestockNotification>
+internal class ProcessRestockNotificationHandler(
+    CustomersDbContext customersDbContext,
+    ICommandBus commandBus,
+    ILogger<ProcessRestockNotificationHandler> logger
+) : ICommandHandler<ProcessRestockNotification>
 {
-    private readonly CustomersDbContext _customersDbContext;
-    private readonly ICommandProcessor _commandProcessor;
-    private readonly ILogger<ProcessRestockNotificationHandler> _logger;
-
-    public ProcessRestockNotificationHandler(
-        CustomersDbContext customersDbContext,
-        ICommandProcessor commandProcessor,
-        ILogger<ProcessRestockNotificationHandler> logger
-    )
-    {
-        _customersDbContext = customersDbContext;
-        _commandProcessor = commandProcessor;
-        _logger = logger;
-    }
-
-    public async Task<Unit> Handle(ProcessRestockNotification command, CancellationToken cancellationToken)
+    public async Task Handle(ProcessRestockNotification command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
-        var subscribedCustomers = _customersDbContext.RestockSubscriptions.Where(
-            x => x.ProductInformation.Id == command.ProductId && !x.Processed
+        var subscribedCustomers = customersDbContext.RestockSubscriptions.Where(x =>
+            x.ProductInformation.Id == command.ProductId && !x.Processed
         );
 
         if (!await subscribedCustomers.AnyAsync(cancellationToken: cancellationToken))
-            return Unit.Value;
+            return;
 
         foreach (var restockSubscription in subscribedCustomers)
         {
@@ -62,16 +51,14 @@ internal class ProcessRestockNotificationHandler : ICommandHandler<ProcessRestoc
 
             // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
             // schedule `SendRestockNotification` for running as a internal command after commenting transaction
-            await _commandProcessor.ScheduleAsync(
+            await commandBus.ScheduleAsync(
                 new SendRestockNotification(restockSubscription.Id, command.CurrentStock),
                 cancellationToken
             );
         }
 
-        await _customersDbContext.SaveChangesAsync(cancellationToken);
+        await customersDbContext.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Marked restock subscriptions as processed");
-
-        return Unit.Value;
+        logger.LogInformation("Marked restock subscriptions as processed");
     }
 }

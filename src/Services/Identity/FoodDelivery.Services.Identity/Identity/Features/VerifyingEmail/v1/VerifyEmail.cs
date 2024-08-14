@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1.Exceptions;
@@ -39,7 +39,7 @@ internal class VerifyEmailHandler : ICommandHandler<VerifyEmail>
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(VerifyEmail command, CancellationToken cancellationToken)
+    public async Task Handle(VerifyEmail command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
@@ -73,7 +73,5 @@ internal class VerifyEmailHandler : ICommandHandler<VerifyEmail>
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Email verified successfully for userId:{UserId}", user.Id);
-
-        return Unit.Value;
     }
 }

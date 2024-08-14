@@ -1,5 +1,5 @@
-﻿using FoodDelivery.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
-using FoodDelivery.Services.Shared.Identity.Users.Events.v1.Integration;
+using FoodDelivery.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
+using FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
 using Humanizer;
 using MassTransit;
 using RabbitMQ.Client;

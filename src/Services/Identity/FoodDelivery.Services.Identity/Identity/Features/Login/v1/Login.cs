@@ -1,18 +1,18 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Utils;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Identity.Identity.Exceptions;
 using FoodDelivery.Services.Identity.Identity.Features.GeneratingJwtToken.v1;
 using FoodDelivery.Services.Identity.Identity.Features.GeneratingRefreshToken.v1;
 using FoodDelivery.Services.Identity.Shared.Data;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -21,7 +21,7 @@ namespace FoodDelivery.Services.Identity.Identity.Features.Login.v1;
 internal record Login(string UserNameOrEmail, string Password, bool Remember) : ICommand<LoginResult>, ITxRequest
 {
     /// <summary>
-    /// Login with in-line validator
+    /// Login with in-line validator.
     /// </summary>
     /// <param name="userNameOrEmail"></param>
     /// <param name="password"></param>
@@ -42,56 +42,37 @@ internal class LoginValidator : AbstractValidator<Login>
     }
 }
 
-internal class LoginHandler : ICommandHandler<Login, LoginResult>
+internal class LoginHandler(
+    UserManager<ApplicationUser> userManager,
+    ICommandBus commandBus,
+    IQueryBus queryBus,
+    IJwtService jwtService,
+    IOptions<JwtOptions> jwtOptions,
+    SignInManager<ApplicationUser> signInManager,
+    IdentityContext context,
+    ILogger<LoginHandler> logger
+) : ICommandHandler<Login, LoginResult>
 {
-    private readonly ICommandProcessor _commandProcessor;
-    private readonly IJwtService _jwtService;
-    private readonly JwtOptions _jwtOptions;
-    private readonly ILogger<LoginHandler> _logger;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly IdentityContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public LoginHandler(
-        UserManager<ApplicationUser> userManager,
-        ICommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
-        IJwtService jwtService,
-        IOptions<JwtOptions> jwtOptions,
-        SignInManager<ApplicationUser> signInManager,
-        IdentityContext context,
-        ILogger<LoginHandler> logger
-    )
-    {
-        _userManager = userManager;
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _jwtService = jwtService;
-        _signInManager = signInManager;
-        _context = context;
-        _jwtOptions = jwtOptions.Value;
-        _logger = logger;
-    }
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
     public async Task<LoginResult> Handle(Login command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
         var identityUser =
-            await _userManager.FindByNameAsync(command.UserNameOrEmail)
-            ?? await _userManager.FindByEmailAsync(command.UserNameOrEmail);
+            await userManager.FindByNameAsync(command.UserNameOrEmail)
+            ?? await userManager.FindByEmailAsync(command.UserNameOrEmail);
 
         identityUser.NotBeNull(exception: new IdentityUserNotFoundException(command.UserNameOrEmail));
 
         // instead of PasswordSignInAsync, we use CheckPasswordSignInAsync because we don't want set cookie, instead we use JWT
-        var signinResult = await _signInManager.CheckPasswordSignInAsync(identityUser, command.Password, false);
+        var signinResult = await signInManager.CheckPasswordSignInAsync(identityUser, command.Password, false);
 
         if (signinResult.IsNotAllowed)
         {
-            if (!await _userManager.IsEmailConfirmedAsync(identityUser))
+            if (!await userManager.IsEmailConfirmedAsync(identityUser))
                 throw new EmailNotConfirmedException(identityUser.Email!);
 
-            if (!await _userManager.IsPhoneNumberConfirmedAsync(identityUser))
+            if (!await userManager.IsPhoneNumberConfirmedAsync(identityUser))
                 throw new PhoneNumberNotConfirmedException(identityUser.PhoneNumber!);
         }
         else if (signinResult.IsLockedOut)
@@ -108,10 +89,10 @@ internal class LoginHandler : ICommandHandler<Login, LoginResult>
         }
 
         var refreshToken = (
-            await _commandProcessor.SendAsync(GenerateRefreshToken.Of(identityUser.Id), cancellationToken)
+            await commandBus.SendAsync(GenerateRefreshToken.Of(identityUser.Id), cancellationToken)
         ).RefreshToken;
 
-        var accessToken = await _commandProcessor.SendAsync(
+        var accessToken = await commandBus.SendAsync(
             GenerateJwtToken.Of(identityUser, refreshToken.Token),
             cancellationToken
         );
@@ -119,11 +100,11 @@ internal class LoginHandler : ICommandHandler<Login, LoginResult>
         if (string.IsNullOrWhiteSpace(accessToken.Token))
             throw new AppException("Generate access token failed.");
 
-        _logger.LogInformation("User with ID: {ID} has been authenticated", identityUser.Id);
+        logger.LogInformation("User with ID: {ID} has been authenticated", identityUser.Id);
 
         if (_jwtOptions.CheckRevokedAccessTokens)
         {
-            await _context
+            await context
                 .Set<AccessToken>()
                 .AddAsync(
                     new AccessToken
@@ -137,7 +118,7 @@ internal class LoginHandler : ICommandHandler<Login, LoginResult>
                     cancellationToken
                 );
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         // we can don't return value from command and get token from a short term session in our request with `TokenStorageService`

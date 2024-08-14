@@ -1,12 +1,6 @@
 namespace BuildingBlocks.Core.Exception.Types;
 
-public class InvalidEmailException : BadRequestException
+public class InvalidEmailException(string email) : BadRequestException($"Email: '{email}' is invalid.")
 {
-    public string Email { get; }
-
-    public InvalidEmailException(string email)
-        : base($"Email: '{email}' is invalid.")
-    {
-        Email = email;
-    }
+    public string Email { get; } = email;
 }

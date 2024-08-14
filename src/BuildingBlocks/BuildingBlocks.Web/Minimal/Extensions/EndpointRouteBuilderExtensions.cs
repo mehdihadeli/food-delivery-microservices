@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
@@ -30,12 +30,12 @@ public static class EndpointRouteBuilderExtensions
         // we can't generalize all possible type results for auto generating open-api metadata, because it might show unwanted response type as metadata
         async Task<NoContent> Handle([AsParameters] HttpCommand<TRequest> requestParameters)
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = mapRequestToCommand is not null
                 ? mapRequestToCommand(request)
                 : mapper.Map<TCommand>(request);
-            await commandProcessor.SendAsync(command, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -66,13 +66,13 @@ public static class EndpointRouteBuilderExtensions
         // we can't generalize all possible type results for auto generating open-api metadata, because it might show unwanted response type as metadata
         async Task<IResult> Handle([AsParameters] HttpCommand<TRequest> requestParameters)
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
             var host = $"{context.Request.Scheme}://{context.Request.Host}";
 
             var command = mapRequestToCommand is not null
                 ? mapRequestToCommand(request)
                 : mapper.Map<TCommand>(request);
-            var res = await commandProcessor.SendAsync(command, cancellationToken);
+            var res = await commandBus.SendAsync(command, cancellationToken);
 
             var response = mapCommandResultToResponse is not null
                 ? mapCommandResultToResponse(res)
@@ -114,7 +114,7 @@ public static class EndpointRouteBuilderExtensions
         // we can't generalize all possible type results for auto generating open-api metadata, because it might show unwanted response type as metadata
         async Task<Ok<TResponse>> Handle([AsParameters] TRequestParameters requestParameters)
         {
-            var queryProcessor = requestParameters.QueryProcessor;
+            var queryProcessor = requestParameters.QueryBus;
             var mapper = requestParameters.Mapper;
             var cancellationToken = requestParameters.CancellationToken;
 

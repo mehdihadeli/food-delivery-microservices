@@ -1,116 +1,37 @@
-﻿using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Messaging.Extensions;
-using BuildingBlocks.Core.Types;
-using BuildingBlocks.Core.Types.Extensions;
-using Humanizer;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Abstractions.Messaging;
+using BuildingBlocks.Core.Events;
 using MassTransit;
-using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
 
 namespace BuildingBlocks.Integration.MassTransit;
 
-public class MassTransitBus : IBus
+public class MassTransitBus(
+    ISendEndpointProvider sendEndpointProvider,
+    IPublishEndpoint publishEndpoint,
+    IMessageMetadataAccessor messageMetadataAccessor
+) : IExternalEventBus
 {
-    private readonly ISendEndpointProvider _sendEndpointProvider;
-    private readonly IPublishEndpoint _publishEndpoint;
-
-    public MassTransitBus(ISendEndpointProvider sendEndpointProvider, IPublishEndpoint publishEndpoint)
+    public Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
+        where TMessage : IMessage
     {
-        _sendEndpointProvider = sendEndpointProvider;
-        _publishEndpoint = publishEndpoint;
+        var correlationId = messageMetadataAccessor.GetCorrelationId();
+        var cautionId = messageMetadataAccessor.GetCorrelationId();
+        var envelopeMessage = EventEnvelope.From(message, correlationId, cautionId);
+
+        return PublishAsync(envelopeMessage, cancellationToken);
     }
 
-    public async Task PublishAsync<TMessage>(
-        TMessage message,
-        IDictionary<string, object?>? headers,
-        CancellationToken cancellationToken = default
-    )
-        where TMessage : class, IMessage
+    public async Task PublishAsync(IEventEnvelope eventEnvelope, CancellationToken cancellationToken = default)
     {
-        IDictionary<string, object?> meta = headers ?? new Dictionary<string, object?>();
-        meta = GetMetadata(message, meta);
-
-        var envelope = new MessageEnvelope<TMessage>(message, meta);
-        await _publishEndpoint.Publish(
-            message,
-            ctx =>
-            {
-                foreach (var header in meta)
-                {
-                    ctx.Headers.Set(header.Key, header.Value);
-                }
-            },
-            cancellationToken
-        );
-    }
-
-    public async Task PublishAsync<TMessage>(
-        TMessage message,
-        IDictionary<string, object?>? headers,
-        string? exchangeOrTopic = null,
-        string? queue = null,
-        CancellationToken cancellationToken = default
-    )
-        where TMessage : class, IMessage
-    {
-        IDictionary<string, object?> meta = headers ?? new Dictionary<string, object?>();
-        meta = GetMetadata(message, meta);
-
-        if (string.IsNullOrEmpty(queue) && string.IsNullOrEmpty(exchangeOrTopic))
-        {
-            await PublishAsync(message, headers, cancellationToken);
-            return;
-        }
-
-        // Ref: https://stackoverflow.com/a/60269493/581476
-        string endpointAddress = GetEndpointAddress(exchangeOrTopic, queue);
-
-        var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(endpointAddress));
-        await sendEndpoint.Send(
-            message,
-            ctx =>
-            {
-                foreach (var header in meta)
-                {
-                    ctx.Headers.Set(header.Key, header.Value);
-                }
-            },
+        await publishEndpoint.Publish(
+            eventEnvelope,
+            envelopeWrapperContext => FillMasstransitContextInformation(eventEnvelope, envelopeWrapperContext),
             cancellationToken
         );
     }
 
     public async Task PublishAsync(
-        object message,
-        IDictionary<string, object?>? headers,
-        CancellationToken cancellationToken = default
-    )
-    {
-        IDictionary<string, object?> meta = headers ?? new Dictionary<string, object?>();
-        if (message is IMessage data)
-        {
-            meta = GetMetadata(data, meta);
-        }
-        else
-        {
-            meta = GetMetadata(message, meta);
-        }
-
-        await _publishEndpoint.Publish(
-            message,
-            ctx =>
-            {
-                foreach (var header in meta)
-                {
-                    ctx.Headers.Set(header.Key, header.Value);
-                }
-            },
-            cancellationToken
-        );
-    }
-
-    public async Task PublishAsync(
-        object message,
-        IDictionary<string, object?>? headers,
+        IEventEnvelope eventEnvelope,
         string? exchangeOrTopic = null,
         string? queue = null,
         CancellationToken cancellationToken = default
@@ -118,35 +39,63 @@ public class MassTransitBus : IBus
     {
         if (string.IsNullOrEmpty(queue) && string.IsNullOrEmpty(exchangeOrTopic))
         {
-            await PublishAsync(message, headers, cancellationToken);
+            await PublishAsync(eventEnvelope, cancellationToken);
             return;
-        }
-
-        IDictionary<string, object?> meta = headers ?? new Dictionary<string, object?>();
-        if (message is IMessage data)
-        {
-            meta = GetMetadata(data, meta);
-        }
-        else
-        {
-            meta = GetMetadata(message, meta);
         }
 
         // Ref: https://stackoverflow.com/a/60269493/581476
         string endpointAddress = GetEndpointAddress(exchangeOrTopic, queue);
 
-        var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(endpointAddress));
+        var sendEndpoint = await sendEndpointProvider.GetSendEndpoint(new Uri(endpointAddress));
         await sendEndpoint.Send(
-            message,
-            ctx =>
-            {
-                foreach (var header in meta)
-                {
-                    ctx.Headers.Set(header.Key, header.Value);
-                }
-            },
+            eventEnvelope,
+            envelopeWrapperContext => FillMasstransitContextInformation(eventEnvelope, envelopeWrapperContext),
             cancellationToken
         );
+    }
+
+    private static void FillMasstransitContextInformation(
+        IEventEnvelope eventEnvelope,
+        PublishContext<IEventEnvelope> envelopeWrapperContext
+    )
+    {
+        if (eventEnvelope.Metadata is null)
+        {
+            return;
+        }
+
+        // https://masstransit.io/documentation/concepts/messages#message-headers
+        // https://www.enterpriseintegrationpatterns.com/patterns/messaging/EnvelopeWrapper.html
+        // Just for filling masstransit related field, but we have a separated envelope message.
+        envelopeWrapperContext.MessageId = eventEnvelope.Metadata.MessageId;
+        envelopeWrapperContext.CorrelationId = eventEnvelope.Metadata.CorrelationId;
+
+        foreach (var header in eventEnvelope.Metadata.Headers)
+        {
+            envelopeWrapperContext.Headers.Set(header.Key, header.Value);
+        }
+    }
+
+    private static void FillMasstransitContextInformation(
+        IEventEnvelope eventEnvelope,
+        SendContext<IEventEnvelope> envelopeWrapperContext
+    )
+    {
+        if (eventEnvelope.Metadata is null)
+        {
+            return;
+        }
+
+        // https://masstransit.io/documentation/concepts/messages#message-headers
+        // https://www.enterpriseintegrationpatterns.com/patterns/messaging/EnvelopeWrapper.html
+        // Just for filling masstransit related field, but we have a separated envelope message.
+        envelopeWrapperContext.MessageId = eventEnvelope.Metadata.MessageId;
+        envelopeWrapperContext.CorrelationId = eventEnvelope.Metadata.CorrelationId;
+
+        foreach (var header in eventEnvelope.Metadata.Headers)
+        {
+            envelopeWrapperContext.Headers.Set(header.Key, header.Value);
+        }
     }
 
     private static string GetEndpointAddress(string? exchangeOrTopic, string? queue)
@@ -162,20 +111,20 @@ public class MassTransitBus : IBus
         IMessageHandler<TMessage> handler,
         Action<IConsumeConfigurationBuilder>? consumeBuilder = null
     )
-        where TMessage : class, IMessage { }
+        where TMessage : IMessage { }
 
     public Task Consume<TMessage>(
         Abstractions.Messaging.MessageHandler<TMessage> subscribeMethod,
         Action<IConsumeConfigurationBuilder>? consumeBuilder = null,
         CancellationToken cancellationToken = default
     )
-        where TMessage : class, IMessage
+        where TMessage : IMessage
     {
         return Task.CompletedTask;
     }
 
     public Task Consume<TMessage>(CancellationToken cancellationToken = default)
-        where TMessage : class, IMessage
+        where TMessage : IMessage
     {
         return Task.CompletedTask;
     }
@@ -187,7 +136,7 @@ public class MassTransitBus : IBus
 
     public Task Consume<THandler, TMessage>(CancellationToken cancellationToken = default)
         where THandler : IMessageHandler<TMessage>
-        where TMessage : class, IMessage
+        where TMessage : IMessage
     {
         return Task.CompletedTask;
     }
@@ -208,53 +157,5 @@ public class MassTransitBus : IBus
     )
     {
         return Task.CompletedTask;
-    }
-
-    private static IDictionary<string, object?> GetMetadata<TMessage>(
-        TMessage message,
-        IDictionary<string, object?>? headers
-    )
-        where TMessage : class, IMessage
-    {
-        var meta = headers ?? new Dictionary<string, object?>();
-
-        if (!meta.ContainsKey(MessageHeaders.MessageId))
-        {
-            //TODO: Using snowflake id here
-            var messageId = message.MessageId;
-            meta.AddMessageId(messageId.ToString());
-        }
-
-        if (!meta.ContainsKey(MessageHeaders.CorrelationId))
-        {
-            meta.AddCorrelationId(Guid.NewGuid().ToString());
-        }
-
-        meta.AddMessageName(message.GetType().Name.Underscore());
-        meta.AddMessageType(TypeMapper.GetTypeName(message.GetType()));
-        meta.AddCreatedUnixTime(DateTimeExtensions.ToUnixTimeSecond(DateTime.Now));
-        return meta;
-    }
-
-    private static IDictionary<string, object?> GetMetadata(object message, IDictionary<string, object?>? headers)
-    {
-        var meta = headers ?? new Dictionary<string, object?>();
-
-        if (!meta.ContainsKey(MessageHeaders.MessageId))
-        {
-            //TODO: Using snowflake id here
-            var messageId = Guid.NewGuid();
-            meta.AddMessageId(messageId.ToString());
-        }
-
-        if (!meta.ContainsKey(MessageHeaders.CorrelationId))
-        {
-            meta.AddCorrelationId(Guid.NewGuid().ToString());
-        }
-
-        meta.AddMessageName(message.GetType().Name.Underscore());
-        meta.AddMessageType(TypeMapper.GetTypeName(message.GetType())); // out of process message should have just type name instead of type full name
-        meta.AddCreatedUnixTime(DateTimeExtensions.ToUnixTimeSecond(DateTime.Now));
-        return meta;
     }
 }

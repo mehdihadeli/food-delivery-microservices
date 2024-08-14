@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.v1;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
@@ -35,7 +35,7 @@ internal class RevokeAllAccessTokenHandler : ICommandHandler<RevokeAllAccessToke
         _userManager = userManager;
     }
 
-    public async Task<Unit> Handle(RevokeAllAccessTokens request, CancellationToken cancellationToken)
+    public async Task Handle(RevokeAllAccessTokens request, CancellationToken cancellationToken)
     {
         var appUser = await _userManager.FindByNameAsync(request.UserName);
         appUser.NotBeNull(new IdentityUserNotFoundException(request.UserName));
@@ -48,7 +48,5 @@ internal class RevokeAllAccessTokenHandler : ICommandHandler<RevokeAllAccessToke
         {
             await _mediator.Send(new RevokeAccessToken(accessToken.Token, appUser.UserName!), cancellationToken);
         }
-
-        return Unit.Value;
     }
 }

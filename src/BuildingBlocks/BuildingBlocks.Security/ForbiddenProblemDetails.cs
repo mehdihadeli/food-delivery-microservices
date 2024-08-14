@@ -9,6 +9,5 @@ public class ForbiddenProblemDetails : ProblemDetails
         Title = "ForbiddenException";
         Detail = details;
         Status = 403;
-        Type = "https://httpstatuses.com/403";
     }
 }

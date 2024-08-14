@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Persistence.EventStoreDB.Extensions;
 using EventStore.Client;
 
@@ -6,14 +6,11 @@ namespace BuildingBlocks.Persistence.EventStoreDB.Subscriptions;
 
 public record CheckpointStored(string SubscriptionId, ulong? Position, DateTime CheckPointedAt) : DomainEvent;
 
-public class EventStoreDbSubscriptionCheckPointRepository : ISubscriptionCheckpointRepository
+public class EventStoreDbSubscriptionCheckPointRepository(EventStoreClient eventStoreClient)
+    : ISubscriptionCheckpointRepository
 {
-    private readonly EventStoreClient _eventStoreClient;
-
-    public EventStoreDbSubscriptionCheckPointRepository(EventStoreClient eventStoreClient)
-    {
-        this._eventStoreClient = eventStoreClient ?? throw new ArgumentNullException(nameof(eventStoreClient));
-    }
+    private readonly EventStoreClient _eventStoreClient =
+        eventStoreClient ?? throw new ArgumentNullException(nameof(eventStoreClient));
 
     public async ValueTask<ulong?> Load(string subscriptionId, CancellationToken ct)
     {

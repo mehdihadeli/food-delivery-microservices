@@ -3,7 +3,6 @@ using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
 using FoodDelivery.Services.Customers.UnitTests.Common;
-using FluentAssertions;
 using NSubstitute;
 using Tests.Shared.XunitCategories;
 
@@ -31,19 +30,18 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
         var fakeCreateCustomerReadCommand = new FakeCreateCustomerRead().Generate();
         var insertCustomer = Mapper.Map<Customer>(fakeCreateCustomerReadCommand);
 
-        _customersReadUnitOfWork.CustomersRepository
-            .AddAsync(Arg.Is(insertCustomer), Arg.Any<CancellationToken>())
+        _customersReadUnitOfWork
+            .CustomersRepository.AddAsync(Arg.Is(insertCustomer), Arg.Any<CancellationToken>())
             .Returns(insertCustomer);
         var handler = new CreateCustomerReadHandler(Mapper, _customersReadUnitOfWork);
 
         // Act
-        var res = await handler.Handle(fakeCreateCustomerReadCommand, CancellationToken.None);
+        await handler.Handle(fakeCreateCustomerReadCommand, CancellationToken.None);
 
         // Assert
-        await _customersReadUnitOfWork.CustomersRepository
-            .Received(1)
+        await _customersReadUnitOfWork
+            .CustomersRepository.Received(1)
             .AddAsync(Arg.Is(insertCustomer), Arg.Any<CancellationToken>());
         await _customersReadUnitOfWork.Received(1).CommitAsync(Arg.Any<CancellationToken>());
-        res.Should().NotBeNull();
     }
 }

@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Abstractions.Events.Internal;
 
 namespace BuildingBlocks.Abstractions.Messaging.PersistMessage;
 
@@ -19,22 +20,36 @@ public interface IMessagePersistenceService
         CancellationToken cancellationToken = default
     );
 
-    Task AddPublishMessageAsync<TMessageEnvelope>(
-        TMessageEnvelope messageEnvelope,
+    Task AddPublishMessageAsync<TEventEnvelope>(
+        TEventEnvelope eventEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TMessageEnvelope : MessageEnvelope;
+        where TEventEnvelope : IEventEnvelope;
+
+    Task AddPublishMessageAsync<TEventEnvelope, TMessage>(
+        TEventEnvelope eventEnvelope,
+        CancellationToken cancellationToken = default
+    )
+        where TEventEnvelope : IEventEnvelope<TMessage>
+        where TMessage : IMessage;
 
     Task AddReceivedMessageAsync<TMessageEnvelope>(
         TMessageEnvelope messageEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TMessageEnvelope : MessageEnvelope;
+        where TMessageEnvelope : IEventEnvelope;
 
-    Task AddInternalMessageAsync<TCommand>(TCommand internalCommand, CancellationToken cancellationToken = default)
-        where TCommand : class, IInternalCommand;
+    Task AddInternalMessageAsync<TInternalCommand>(
+        TInternalCommand internalCommand,
+        CancellationToken cancellationToken = default
+    )
+        where TInternalCommand : class, IInternalCommand;
 
-    Task AddNotificationAsync(IDomainNotificationEvent notification, CancellationToken cancellationToken = default);
+    Task AddNotificationAsync<TDomainNotification>(
+        TDomainNotification notification,
+        CancellationToken cancellationToken = default
+    )
+        where TDomainNotification : IDomainNotificationEvent;
 
     Task ProcessAsync(Guid messageId, CancellationToken cancellationToken = default);
 

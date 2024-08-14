@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Persistence.Mongo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,20 +28,14 @@ public class SharedFixtureWithEfCoreAndMongo<TEntryPoint, TEfCoreDbContext, TMon
     public Task ExecuteMongoDbContextAsync(Func<TMongoDbContext, Task> action) =>
         ExecuteScopeAsync(sp => action(sp.GetRequiredService<TMongoDbContext>()));
 
-    public Task ExecuteMongoDbContextAsync(Func<TMongoDbContext, ICommandProcessor, Task> action) =>
-        ExecuteScopeAsync(
-            sp => action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<ICommandProcessor>())
-        );
+    public Task ExecuteMongoDbContextAsync(Func<TMongoDbContext, ICommandBus, Task> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<ICommandBus>()));
 
-    public Task<T> ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, ICommandProcessor, Task<T>> action) =>
-        ExecuteScopeAsync(
-            sp => action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<ICommandProcessor>())
-        );
+    public Task<T> ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, ICommandBus, Task<T>> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<ICommandBus>()));
 
-    public Task ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, IQueryProcessor, Task<T>> action) =>
-        ExecuteScopeAsync(
-            sp => action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<IQueryProcessor>())
-        );
+    public Task ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, IQueryBus, Task<T>> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetRequiredService<TMongoDbContext>(), sp.GetRequiredService<IQueryBus>()));
 
     public Task<T> ExecuteMongoDbContextAsync<T>(Func<TMongoDbContext, Task<T>> action) =>
         ExecuteScopeAsync(sp => action(sp.GetRequiredService<TMongoDbContext>()));

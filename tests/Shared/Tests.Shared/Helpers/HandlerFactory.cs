@@ -1,6 +1,5 @@
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Abstractions.Messaging.Context;
-using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Types.Extensions;
 using Hypothesist;
 using MassTransit;
@@ -10,38 +9,38 @@ namespace Tests.Shared.Helpers;
 
 public static class HandlerFactory
 {
-    public static IMessageHandler<T> AsMessageHandler<T>(this IHypothesis<T> hypothesis)
+    public static IMessageHandler<T> AsMessageHandler<T>(this Observer<T> observer)
         where T : class, IMessage
     {
-        return new SimpleMessageConsumer<T>(hypothesis);
+        return new SimpleMessageConsumer<T>(observer);
     }
 
-    public static IConsumer<T> AsConsumer<T>(this IHypothesis<T> hypothesis)
+    public static IConsumer<T> AsConsumer<T>(this Observer<T> observer)
         where T : class, IMessage
     {
-        return new MassTransitSimpleMessageConsumer<T>(hypothesis);
+        return new MassTransitSimpleMessageConsumer<T>(observer);
     }
 
     public static IConsumer<TMessage> AsConsumer<TMessage, TConsumer>(
-        this IHypothesis<TMessage> hypothesis,
+        this Observer<TMessage> observer,
         IServiceProvider serviceProvider
     )
         where TMessage : class, IMessage
         where TConsumer : IConsumer<TMessage>
     {
-        return new MassTransitConsumer<TMessage>(hypothesis, serviceProvider, typeof(TConsumer));
+        return new MassTransitConsumer<TMessage>(observer, serviceProvider, typeof(TConsumer));
     }
 
     public static BuildingBlocks.Abstractions.Messaging.MessageHandler<T> AsMessageHandlerDelegate<T>(
-        this IHypothesis<T> hypothesis
+        this Observer<T> observer
     )
         where T : class, IMessage
     {
-        return (context, cancellationToken) => hypothesis.Test(context.Message, cancellationToken);
+        return (context, cancellationToken) => observer.Add(context.Data, cancellationToken);
     }
 
     public static IMessageHandler<TMessage> AsMessageHandler<TMessage, TMessageHandler>(
-        this IHypothesis<TMessage> hypothesis,
+        this Observer<TMessage> hypothesis,
         IServiceProvider serviceProvider
     )
         where TMessage : class, IMessage
@@ -51,92 +50,59 @@ public static class HandlerFactory
     }
 }
 
-internal class MessageConsumer<T> : IMessageHandler<T>
+internal class MessageConsumer<T>(Observer<T> observer, IServiceProvider serviceProvider, Type internalHandler)
+    : IMessageHandler<T>
     where T : class, IMessage
 {
-    private readonly IHypothesis<T> _hypothesis;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly Type _internalHandler;
-
-    public MessageConsumer(IHypothesis<T> hypothesis, IServiceProvider serviceProvider, Type internalHandler)
+    public async Task HandleAsync(IEventEnvelope<T> eventEnvelope, CancellationToken cancellationToken = default)
     {
-        _hypothesis = hypothesis;
-        _serviceProvider = serviceProvider;
-        _internalHandler = internalHandler;
-    }
-
-    public async Task HandleAsync(IConsumeContext<T> messageContext, CancellationToken cancellationToken = default)
-    {
-        using var scope = _serviceProvider.CreateScope();
-        var handler = scope.ServiceProvider.GetService(_internalHandler);
+        using var scope = serviceProvider.CreateScope();
+        var handler = scope.ServiceProvider.GetService(internalHandler);
         if (handler is null)
         {
-            await _hypothesis.Test(null!, cancellationToken);
+            await observer.Add(null!, cancellationToken);
+
             return;
         }
 
-        await handler.InvokeMethodWithoutResultAsync("HandleAsync", messageContext, cancellationToken);
-        await _hypothesis.Test(messageContext.Message);
+        await handler.InvokeMethodWithoutResultAsync("HandleAsync", eventEnvelope, cancellationToken);
+        await observer.Add(eventEnvelope.Data, cancellationToken);
     }
 }
 
-internal class SimpleMessageConsumer<T> : IMessageHandler<T>
+internal class SimpleMessageConsumer<T>(Observer<T> observer) : IMessageHandler<T>
     where T : class, IMessage
 {
-    private readonly IHypothesis<T> _hypothesis;
-
-    public SimpleMessageConsumer(IHypothesis<T> hypothesis)
+    public Task HandleAsync(IEventEnvelope<T> eventEnvelope, CancellationToken cancellationToken = default)
     {
-        _hypothesis = hypothesis;
-    }
-
-    public Task HandleAsync(IConsumeContext<T> messageContext, CancellationToken cancellationToken = default)
-    {
-        return _hypothesis.Test(messageContext.Message);
+        return observer.Add(eventEnvelope.Data, cancellationToken);
     }
 }
 
-internal class MassTransitConsumer<T> : IConsumer<T>
+internal class MassTransitConsumer<T>(Observer<T> hypothesis, IServiceProvider serviceProvider, Type internalHandler)
+    : IConsumer<T>
     where T : class, IMessage
 {
-    private readonly IHypothesis<T> _hypothesis;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly Type _internalHandler;
-
-    public MassTransitConsumer(IHypothesis<T> hypothesis, IServiceProvider serviceProvider, Type internalHandler)
-    {
-        _hypothesis = hypothesis;
-        _serviceProvider = serviceProvider;
-        _internalHandler = internalHandler;
-    }
-
     public async Task Consume(ConsumeContext<T> context)
     {
-        using var scope = _serviceProvider.CreateScope();
-        var handler = scope.ServiceProvider.GetService(_internalHandler);
+        using var scope = serviceProvider.CreateScope();
+        var handler = scope.ServiceProvider.GetService(internalHandler);
         if (handler is null)
         {
-            await _hypothesis.Test(null!);
+            await hypothesis.Add(null!);
             return;
         }
 
         await handler.InvokeMethodWithoutResultAsync("Consume", context);
-        await _hypothesis.Test(context.Message);
+        await hypothesis.Add(context.Message);
     }
 }
 
-internal class MassTransitSimpleMessageConsumer<TMessage> : IConsumer<TMessage>
+internal class MassTransitSimpleMessageConsumer<TMessage>(Observer<TMessage> observer) : IConsumer<TMessage>
     where TMessage : class, IMessage
 {
-    private readonly IHypothesis<TMessage> _hypothesis;
-
-    public MassTransitSimpleMessageConsumer(IHypothesis<TMessage> hypothesis)
-    {
-        _hypothesis = hypothesis;
-    }
-
     public Task Consume(ConsumeContext<TMessage> context)
     {
-        return _hypothesis.Test(context.Message);
+        return observer.Add(context.Message);
     }
 }

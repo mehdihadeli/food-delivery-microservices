@@ -1,6 +1,7 @@
 namespace BuildingBlocks.Resiliency.Retry;
 
-//https://gist.github.com/henkmollema/ba21bb90c35580a7189e77624d9ed8d1
+// https://gist.github.com/henkmollema/ba21bb90c35580a7189e77624d9ed8d1
+
 /// <summary>
 ///     Applies a retry policy on the MediatR request.
 ///     Apply this attribute to the MediatR <see cref="IRequest" /> class (not on the handler).

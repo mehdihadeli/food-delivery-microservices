@@ -4,14 +4,9 @@ using BuildingBlocks.Core.Extensions;
 
 namespace BuildingBlocks.Core.Persistence.EventStore;
 
-public class StreamName
+public class StreamName([NotNull] string? value)
 {
-    public string Value { get; }
-
-    public StreamName([NotNull] string? value)
-    {
-        Value = value.NotBeNull();
-    }
+    public string Value { get; } = value.NotBeNull();
 
     public static StreamName For<T>(string id) => new($"{typeof(T).Name}-{id.NotBeNullOrWhiteSpace()}");
 

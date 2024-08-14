@@ -1,5 +1,5 @@
 using BuildingBlocks.Abstractions.Caching;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 
 namespace BuildingBlocks.Caching;
 

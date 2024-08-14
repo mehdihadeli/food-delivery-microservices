@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using Humanizer;
@@ -21,6 +21,7 @@ internal class UpdateCustomerEndpoint : ICommandMinimalEndpoint<UpdateCustomerRe
             .WithName(nameof(UpdateCustomer))
             .WithDisplayName(nameof(UpdateCustomer).Humanize())
             .WithSummaryAndDescription(nameof(UpdateCustomer).Humanize(), nameof(UpdateCustomer).Humanize());
+
         // .Produces("Customer updated successfully.", StatusCodes.Status204NoContent)
         // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
         // .ProducesProblem("UnAuthorized request.", StatusCodes.Status401Unauthorized)
@@ -28,12 +29,12 @@ internal class UpdateCustomerEndpoint : ICommandMinimalEndpoint<UpdateCustomerRe
 
     public async Task<IResult> HandleAsync(UpdateCustomerRequestParameters requestParameters)
     {
-        var (request, id, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+        var (request, id, context, commandBus, mapper, cancellationToken) = requestParameters;
 
         var command = mapper.Map<UpdateCustomer>(request);
         command = command with { Id = id };
 
-        await commandProcessor.SendAsync(command, cancellationToken);
+        await commandBus.SendAsync(command, cancellationToken);
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -47,7 +48,7 @@ internal record UpdateCustomerRequestParameters(
     [FromBody] UpdateCustomerRequest Request,
     [FromRoute] long Id,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<UpdateCustomerRequest>;

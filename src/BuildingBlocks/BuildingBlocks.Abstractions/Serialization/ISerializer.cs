@@ -1,33 +1,29 @@
-﻿namespace BuildingBlocks.Abstractions.Serialization;
+namespace BuildingBlocks.Abstractions.Serialization;
 
 public interface ISerializer
 {
     string ContentType { get; }
 
     /// <summary>
-    /// Serializes the given object into a string
+    ///     Serializes the given object into a string.
     /// </summary>
     /// <param name="obj"></param>
-    /// <param name="camelCase"></param>
-    /// <param name="indented"></param>
     /// <returns></returns>
-    string Serialize(object obj, bool camelCase = true, bool indented = true);
+    string Serialize(object obj);
 
     /// <summary>
-    /// Deserialize the given string into a <see cref="T"/>
+    ///     Deserialize the given string into a <see cref="T" />.
     /// </summary>
     /// <param name="payload"></param>
-    /// <param name="camelCase"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    T? Deserialize<T>(string payload, bool camelCase = true);
+    T? Deserialize<T>(string payload);
 
     /// <summary>
-    /// Deserialize the given string into a object.
+    ///     Deserialize the given string into an object.
     /// </summary>
     /// <param name="payload"></param>
     /// <param name="type"></param>
-    /// <param name="camelCase"></param>
     /// <returns></returns>
-    object? Deserialize(string payload, Type type, bool camelCase = true);
+    object? Deserialize(string payload, Type type);
 }

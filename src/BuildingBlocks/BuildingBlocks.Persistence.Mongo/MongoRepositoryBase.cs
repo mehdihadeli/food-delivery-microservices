@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
@@ -16,15 +15,16 @@ public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity
     where TEntity : class, IHaveIdentity<TId>
     where TDbContext : MongoDbContext
 {
-    private readonly TDbContext _context;
     private readonly ISieveProcessor _sieveProcessor;
-    protected readonly IMongoCollection<TEntity> DbSet;
+
+    protected TDbContext Context { get; }
+    protected IMongoCollection<TEntity> DbSet { get; }
 
     public MongoRepositoryBase(TDbContext context, ISieveProcessor sieveProcessor)
     {
-        _context = context;
+        Context = context;
         _sieveProcessor = sieveProcessor;
-        DbSet = _context.GetCollection<TEntity>();
+        DbSet = Context.GetCollection<TEntity>();
     }
 
     public void Dispose()
@@ -125,7 +125,7 @@ public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity
 
     public Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        _context.AddCommand(async () =>
+        Context.AddCommand(async () =>
         {
             await DbSet.InsertOneAsync(entity, null, cancellationToken);
         });
@@ -135,7 +135,7 @@ public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity
 
     public Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        _context.AddCommand(async () =>
+        Context.AddCommand(async () =>
         {
             var filter = Builders<TEntity>.Filter.Eq(x => x.Id, entity.Id);
             await DbSet.ReplaceOneAsync(filter, entity, cancellationToken: cancellationToken);
@@ -146,7 +146,7 @@ public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity
 
     public Task DeleteRangeAsync(IReadOnlyList<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        _context.AddCommand(async () =>
+        Context.AddCommand(async () =>
         {
             var idsToDelete = entities.Select(x => x.Id).ToList();
             var filter = Builders<TEntity>.Filter.In(x => x.Id, idsToDelete);
@@ -158,7 +158,7 @@ public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity
 
     public Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        _context.AddCommand(async () =>
+        Context.AddCommand(async () =>
         {
             await DbSet.DeleteOneAsync(predicate, cancellationToken);
         });
@@ -168,7 +168,7 @@ public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity
 
     public Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        _context.AddCommand(async () =>
+        Context.AddCommand(async () =>
         {
             var filter = Builders<TEntity>.Filter.Eq(x => x.Id, entity.Id);
             await DbSet.DeleteOneAsync(filter, cancellationToken);
@@ -179,7 +179,7 @@ public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity
 
     public Task DeleteByIdAsync(TId id, CancellationToken cancellationToken = default)
     {
-        _context.AddCommand(async () =>
+        Context.AddCommand(async () =>
         {
             var filter = Builders<TEntity>.Filter.Eq(x => x.Id, id);
             await DbSet.DeleteOneAsync(filter, cancellationToken);

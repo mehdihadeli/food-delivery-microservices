@@ -1,4 +1,4 @@
-﻿using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
+using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.Brands.Contracts;
 

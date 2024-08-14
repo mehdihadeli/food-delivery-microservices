@@ -34,4 +34,8 @@
     <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Logging\BuildingBlocks.Logging.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+      <PackageReference Include="MassTransit.Abstractions" />
+  </ItemGroup>
+
 </Project>

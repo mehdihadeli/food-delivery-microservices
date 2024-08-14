@@ -1,12 +1,12 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 
 namespace FoodDelivery.Services.Identity.Users.Features.GettingUerByEmail.v1;
@@ -32,25 +32,17 @@ internal class GetUserByIdValidator : AbstractValidator<GetUserByEmail>
     }
 }
 
-internal class GetUserByEmailHandler : IQueryHandler<GetUserByEmail, GetUserByEmailResult>
+internal class GetUserByEmailHandler(UserManager<ApplicationUser> userManager, IMapper mapper)
+    : IQueryHandler<GetUserByEmail, GetUserByEmailResult>
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IMapper _mapper;
-
-    public GetUserByEmailHandler(UserManager<ApplicationUser> userManager, IMapper mapper)
-    {
-        _userManager = userManager;
-        _mapper = mapper;
-    }
-
     public async Task<GetUserByEmailResult> Handle(GetUserByEmail query, CancellationToken cancellationToken)
     {
         query.NotBeNull();
 
-        var identityUser = await _userManager.FindUserWithRoleByEmailAsync(query.Email);
+        var identityUser = await userManager.FindUserWithRoleByEmailAsync(query.Email);
         identityUser.NotBeNull(new IdentityUserNotFoundException(query.Email));
 
-        var userDto = _mapper.Map<IdentityUserDto>(identityUser);
+        var userDto = mapper.Map<IdentityUserDto>(identityUser);
 
         return new GetUserByEmailResult(userDto);
     }

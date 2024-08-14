@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -27,11 +27,11 @@ public static class RefreshTokenEndpoint
             [AsParameters] RefreshTokenRequestParameters requestParameters
         )
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = RefreshToken.Of(request.AccessToken, request.RefreshToken);
 
-            var result = await commandProcessor.SendAsync(command, cancellationToken);
+            var result = await commandBus.SendAsync(command, cancellationToken);
 
             var response = mapper.Map<RefreshTokenResponse>(result);
 
@@ -47,7 +47,7 @@ public static class RefreshTokenEndpoint
 internal record RefreshTokenRequestParameters(
     [FromBody] RefreshTokenRequest Request,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RefreshTokenRequest>;

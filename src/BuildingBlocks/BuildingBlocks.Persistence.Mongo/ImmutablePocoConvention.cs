@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.InteropServices;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 
@@ -8,22 +9,17 @@ namespace BuildingBlocks.Persistence.Mongo
     /// A convention that map all read only properties for which a matching constructor is found.
     /// Also matching constructors are mapped.
     /// </summary>
-    public class ImmutablePocoConvention : ConventionBase, IClassMapConvention
+    public class ImmutablePocoConvention(BindingFlags bindingFlags) : ConventionBase, IClassMapConvention
     {
-        private readonly BindingFlags _bindingFlags;
+        private readonly BindingFlags _bindingFlags = bindingFlags | BindingFlags.DeclaredOnly;
 
         public ImmutablePocoConvention()
             : this(BindingFlags.Instance | BindingFlags.Public) { }
 
-        public ImmutablePocoConvention(BindingFlags bindingFlags)
-        {
-            _bindingFlags = bindingFlags | BindingFlags.DeclaredOnly;
-        }
-
         public void Apply(BsonClassMap classMap)
         {
-            var readOnlyProperties = classMap.ClassType
-                .GetTypeInfo()
+            var readOnlyProperties = classMap
+                .ClassType.GetTypeInfo()
                 .GetProperties(_bindingFlags)
                 .Where(p => IsReadOnlyProperty(classMap, p))
                 .ToList();
@@ -38,7 +34,7 @@ namespace BuildingBlocks.Persistence.Mongo
                     classMap.MapConstructor(constructor);
 
                     // Map properties
-                    foreach (var p in matchProperties)
+                    foreach (var p in CollectionsMarshal.AsSpan(matchProperties))
                         classMap.MapMember(p);
                 }
             }

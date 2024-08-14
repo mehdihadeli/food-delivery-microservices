@@ -1,9 +1,9 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Caching;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
+using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Security.Jwt;
-using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Minimal.Extensions;
 using EasyCaching.Core;
 using Humanizer;
@@ -21,7 +21,7 @@ public static class LogoutEndpoint
             .MapPost("/logout", Handle)
             .RequireAuthorization()
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses?#typedresults-vs-results
-            //.Produces(StatusCodes.Status200OK)
+            // .Produces(StatusCodes.Status200OK)
             .WithName("Logout")
             .WithDisplayName("Logout".Humanize())
             .WithSummaryAndDescription("Logout".Humanize(), "Logout".Humanize())
@@ -29,7 +29,7 @@ public static class LogoutEndpoint
 
         async Task<Ok> Handle([AsParameters] LogoutRequestParameters requestParameters)
         {
-            var (context, commandProcessor, mapper, caching, jwtOptions, cancellationToken) = requestParameters;
+            var (context, commandBus, mapper, caching, jwtOptions, cancellationToken) = requestParameters;
             var cacheProvider = caching.GetCachingProvider(nameof(CacheProviderType.InMemory));
 
             await context.SignOutAsync();
@@ -52,9 +52,10 @@ public static class LogoutEndpoint
         }
     }
 
-    private static string GetTokenFromHeader(HttpContext context)
+    private static string? GetTokenFromHeader(HttpContext context)
     {
         var authorizationHeader = context.Request.Headers.Get<string>("authorization");
+
         return authorizationHeader;
     }
 }
@@ -63,7 +64,7 @@ public static class LogoutEndpoint
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding#binding-precedence
 internal record LogoutRequestParameters(
     [FromBody] HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     IEasyCachingProviderFactory CachingProviderFactory,
     IOptions<JwtOptions> JwtOptions,

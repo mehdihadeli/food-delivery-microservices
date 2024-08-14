@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
@@ -102,8 +102,8 @@ internal class ProductCreatedHandler : IDomainEventHandler<ProductCreated>
 
         if (existed is null)
         {
-            var product = await _dbContext.Products
-                .Include(x => x.Brand)
+            var product = await _dbContext
+                .Products.Include(x => x.Brand)
                 .Include(x => x.Category)
                 .Include(x => x.Supplier)
                 .SingleOrDefaultAsync(x => x.Id == notification.Id, cancellationToken);

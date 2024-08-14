@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Identity.Identity.Exceptions;
 using FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.v1;
@@ -12,21 +12,14 @@ internal record RevokeRefreshToken(string RefreshToken) : ICommand
     public static RevokeRefreshToken Of(string? refreshToken) => new(refreshToken.NotBeEmptyOrNull());
 }
 
-internal class RevokeRefreshTokenHandler : ICommandHandler<RevokeRefreshToken>
+internal class RevokeRefreshTokenHandler(IdentityContext context) : ICommandHandler<RevokeRefreshToken>
 {
-    private readonly IdentityContext _context;
-
-    public RevokeRefreshTokenHandler(IdentityContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<Unit> Handle(RevokeRefreshToken command, CancellationToken cancellationToken)
+    public async Task Handle(RevokeRefreshToken command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
-        var refreshToken = await _context
-            .Set<global::FoodDelivery.Services.Identity.Shared.Models.RefreshToken>()
+        var refreshToken = await context
+            .Set<FoodDelivery.Services.Identity.Shared.Models.RefreshToken>()
             .FirstOrDefaultAsync(x => x.Token == command.RefreshToken, cancellationToken: cancellationToken);
 
         if (refreshToken == null)
@@ -37,8 +30,6 @@ internal class RevokeRefreshTokenHandler : ICommandHandler<RevokeRefreshToken>
 
         // revoke token and save
         refreshToken.RevokedAt = DateTime.Now;
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return Unit.Value;
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

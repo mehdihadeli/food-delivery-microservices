@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Domain.Events;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 using BuildingBlocks.Core.Threading;
 using BuildingBlocks.Core.Types;
@@ -12,33 +12,18 @@ using Microsoft.Extensions.Options;
 namespace BuildingBlocks.Persistence.EventStoreDB.Subscriptions;
 
 // Ref: https://github.com/oskardudycz/EventSourcing.NetCore/
-public class EventStoreDBSubscriptionToAll : BackgroundService
+public class EventStoreDbSubscriptionToAll(
+    IOptions<EventStoreDbOptions> eventStoreDbOptions,
+    EventStoreClient eventStoreClient,
+    IReadProjectionPublisher projectionPublisher,
+    IInternalEventBus internalEventBus,
+    ISubscriptionCheckpointRepository checkpointRepository,
+    ILogger<EventStoreDbSubscriptionToAll> logger
+) : BackgroundService
 {
-    private readonly EventStoreDbOptions _eventStoreDbOptions;
-    private readonly EventStoreClient _eventStoreClient;
-    private readonly IReadProjectionPublisher _projectionPublisher;
-    private readonly IInternalEventBus _internalEventBus;
-    private readonly ISubscriptionCheckpointRepository _checkpointRepository;
-    private readonly ILogger<EventStoreDBSubscriptionToAll> _logger;
+    private readonly EventStoreDbOptions _eventStoreDbOptions = eventStoreDbOptions.Value;
     private readonly object _resubscribeLock = new();
     private CancellationToken _cancellationToken;
-
-    public EventStoreDBSubscriptionToAll(
-        IOptions<EventStoreDbOptions> eventStoreDbOptions,
-        EventStoreClient eventStoreClient,
-        IReadProjectionPublisher projectionPublisher,
-        IInternalEventBus internalEventBus,
-        ISubscriptionCheckpointRepository checkpointRepository,
-        ILogger<EventStoreDBSubscriptionToAll> logger
-    )
-    {
-        _eventStoreDbOptions = eventStoreDbOptions.Value;
-        _eventStoreClient = eventStoreClient;
-        _projectionPublisher = projectionPublisher;
-        _internalEventBus = internalEventBus;
-        _checkpointRepository = checkpointRepository;
-        _logger = logger;
-    }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -52,17 +37,17 @@ public class EventStoreDBSubscriptionToAll : BackgroundService
         // see: https://github.com/dotnet/runtime/issues/36063
         await Task.Yield();
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Subscription to all '{SubscriptionId}'",
             _eventStoreDbOptions.SubscriptionOptions.SubscriptionId
         );
 
-        var checkpoint = await _checkpointRepository.Load(
+        var checkpoint = await checkpointRepository.Load(
             _eventStoreDbOptions.SubscriptionOptions.SubscriptionId,
             cancellationToken
         );
 
-        await _eventStoreClient.SubscribeToAllAsync(
+        await eventStoreClient.SubscribeToAllAsync(
             checkpoint == null ? FromAll.Start : FromAll.After(new Position(checkpoint.Value, checkpoint.Value)),
             HandleEvent,
             _eventStoreDbOptions.SubscriptionOptions.ResolveLinkTos,
@@ -72,7 +57,7 @@ public class EventStoreDBSubscriptionToAll : BackgroundService
             cancellationToken
         );
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Subscription to all '{SubscriptionId}' started",
             _eventStoreDbOptions.SubscriptionOptions.SubscriptionId
         );
@@ -98,7 +83,7 @@ public class EventStoreDBSubscriptionToAll : BackgroundService
                 // then we might get events that are from other module and we might not be able to deserialize them.
                 // In that case it's safe to ignore deserialization error.
                 // You may add more sophisticated logic checking if it should be ignored or not.
-                _logger.LogWarning("Couldn't deserialize event with id: {EventId}", resolvedEvent.Event.EventId);
+                logger.LogWarning("Couldn't deserialize event with id: {EventId}", resolvedEvent.Event.EventId);
 
                 if (!_eventStoreDbOptions.SubscriptionOptions.IgnoreDeserializationErrors)
                 {
@@ -111,11 +96,11 @@ public class EventStoreDBSubscriptionToAll : BackgroundService
             }
 
             // publish event to internal event bus
-            await _internalEventBus.Publish(streamEvent, cancellationToken);
+            await internalEventBus.Publish(streamEvent, cancellationToken);
 
-            await _projectionPublisher.PublishAsync(streamEvent, cancellationToken);
+            await projectionPublisher.PublishAsync(streamEvent, cancellationToken);
 
-            await _checkpointRepository.Store(
+            await checkpointRepository.Store(
                 _eventStoreDbOptions.SubscriptionOptions.SubscriptionId,
                 resolvedEvent.Event.Position.CommitPosition,
                 cancellationToken
@@ -123,7 +108,7 @@ public class EventStoreDBSubscriptionToAll : BackgroundService
         }
         catch (Exception e)
         {
-            _logger.LogError(
+            logger.LogError(
                 "Error consuming message: {ExceptionMessage}{ExceptionStackTrace}",
                 e.Message,
                 e.StackTrace
@@ -141,7 +126,7 @@ public class EventStoreDBSubscriptionToAll : BackgroundService
         Exception? exception
     )
     {
-        _logger.LogError(
+        logger.LogError(
             exception,
             "Subscription to all '{SubscriptionId}' dropped with '{Reason}'",
             _eventStoreDbOptions.SubscriptionOptions.SubscriptionId,
@@ -177,7 +162,7 @@ public class EventStoreDBSubscriptionToAll : BackgroundService
             }
             catch (Exception exception)
             {
-                _logger.LogWarning(
+                logger.LogWarning(
                     exception,
                     "Failed to resubscribe to all '{SubscriptionId}' dropped with '{ExceptionMessage}{ExceptionStackTrace}'",
                     _eventStoreDbOptions.SubscriptionOptions.SubscriptionId,
@@ -204,7 +189,7 @@ public class EventStoreDBSubscriptionToAll : BackgroundService
         if (resolvedEvent.Event.Data.Length != 0)
             return false;
 
-        _logger.LogInformation("Event without data received");
+        logger.LogInformation("Event without data received");
         return true;
     }
 
@@ -213,7 +198,7 @@ public class EventStoreDBSubscriptionToAll : BackgroundService
         if (resolvedEvent.Event.EventType != TypeMapper.GetTypeName<CheckpointStored>())
             return false;
 
-        _logger.LogInformation("Checkpoint event - ignoring");
+        logger.LogInformation("Checkpoint event - ignoring");
         return true;
     }
 }

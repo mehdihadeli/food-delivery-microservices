@@ -1,12 +1,11 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Extensions;
-using FluentValidation;
-using MediatR;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1;
 
@@ -34,28 +33,20 @@ internal class ReplenishingProductStockValidator : AbstractValidator<ReplenishPr
     }
 }
 
-internal class ReplenishingProductStockHandler : ICommandHandler<ReplenishProductStock>
+internal class ReplenishingProductStockHandler(ICatalogDbContext catalogDbContext)
+    : ICommandHandler<ReplenishProductStock>
 {
-    private readonly ICatalogDbContext _catalogDbContext;
-
-    public ReplenishingProductStockHandler(ICatalogDbContext catalogDbContext)
-    {
-        _catalogDbContext = catalogDbContext;
-    }
-
-    public async Task<Unit> Handle(ReplenishProductStock command, CancellationToken cancellationToken)
+    public async Task Handle(ReplenishProductStock command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
         var (productId, quantity) = command;
 
-        var product = await _catalogDbContext.FindProductByIdAsync(ProductId.Of(productId));
+        var product = await catalogDbContext.FindProductByIdAsync(ProductId.Of(productId));
         if (product is null)
             throw new ProductNotFoundException(productId);
 
         product.ReplenishStock(quantity);
-        await _catalogDbContext.SaveChangesAsync(cancellationToken);
-
-        return Unit.Value;
+        await catalogDbContext.SaveChangesAsync(cancellationToken);
     }
 }

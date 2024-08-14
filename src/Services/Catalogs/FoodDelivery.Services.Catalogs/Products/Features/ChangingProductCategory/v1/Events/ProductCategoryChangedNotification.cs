@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Core.Events.Internal;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 

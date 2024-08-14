@@ -1,14 +1,14 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Domain.ValueObjects;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Validation.Extensions;
+using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Models;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FluentValidation;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 
@@ -42,33 +42,22 @@ internal class CreateCustomerValidator : AbstractValidator<CreateCustomer>
     }
 }
 
-internal class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCustomerResult>
+internal class CreateCustomerHandler(
+    IIdentityApiClient identityApiClient,
+    CustomersDbContext customersDbContext,
+    ILogger<CreateCustomerHandler> logger
+) : ICommandHandler<CreateCustomer, CreateCustomerResult>
 {
-    private readonly IIdentityApiClient _identityApiClient;
-    private readonly CustomersDbContext _customersDbContext;
-    private readonly ILogger<CreateCustomerHandler> _logger;
-
-    public CreateCustomerHandler(
-        IIdentityApiClient identityApiClient,
-        CustomersDbContext customersDbContext,
-        ILogger<CreateCustomerHandler> logger
-    )
-    {
-        _identityApiClient = identityApiClient;
-        _customersDbContext = customersDbContext;
-        _logger = logger;
-    }
-
     public async Task<CreateCustomerResult> Handle(CreateCustomer command, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Creating customer");
+        logger.LogInformation("Creating customer");
 
         command.NotBeNull();
 
-        if (_customersDbContext.Customers.Any(x => x.Email.Value == command.Email))
+        if (customersDbContext.Customers.Any(x => x.Email.Value == command.Email))
             throw new CustomerAlreadyExistsException($"Customer with email '{command.Email}' already exists.");
 
-        var identityUser = await _identityApiClient.GetUserByEmailAsync(command.Email, cancellationToken);
+        var identityUser = await identityApiClient.GetUserByEmailAsync(command.Email, cancellationToken);
 
         var customer = Customer.Create(
             CustomerId.Of(command.Id),
@@ -78,11 +67,11 @@ internal class CreateCustomerHandler : ICommandHandler<CreateCustomer, CreateCus
             identityUser.Id
         );
 
-        await _customersDbContext.AddAsync(customer, cancellationToken);
+        await customersDbContext.AddAsync(customer, cancellationToken);
 
-        await _customersDbContext.SaveChangesAsync(cancellationToken);
+        await customersDbContext.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Created a customer with ID: '{@CustomerId}'", customer.Id);
+        logger.LogInformation("Created a customer with ID: '{@CustomerId}'", customer.Id);
 
         return new CreateCustomerResult(customer.Id, customer.IdentityId);
     }

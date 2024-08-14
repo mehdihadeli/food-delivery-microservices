@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Security.Jwt;
 using FoodDelivery.Services.Identity.Shared.Models;
@@ -25,23 +25,12 @@ internal record GenerateJwtToken(ApplicationUser User, string RefreshToken) : IC
     }
 }
 
-internal class GenerateJwtTokenHandler : ICommandHandler<GenerateJwtToken, GenerateJwtTokenResult>
+internal class GenerateJwtTokenHandler(
+    UserManager<ApplicationUser> userManager,
+    IJwtService jwtService,
+    ILogger<GenerateJwtTokenHandler> logger
+) : ICommandHandler<GenerateJwtToken, GenerateJwtTokenResult>
 {
-    private readonly ILogger<GenerateJwtTokenHandler> _logger;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IJwtService _jwtService;
-
-    public GenerateJwtTokenHandler(
-        UserManager<ApplicationUser> userManager,
-        IJwtService jwtService,
-        ILogger<GenerateJwtTokenHandler> logger
-    )
-    {
-        _userManager = userManager;
-        _jwtService = jwtService;
-        _logger = logger;
-    }
-
     public async Task<GenerateJwtTokenResult> Handle(GenerateJwtToken request, CancellationToken cancellationToken)
     {
         request.NotBeNull();
@@ -53,7 +42,7 @@ internal class GenerateJwtTokenHandler : ICommandHandler<GenerateJwtToken, Gener
         var allClaims = await GetClaimsAsync(request.User.UserName!);
         var fullName = $"{identityUser.FirstName} {identityUser.LastName}";
 
-        var tokenResult = _jwtService.GenerateJwtToken(
+        var tokenResult = jwtService.GenerateJwtToken(
             identityUser.UserName!,
             identityUser.Email!,
             identityUser.Id.ToString(),
@@ -65,7 +54,7 @@ internal class GenerateJwtTokenHandler : ICommandHandler<GenerateJwtToken, Gener
             allClaims.PermissionClaims.ToImmutableList()
         );
 
-        _logger.LogInformation("access-token generated, \n: {AccessToken}", tokenResult.AccessToken);
+        logger.LogInformation("access-token generated, \n: {AccessToken}", tokenResult.AccessToken);
 
         return new GenerateJwtTokenResult(tokenResult.AccessToken, tokenResult.ExpireAt);
     }
@@ -74,15 +63,15 @@ internal class GenerateJwtTokenHandler : ICommandHandler<GenerateJwtToken, Gener
         string userName
     )
     {
-        var appUser = await _userManager.FindByNameAsync(userName);
+        var appUser = await userManager.FindByNameAsync(userName);
         appUser.NotBeNull();
 
-        var userClaims = (await _userManager.GetClaimsAsync(appUser))
+        var userClaims = (await userManager.GetClaimsAsync(appUser))
             .Where(x => x.Type != CustomClaimTypes.Permission)
             .ToList();
-        var roles = await _userManager.GetRolesAsync(appUser);
+        var roles = await userManager.GetRolesAsync(appUser);
 
-        var permissions = (await _userManager.GetClaimsAsync(appUser))
+        var permissions = (await userManager.GetClaimsAsync(appUser))
             .Where(x => x.Type == CustomClaimTypes.Permission)
             ?.Select(x => x.Value)
             .ToList();

@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -33,12 +33,9 @@ internal static class ReplenishProductStockEndpoint
             Results<NoContent, UnAuthorizedHttpProblemResult, ValidationProblem, NotFoundHttpProblemResult>
         > Handle([AsParameters] ReplenishProductStockRequestParameters requestParameters)
         {
-            var (request, productId, context, commandProcessor, _, cancellationToken) = requestParameters;
+            var (request, productId, context, commandBus, _, cancellationToken) = requestParameters;
 
-            await commandProcessor.SendAsync(
-                ReplenishProductStock.Of(productId, request.DebitQuantity),
-                cancellationToken
-            );
+            await commandBus.SendAsync(ReplenishProductStock.Of(productId, request.DebitQuantity), cancellationToken);
 
             return TypedResults.NoContent();
         }
@@ -51,7 +48,7 @@ internal record ReplenishProductStockRequestParameters(
     [FromBody] ReplenishProductStockRequest Request,
     [FromRoute] long ProductId,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<ReplenishProductStockRequest>;

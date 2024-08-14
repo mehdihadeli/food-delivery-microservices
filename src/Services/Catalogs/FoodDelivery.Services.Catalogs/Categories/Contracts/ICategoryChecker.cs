@@ -1,4 +1,4 @@
-﻿namespace FoodDelivery.Services.Catalogs.Categories.Contracts;
+namespace FoodDelivery.Services.Catalogs.Categories.Contracts;
 
 public interface ICategoryChecker
 {

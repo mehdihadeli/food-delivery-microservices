@@ -1,17 +1,17 @@
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using AutoBogus;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
 using BuildingBlocks.Core.Types;
 using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Persistence.Mongo;
-using DotNet.Testcontainers.Configurations;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using MassTransit;
@@ -29,7 +29,7 @@ using Tests.Shared.Extensions;
 using Tests.Shared.Factory;
 using WireMock.Server;
 using Xunit.Sdk;
-using IBus = BuildingBlocks.Abstractions.Messaging.IBus;
+using IExternalEventBus = BuildingBlocks.Abstractions.Messaging.IExternalEventBus;
 
 namespace Tests.Shared.Fixtures;
 
@@ -106,8 +106,8 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         messageSink.OnMessage(new DiagnosticMessage("Constructing SharedFixture..."));
 
         //https://github.com/trbenning/serilog-sinks-xunit
-        Logger = new LoggerConfiguration().MinimumLevel
-            .Verbose()
+        Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
             .WriteTo.TestOutput(messageSink)
             .CreateLogger()
             .ForContext<SharedFixture<TEntryPoint>>();
@@ -340,9 +340,9 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         return await ExecuteScopeAsync(async sp =>
         {
-            var commandProcessor = sp.GetRequiredService<ICommandProcessor>();
+            var commandBus = sp.GetRequiredService<ICommandBus>();
 
-            return await commandProcessor.SendAsync(request, cancellationToken);
+            return await commandBus.SendAsync(request, cancellationToken);
         });
     }
 
@@ -351,9 +351,9 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         await ExecuteScopeAsync(async sp =>
         {
-            var commandProcessor = sp.GetRequiredService<ICommandProcessor>();
+            var commandBus = sp.GetRequiredService<ICommandBus>();
 
-            await commandProcessor.SendAsync(request, cancellationToken);
+            await commandBus.SendAsync(request, cancellationToken);
         });
     }
 
@@ -365,7 +365,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         return await ExecuteScopeAsync(async sp =>
         {
-            var queryProcessor = sp.GetRequiredService<IQueryProcessor>();
+            var queryProcessor = sp.GetRequiredService<IQueryBus>();
 
             return await queryProcessor.SendAsync(query, cancellationToken);
         });
@@ -373,16 +373,29 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
     public async ValueTask PublishMessageAsync<TMessage>(
         TMessage message,
-        IDictionary<string, object?>? headers = null,
         CancellationToken cancellationToken = default
     )
         where TMessage : class, IMessage
     {
         await ExecuteScopeAsync(async sp =>
         {
-            var bus = sp.GetRequiredService<IBus>();
+            var bus = sp.GetRequiredService<IExternalEventBus>();
 
-            await bus.PublishAsync(message, headers, cancellationToken);
+            await bus.PublishAsync(message, cancellationToken);
+        });
+    }
+
+    public async ValueTask PublishMessageAsync<TMessage>(
+        IEventEnvelope<TMessage> eventEnvelope,
+        CancellationToken cancellationToken = default
+    )
+        where TMessage : class, IMessage
+    {
+        await ExecuteScopeAsync(async sp =>
+        {
+            var bus = sp.GetRequiredService<IExternalEventBus>();
+
+            await bus.PublishAsync(eventEnvelope, cancellationToken);
         });
     }
 
@@ -511,8 +524,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
                 var res = filter.Any(x => x.MessageStatus == MessageStatus.Processed);
 
-                if (res is true)
-                { }
+                if (res is true) { }
 
                 return res;
             });

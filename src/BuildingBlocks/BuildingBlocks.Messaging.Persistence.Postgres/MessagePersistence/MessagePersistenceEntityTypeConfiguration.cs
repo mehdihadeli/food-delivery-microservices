@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,18 +9,13 @@ public class MessagePersistenceEntityTypeConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<StoreMessage> builder)
     {
-        builder.ToTable("StoreMessages", MessagePersistenceDbContext.DefaultSchema);
+        builder.ToTable("StoreMessages".Underscore(), MessagePersistenceDbContext.DefaultSchema);
 
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id).IsRequired();
 
-        builder
-            .Property(x => x.DeliveryType)
-            .HasMaxLength(50)
-            .HasConversion(v => v.ToString(), v => (MessageDeliveryType)Enum.Parse(typeof(MessageDeliveryType), v))
-            .IsRequired()
-            .IsUnicode(false);
+        builder.Property(x => x.RetryCount).HasColumnType("int").HasDefaultValue(0);
 
         builder
             .Property(x => x.DeliveryType)

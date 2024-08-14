@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace BuildingBlocks.Core.Extensions;
 
@@ -12,7 +12,7 @@ public static class ConfigurationExtensions
     /// </summary>
     /// <typeparam name="TOptions">The given bind model.</typeparam>
     /// <param name="configuration">The configuration instance to bind.</param>
-    /// <param name="section">The configuration section</param>
+    /// <param name="section">The configuration section.</param>
     /// <returns>The new instance of <typeparamref name="TOptions"/>.</returns>
     public static TOptions BindOptions<TOptions>(this IConfiguration configuration, string section)
         where TOptions : new()

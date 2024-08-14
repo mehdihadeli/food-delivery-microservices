@@ -8,12 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Data;
 
-public class CatalogDbContext : EfDbContextBase, ICatalogDbContext
+public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : EfDbContextBase(options), ICatalogDbContext
 {
     public const string DefaultSchema = "catalog";
-
-    public CatalogDbContext(DbContextOptions<CatalogDbContext> options)
-        : base(options) { }
 
     public DbSet<Product> Products { get; set; } = default!;
     public DbSet<ProductView> ProductsView { get; set; } = default!;

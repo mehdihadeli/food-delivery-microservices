@@ -3,17 +3,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace BuildingBlocks.Core.Exception.Types;
 
-public class NotFoundException : CustomException
-{
-    public NotFoundException(string message, System.Exception? innerException = null)
-        : base(message, StatusCodes.Status404NotFound, innerException) { }
-}
+public class NotFoundException(string message, System.Exception? innerException = null)
+    : CustomException(message, StatusCodes.Status404NotFound, innerException);
 
-public class NotFoundAppException : AppException
-{
-    public NotFoundAppException(string message, System.Exception? innerException = null)
-        : base(message, StatusCodes.Status404NotFound, innerException) { }
-}
+public class NotFoundAppException(string message, System.Exception? innerException = null)
+    : AppException(message, StatusCodes.Status404NotFound, innerException);
 
 public class NotFoundDomainException : DomainException
 {

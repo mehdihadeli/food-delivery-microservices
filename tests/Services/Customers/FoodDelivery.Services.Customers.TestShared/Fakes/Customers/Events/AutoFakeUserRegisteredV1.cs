@@ -1,5 +1,5 @@
 using AutoBogus;
-using FoodDelivery.Services.Shared.Identity.Users.Events.v1.Integration;
+using FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
 
 namespace FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Events;
 

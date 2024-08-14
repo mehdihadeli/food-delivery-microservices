@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -42,11 +42,11 @@ internal class CreateRestockSubscriptionEndpoint
         Results<CreatedAtRoute<CreateRestockSubscriptionResponse>, UnAuthorizedHttpProblemResult, ValidationProblem>
     > HandleAsync([AsParameters] CreateRestockSubscriptionRequestParameters requestParameters)
     {
-        var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+        var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
         var command = CreateRestockSubscription.Of(request.CustomerId, request.ProductId, request.Email);
 
-        var result = await commandProcessor.SendAsync(command, cancellationToken);
+        var result = await commandBus.SendAsync(command, cancellationToken);
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -61,7 +61,7 @@ internal class CreateRestockSubscriptionEndpoint
 internal record CreateRestockSubscriptionRequestParameters(
     [FromBody] CreateRestockSubscriptionRequest Request,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<CreateRestockSubscriptionRequest>;

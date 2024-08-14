@@ -2,9 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
 using BuildingBlocks.Abstractions.Domain;
-using BuildingBlocks.Abstractions.Domain.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
@@ -13,26 +11,13 @@ using Sieve.Services;
 
 namespace BuildingBlocks.Core.Persistence.EfCore;
 
-public abstract class EfRepositoryBase<TDbContext, TEntity, TKey> : IRepository<TEntity, TKey>
+public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>(TDbContext dbContext, ISieveProcessor sieveProcessor)
+    : IRepository<TEntity, TKey>
     where TEntity : class, IHaveIdentity<TKey>
     where TDbContext : DbContext
 {
-    protected readonly TDbContext DbContext;
-    private readonly ISieveProcessor _sieveProcessor;
-    private readonly IAggregatesDomainEventsRequestStore _aggregatesDomainEventsStore;
-    protected readonly DbSet<TEntity> DbSet;
-
-    protected EfRepositoryBase(
-        TDbContext dbContext,
-        ISieveProcessor sieveProcessor,
-        IAggregatesDomainEventsRequestStore aggregatesDomainEventsStore
-    )
-    {
-        DbContext = dbContext;
-        _sieveProcessor = sieveProcessor;
-        _aggregatesDomainEventsStore = aggregatesDomainEventsStore;
-        DbSet = dbContext.Set<TEntity>();
-    }
+    protected DbSet<TEntity> DbSet { get; } = dbContext.Set<TEntity>();
+    protected TDbContext DbContext { get; } = dbContext;
 
     public Task<TEntity?> FindByIdAsync(TKey id, CancellationToken cancellationToken = default)
     {
@@ -98,7 +83,7 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey> : IRepository<
         CancellationToken cancellationToken = default
     )
     {
-        return await DbSet.ApplyPagingAsync(pageRequest, _sieveProcessor, predicate, sortExpression, cancellationToken);
+        return await DbSet.ApplyPagingAsync(pageRequest, sieveProcessor, predicate, sortExpression, cancellationToken);
     }
 
     public async Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
@@ -112,7 +97,7 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey> : IRepository<
     {
         return await DbSet.ApplyPagingAsync<TEntity, TResult, TSortKey>(
             pageRequest,
-            _sieveProcessor,
+            sieveProcessor,
             configuration,
             predicate,
             sortExpression,

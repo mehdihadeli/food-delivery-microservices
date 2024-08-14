@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,11 +11,9 @@ namespace FoodDelivery.Services.Orders.Shared.Data.Migrations.Orders
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "order");
+            migrationBuilder.EnsureSchema(name: "order");
 
-            migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:PostgresExtension:uuid-ossp", ",,");
+            migrationBuilder.AlterDatabase().Annotation("Npgsql:PostgresExtension:uuid-ossp", ",,");
 
             migrationBuilder.CreateTable(
                 name: "orders",
@@ -35,22 +33,22 @@ namespace FoodDelivery.Services.Orders.Shared.Data.Migrations.Orders
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_orders", x => x.id);
-                });
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "ix_orders_id",
                 schema: "order",
                 table: "orders",
                 column: "id",
-                unique: true);
+                unique: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "orders",
-                schema: "order");
+            migrationBuilder.DropTable(name: "orders", schema: "order");
         }
     }
 }

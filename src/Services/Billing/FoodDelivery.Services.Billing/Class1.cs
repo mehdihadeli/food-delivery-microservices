@@ -1,3 +1,3 @@
-﻿namespace FoodDelivery.Services.Billing;
+namespace FoodDelivery.Services.Billing;
 
 public class Class1 { }

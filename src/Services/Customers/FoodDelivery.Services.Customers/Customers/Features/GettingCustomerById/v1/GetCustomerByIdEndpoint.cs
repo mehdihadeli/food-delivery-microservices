@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -31,6 +31,7 @@ internal class GetCustomerByIdEndpointEndpoint
             .WithName(nameof(GetCustomerById))
             .WithDisplayName(nameof(GetCustomerById).Humanize())
             .WithSummaryAndDescription(nameof(GetCustomerById).Humanize(), nameof(GetCustomerById).Humanize());
+
         // .Produces<GetCustomerByIdResponse>("Customer fetched successfully.", StatusCodes.Status200OK)
         // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
         // .ProducesProblem(StatusCodes.Status404NotFound)
@@ -60,7 +61,7 @@ internal class GetCustomerByIdEndpointEndpoint
 internal record GetCustomerByIdRequestParameters(
     [FromRoute] Guid Id,
     HttpContext HttpContext,
-    IQueryProcessor QueryProcessor,
+    IQueryBus QueryBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;

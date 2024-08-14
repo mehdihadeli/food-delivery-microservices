@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -32,12 +32,12 @@ public static class UpdateProductEndpoint
             [AsParameters] UpdateProductRequestParameters requestParameters
         )
         {
-            var (request, id, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, id, context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = mapper.Map<UpdateProduct>(request);
             command = command with { Id = id };
 
-            await commandProcessor.SendAsync(command, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -52,7 +52,7 @@ internal record UpdateProductRequestParameters(
     [FromBody] UpdateProductRequest Request,
     [FromRoute] long Id,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<UpdateProductRequest>;

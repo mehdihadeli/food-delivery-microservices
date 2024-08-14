@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
@@ -18,7 +18,6 @@ using FoodDelivery.Services.Catalogs.Shared.Extensions;
 using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 using FoodDelivery.Services.Catalogs.Suppliers.Exceptions.Application;
-using MediatR;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 
@@ -115,26 +114,14 @@ internal class UpdateProductInvalidateCache : InvalidateCacheRequest<UpdateProdu
     }
 }
 
-internal class UpdateProductCommandHandler : ICommandHandler<UpdateProduct>
+internal class UpdateProductCommandHandler(
+    ICatalogDbContext catalogDbContext,
+    ICategoryChecker categoryChecker,
+    IBrandChecker brandChecker,
+    ISupplierChecker supplierChecker
+) : ICommandHandler<UpdateProduct>
 {
-    private readonly ICatalogDbContext _catalogDbContext;
-    private readonly ICategoryChecker _categoryChecker;
-    private readonly IBrandChecker _brandChecker;
-    private readonly ISupplierChecker _supplierChecker;
-
-    public UpdateProductCommandHandler(
-        ICatalogDbContext catalogDbContext,
-        ICategoryChecker categoryChecker,
-        IBrandChecker brandChecker,
-        ISupplierChecker supplierChecker)
-    {
-        _catalogDbContext = catalogDbContext;
-        _categoryChecker = categoryChecker;
-        _brandChecker = brandChecker;
-        _supplierChecker = supplierChecker;
-    }
-
-    public async Task<Unit> Handle(UpdateProduct command, CancellationToken cancellationToken)
+    public async Task Handle(UpdateProduct command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
@@ -157,34 +144,45 @@ internal class UpdateProductCommandHandler : ICommandHandler<UpdateProduct>
             description
         ) = command;
 
-        var product = await _catalogDbContext.FindProductByIdAsync(ProductId.Of(id));
+        var product = await catalogDbContext.FindProductByIdAsync(ProductId.Of(id));
         if (product is null)
         {
             throw new ProductNotFoundException(id);
         }
 
-        var category = await _catalogDbContext.FindCategoryAsync(CategoryId.Of(id));
+        var category = await catalogDbContext.FindCategoryAsync(CategoryId.Of(id));
         if (category is null)
             throw new CategoryNotFoundException(categoryId);
 
-        var brand = await _catalogDbContext.FindBrandAsync(BrandId.Of(brandId));
+        var brand = await catalogDbContext.FindBrandAsync(BrandId.Of(brandId));
         if (brand is null)
             throw new BrandNotFoundException(brandId);
 
-        var supplier = await _catalogDbContext.FindSupplierByIdAsync(SupplierId.Of(supplierId));
+        var supplier = await catalogDbContext.FindSupplierByIdAsync(SupplierId.Of(supplierId));
         if (supplier is null)
             throw new SupplierNotFoundException(supplierId);
 
-        product.ChangeCategory(async cid => await _catalogDbContext.CategoryExistsAsync(cid!, cancellationToken: cancellationToken), CategoryId.Of(categoryId));
-        product.ChangeBrand(_brandChecker, BrandId.Of(brandId));
-        product.ChangeSupplier(_supplierChecker, SupplierId.Of(supplierId));
+        product.ChangeCategory(
+            async cid => await catalogDbContext.CategoryExistsAsync(cid!, cancellationToken: cancellationToken),
+            CategoryId.Of(categoryId)
+        );
+        product.ChangeBrand(brandChecker, BrandId.Of(brandId));
+        product.ChangeSupplier(supplierChecker, SupplierId.Of(supplierId));
 
-        product.ChangeProductDetail(Name.Of(name), productStatus, productType, Dimensions.Of(width, height, depth), Size.Of(size), color, null, description);
+        product.ChangeProductDetail(
+            Name.Of(name),
+            productStatus,
+            productType,
+            Dimensions.Of(width, height, depth),
+            Size.Of(size),
+            color,
+            null,
+            description
+        );
         product.ChangePrice(Price.Of(price));
         product.ChangeMaxStockThreshold(maxStockThreshold);
         product.ChangeRestockThreshold(restockThreshold);
 
-        await _catalogDbContext.SaveChangesAsync(cancellationToken);
-        return Unit.Value;
+        await catalogDbContext.SaveChangesAsync(cancellationToken);
     }
 }

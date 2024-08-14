@@ -9,25 +9,25 @@ public class TagBySwaggerOperationFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        if (context.ApiDescription.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
-        {
-            var apiExplorerSettings = controllerActionDescriptor.ControllerTypeInfo
-                .GetCustomAttributes(typeof(SwaggerOperationAttribute), true)
-                .Cast<SwaggerOperationAttribute>()
-                .FirstOrDefault();
-            if (apiExplorerSettings != null && apiExplorerSettings.Tags.Any())
-            {
-                operation.Tags = apiExplorerSettings.Tags.Select(x => new OpenApiTag { Name = x }).ToList();
-            }
+        if (context.ApiDescription.ActionDescriptor is not ControllerActionDescriptor controllerActionDescriptor)
+            return;
 
-            if (
-                controllerActionDescriptor.EndpointMetadata.FirstOrDefault(x => x is SwaggerOperationAttribute)
-                    is SwaggerOperationAttribute swaggerOperationEndpoint
-                && swaggerOperationEndpoint.Tags.Any()
-            )
-            {
-                operation.Tags = swaggerOperationEndpoint.Tags.Select(x => new OpenApiTag { Name = x }).ToList();
-            }
+        var apiExplorerSettings = controllerActionDescriptor
+            .ControllerTypeInfo.GetCustomAttributes(typeof(SwaggerOperationAttribute), true)
+            .Cast<SwaggerOperationAttribute>()
+            .FirstOrDefault();
+        if (apiExplorerSettings != null && apiExplorerSettings.Tags.Length != 0)
+        {
+            operation.Tags = apiExplorerSettings.Tags.Select(x => new OpenApiTag { Name = x }).ToList();
+        }
+
+        if (
+            controllerActionDescriptor.EndpointMetadata.FirstOrDefault(x => x is SwaggerOperationAttribute)
+                is SwaggerOperationAttribute swaggerOperationEndpoint
+            && swaggerOperationEndpoint.Tags.Length != 0
+        )
+        {
+            operation.Tags = swaggerOperationEndpoint.Tags.Select(x => new OpenApiTag { Name = x }).ToList();
         }
     }
 }

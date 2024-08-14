@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Extensions;
-using Tests.Shared.Helpers;
 using MongoDB.Driver;
 using Testcontainers.MongoDb;
+using Tests.Shared.Helpers;
 using Xunit.Sdk;
 
 namespace Tests.Shared.Fixtures;

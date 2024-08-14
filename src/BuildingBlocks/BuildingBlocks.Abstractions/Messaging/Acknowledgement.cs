@@ -18,10 +18,10 @@ public class Nack : Acknowledgement
 
 public class Reject : Acknowledgement
 {
-    public bool Requeue { get; }
-
     public Reject(bool requeue = true)
     {
         Requeue = requeue;
     }
+
+    public bool Requeue { get; }
 }

@@ -13,9 +13,7 @@ public class ContextItems
     public T? TryGetItem<T>(string key)
     {
         if (_items.TryGetValue(key, out var result))
-        {
             return result is T type ? type : default;
-        }
 
         return default;
     }

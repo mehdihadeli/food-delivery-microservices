@@ -1,3 +1,3 @@
-﻿namespace FoodDelivery.Services.Checkouts;
+namespace FoodDelivery.Services.Checkouts;
 
 public class Class1 { }

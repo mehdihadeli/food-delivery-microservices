@@ -8,8 +8,7 @@ public static class HttpContextExtensions
 {
     public static string? GetMetricsCurrentResourceName(this HttpContext httpContext)
     {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
+        ArgumentNullException.ThrowIfNull(httpContext);
 
         Endpoint? endpoint = httpContext.Features.Get<IEndpointFeature>()?.Endpoint;
 

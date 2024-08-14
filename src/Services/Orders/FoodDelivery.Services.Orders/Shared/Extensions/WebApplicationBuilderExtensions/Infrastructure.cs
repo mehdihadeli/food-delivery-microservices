@@ -1,9 +1,13 @@
 using System.Threading.RateLimiting;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviours;
+using BuildingBlocks.Caching.Extensions;
+using BuildingBlocks.Core;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Persistence.EfCore;
-using BuildingBlocks.Core.Registrations;
+using BuildingBlocks.Core.Web.Extensions;
+using BuildingBlocks.Core.Web.HeaderPropagation.Extensions;
 using BuildingBlocks.Email;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
@@ -11,12 +15,12 @@ using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.OpenTelemetry;
 using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Security.Extensions;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
 using BuildingBlocks.Validation.Extensions;
 using BuildingBlocks.Web.Extensions;
+using BuildingBlocks.Web.Versioning;
 using FoodDelivery.Services.Orders.Customers;
 
 namespace FoodDelivery.Services.Orders.Shared.Extensions.WebApplicationBuilderExtensions;
@@ -51,13 +55,23 @@ internal static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomVersioning();
 
-        builder.AddCustomSwagger();
+        builder.AddCustomSwagger(cfg =>
+        {
+            cfg.Name = "Orders Apis";
+            cfg.Title = "Orders Apis";
+        });
 
         builder.AddCustomCors();
 
         builder.Services.AddHttpContextAccessor();
 
         builder.AddCustomOpenTelemetry();
+
+        builder.Services.AddHeaderPropagation(options =>
+        {
+            options.HeaderNames.Add(MessageHeaders.CorrelationId);
+            options.HeaderNames.Add(MessageHeaders.CausationId);
+        });
 
         if (builder.Environment.IsTest() == false)
         {
@@ -73,32 +87,31 @@ internal static partial class WebApplicationBuilderExtensions
                     .AddNpgSql(
                         postgresOptions.ConnectionString,
                         name: "OrdersService-Postgres-Check",
-                        tags: new[] { "postgres", "database", "infra", "orders-service", "live", "ready" }
+                        tags: ["postgres", "database", "infra", "orders-service", "live", "ready",]
                     )
                     .AddRabbitMQ(
                         rabbitMqOptions.ConnectionString,
                         name: "OrdersService-RabbitMQ-Check",
                         timeout: TimeSpan.FromSeconds(3),
-                        tags: new[] { "rabbitmq", "bus", "infra", "orders-service", "live", "ready" }
+                        tags: ["rabbitmq", "bus", "infra", "orders-service", "live", "ready",]
                     );
             });
         }
 
         builder.Services.AddEmailService(builder.Configuration);
 
-        builder.Services.AddCqrs(
-            pipelines: new[]
-            {
-                typeof(LoggingBehavior<,>),
-                typeof(StreamLoggingBehavior<,>),
-                typeof(RequestValidationBehavior<,>),
-                typeof(StreamRequestValidationBehavior<,>),
-                typeof(StreamCachingBehavior<,>),
-                typeof(CachingBehavior<,>),
-                typeof(InvalidateCachingBehavior<,>),
-                typeof(EfTxBehavior<,>)
-            }
-        );
+        builder.Services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.AddOpenStreamBehavior(typeof(StreamLoggingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(RequestValidationBehavior<,>));
+            cfg.AddOpenStreamBehavior(typeof(StreamRequestValidationBehavior<,>));
+            cfg.AddOpenStreamBehavior(typeof(StreamCachingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(InvalidateCachingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(EfTxBehavior<,>));
+        });
 
         builder.Services.AddPostgresMessagePersistence(builder.Configuration);
 
@@ -106,19 +119,17 @@ internal static partial class WebApplicationBuilderExtensions
         builder.Services.AddRateLimiter(options =>
         {
             // rate limiter that limits all to 10 requests per minute, per authenticated username (or hostname if not authenticated)
-            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
-                httpContext =>
-                    RateLimitPartition.GetFixedWindowLimiter(
-                        partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
-                        factory: partition =>
-                            new FixedWindowRateLimiterOptions
-                            {
-                                AutoReplenishment = true,
-                                PermitLimit = 10,
-                                QueueLimit = 0,
-                                Window = TimeSpan.FromMinutes(1)
-                            }
-                    )
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+                    factory: partition => new FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true,
+                        PermitLimit = 10,
+                        QueueLimit = 0,
+                        Window = TimeSpan.FromMinutes(1)
+                    }
+                )
             );
         });
 

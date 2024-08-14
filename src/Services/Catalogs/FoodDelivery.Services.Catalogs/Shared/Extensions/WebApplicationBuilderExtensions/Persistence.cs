@@ -1,8 +1,8 @@
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Persistence.Mongo;
+using BuildingBlocks.Persistence.Mongo.Extensions;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Data;
 using Microsoft.EntityFrameworkCore;
@@ -25,8 +25,8 @@ public static partial class WebApplicationBuilderExtensions
         var option = configuration.BindOptions<PostgresOptions>();
         if (option.UseInMemory)
         {
-            services.AddDbContext<CatalogDbContext>(
-                options => options.UseInMemoryDatabase("FoodDelivery.Services.Catalogs")
+            services.AddDbContext<CatalogDbContext>(options =>
+                options.UseInMemoryDatabase("FoodDelivery.Services.Catalogs")
             );
 
             services.TryAddScoped<IDbFacadeResolver>(provider => provider.GetService<CatalogDbContext>()!);
@@ -46,6 +46,6 @@ public static partial class WebApplicationBuilderExtensions
 
     private static void AddMongoReadStorage(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddMongoDbContext<CatalogReadDbContext>(configuration);
+        services.AddMongoDbContext<CatalogReadDbContext>();
     }
 }

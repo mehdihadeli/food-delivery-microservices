@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
@@ -101,32 +101,15 @@ internal record CreateProduct(
     }
 }
 
-internal class CreateProductHandler : ICommandHandler<CreateProduct, CreateProductResult>
+internal class CreateProductHandler(
+    ICatalogDbContext catalogDbContext,
+    IMapper mapper,
+    ICategoryChecker categoryChecker,
+    IBrandChecker brandChecker,
+    ISupplierChecker supplierChecker,
+    ILogger<CreateProductHandler> logger
+) : ICommandHandler<CreateProduct, CreateProductResult>
 {
-    private readonly ILogger<CreateProductHandler> _logger;
-    private readonly IMapper _mapper;
-    private readonly ICategoryChecker _categoryChecker;
-    private readonly IBrandChecker _brandChecker;
-    private readonly ISupplierChecker _supplierChecker;
-    private readonly ICatalogDbContext _catalogDbContext;
-
-    public CreateProductHandler(
-        ICatalogDbContext catalogDbContext,
-        IMapper mapper,
-        ICategoryChecker categoryChecker,
-        IBrandChecker brandChecker,
-        ISupplierChecker supplierChecker,
-        ILogger<CreateProductHandler> logger
-    )
-    {
-        _catalogDbContext = catalogDbContext;
-        _mapper = mapper;
-        _categoryChecker = categoryChecker;
-        _brandChecker = brandChecker;
-        _supplierChecker = supplierChecker;
-        _logger = logger;
-    }
-
     public async Task<CreateProductResult> Handle(CreateProduct command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
@@ -148,15 +131,12 @@ internal class CreateProductHandler : ICommandHandler<CreateProduct, CreateProdu
         ) = command;
 
         var images = imageItems
-            ?.Select(
-                x =>
-                    new ProductImage(
-                        EntityId.Of(SnowFlakIdGenerator.NewId()),
-                        x.ImageUrl,
-                        x.IsMain,
-                        ProductId.Of(command.Id)
-                    )
-            )
+            ?.Select(x => new ProductImage(
+                EntityId.Of(SnowFlakIdGenerator.NewId()),
+                x.ImageUrl,
+                x.IsMain,
+                ProductId.Of(command.Id)
+            ))
             .ToList();
 
         // await _domainEventDispatcher.DispatchAsync(cancellationToken, new Events.Domain.CreatingProduct());
@@ -177,22 +157,22 @@ internal class CreateProductHandler : ICommandHandler<CreateProduct, CreateProdu
             categoryId,
             supplierId,
             brandId,
-            async cid => await _catalogDbContext.CategoryExistsAsync(cid!, cancellationToken: cancellationToken),
-            _supplierChecker,
-            _brandChecker,
+            async cid => await catalogDbContext.CategoryExistsAsync(cid!, cancellationToken: cancellationToken),
+            supplierChecker,
+            brandChecker,
             images
         );
 
-        await _catalogDbContext.Products.AddAsync(product, cancellationToken: cancellationToken);
-        await _catalogDbContext.SaveChangesAsync(cancellationToken);
+        await catalogDbContext.Products.AddAsync(product, cancellationToken: cancellationToken);
+        await catalogDbContext.SaveChangesAsync(cancellationToken);
 
-        var created = await _catalogDbContext.Products
-            .Include(x => x.Brand)
+        var created = await catalogDbContext
+            .Products.Include(x => x.Brand)
             .Include(x => x.Category)
             .Include(x => x.Supplier)
             .SingleOrDefaultAsync(x => x.Id == product.Id, cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Product a with ID: '{ProductId} created.'", created!.Id);
+        logger.LogInformation("Product a with ID: '{ProductId} created.'", created!.Id);
 
         return new CreateProductResult(created.Id);
     }

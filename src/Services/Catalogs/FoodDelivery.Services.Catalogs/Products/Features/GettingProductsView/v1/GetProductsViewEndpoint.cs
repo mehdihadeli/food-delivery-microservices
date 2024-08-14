@@ -1,6 +1,6 @@
 using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -20,9 +20,9 @@ public static class GetProductsViewEndpoint
             .MapGet("/products-view/{page}/{pageSize}", Handle)
             .WithTags(ProductsConfigs.Tag)
             // .RequireAuthorization()
-            .WithDisplayName(nameof(v1.GetProductsView).Humanize())
-            .WithSummaryAndDescription(nameof(v1.GetProductsView).Humanize(), nameof(v1.GetProductsView).Humanize())
-            .WithName(nameof(v1.GetProductsView))
+            .WithDisplayName(nameof(GetProductsView).Humanize())
+            .WithSummaryAndDescription(nameof(GetProductsView).Humanize(), nameof(GetProductsView).Humanize())
+            .WithName(nameof(GetProductsView))
             // .Produces<GetProductsViewResult>(StatusCodes.Status200OK)
             // .ProducesProblem(StatusCodes.Status401Unauthorized)
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
@@ -54,7 +54,7 @@ public static class GetProductsViewEndpoint
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding#binding-precedence
 internal record GetProductsViewRequestParameters(
     HttpContext HttpContext,
-    IQueryProcessor QueryProcessor,
+    IQueryBus QueryBus,
     IMapper Mapper,
     CancellationToken CancellationToken,
     int PageSize = 10,

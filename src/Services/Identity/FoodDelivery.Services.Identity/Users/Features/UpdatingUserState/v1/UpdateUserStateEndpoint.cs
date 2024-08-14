@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -29,10 +29,10 @@ internal static class UpdateUserStateEndpoint
             [AsParameters] UpdateUserStateRequestParameters requestParameters
         )
         {
-            var (request, userId, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, userId, context, commandBus, mapper, cancellationToken) = requestParameters;
             var command = UpdateUserState.Of(userId, request.UserState);
 
-            await commandProcessor.SendAsync(command, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
 
             return TypedResults.NoContent();
         }
@@ -45,7 +45,7 @@ internal record UpdateUserStateRequestParameters(
     [FromBody] UpdateUserStateRequest Request,
     [FromRoute] Guid UserId,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<UpdateUserStateRequest>;

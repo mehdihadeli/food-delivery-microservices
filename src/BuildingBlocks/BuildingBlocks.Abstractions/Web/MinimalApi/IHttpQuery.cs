@@ -1,6 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Queries;
-using MediatR;
+using BuildingBlocks.Abstractions.Queries;
 using Microsoft.AspNetCore.Http;
 
 namespace BuildingBlocks.Abstractions.Web.MinimalApi;
@@ -12,7 +11,7 @@ namespace BuildingBlocks.Abstractions.Web.MinimalApi;
 public interface IHttpQuery
 {
     HttpContext HttpContext { get; init; }
-    IQueryProcessor QueryProcessor { get; init; }
+    IQueryBus QueryBus { get; init; }
     IMapper Mapper { get; init; }
     CancellationToken CancellationToken { get; init; }
 }

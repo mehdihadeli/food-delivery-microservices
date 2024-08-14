@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.CQRS.Queries;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Queries;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -133,20 +133,18 @@ public class SharedFixtureWithEfCore<TEntryPoint, TEfCoreDbContext> : SharedFixt
     public Task<T> ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, IMediator, Task<T>> action) =>
         ExecuteScopeAsync(sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<IMediator>()));
 
-    public Task ExecuteEfDbContextAsync(Func<TEfCoreDbContext, ICommandProcessor, Task> action) =>
-        ExecuteScopeAsync(
-            sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<ICommandProcessor>())
+    public Task ExecuteEfDbContextAsync(Func<TEfCoreDbContext, ICommandBus, Task> action) =>
+        ExecuteScopeAsync(sp =>
+            action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<ICommandBus>())
         );
 
-    public Task<T> ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, ICommandProcessor, Task<T>> action) =>
-        ExecuteScopeAsync(
-            sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<ICommandProcessor>())
+    public Task<T> ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, ICommandBus, Task<T>> action) =>
+        ExecuteScopeAsync(sp =>
+            action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<ICommandBus>())
         );
 
-    public Task ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, IQueryProcessor, Task<T>> action) =>
-        ExecuteScopeAsync(
-            sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<IQueryProcessor>())
-        );
+    public Task ExecuteEfDbContextAsync<T>(Func<TEfCoreDbContext, IQueryBus, Task<T>> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetRequiredService<TEfCoreDbContext>(), sp.GetRequiredService<IQueryBus>()));
 
     public async Task<int> InsertEfDbContextAsync<T>(params T[] entities)
         where T : class

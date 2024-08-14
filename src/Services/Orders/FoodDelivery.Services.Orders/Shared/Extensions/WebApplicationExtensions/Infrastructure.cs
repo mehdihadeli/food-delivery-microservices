@@ -1,9 +1,11 @@
+using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.Web.Extensions;
-using BuildingBlocks.Web.Middlewares.CaptureExceptionMiddleware;
-using BuildingBlocks.Web.Middlewares.RequestLogContextMiddleware;
+using BuildingBlocks.Web.Middlewares.CaptureException;
+using BuildingBlocks.Web.Middlewares.HeaderPropagation;
+using BuildingBlocks.Web.RateLimit;
 using FoodDelivery.Services.Catalogs;
 using Serilog;
 
@@ -44,12 +46,12 @@ public static partial class WebApplicationExtensions
             opts.GetLevel = LogEnricher.GetLogLevel;
         });
 
-        app.UseRequestLogContextMiddleware();
-
         app.UseCustomCors();
 
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.UseHeaderPropagation();
 
         await app.UsePostgresPersistenceMessage(app.Logger);
 

@@ -1,11 +1,11 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
-using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.Read.Mongo;
 using FluentValidation;
+using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Read.Mongo;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
 
@@ -15,7 +15,6 @@ namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1
 // https://buildplease.com/pages/vos-in-events/
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
-
 public record CustomerUpdated(
     long Id,
     string FirstName,
@@ -84,24 +83,15 @@ internal class CustomerUpdatedValidator : AbstractValidator<CustomerUpdated>
     }
 }
 
-internal class CustomerCreatedHandler : IDomainEventHandler<CustomerUpdated>
+internal class CustomerCreatedHandler(ICommandBus commandBus, IMapper mapper) : IDomainEventHandler<CustomerUpdated>
 {
-    private readonly ICommandProcessor _commandProcessor;
-    private readonly IMapper _mapper;
-
-    public CustomerCreatedHandler(ICommandProcessor commandProcessor, IMapper mapper)
-    {
-        _commandProcessor = commandProcessor;
-        _mapper = mapper;
-    }
-
     public Task Handle(CustomerUpdated notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
-        var mongoReadCommand = _mapper.Map<UpdateCustomerRead>(notification);
+        var mongoReadCommand = mapper.Map<UpdateCustomerRead>(notification);
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         // Schedule multiple read sides to execute here
-        return _commandProcessor.ScheduleAsync(new IInternalCommand[] { mongoReadCommand }, cancellationToken);
+        return commandBus.ScheduleAsync(new IInternalCommand[] { mongoReadCommand }, cancellationToken);
     }
 }

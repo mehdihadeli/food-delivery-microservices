@@ -1,12 +1,7 @@
-using Bogus;
-using FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
-using FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
-using FoodDelivery.Services.Shared.Identity.Users.Events.v1.Integration;
-using Microsoft.Extensions.DependencyInjection;
-using Tests.Shared.Fixtures;
-using Xunit.Abstractions;
-
 namespace FoodDelivery.Services.Identity.IntegrationTests.Users.Features.RegisteringUser.v1;
+
+
+
 
 // public class RegisterUserTests : IntegrationTestBase<Program>
 // {

@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using BuildingBlocks.Core.Exception.Types;
-using BuildingBlocks.Validation;
 
 namespace BuildingBlocks.Core.Extensions;
 

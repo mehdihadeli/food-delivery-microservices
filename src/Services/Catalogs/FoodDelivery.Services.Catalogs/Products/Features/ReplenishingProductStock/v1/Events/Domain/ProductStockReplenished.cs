@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1.Events.Domain;

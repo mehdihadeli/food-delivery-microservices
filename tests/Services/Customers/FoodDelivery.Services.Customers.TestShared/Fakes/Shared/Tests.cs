@@ -1,5 +1,5 @@
-using FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Dtos;
 using FluentAssertions;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Dtos;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Customers.TestShared.Fakes.Shared;

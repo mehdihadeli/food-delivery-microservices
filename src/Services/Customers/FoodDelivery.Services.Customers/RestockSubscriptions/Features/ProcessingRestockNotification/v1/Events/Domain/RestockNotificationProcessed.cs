@@ -1,8 +1,7 @@
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
-using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Write;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,37 +14,24 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.Processi
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our commands and events, just primitive types
-
 public record RestockNotificationProcessed(long Id, DateTime ProcessedTime) : DomainEvent;
 
-internal class RestockNotificationProcessedHandler : IDomainEventHandler<RestockNotificationProcessed>
+internal class RestockNotificationProcessedHandler(ICommandBus commandBus, CustomersDbContext customersDbContext)
+    : IDomainEventHandler<RestockNotificationProcessed>
 {
-    private readonly ICommandProcessor _commandProcessor;
-    private readonly CustomersDbContext _customersDbContext;
-
-    public RestockNotificationProcessedHandler(
-        ICommandProcessor commandProcessor,
-        CustomersDbContext customersDbContext
-    )
-    {
-        _commandProcessor = commandProcessor;
-        _customersDbContext = customersDbContext;
-    }
-
     public async Task Handle(RestockNotificationProcessed notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
 
-        var restockSubscription = await _customersDbContext.RestockSubscriptions.FirstOrDefaultAsync(
-            x => x.Id == notification.Id,
-            cancellationToken
-        );
+        var restockSubscription = await customersDbContext
+            .RestockSubscriptions.Include(restockSubscription => restockSubscription.ProductInformation)
+            .FirstOrDefaultAsync(x => x.Id == notification.Id, cancellationToken);
 
         if (restockSubscription is null)
             return;
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
-        await _commandProcessor.SendAsync(
+        await commandBus.SendAsync(
             new UpdateMongoRestockSubscriptionReadModel(
                 notification.Id,
                 restockSubscription.CustomerId,

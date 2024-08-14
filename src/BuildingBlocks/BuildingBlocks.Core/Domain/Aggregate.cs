@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using BuildingBlocks.Abstractions.Domain;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Domain.Exceptions;
 
 namespace BuildingBlocks.Core.Domain;
@@ -29,7 +29,7 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
 
     public bool HasUncommittedDomainEvents()
     {
-        return _uncommittedDomainEvents.Any();
+        return !_uncommittedDomainEvents.IsEmpty;
     }
 
     public IReadOnlyList<IDomainEvent> GetUncommittedDomainEvents()

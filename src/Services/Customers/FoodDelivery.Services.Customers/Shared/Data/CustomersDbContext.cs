@@ -6,12 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Customers.Shared.Data;
 
-public class CustomersDbContext : EfDbContextBase, ICustomersDbContext
+public class CustomersDbContext(DbContextOptions<CustomersDbContext> options)
+    : EfDbContextBase(options),
+        ICustomersDbContext
 {
     public const string DefaultSchema = "customer";
-
-    public CustomersDbContext(DbContextOptions<CustomersDbContext> options)
-        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

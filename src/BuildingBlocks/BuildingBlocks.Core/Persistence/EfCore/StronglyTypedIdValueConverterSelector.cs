@@ -7,13 +7,11 @@ namespace BuildingBlocks.Core.Persistence.EfCore;
 
 // Ref: https://andrewlock.net/series/using-strongly-typed-entity-ids-to-avoid-primitive-obsession/
 // https://andrewlock.net/strongly-typed-ids-in-ef-core-using-strongly-typed-entity-ids-to-avoid-primitive-obsession-part-4/
-public class StronglyTypedIdValueConverterSelector<TId> : ValueConverterSelector
+public class StronglyTypedIdValueConverterSelector<TId>(ValueConverterSelectorDependencies dependencies)
+    : ValueConverterSelector(dependencies)
 {
     private readonly ConcurrentDictionary<(Type ModelClrType, Type ProviderClrType), ValueConverterInfo> _converters =
         new();
-
-    public StronglyTypedIdValueConverterSelector(ValueConverterSelectorDependencies dependencies)
-        : base(dependencies) { }
 
     public override IEnumerable<ValueConverterInfo> Select(Type? modelClrType, Type? providerClrType = null)
     {

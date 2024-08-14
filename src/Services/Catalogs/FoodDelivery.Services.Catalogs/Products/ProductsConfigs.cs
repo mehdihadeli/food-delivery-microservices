@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Domain.Events;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
 using FoodDelivery.Services.Catalogs.Products.Data;

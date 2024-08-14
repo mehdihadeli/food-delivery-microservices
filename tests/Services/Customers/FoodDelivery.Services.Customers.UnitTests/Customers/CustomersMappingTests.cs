@@ -1,14 +1,14 @@
 using AutoBogus;
 using AutoMapper;
+using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
-using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.Read.Mongo;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
+using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Read.Mongo;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
 using FoodDelivery.Services.Customers.UnitTests.Common;
-using FluentAssertions;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Customers.UnitTests.Customers;

@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
-using BuildingBlocks.Core.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 
@@ -44,14 +44,10 @@ internal record ProductRestockThresholdReached(
     }
 }
 
-internal class ProductRestockThresholdReachedHandler : IDomainEventHandler<ProductRestockThresholdReached>
+internal class ProductRestockThresholdReachedHandler(ICatalogDbContext catalogDbContext)
+    : IDomainEventHandler<ProductRestockThresholdReached>
 {
-    private readonly ICatalogDbContext _catalogDbContext;
-
-    public ProductRestockThresholdReachedHandler(ICatalogDbContext catalogDbContext)
-    {
-        _catalogDbContext = catalogDbContext;
-    }
+    private readonly ICatalogDbContext _catalogDbContext = catalogDbContext;
 
     public Task Handle(ProductRestockThresholdReached notification, CancellationToken cancellationToken)
     {

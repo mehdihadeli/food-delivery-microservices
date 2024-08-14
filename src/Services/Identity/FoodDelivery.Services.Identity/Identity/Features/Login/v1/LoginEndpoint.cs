@@ -1,5 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
@@ -32,11 +32,11 @@ internal static class LoginEndpoint
             Results<Ok<LoginResponse>, InternalHttpProblemResult, ForbiddenHttpProblemResult, ValidationProblem>
         > Handle([AsParameters] LoginRequestParameters requestParameters)
         {
-            var (request, context, commandProcessor, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
 
             var command = Login.Of(request.UserNameOrEmail, request.Password, request.Remember);
 
-            var result = await commandProcessor.SendAsync(command, cancellationToken);
+            var result = await commandBus.SendAsync(command, cancellationToken);
 
             var response = mapper.Map<LoginResponse>(result);
 
@@ -52,7 +52,7 @@ internal static class LoginEndpoint
 internal record LoginRequestParameters(
     [FromBody] LoginRequest Request,
     HttpContext HttpContext,
-    ICommandProcessor CommandProcessor,
+    ICommandBus CommandBus,
     IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<LoginRequest>;

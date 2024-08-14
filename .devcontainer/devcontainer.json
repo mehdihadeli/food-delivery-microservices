@@ -22,8 +22,8 @@
     // https://github.com/devcontainers/features/tree/main/src/dotnet#dotnet-cli-dotnet
     "ghcr.io/devcontainers/features/dotnet:2": {
       // this version should be matched with global.json .net version for working vscode IntelliSense correctly
-      "version": "8.0.303",
-      "additionalVersions": "latest, 7.0.410, 8.0.303, 6.0.424",
+      "version": "8.0.400",
+      "additionalVersions": "latest, 8.0.400, 8.0.303, 7.0.410, 6.0.424",
       "aspNetCoreRuntimeVersions": "latest, 7.0"
     },
     // https://github.com/devcontainers/features/tree/main/src/github-cli
@@ -74,7 +74,18 @@
         "terminal.integrated.defaultProfile.windows": "PowerShell",
         "terminal.integrated.defaultProfile.linux": "zsh",
         "powershell.cwd": "~",
-        "terminal.external.windowsExec": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe"
+        "terminal.external.windowsExec": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "editor.smoothScrolling": true,
+        "editor.wordWrap": "on",
+        "editor.guides.bracketPairs": true,
+        "explorer.experimental.fileNesting.enabled": true,
+        "[csharp]": {
+          "editor.defaultFormatter": "csharpier.csharpier-vscode",
+          "editor.formatOnSave": true
+        }
       },
       "extensions": [
         "streetsidesoftware.code-spell-checker",
@@ -89,7 +100,14 @@
         "GitHub.vscode-github-actions",
         "PKief.material-icon-theme",
         "EditorConfig.EditorConfig",
-        "DavidAnson.vscode-markdownlint"
+        "DavidAnson.vscode-markdownlint",
+        "IBM.output-colorizer", // Colorize your output/test logs
+        "emmanuelbeziat.vscode-great-icons",
+        "esbenp.prettier-vscode",
+        "vscode-icons-team.vscode-icons",
+        "csharpier.csharpier-vscode",
+        "redhat.vscode-yaml",
+        "kennylong.kubernetes-yaml-formatter"
       ]
     }
   },

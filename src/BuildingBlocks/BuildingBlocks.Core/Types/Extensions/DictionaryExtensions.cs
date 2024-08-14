@@ -31,10 +31,9 @@ public static class DictionaryExtensions
     }
 
     public static TValue? Get<TValue>(this IDictionary<string, object?> dictionary, string key)
-        where TValue : class
     {
         dictionary.TryGetValue(key, out object? val);
 
-        return val as TValue;
+        return val is null ? default : (TValue)val;
     }
 }

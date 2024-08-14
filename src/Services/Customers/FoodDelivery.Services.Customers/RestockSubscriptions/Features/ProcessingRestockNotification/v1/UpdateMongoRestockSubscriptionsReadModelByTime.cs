@@ -1,6 +1,6 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Core.CQRS.Commands;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 
@@ -9,26 +9,19 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.Processi
 public record UpdateMongoRestockSubscriptionsReadModelByTime(DateTime? From, DateTime? To, bool IsDeleted = false)
     : InternalCommand;
 
-internal class UpdateMongoRestockSubscriptionsReadModelByTimeHandler
+internal class UpdateMongoRestockSubscriptionsReadModelByTimeHandler(IMapper mapper, CustomersReadUnitOfWork unitOfWork)
     : ICommandHandler<UpdateMongoRestockSubscriptionsReadModelByTime>
 {
-    private readonly IMapper _mapper;
-    private readonly CustomersReadUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper = mapper;
 
-    public UpdateMongoRestockSubscriptionsReadModelByTimeHandler(IMapper mapper, CustomersReadUnitOfWork unitOfWork)
-    {
-        _mapper = mapper;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<Unit> Handle(
+    public async Task Handle(
         UpdateMongoRestockSubscriptionsReadModelByTime command,
         CancellationToken cancellationToken
     )
     {
         command.NotBeNull();
 
-        var itemsToUpdate = await _unitOfWork.RestockSubscriptionsRepository.FindAsync(
+        var itemsToUpdate = await unitOfWork.RestockSubscriptionsRepository.FindAsync(
             x =>
                 (command.From == null && command.To == null)
                 || (command.From == null && x.Created <= command.To)
@@ -38,16 +31,14 @@ internal class UpdateMongoRestockSubscriptionsReadModelByTimeHandler
         );
 
         if (itemsToUpdate.Any() == false)
-            return Unit.Value;
+            return;
 
         foreach (var restockSubscriptionReadModel in itemsToUpdate)
         {
             var updatedItem = restockSubscriptionReadModel with { IsDeleted = command.IsDeleted };
-            await _unitOfWork.RestockSubscriptionsRepository.UpdateAsync(updatedItem, cancellationToken);
+            await unitOfWork.RestockSubscriptionsRepository.UpdateAsync(updatedItem, cancellationToken);
         }
 
-        await _unitOfWork.CommitAsync(cancellationToken);
-
-        return Unit.Value;
+        await unitOfWork.CommitAsync(cancellationToken);
     }
 }

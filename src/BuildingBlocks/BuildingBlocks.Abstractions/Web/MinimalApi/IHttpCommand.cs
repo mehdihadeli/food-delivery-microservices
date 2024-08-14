@@ -1,6 +1,5 @@
 using AutoMapper;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using MediatR;
+using BuildingBlocks.Abstractions.Commands;
 using Microsoft.AspNetCore.Http;
 
 namespace BuildingBlocks.Abstractions.Web.MinimalApi;
@@ -13,7 +12,7 @@ public interface IHttpCommand<TRequest>
 {
     TRequest Request { get; init; }
     HttpContext HttpContext { get; init; }
-    ICommandProcessor CommandProcessor { get; init; }
+    ICommandBus CommandBus { get; init; }
     IMapper Mapper { get; init; }
     CancellationToken CancellationToken { get; init; }
 }
@@ -21,7 +20,7 @@ public interface IHttpCommand<TRequest>
 public interface IHttpCommand
 {
     HttpContext HttpContext { get; init; }
-    ICommandProcessor CommandProcessor { get; init; }
+    ICommandBus CommandBus { get; init; }
     IMapper Mapper { get; init; }
     CancellationToken CancellationToken { get; init; }
 }

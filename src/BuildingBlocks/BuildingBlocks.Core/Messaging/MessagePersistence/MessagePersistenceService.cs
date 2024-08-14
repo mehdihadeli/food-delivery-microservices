@@ -1,9 +1,11 @@
 using System.Linq.Expressions;
-using BuildingBlocks.Abstractions.CQRS.Commands;
-using BuildingBlocks.Abstractions.Domain.Events.Internal;
+using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Abstractions.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Serialization;
+using BuildingBlocks.Core.Events;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Types;
 using MediatR;
@@ -11,54 +13,47 @@ using Microsoft.Extensions.Logging;
 
 namespace BuildingBlocks.Core.Messaging.MessagePersistence;
 
-public class MessagePersistenceService : IMessagePersistenceService
+public class MessagePersistenceService(
+    ILogger<MessagePersistenceService> logger,
+    IMessagePersistenceRepository messagePersistenceRepository,
+    IMessageSerializer messageSerializer,
+    IMediator mediator,
+    IExternalEventBus bus,
+    ISerializer serializer
+) : IMessagePersistenceService
 {
-    private readonly ILogger<MessagePersistenceService> _logger;
-    private readonly IMessagePersistenceRepository _messagePersistenceRepository;
-    private readonly IMessageSerializer _messageSerializer;
-    private readonly IMediator _mediator;
-    private readonly IBus _bus;
-    private readonly ISerializer _serializer;
-
-    public MessagePersistenceService(
-        ILogger<MessagePersistenceService> logger,
-        IMessagePersistenceRepository messagePersistenceRepository,
-        IMessageSerializer messageSerializer,
-        IMediator mediator,
-        IBus bus,
-        ISerializer serializer
-    )
-    {
-        _logger = logger;
-        _messagePersistenceRepository = messagePersistenceRepository;
-        _messageSerializer = messageSerializer;
-        _mediator = mediator;
-        _bus = bus;
-        _serializer = serializer;
-    }
-
     public Task<IReadOnlyList<StoreMessage>> GetByFilterAsync(
         Expression<Func<StoreMessage, bool>>? predicate = null,
         CancellationToken cancellationToken = default
     )
     {
-        return _messagePersistenceRepository.GetByFilterAsync(predicate ?? (_ => true), cancellationToken);
+        return messagePersistenceRepository.GetByFilterAsync(predicate ?? (_ => true), cancellationToken);
     }
 
-    public async Task AddPublishMessageAsync<TMessageEnvelope>(
-        TMessageEnvelope messageEnvelope,
+    public async Task AddPublishMessageAsync<TEventEnvelope>(
+        TEventEnvelope eventEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TMessageEnvelope : MessageEnvelope
+        where TEventEnvelope : IEventEnvelope
     {
-        await AddMessageCore(messageEnvelope, MessageDeliveryType.Outbox, cancellationToken);
+        await AddMessageCore(eventEnvelope, MessageDeliveryType.Outbox, cancellationToken);
     }
 
-    public async Task AddReceivedMessageAsync<TMessageEnvelope>(
-        TMessageEnvelope messageEnvelope,
+    public async Task AddPublishMessageAsync<TEventEnvelope, TMessage>(
+        TEventEnvelope eventEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TMessageEnvelope : MessageEnvelope
+        where TEventEnvelope : IEventEnvelope<TMessage>
+        where TMessage : IMessage
+    {
+        await AddMessageCore(eventEnvelope, MessageDeliveryType.Outbox, cancellationToken);
+    }
+
+    public async Task AddReceivedMessageAsync<TEventEnvelope>(
+        TEventEnvelope messageEnvelope,
+        CancellationToken cancellationToken = default
+    )
+        where TEventEnvelope : IEventEnvelope
     {
         await AddMessageCore(messageEnvelope, MessageDeliveryType.Inbox, cancellationToken);
     }
@@ -69,19 +64,24 @@ public class MessagePersistenceService : IMessagePersistenceService
     )
         where TCommand : class, IInternalCommand
     {
-        await AddMessageCore(new MessageEnvelope(internalCommand), MessageDeliveryType.Internal, cancellationToken);
+        await AddMessageCore(
+            EventEnvelope.From(internalCommand, metadata: null),
+            MessageDeliveryType.Internal,
+            cancellationToken
+        );
     }
 
-    public async Task AddNotificationAsync(
-        IDomainNotificationEvent notification,
+    public async Task AddNotificationAsync<TDomainNotification>(
+        TDomainNotification notification,
         CancellationToken cancellationToken = default
     )
+        where TDomainNotification : IDomainNotificationEvent
     {
-        await _messagePersistenceRepository.AddAsync(
+        await messagePersistenceRepository.AddAsync(
             new StoreMessage(
                 notification.EventId,
                 TypeMapper.GetFullTypeName(notification.GetType()), // same process so we use full type name
-                _serializer.Serialize(notification),
+                serializer.Serialize(notification),
                 MessageDeliveryType.Internal
             ),
             cancellationToken
@@ -89,19 +89,19 @@ public class MessagePersistenceService : IMessagePersistenceService
     }
 
     private async Task AddMessageCore(
-        MessageEnvelope messageEnvelope,
+        IEventEnvelope eventEnvelope,
         MessageDeliveryType deliveryType,
         CancellationToken cancellationToken = default
     )
     {
-        messageEnvelope.Message.NotBeNull();
+        eventEnvelope.Data.NotBeNull();
 
         Guid id;
-        if (messageEnvelope.Message is IMessage im)
+        if (eventEnvelope.Data is IMessage im)
         {
             id = im.MessageId;
         }
-        else if (messageEnvelope.Message is IInternalCommand command)
+        else if (eventEnvelope.Data is IInternalCommand command)
         {
             id = command.InternalCommandId;
         }
@@ -110,17 +110,17 @@ public class MessagePersistenceService : IMessagePersistenceService
             id = Guid.NewGuid();
         }
 
-        await _messagePersistenceRepository.AddAsync(
+        await messagePersistenceRepository.AddAsync(
             new StoreMessage(
                 id,
-                TypeMapper.GetFullTypeName(messageEnvelope.Message.GetType()), // because each service has its own persistence and same process (outbox,inbox), full name message type but in microservices we should just use type name for message
-                _messageSerializer.Serialize(messageEnvelope),
+                TypeMapper.GetFullTypeName(eventEnvelope.Data.GetType()), // because each service has its own persistence and same process (outbox,inbox), full name message type but in microservices we should just use type name for message
+                messageSerializer.Serialize(eventEnvelope),
                 deliveryType
             ),
             cancellationToken
         );
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Message with id: {MessageID} and delivery type: {DeliveryType} saved in persistence message store",
             id,
             deliveryType.ToString()
@@ -129,7 +129,7 @@ public class MessagePersistenceService : IMessagePersistenceService
 
     public async Task ProcessAsync(Guid messageId, CancellationToken cancellationToken = default)
     {
-        var message = await _messagePersistenceRepository.GetByIdAsync(messageId, cancellationToken);
+        var message = await messagePersistenceRepository.GetByIdAsync(messageId, cancellationToken);
 
         if (message is null)
             return;
@@ -147,12 +147,12 @@ public class MessagePersistenceService : IMessagePersistenceService
                 break;
         }
 
-        await _messagePersistenceRepository.ChangeStateAsync(message.Id, MessageStatus.Processed, cancellationToken);
+        await messagePersistenceRepository.ChangeStateAsync(message.Id, MessageStatus.Processed, cancellationToken);
     }
 
     public async Task ProcessAllAsync(CancellationToken cancellationToken = default)
     {
-        var messages = await _messagePersistenceRepository.GetByFilterAsync(
+        var messages = await messagePersistenceRepository.GetByFilterAsync(
             x => x.MessageStatus != MessageStatus.Processed,
             cancellationToken
         );
@@ -163,67 +163,56 @@ public class MessagePersistenceService : IMessagePersistenceService
         }
     }
 
-    private async Task ProcessOutbox(StoreMessage message, CancellationToken cancellationToken)
+    private async Task ProcessOutbox(StoreMessage storeMessage, CancellationToken cancellationToken)
     {
-        MessageEnvelope? messageEnvelope = _messageSerializer.Deserialize<MessageEnvelope>(message.Data, true);
+        var messageType = TypeMapper.GetType(storeMessage.DataType);
 
-        if (messageEnvelope is null || messageEnvelope.Message is null)
+        var messageEnvelope = messageSerializer.Deserialize(storeMessage.Data, messageType);
+
+        if (messageEnvelope is null)
             return;
 
-        var data = _messageSerializer.Deserialize(
-            messageEnvelope.Message.ToString()!,
-            TypeMapper.GetType(message.DataType)
+        // we should pass an object type message or explicit our message type, not cast to IMessage (data is IMessage integrationEvent) because masstransit doesn't work with IMessage cast.
+        await bus.PublishAsync(messageEnvelope, cancellationToken);
+
+        logger.LogInformation(
+            "Message with id: {MessageId} and delivery type: {DeliveryType} processed from the persistence message store",
+            storeMessage.Id,
+            storeMessage.DeliveryType
         );
-
-        if (data is IMessage)
-        {
-            // we should pass a object type message or explicit our message type, not cast to IMessage (data is IMessage integrationEvent) because masstransit doesn't work with IMessage cast.
-            await _bus.PublishAsync(data, messageEnvelope.Headers, cancellationToken);
-
-            _logger.LogInformation(
-                "Message with id: {MessageId} and delivery type: {DeliveryType} processed from the persistence message store",
-                message.Id,
-                message.DeliveryType
-            );
-        }
     }
 
-    private async Task ProcessInternal(StoreMessage message, CancellationToken cancellationToken)
+    private async Task ProcessInternal(StoreMessage storeMessage, CancellationToken cancellationToken)
     {
-        MessageEnvelope? messageEnvelope = _messageSerializer.Deserialize<MessageEnvelope>(message.Data, true);
+        var messageEnvelope = messageSerializer.Deserialize(storeMessage.Data);
 
-        if (messageEnvelope is null || messageEnvelope.Message is null)
+        if (messageEnvelope is null)
             return;
 
-        var data = _messageSerializer.Deserialize(
-            messageEnvelope.Message.ToString()!,
-            TypeMapper.GetType(message.DataType)
-        );
-
-        if (data is IDomainNotificationEvent domainNotificationEvent)
+        if (messageEnvelope.Data is IDomainNotificationEvent domainNotificationEvent)
         {
-            await _mediator.Publish(domainNotificationEvent, cancellationToken);
+            await mediator.Publish(domainNotificationEvent, cancellationToken);
 
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Domain-Notification with id: {EventID} and delivery type: {DeliveryType} processed from the persistence message store",
-                message.Id,
-                message.DeliveryType
+                storeMessage.Id,
+                storeMessage.DeliveryType
             );
         }
 
-        if (data is IInternalCommand internalCommand)
+        if (messageEnvelope.Data is IInternalCommand internalCommand)
         {
-            await _mediator.Send(internalCommand, cancellationToken);
+            await mediator.Send(internalCommand, cancellationToken);
 
-            _logger.LogInformation(
+            logger.LogInformation(
                 "InternalCommand with id: {EventID} and delivery type: {DeliveryType} processed from the persistence message store",
-                message.Id,
-                message.DeliveryType
+                storeMessage.Id,
+                storeMessage.DeliveryType
             );
         }
     }
 
-    private Task ProcessInbox(StoreMessage message, CancellationToken cancellationToken)
+    private Task ProcessInbox(StoreMessage storeMessage, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

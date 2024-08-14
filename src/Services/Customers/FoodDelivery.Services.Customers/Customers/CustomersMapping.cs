@@ -1,14 +1,11 @@
 using AutoMapper;
 using BuildingBlocks.Core.Domain.ValueObjects;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
-using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
-using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.Read.Mongo;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
-using FoodDelivery.Services.Customers.Customers.Models;
-using FoodDelivery.Services.Customers.Customers.Models.Reads;
+using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Read.Mongo;
 using Customer = FoodDelivery.Services.Customers.Customers.Models.Reads.Customer;
 
 namespace FoodDelivery.Services.Customers.Customers;
@@ -88,18 +85,17 @@ public class CustomersMapping : Profile
         CreateMap<CustomerUpdated, UpdateCustomerRead>();
 
         CreateMap<UpdateCustomerRequest, UpdateCustomer>()
-            .ConstructUsing(
-                req =>
-                    UpdateCustomer.Of(
-                        0,
-                        req.FirstName,
-                        req.LastName,
-                        req.Email,
-                        req.PhoneNumber,
-                        req.BirthDate,
-                        req.Address,
-                        req.Nationality
-                    )
+            .ConstructUsing(req =>
+                UpdateCustomer.Of(
+                    0,
+                    req.FirstName,
+                    req.LastName,
+                    req.Email,
+                    req.PhoneNumber,
+                    req.BirthDate,
+                    req.Address,
+                    req.Nationality
+                )
             );
     }
 }

@@ -1,13 +1,7 @@
 namespace BuildingBlocks.Security.Jwt;
 
-public class RolePolicy
+public class RolePolicy(string name, IReadOnlyList<string>? roles)
 {
-    public RolePolicy(string name, IReadOnlyList<string>? roles)
-    {
-        Name = name;
-        Roles = roles ?? new List<string>();
-    }
-
-    public string Name { get; set; }
-    public IReadOnlyList<string> Roles { get; set; }
+    public string Name { get; set; } = name;
+    public IReadOnlyList<string> Roles { get; set; } = roles ?? new List<string>();
 }

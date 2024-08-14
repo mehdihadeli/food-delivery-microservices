@@ -1,4 +1,5 @@
 using BuildingBlocks.Core.Exception.Types;
+using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
@@ -9,7 +10,6 @@ using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Dtos;
 using FoodDelivery.Services.Customers.UnitTests.Common;
 using FoodDelivery.Services.Customers.Users.Model;
-using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;

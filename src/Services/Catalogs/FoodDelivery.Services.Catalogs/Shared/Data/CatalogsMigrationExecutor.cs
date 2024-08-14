@@ -3,25 +3,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Data;
 
-public class CatalogsMigrationExecutor : IMigrationExecutor
+public class CatalogsMigrationExecutor(CatalogDbContext catalogDbContext, ILogger<CatalogsMigrationExecutor> logger)
+    : IMigrationExecutor
 {
-    private readonly CatalogDbContext _catalogDbContext;
-    private readonly ILogger<CatalogsMigrationExecutor> _logger;
-
-    public CatalogsMigrationExecutor(CatalogDbContext catalogDbContext, ILogger<CatalogsMigrationExecutor> logger)
-    {
-        _catalogDbContext = catalogDbContext;
-        _logger = logger;
-    }
-
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Migration worker started");
+        logger.LogInformation("Migration worker started");
 
-        _logger.LogInformation("Updating catalog database...");
+        logger.LogInformation("Updating catalog database...");
 
-        await _catalogDbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
+        await catalogDbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
 
-        _logger.LogInformation("catalog database Updated");
+        logger.LogInformation("catalog database Updated");
     }
 }

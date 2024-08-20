@@ -3,7 +3,6 @@ using BuildingBlocks.Core.Messaging;
 using FoodDelivery.Services.Shared.Customers.Customers.Events.V1.Integration;
 using Humanizer;
 using MassTransit;
-using RabbitMQ.Client;
 
 namespace FoodDelivery.Services.Customers.Customers;
 

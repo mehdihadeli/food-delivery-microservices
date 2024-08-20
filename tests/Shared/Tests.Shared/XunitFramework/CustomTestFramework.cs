@@ -17,15 +17,12 @@ public class CustomTestFramework : XunitTestFramework
     protected override ITestFrameworkExecutor CreateExecutor(AssemblyName assemblyName) =>
         new CustomExecutor(assemblyName, SourceInformationProvider, DiagnosticMessageSink);
 
-    private class CustomExecutor : XunitTestFrameworkExecutor
+    private class CustomExecutor(
+        AssemblyName assemblyName,
+        ISourceInformationProvider sourceInformationProvider,
+        IMessageSink diagnosticMessageSink
+    ) : XunitTestFrameworkExecutor(assemblyName, sourceInformationProvider, diagnosticMessageSink)
     {
-        public CustomExecutor(
-            AssemblyName assemblyName,
-            ISourceInformationProvider sourceInformationProvider,
-            IMessageSink diagnosticMessageSink
-        )
-            : base(assemblyName, sourceInformationProvider, diagnosticMessageSink) { }
-
         protected override async void RunTestCases(
             IEnumerable<IXunitTestCase> testCases,
             IMessageSink executionMessageSink,
@@ -43,17 +40,14 @@ public class CustomTestFramework : XunitTestFramework
         }
     }
 
-    private class CustomAssemblyRunner : XunitTestAssemblyRunner
+    private class CustomAssemblyRunner(
+        ITestAssembly testAssembly,
+        IEnumerable<IXunitTestCase> testCases,
+        IMessageSink diagnosticMessageSink,
+        IMessageSink executionMessageSink,
+        ITestFrameworkExecutionOptions executionOptions
+    ) : XunitTestAssemblyRunner(testAssembly, testCases, diagnosticMessageSink, executionMessageSink, executionOptions)
     {
-        public CustomAssemblyRunner(
-            ITestAssembly testAssembly,
-            IEnumerable<IXunitTestCase> testCases,
-            IMessageSink diagnosticMessageSink,
-            IMessageSink executionMessageSink,
-            ITestFrameworkExecutionOptions executionOptions
-        )
-            : base(testAssembly, testCases, diagnosticMessageSink, executionMessageSink, executionOptions) { }
-
         protected override Task<RunSummary> RunTestCollectionAsync(
             IMessageBus messageBus,
             ITestCollection testCollection,

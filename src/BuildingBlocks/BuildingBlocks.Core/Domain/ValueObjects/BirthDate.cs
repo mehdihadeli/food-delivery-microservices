@@ -41,7 +41,7 @@ public record BirthDate
         return new BirthDate { Value = value };
     }
 
-    public static implicit operator DateTime(BirthDate value) => value.Value;
+    public static implicit operator DateTime(BirthDate? value) => value?.Value ?? default;
 
     // https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/deconstruct#user-defined-types
     // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record#positional-syntax-for-property-definition

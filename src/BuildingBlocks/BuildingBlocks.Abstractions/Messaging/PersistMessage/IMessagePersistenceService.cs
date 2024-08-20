@@ -20,30 +20,23 @@ public interface IMessagePersistenceService
         CancellationToken cancellationToken = default
     );
 
-    Task AddPublishMessageAsync<TEventEnvelope>(
-        TEventEnvelope eventEnvelope,
+    Task AddPublishMessageAsync<TMessage>(
+        IEventEnvelope<TMessage> eventEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TEventEnvelope : IEventEnvelope;
-
-    Task AddPublishMessageAsync<TEventEnvelope, TMessage>(
-        TEventEnvelope eventEnvelope,
-        CancellationToken cancellationToken = default
-    )
-        where TEventEnvelope : IEventEnvelope<TMessage>
         where TMessage : IMessage;
 
-    Task AddReceivedMessageAsync<TMessageEnvelope>(
-        TMessageEnvelope messageEnvelope,
+    Task AddReceivedMessageAsync<TMessage>(
+        IEventEnvelope<TMessage> eventEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TMessageEnvelope : IEventEnvelope;
+        where TMessage : IMessage;
 
     Task AddInternalMessageAsync<TInternalCommand>(
         TInternalCommand internalCommand,
         CancellationToken cancellationToken = default
     )
-        where TInternalCommand : class, IInternalCommand;
+        where TInternalCommand : IInternalCommand;
 
     Task AddNotificationAsync<TDomainNotification>(
         TDomainNotification notification,

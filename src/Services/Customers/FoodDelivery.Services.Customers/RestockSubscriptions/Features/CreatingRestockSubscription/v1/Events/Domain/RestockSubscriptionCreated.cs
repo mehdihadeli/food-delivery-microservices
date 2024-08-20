@@ -5,6 +5,7 @@ using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Data;
+using FoodDelivery.Services.Customers.Shared.Data.Extensions;
 using FoodDelivery.Services.Customers.Shared.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Events.Domain;

@@ -40,5 +40,5 @@ public record Nationality
         return new Nationality(value);
     }
 
-    public static implicit operator string(Nationality value) => value.Value;
+    public static implicit operator string(Nationality? value) => value?.Value ?? string.Empty;
 }

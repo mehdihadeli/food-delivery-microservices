@@ -159,6 +159,7 @@
   <ItemGroup>
     <PackageVersion Include="AutoMapper" Version="13.0.1" />
     <PackageVersion Include="MediatR" Version="12.4.0" />
+    <PackageVersion Include="Riok.Mapperly" Version="3.6.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Bogus" Version="35.5.1" />

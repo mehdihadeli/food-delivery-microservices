@@ -13,5 +13,5 @@ public record CustomerId : AggregateId
     // validations should be placed here instead of constructor
     public static CustomerId Of(long id) => new(id.NotBeNegativeOrZero());
 
-    public static implicit operator long(CustomerId id) => id.Value;
+    public static implicit operator long(CustomerId? id) => id?.Value ?? default;
 }

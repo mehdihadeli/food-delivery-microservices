@@ -1,4 +1,3 @@
-using System.Reflection;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 
@@ -26,11 +25,12 @@ public static class StreamEventEnvelope
 
     public static IStreamEventEnvelope From(object data, string eventId, ulong streamPosition, ulong logPosition)
     {
-        var methodInfo = typeof(StreamEventEnvelope).GetMethod(
-            nameof(From),
-            BindingFlags.NonPublic | BindingFlags.Static
-        );
-        var genericMethod = methodInfo!.MakeGenericMethod(data.GetType());
+        var methodInfo = typeof(StreamEventEnvelope)
+            .GetMethods()
+            .FirstOrDefault(x =>
+                x.Name == nameof(From) && x.GetGenericArguments().Length != 0 && x.GetParameters().Length == 4
+            );
+        var genericMethod = methodInfo.MakeGenericMethod(data.GetType());
 
         return (IStreamEventEnvelope)
             genericMethod.Invoke(null, new object[] { data, eventId, streamPosition, logPosition });

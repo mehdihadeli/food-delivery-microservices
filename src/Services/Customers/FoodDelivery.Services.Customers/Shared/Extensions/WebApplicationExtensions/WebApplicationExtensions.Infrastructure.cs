@@ -6,6 +6,7 @@ using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Middlewares.CaptureException;
 using BuildingBlocks.Web.Middlewares.HeaderPropagation;
 using BuildingBlocks.Web.RateLimit;
+using FoodDelivery.Services.Customers.Shared.Data.Extensions;
 using Serilog;
 
 namespace FoodDelivery.Services.Customers.Shared.Extensions.WebApplicationExtensions;

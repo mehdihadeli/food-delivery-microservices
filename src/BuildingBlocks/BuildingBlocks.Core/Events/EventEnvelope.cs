@@ -1,4 +1,3 @@
-using System.Reflection;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Core.Types;
@@ -7,36 +6,51 @@ using Humanizer;
 
 namespace BuildingBlocks.Core.Events;
 
-public record EventEnvelope<T>(T Data, IEventEnvelopeMetadata? Metadata = null) : IEventEnvelope<T>
-    where T : notnull
+// For deserialization of EventEnvelope, EventEnvelopeMetadata should be a class here
+public record EventEnvelope<T>(T Message, EventEnvelopeMetadata Metadata) : IEventEnvelope<T>
+    where T : IMessage
 {
-    object IEventEnvelope.Data => Data;
+    object IEventEnvelope.Message => Message;
 }
 
 public static class EventEnvelope
 {
-    public static IEventEnvelope From(object data, IEventEnvelopeMetadata? metadata = null)
+    public static IEventEnvelope From(object data, EventEnvelopeMetadata metadata)
     {
         var type = typeof(EventEnvelope<>).MakeGenericType(data.GetType());
         return (IEventEnvelope)Activator.CreateInstance(type, data, metadata)!;
     }
 
-    public static IEventEnvelope<TMessage> From<TMessage>(TMessage data, IEventEnvelopeMetadata? metadata)
-        where TMessage : IMessage
+    public static IEventEnvelope<T> From<T>(T data, EventEnvelopeMetadata metadata)
+        where T : IMessage
     {
-        return new EventEnvelope<TMessage>(data, metadata);
+        return new EventEnvelope<T>(data, metadata);
     }
 
-    public static IEventEnvelope From(object data, Guid correlationId, Guid? cautionId = null)
+    public static IEventEnvelope From(
+        object data,
+        Guid correlationId,
+        Guid? cautionId = null,
+        IDictionary<string, object?>? headers = null
+    )
     {
-        var methodInfo = typeof(EventEnvelope).GetMethod(nameof(From), BindingFlags.NonPublic | BindingFlags.Static);
+        var methodInfo = typeof(EventEnvelope)
+            .GetMethods()
+            .FirstOrDefault(x =>
+                x.Name == nameof(From) && x.GetGenericArguments().Length != 0 && x.GetParameters().Length == 4
+            );
         var genericMethod = methodInfo.MakeGenericMethod(data.GetType());
 
-        return (IEventEnvelope)genericMethod.Invoke(null, new object[] { data, correlationId, cautionId });
+        return (IEventEnvelope)genericMethod.Invoke(null, new object[] { data, correlationId, cautionId, headers });
     }
 
-    public static IEventEnvelope<TMessage> From<TMessage>(TMessage data, Guid correlationId, Guid? cautionId = null)
-        where TMessage : IMessage
+    public static IEventEnvelope<T> From<T>(
+        T data,
+        Guid correlationId,
+        Guid? cautionId = null,
+        IDictionary<string, object?>? headers = null
+    )
+        where T : IMessage
     {
         var envelopeMetadata = new EventEnvelopeMetadata(
             data.MessageId,
@@ -47,6 +61,7 @@ public static class EventEnvelope
         )
         {
             CreatedUnixTime = DateTime.Now.ToUnixTimeSecond(),
+            Headers = headers ?? new Dictionary<string, object?>()
         };
 
         return From(data, envelopeMetadata);

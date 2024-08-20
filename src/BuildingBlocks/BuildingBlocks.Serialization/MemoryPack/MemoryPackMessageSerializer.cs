@@ -1,5 +1,6 @@
 using System.Text;
 using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Serialization;
 using BuildingBlocks.Core.Events;
 using MemoryPack;
@@ -16,11 +17,10 @@ public class MemoryPackMessageSerializer(MemoryPackSerializerOptions options) : 
         return Encoding.UTF8.GetString(MemoryPackSerializer.Serialize(eventEnvelope, options));
     }
 
-    public IEventEnvelope? Deserialize(string eventEnvelope)
+    public string Serialize<T>(IEventEnvelope<T> eventEnvelope)
+        where T : IMessage
     {
-        ReadOnlySpan<byte> byteSpan = StringToReadOnlySpan(eventEnvelope);
-
-        return MemoryPackSerializer.Deserialize<EventEnvelope<object>>(byteSpan, options);
+        return Encoding.UTF8.GetString(MemoryPackSerializer.Serialize(eventEnvelope, options));
     }
 
     public IEventEnvelope? Deserialize(string eventEnvelope, Type messageType)
@@ -32,6 +32,14 @@ public class MemoryPackMessageSerializer(MemoryPackSerializerOptions options) : 
         ReadOnlySpan<byte> byteSpan = StringToReadOnlySpan(eventEnvelope);
 
         return MemoryPackSerializer.Deserialize(eventEnvelopGenericType, byteSpan, options) as IEventEnvelope;
+    }
+
+    public IEventEnvelope<T>? Deserialize<T>(string eventEnvelope)
+        where T : IMessage
+    {
+        ReadOnlySpan<byte> byteSpan = StringToReadOnlySpan(eventEnvelope);
+
+        return MemoryPackSerializer.Deserialize<EventEnvelope<T>>(byteSpan, options);
     }
 
     private static ReadOnlySpan<byte> StringToReadOnlySpan(string input)

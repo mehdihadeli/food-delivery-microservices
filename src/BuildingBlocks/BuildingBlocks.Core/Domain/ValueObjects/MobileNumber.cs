@@ -27,7 +27,7 @@ public record MobileNumber
         return new MobileNumber(value);
     }
 
-    public static implicit operator string(MobileNumber phoneNumber) => phoneNumber.Value;
+    public static implicit operator string(MobileNumber? phoneNumber) => phoneNumber?.Value ?? string.Empty;
 
     // https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/deconstruct#user-defined-types
     // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record#positional-syntax-for-property-definition

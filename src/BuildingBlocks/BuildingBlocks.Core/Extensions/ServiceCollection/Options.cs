@@ -60,10 +60,7 @@ public static partial class ServiceCollectionExtensions
     )
         where T : class
     {
-        if (validator is null)
-        {
-            validator = RequiredConfigurationValidator.Validate;
-        }
+        validator ??= RequiredConfigurationValidator.Validate;
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options
         // https://thecodeblogger.com/2021/04/21/options-pattern-in-net-ioptions-ioptionssnapshot-ioptionsmonitor/

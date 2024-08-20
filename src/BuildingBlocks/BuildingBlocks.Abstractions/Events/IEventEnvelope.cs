@@ -12,12 +12,12 @@ namespace BuildingBlocks.Abstractions.Events;
 // Ref: https://www.enterpriseintegrationpatterns.com/patterns/messaging/EnvelopeWrapper.html
 public interface IEventEnvelope
 {
-    object Data { get; }
-    IEventEnvelopeMetadata? Metadata { get; }
+    object Message { get; }
+    EventEnvelopeMetadata Metadata { get; }
 }
 
 public interface IEventEnvelope<out T> : IEventEnvelope
     where T : notnull
 {
-    new T Data { get; }
+    new T Message { get; }
 }

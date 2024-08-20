@@ -80,8 +80,7 @@ internal class CreateCustomerReadValidator : AbstractValidator<CreateCustomerRea
     }
 }
 
-internal class CreateCustomerReadHandler(IMapper mapper, ICustomersReadUnitOfWork unitOfWork)
-    : ICommandHandler<CreateCustomerRead>
+internal class CreateCustomerReadHandler(ICustomersReadUnitOfWork unitOfWork) : ICommandHandler<CreateCustomerRead>
 {
     // totally we don't need to unit test our handlers according jimmy bogard blogs and videos, and we should extract our business to domain or seperated class so we don't need repository pattern for test, but for a sample I use it here
     // https://www.reddit.com/r/dotnet/comments/rxuqrb/testing_mediator_handlers/
@@ -90,7 +89,7 @@ internal class CreateCustomerReadHandler(IMapper mapper, ICustomersReadUnitOfWor
     {
         command.NotBeNull();
 
-        var readModel = mapper.Map<Customer>(command);
+        var readModel = command.ToCustomer();
 
         await unitOfWork.CustomersRepository.AddAsync(readModel, cancellationToken: cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);

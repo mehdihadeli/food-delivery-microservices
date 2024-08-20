@@ -29,7 +29,7 @@ public record Amount
         return Of(value.Value);
     }
 
-    public static Amount Of(decimal value)
+    public static Amount Of([NotNull] decimal value)
     {
         value.NotBeNegativeOrZero();
 
@@ -42,7 +42,7 @@ public record Amount
         return new Amount(value);
     }
 
-    public static implicit operator decimal(Amount value) => value.Value;
+    public static implicit operator decimal(Amount? value) => value?.Value ?? default;
 
     public static bool operator >(Amount a, Amount b) => a.Value > b.Value;
 

@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Commands;
+using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Core.Events;
 using BuildingBlocks.Validation.Extensions;
@@ -94,10 +95,8 @@ internal class RegisterUserValidator : AbstractValidator<RegisterUser>
 
 // using transaction script instead of using domain business logic here
 // https://www.youtube.com/watch?v=PrJIMTZsbDw
-internal class RegisterUserHandler(
-    UserManager<ApplicationUser> userManager,
-    IMessagePersistenceService messagePersistenceService
-) : ICommandHandler<RegisterUser, RegisterUserResult>
+internal class RegisterUserHandler(UserManager<ApplicationUser> userManager, IExternalEventBus externalEventBus)
+    : ICommandHandler<RegisterUser, RegisterUserResult>
 {
     public async Task<RegisterUserResult> Handle(RegisterUser request, CancellationToken cancellationToken)
     {
@@ -136,10 +135,7 @@ internal class RegisterUserHandler(
 
         // publish our integration event and save to outbox should do in same transaction of our business logic actions. we could use TxBehaviour or ITxDbContextExecutes interface
         // This service is not DDD, so we couldn't use DomainEventPublisher to publish mapped integration events
-        await messagePersistenceService.AddPublishMessageAsync(
-            new EventEnvelope<UserRegisteredV1>(userRegistered),
-            cancellationToken
-        );
+        await externalEventBus.PublishAsync(userRegistered, cancellationToken);
 
         return new RegisterUserResult(
             new IdentityUserDto

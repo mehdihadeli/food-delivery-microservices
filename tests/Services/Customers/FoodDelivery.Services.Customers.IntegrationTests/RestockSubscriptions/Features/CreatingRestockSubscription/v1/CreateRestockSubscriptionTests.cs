@@ -3,7 +3,6 @@ using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
-using FoodDelivery.Services.Customers.TestShared.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
@@ -11,20 +10,17 @@ using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 
-public class CreateRestockSubscriptionTests : CustomerServiceIntegrationTestBase
+public class CreateRestockSubscriptionTests(
+    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
+    ITestOutputHelper outputHelper
+) : CustomerServiceIntegrationTestBase(sharedFixture, outputHelper)
 {
-    public CreateRestockSubscriptionTests(
-        SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-        ITestOutputHelper outputHelper
-    )
-        : base(sharedFixture, outputHelper) { }
-
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
     public async Task can_create_new_customer_restock_subscription_in_postgres_db()
     {
         // Arrange
-        var fakeProduct = CustomersServiceMockServersFixture.CatalogsServiceMock.SetupGetProductById().Response.Product;
+        var fakeProduct = CatalogsServiceWireMock.SetupGetProductById().Response.Product;
         var fakeCustomer = new FakeCustomer().Generate();
         await SharedFixture.InsertEfDbContextAsync(fakeCustomer);
 

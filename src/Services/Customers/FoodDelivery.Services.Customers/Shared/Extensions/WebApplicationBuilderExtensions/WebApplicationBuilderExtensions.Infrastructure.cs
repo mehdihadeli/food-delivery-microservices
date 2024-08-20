@@ -3,16 +3,12 @@ using BuildingBlocks.Caching.Extensions;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Persistence.EfCore;
-using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Core.Web.HeaderPropagation.Extensions;
 using BuildingBlocks.Email;
-using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Logging;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.OpenTelemetry;
-using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Persistence.Mongo;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.Swagger;
 using BuildingBlocks.Validation;
@@ -20,13 +16,11 @@ using BuildingBlocks.Validation.Extensions;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.RateLimit;
 using BuildingBlocks.Web.Versioning;
-using FoodDelivery.Services.Customers.Customers.Extensions;
+using FoodDelivery.Services.Customers.Customers;
 using FoodDelivery.Services.Customers.Products;
 using FoodDelivery.Services.Customers.RestockSubscriptions;
-using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
-using FoodDelivery.Services.Customers.Shared.Clients.Identity;
+using FoodDelivery.Services.Customers.Shared.Clients;
 using FoodDelivery.Services.Customers.Users;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace FoodDelivery.Services.Customers.Shared.Extensions.WebApplicationBuilderExtensions;
 
@@ -142,7 +136,7 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomRateLimit();
 
         builder.AddCustomMassTransit(
-            (context, cfg) =>
+            configureReceiveEndpoints: (context, cfg) =>
             {
                 cfg.AddUsersEndpoints(context);
                 cfg.AddProductEndpoints(context);
@@ -150,7 +144,12 @@ public static partial class WebApplicationBuilderExtensions
                 cfg.AddCustomerPublishers();
                 cfg.AddRestockSubscriptionPublishers();
             },
-            autoConfigEndpoints: false
+            configureMessagingOptions: msgCfg =>
+            {
+                msgCfg.AutoConfigEndpoints = false;
+                msgCfg.OutboxEnabled = true;
+                msgCfg.InboxEnabled = true;
+            }
         );
 
         builder.Services.AddCustomValidators(Assembly.GetExecutingAssembly());

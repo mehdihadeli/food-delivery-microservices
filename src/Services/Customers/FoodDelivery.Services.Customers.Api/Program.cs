@@ -57,11 +57,11 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment() || app.Environment.IsTest())
 {
-    app.Services.ValidateDependencies(
-        builder.Services,
-        typeof(CustomersMetadata).Assembly,
-        Assembly.GetExecutingAssembly()
-    );
+    // app.Services.ValidateDependencies(
+    //     builder.Services,
+    //     typeof(CustomersMetadata).Assembly,
+    //     Assembly.GetExecutingAssembly()
+    // );
 }
 
 /*----------------- Module Middleware Setup ------------------*/

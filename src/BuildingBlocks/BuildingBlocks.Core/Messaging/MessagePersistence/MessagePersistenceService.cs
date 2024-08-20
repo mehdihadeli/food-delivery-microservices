@@ -1,11 +1,11 @@
 using System.Linq.Expressions;
+using System.Reflection;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Events.Internal;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Serialization;
-using BuildingBlocks.Core.Events;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Types;
 using MediatR;
@@ -18,7 +18,7 @@ public class MessagePersistenceService(
     IMessagePersistenceRepository messagePersistenceRepository,
     IMessageSerializer messageSerializer,
     IMediator mediator,
-    IExternalEventBus bus,
+    IBusDirectPublisher busDirectPublisher,
     ISerializer serializer
 ) : IMessagePersistenceService
 {
@@ -30,43 +30,37 @@ public class MessagePersistenceService(
         return messagePersistenceRepository.GetByFilterAsync(predicate ?? (_ => true), cancellationToken);
     }
 
-    public async Task AddPublishMessageAsync<TEventEnvelope>(
-        TEventEnvelope eventEnvelope,
+    public async Task AddPublishMessageAsync<TMessage>(
+        IEventEnvelope<TMessage> eventEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TEventEnvelope : IEventEnvelope
-    {
-        await AddMessageCore(eventEnvelope, MessageDeliveryType.Outbox, cancellationToken);
-    }
-
-    public async Task AddPublishMessageAsync<TEventEnvelope, TMessage>(
-        TEventEnvelope eventEnvelope,
-        CancellationToken cancellationToken = default
-    )
-        where TEventEnvelope : IEventEnvelope<TMessage>
         where TMessage : IMessage
     {
         await AddMessageCore(eventEnvelope, MessageDeliveryType.Outbox, cancellationToken);
     }
 
-    public async Task AddReceivedMessageAsync<TEventEnvelope>(
-        TEventEnvelope messageEnvelope,
+    public async Task AddReceivedMessageAsync<TMessage>(
+        IEventEnvelope<TMessage> eventEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TEventEnvelope : IEventEnvelope
+        where TMessage : IMessage
     {
-        await AddMessageCore(messageEnvelope, MessageDeliveryType.Inbox, cancellationToken);
+        await AddMessageCore(eventEnvelope, MessageDeliveryType.Inbox, cancellationToken);
     }
 
-    public async Task AddInternalMessageAsync<TCommand>(
-        TCommand internalCommand,
+    public async Task AddInternalMessageAsync<TInternalCommand>(
+        TInternalCommand internalCommand,
         CancellationToken cancellationToken = default
     )
-        where TCommand : class, IInternalCommand
+        where TInternalCommand : IInternalCommand
     {
-        await AddMessageCore(
-            EventEnvelope.From(internalCommand, metadata: null),
-            MessageDeliveryType.Internal,
+        await messagePersistenceRepository.AddAsync(
+            new StoreMessage(
+                internalCommand.InternalCommandId,
+                TypeMapper.GetFullTypeName(internalCommand.GetType()), // same process so we use full type name
+                serializer.Serialize(internalCommand),
+                MessageDeliveryType.Internal
+            ),
             cancellationToken
         );
     }
@@ -94,26 +88,14 @@ public class MessagePersistenceService(
         CancellationToken cancellationToken = default
     )
     {
-        eventEnvelope.Data.NotBeNull();
+        eventEnvelope.Message.NotBeNull();
 
-        Guid id;
-        if (eventEnvelope.Data is IMessage im)
-        {
-            id = im.MessageId;
-        }
-        else if (eventEnvelope.Data is IInternalCommand command)
-        {
-            id = command.InternalCommandId;
-        }
-        else
-        {
-            id = Guid.NewGuid();
-        }
+        var id = eventEnvelope.Message is IMessage im ? im.MessageId : Guid.NewGuid();
 
         await messagePersistenceRepository.AddAsync(
             new StoreMessage(
                 id,
-                TypeMapper.GetFullTypeName(eventEnvelope.Data.GetType()), // because each service has its own persistence and same process (outbox,inbox), full name message type but in microservices we should just use type name for message
+                TypeMapper.GetFullTypeName(eventEnvelope.Message.GetType()), // because each service has its own persistence and inbox and outbox processor will run in the same process we can use full type name
                 messageSerializer.Serialize(eventEnvelope),
                 deliveryType
             ),
@@ -166,14 +148,16 @@ public class MessagePersistenceService(
     private async Task ProcessOutbox(StoreMessage storeMessage, CancellationToken cancellationToken)
     {
         var messageType = TypeMapper.GetType(storeMessage.DataType);
+        var eventEnvelope = messageSerializer.Deserialize(storeMessage.Data, messageType);
 
-        var messageEnvelope = messageSerializer.Deserialize(storeMessage.Data, messageType);
-
-        if (messageEnvelope is null)
+        if (eventEnvelope is null)
             return;
 
+        // eventEnvelope.Metadata.Headers.TryGetValue(MessageHeaders.ExchangeOrTopic, out var exchange);
+        // eventEnvelope.Metadata.Headers.TryGetValue(MessageHeaders.Queue, out var queue);
+
         // we should pass an object type message or explicit our message type, not cast to IMessage (data is IMessage integrationEvent) because masstransit doesn't work with IMessage cast.
-        await bus.PublishAsync(messageEnvelope, cancellationToken);
+        await busDirectPublisher.PublishAsync(eventEnvelope, cancellationToken);
 
         logger.LogInformation(
             "Message with id: {MessageId} and delivery type: {DeliveryType} processed from the persistence message store",
@@ -184,12 +168,13 @@ public class MessagePersistenceService(
 
     private async Task ProcessInternal(StoreMessage storeMessage, CancellationToken cancellationToken)
     {
-        var messageEnvelope = messageSerializer.Deserialize(storeMessage.Data);
+        var messageType = TypeMapper.GetType(storeMessage.DataType);
+        var internalMessage = serializer.Deserialize(storeMessage.Data, messageType);
 
-        if (messageEnvelope is null)
+        if (internalMessage is null)
             return;
 
-        if (messageEnvelope.Data is IDomainNotificationEvent domainNotificationEvent)
+        if (internalMessage is IDomainNotificationEvent domainNotificationEvent)
         {
             await mediator.Publish(domainNotificationEvent, cancellationToken);
 
@@ -200,7 +185,7 @@ public class MessagePersistenceService(
             );
         }
 
-        if (messageEnvelope.Data is IInternalCommand internalCommand)
+        if (internalMessage is IInternalCommand internalCommand)
         {
             await mediator.Send(internalCommand, cancellationToken);
 
@@ -214,6 +199,9 @@ public class MessagePersistenceService(
 
     private Task ProcessInbox(StoreMessage storeMessage, CancellationToken cancellationToken)
     {
+        var messageType = TypeMapper.GetType(storeMessage.DataType);
+        var messageEnvelope = messageSerializer.Deserialize(storeMessage.Data, messageType);
+
         return Task.CompletedTask;
     }
 }

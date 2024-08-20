@@ -1,6 +1,6 @@
 using BuildingBlocks.Abstractions.Persistence;
 
-namespace FoodDelivery.Services.Customers.Shared.Extensions.WebApplicationExtensions;
+namespace FoodDelivery.Services.Customers.Shared.Data.Extensions;
 
 public static partial class WebApplicationExtensions
 {

@@ -19,11 +19,10 @@ public static class DependencyInjectionExtensions
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-        var options = configuration.BindOptions<MessagePersistenceOptions>();
-        configurator?.Invoke(options);
+        var options = configuration.BindOptions(configurator);
 
         // add option to the dependency injection
-        services.AddValidationOptions<MessagePersistenceOptions>(opt => configurator?.Invoke(opt));
+        services.AddValidationOptions(configurator);
 
         services.TryAddScoped<IMessagePersistenceConnectionFactory>(sp => new NpgsqlMessagePersistenceConnectionFactory(
             options.ConnectionString.NotBeEmptyOrNull()

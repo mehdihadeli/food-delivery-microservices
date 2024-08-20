@@ -6,11 +6,10 @@ using FoodDelivery.Services.Customers.Customers.Data.Repositories.Mongo;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Data.Repositories.Mongo;
 using FoodDelivery.Services.Customers.Shared.Contracts;
-using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace FoodDelivery.Services.Customers.Shared.Extensions.WebApplicationBuilderExtensions;
+namespace FoodDelivery.Services.Customers.Shared.Data.Extensions;
 
 public static partial class WebApplicationBuilderExtensions
 {

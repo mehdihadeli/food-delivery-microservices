@@ -11,4 +11,6 @@ public static class MessageHeaders
     public const string Name = "name";
     public const string Type = "type";
     public const string Created = "created";
+    public const string ExchangeOrTopic = "exchange-topic";
+    public const string Queue = "queue";
 }

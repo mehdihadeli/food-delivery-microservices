@@ -1,110 +1,116 @@
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
+using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Core.Events;
-using MassTransit;
+using BuildingBlocks.Core.Messaging;
+using Humanizer;
+using Microsoft.Extensions.Options;
+using MessageHeaders = BuildingBlocks.Core.Messaging.MessageHeaders;
 
 namespace BuildingBlocks.Integration.MassTransit;
 
 public class MassTransitBus(
-    ISendEndpointProvider sendEndpointProvider,
-    IPublishEndpoint publishEndpoint,
-    IMessageMetadataAccessor messageMetadataAccessor
+    IBusDirectPublisher busDirectPublisher,
+    IMessageMetadataAccessor messageMetadataAccessor,
+    IMessagePersistenceService messagePersistenceService,
+    IOptions<MessagingOptions> messagingOptions
 ) : IExternalEventBus
 {
+    private readonly MessagingOptions _messagingOptions = messagingOptions.Value;
+
     public Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
         where TMessage : IMessage
     {
         var correlationId = messageMetadataAccessor.GetCorrelationId();
         var cautionId = messageMetadataAccessor.GetCorrelationId();
-        var envelopeMessage = EventEnvelope.From(message, correlationId, cautionId);
+        var messageTypeName = message.GetType().Name.Underscore();
 
-        return PublishAsync(envelopeMessage, cancellationToken);
-    }
-
-    public async Task PublishAsync(IEventEnvelope eventEnvelope, CancellationToken cancellationToken = default)
-    {
-        await publishEndpoint.Publish(
-            eventEnvelope,
-            envelopeWrapperContext => FillMasstransitContextInformation(eventEnvelope, envelopeWrapperContext),
-            cancellationToken
+        var eventEnvelope = EventEnvelope.From<TMessage>(
+            message,
+            correlationId,
+            cautionId,
+            new Dictionary<string, object?>
+            {
+                { MessageHeaders.ExchangeOrTopic, $"{messageTypeName}{MessagingConstants.PrimaryExchangePostfix}" },
+                { MessageHeaders.Queue, messageTypeName }
+            }
         );
+
+        return PublishAsync(eventEnvelope, cancellationToken);
     }
 
-    public async Task PublishAsync(
-        IEventEnvelope eventEnvelope,
+    public async Task PublishAsync<TMessage>(
+        IEventEnvelope<TMessage> eventEnvelope,
+        CancellationToken cancellationToken = default
+    )
+        where TMessage : IMessage
+    {
+        if (_messagingOptions.OutboxEnabled)
+        {
+            await messagePersistenceService.AddPublishMessageAsync(eventEnvelope, cancellationToken);
+            return;
+        }
+
+        await busDirectPublisher.PublishAsync(eventEnvelope, cancellationToken);
+    }
+
+    public async Task PublishAsync<TMessage>(
+        TMessage message,
         string? exchangeOrTopic = null,
         string? queue = null,
         CancellationToken cancellationToken = default
     )
+        where TMessage : IMessage
     {
-        if (string.IsNullOrEmpty(queue) && string.IsNullOrEmpty(exchangeOrTopic))
+        var correlationId = messageMetadataAccessor.GetCorrelationId();
+        var cautionId = messageMetadataAccessor.GetCorrelationId();
+        var messageTypeName = message.GetType().Name.Underscore();
+
+        var eventEnvelope = EventEnvelope.From<TMessage>(
+            message,
+            correlationId,
+            cautionId,
+            new Dictionary<string, object?>
+            {
+                {
+                    MessageHeaders.ExchangeOrTopic,
+                    exchangeOrTopic ?? $"{messageTypeName}{MessagingConstants.PrimaryExchangePostfix}"
+                },
+                { MessageHeaders.Queue, queue ?? messageTypeName }
+            }
+        );
+
+        if (_messagingOptions.OutboxEnabled)
         {
-            await PublishAsync(eventEnvelope, cancellationToken);
+            await messagePersistenceService.AddPublishMessageAsync(eventEnvelope, cancellationToken);
             return;
         }
 
-        // Ref: https://stackoverflow.com/a/60269493/581476
-        string endpointAddress = GetEndpointAddress(exchangeOrTopic, queue);
+        await busDirectPublisher.PublishAsync(eventEnvelope, exchangeOrTopic, queue, cancellationToken);
+    }
 
-        var sendEndpoint = await sendEndpointProvider.GetSendEndpoint(new Uri(endpointAddress));
-        await sendEndpoint.Send(
+    public async Task PublishAsync<TMessage>(
+        IEventEnvelope<TMessage> eventEnvelope,
+        string? exchangeOrTopic = null,
+        string? queue = null,
+        CancellationToken cancellationToken = default
+    )
+        where TMessage : IMessage
+    {
+        var messageTypeName = eventEnvelope.Message.GetType().Name.Underscore();
+
+        if (_messagingOptions.OutboxEnabled)
+        {
+            await messagePersistenceService.AddPublishMessageAsync(eventEnvelope, cancellationToken);
+            return;
+        }
+
+        await busDirectPublisher.PublishAsync(
             eventEnvelope,
-            envelopeWrapperContext => FillMasstransitContextInformation(eventEnvelope, envelopeWrapperContext),
+            exchangeOrTopic ?? $"{messageTypeName}{MessagingConstants.PrimaryExchangePostfix}",
+            queue ?? messageTypeName,
             cancellationToken
         );
-    }
-
-    private static void FillMasstransitContextInformation(
-        IEventEnvelope eventEnvelope,
-        PublishContext<IEventEnvelope> envelopeWrapperContext
-    )
-    {
-        if (eventEnvelope.Metadata is null)
-        {
-            return;
-        }
-
-        // https://masstransit.io/documentation/concepts/messages#message-headers
-        // https://www.enterpriseintegrationpatterns.com/patterns/messaging/EnvelopeWrapper.html
-        // Just for filling masstransit related field, but we have a separated envelope message.
-        envelopeWrapperContext.MessageId = eventEnvelope.Metadata.MessageId;
-        envelopeWrapperContext.CorrelationId = eventEnvelope.Metadata.CorrelationId;
-
-        foreach (var header in eventEnvelope.Metadata.Headers)
-        {
-            envelopeWrapperContext.Headers.Set(header.Key, header.Value);
-        }
-    }
-
-    private static void FillMasstransitContextInformation(
-        IEventEnvelope eventEnvelope,
-        SendContext<IEventEnvelope> envelopeWrapperContext
-    )
-    {
-        if (eventEnvelope.Metadata is null)
-        {
-            return;
-        }
-
-        // https://masstransit.io/documentation/concepts/messages#message-headers
-        // https://www.enterpriseintegrationpatterns.com/patterns/messaging/EnvelopeWrapper.html
-        // Just for filling masstransit related field, but we have a separated envelope message.
-        envelopeWrapperContext.MessageId = eventEnvelope.Metadata.MessageId;
-        envelopeWrapperContext.CorrelationId = eventEnvelope.Metadata.CorrelationId;
-
-        foreach (var header in eventEnvelope.Metadata.Headers)
-        {
-            envelopeWrapperContext.Headers.Set(header.Key, header.Value);
-        }
-    }
-
-    private static string GetEndpointAddress(string? exchangeOrTopic, string? queue)
-    {
-        return !string.IsNullOrEmpty(queue) && !string.IsNullOrEmpty(exchangeOrTopic)
-            ? $"exchange:{exchangeOrTopic}?bind=true&queue={queue}"
-            : !string.IsNullOrEmpty(queue)
-                ? $"queue={queue}"
-                : $"exchange:{exchangeOrTopic}";
     }
 
     public void Consume<TMessage>(

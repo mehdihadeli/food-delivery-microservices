@@ -6,6 +6,7 @@ using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Rea
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Read.Mongo;
+using Riok.Mapperly.Abstractions;
 using Customer = FoodDelivery.Services.Customers.Customers.Models.Reads.Customer;
 
 namespace FoodDelivery.Services.Customers.Customers;
@@ -49,10 +50,6 @@ public class CustomersMapping : Profile
             .ForMember(x => x.InternalCommandId, opt => opt.Ignore())
             .ForMember(x => x.OccurredOn, opt => opt.MapFrom(x => x.Created));
 
-        CreateMap<CreateCustomerRead, Customer>()
-            .ForMember(x => x.Id, opt => opt.Ignore())
-            .ForMember(x => x.CustomerId, opt => opt.MapFrom(x => x.CustomerId));
-
         CreateMap<Models.Customer, UpdateCustomerRead>()
             .ForMember(x => x.CustomerId, opt => opt.MapFrom(x => x.Id.Value))
             .ForMember(x => x.Id, opt => opt.Ignore())
@@ -80,7 +77,10 @@ public class CustomersMapping : Profile
             .ForMember(x => x.CustomerId, opt => opt.MapFrom(x => x.CustomerId))
             .ForMember(x => x.Created, opt => opt.MapFrom(x => x.OccurredOn));
 
-        CreateMap<CustomerCreated, CreateCustomerRead>();
+        CreateMap<CustomerCreated, CreateCustomerRead>()
+            .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Created, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.DetailAddress, opt => opt.MapFrom(src => src.Address));
 
         CreateMap<CustomerUpdated, UpdateCustomerRead>();
 
@@ -98,4 +98,22 @@ public class CustomersMapping : Profile
                 )
             );
     }
+}
+
+// https://mapperly.riok.app/docs/configuration/static-mappers/
+[Mapper]
+public static partial class CustomerCreatedMapper
+{
+    [MapProperty(nameof(CustomerCreated.Id), nameof(CreateCustomerRead.CustomerId))]
+    [MapProperty(nameof(CustomerCreated.CreatedAt), nameof(CreateCustomerRead.Created))]
+    [MapProperty(nameof(CustomerCreated.Address), nameof(CreateCustomerRead.DetailAddress))]
+    public static partial CreateCustomerRead ToCreateCustomerRead(this CustomerCreated customerCreated);
+}
+
+[Mapper]
+public static partial class CreateCustomerReadMapper
+{
+    [MapperIgnoreTarget(nameof(Customer.Id))]
+    [MapProperty(nameof(CreateCustomerRead.CustomerId), nameof(Customer.CustomerId))]
+    public static partial Customer ToCustomer(this CreateCustomerRead createCustomerRead);
 }

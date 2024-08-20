@@ -39,7 +39,8 @@ public class RestockSubscription : Aggregate<RestockSubscriptionId>, IHaveSoftDe
         {
             Id = id,
             CustomerId = customerId,
-            ProductInformation = productInformation
+            ProductInformation = productInformation,
+            Created = DateTime.Now
         };
 
         restockSubscription.ChangeEmail(email);

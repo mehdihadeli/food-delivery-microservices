@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Riok.Mapperly"/>
     <PackageReference Include="AutoMapper"/>
     <PackageReference Include="MediatR"/>
     <PackageReference Include="MongoDB.Driver"/>

@@ -5,20 +5,21 @@ using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Clients.Catalogs.Dtos;
 using Tests.Shared.Helpers;
 using Tests.Shared.XunitCategories;
+using WireMock.Server;
 
 namespace FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Servers;
 
 public class CatalogServiceMockTests
 {
-    private readonly CatalogsServiceMock _catalogsServiceMock = CatalogsServiceMock.Start(
-        ConfigurationHelper.BindOptions<CatalogsApiClientOptions>()
-    );
+    private static readonly WireMockServer _wireMockServer = WireMockServer.Start();
+    private readonly CatalogsServiceWireMock _catalogsServiceWireMock =
+        new(_wireMockServer, ConfigurationHelper.BindOptions<CatalogsApiClientOptions>());
 
     [Fact]
     [CategoryTrait(TestCategory.Unit)]
     public async Task root_address()
     {
-        var client = new HttpClient { BaseAddress = new Uri(_catalogsServiceMock.Url!) };
+        var client = new HttpClient { BaseAddress = new Uri(_wireMockServer.Url!) };
         var res = await client.GetAsync("/");
         res.EnsureSuccessStatusCode();
 
@@ -31,10 +32,10 @@ public class CatalogServiceMockTests
     [CategoryTrait(TestCategory.Unit)]
     public async Task get_by_id()
     {
-        var (response, endpoint) = _catalogsServiceMock.SetupGetProductById();
+        var (response, endpoint) = _catalogsServiceWireMock.SetupGetProductById();
         var fakeProduct = response.Product;
 
-        var client = new HttpClient { BaseAddress = new Uri(_catalogsServiceMock.Url!) };
+        var client = new HttpClient { BaseAddress = new Uri(_wireMockServer.Url!) };
         var httpResponse = await client.GetAsync(endpoint);
 
         await httpResponse.EnsureSuccessStatusCodeWithDetailAsync();

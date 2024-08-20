@@ -36,7 +36,7 @@ public static class HandlerFactory
     )
         where T : class, IMessage
     {
-        return (context, cancellationToken) => observer.Add(context.Data, cancellationToken);
+        return (context, cancellationToken) => observer.Add(context.Message, cancellationToken);
     }
 
     public static IMessageHandler<TMessage> AsMessageHandler<TMessage, TMessageHandler>(
@@ -66,7 +66,7 @@ internal class MessageConsumer<T>(Observer<T> observer, IServiceProvider service
         }
 
         await handler.InvokeMethodWithoutResultAsync("HandleAsync", eventEnvelope, cancellationToken);
-        await observer.Add(eventEnvelope.Data, cancellationToken);
+        await observer.Add(eventEnvelope.Message, cancellationToken);
     }
 }
 
@@ -75,7 +75,7 @@ internal class SimpleMessageConsumer<T>(Observer<T> observer) : IMessageHandler<
 {
     public Task HandleAsync(IEventEnvelope<T> eventEnvelope, CancellationToken cancellationToken = default)
     {
-        return observer.Add(eventEnvelope.Data, cancellationToken);
+        return observer.Add(eventEnvelope.Message, cancellationToken);
     }
 }
 

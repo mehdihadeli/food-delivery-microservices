@@ -1,10 +1,11 @@
+using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Core.Events;
 using BuildingBlocks.Core.Exception.Types;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FoodDelivery.Services.Customers.TestShared.Fixtures;
 using FoodDelivery.Services.Shared.Customers.Customers.Events.V1.Integration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -25,9 +26,7 @@ public class CreateCustomerTests(
     public async Task can_create_new_customer_with_valid_input_in_postgres_db()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture
-            .IdentityServiceMock.SetupGetUserByEmail()
-            .Response.UserIdentity;
+        var fakeIdentityUser = IdentityServiceWireMock.SetupGetUserByEmail().Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
@@ -69,9 +68,7 @@ public class CreateCustomerTests(
     public async Task must_throw_exception_when_customer_with_email_already_exists()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture
-            .IdentityServiceMock.SetupGetUserByEmail()
-            .Response.UserIdentity;
+        var fakeIdentityUser = IdentityServiceWireMock.SetupGetUserByEmail().Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
@@ -89,9 +86,7 @@ public class CreateCustomerTests(
     public async Task can_save_mongo_customer_read_model_in_internal_persistence_message()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture
-            .IdentityServiceMock.SetupGetUserByEmail()
-            .Response.UserIdentity;
+        var fakeIdentityUser = IdentityServiceWireMock.SetupGetUserByEmail().Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
@@ -106,9 +101,7 @@ public class CreateCustomerTests(
     public async Task can_create_new_mongo_customer_read_model_in_the_mongodb()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture
-            .IdentityServiceMock.SetupGetUserByEmail()
-            .Response.UserIdentity;
+        var fakeIdentityUser = IdentityServiceWireMock.SetupGetUserByEmail().Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
@@ -133,9 +126,7 @@ public class CreateCustomerTests(
     public async Task can_publish_customer_created_integration_event_to_the_broker()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture
-            .IdentityServiceMock.SetupGetUserByEmail()
-            .Response.UserIdentity;
+        var fakeIdentityUser = IdentityServiceWireMock.SetupGetUserByEmail().Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
@@ -150,9 +141,7 @@ public class CreateCustomerTests(
     public async Task can_save_customer_created_integration_event_in_the_outbox()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture
-            .IdentityServiceMock.SetupGetUserByEmail()
-            .Response.UserIdentity;
+        var fakeIdentityUser = IdentityServiceWireMock.SetupGetUserByEmail().Response.UserIdentity;
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act

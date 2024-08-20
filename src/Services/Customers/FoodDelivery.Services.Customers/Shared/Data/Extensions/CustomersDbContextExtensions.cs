@@ -1,9 +1,8 @@
 using FoodDelivery.Services.Customers.Customers.Models;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
-using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services.Customers.Shared.Extensions;
+namespace FoodDelivery.Services.Customers.Shared.Data.Extensions;
 
 public static class CustomersDbContextExtensions
 {

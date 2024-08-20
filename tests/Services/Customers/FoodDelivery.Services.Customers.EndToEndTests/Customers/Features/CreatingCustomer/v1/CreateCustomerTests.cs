@@ -1,5 +1,4 @@
 using BuildingBlocks.Core.Exception.Types;
-using BuildingBlocks.Validation;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
@@ -7,7 +6,6 @@ using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Requests;
-using FoodDelivery.Services.Customers.TestShared.Fixtures;
 using Microsoft.AspNetCore.Mvc;
 using Tests.Shared.Extensions;
 using Tests.Shared.Fixtures;
@@ -32,9 +30,7 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
     public async Task can_returns_created_status_code_using_valid_dto_and_auth_credentials()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture
-            .IdentityServiceMock.SetupGetUserByEmail()
-            .Response.UserIdentity;
+        var fakeIdentityUser = IdentityServiceWireMock.SetupGetUserByEmail().Response.UserIdentity;
         var fakeCreateCustomerRequest = new FakeCreateCustomerRequest(fakeIdentityUser!.Email).Generate();
         var route = Constants.Routes.Customers.Create;
 
@@ -50,9 +46,7 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
     public async Task can_returns_valid_response_using_valid_dto_and_auth_credentials()
     {
         // Arrange
-        var fakeIdentityUser = CustomersServiceMockServersFixture
-            .IdentityServiceMock.SetupGetUserByEmail()
-            .Response.UserIdentity;
+        var fakeIdentityUser = IdentityServiceWireMock.SetupGetUserByEmail().Response.UserIdentity;
         var fakeCreateCustomerRequest = new FakeCreateCustomerRequest(fakeIdentityUser!.Email).Generate();
         var route = Constants.Routes.Customers.Create;
 
@@ -91,7 +85,6 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
                 {
                     Detail = $"Customer with email '{fakeCustomer.Email.Value}' already exists.",
                     Title = nameof(CustomerAlreadyExistsException),
-                    Type = "https://somedomain/application-error",
                 }
             )
             .And.Be409Conflict();
@@ -113,12 +106,7 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
         response
             .Should()
             .ContainsProblemDetail(
-                new ProblemDetails
-                {
-                    Detail = "Email address is invalid.",
-                    Title = nameof(ValidationException),
-                    Type = "https://somedomain/input-validation-rules-error"
-                }
+                new ProblemDetails { Detail = "Email address is invalid.", Title = nameof(ValidationException), }
             )
             .And.Be400BadRequest();
     }

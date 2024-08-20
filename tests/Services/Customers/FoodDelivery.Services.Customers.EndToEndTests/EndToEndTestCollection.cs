@@ -1,5 +1,4 @@
 using FoodDelivery.Services.Customers.Shared.Data;
-using FoodDelivery.Services.Customers.TestShared.Fixtures;
 using Tests.Shared.Fixtures;
 
 namespace FoodDelivery.Services.Customers.EndToEndTests;
@@ -10,8 +9,7 @@ namespace FoodDelivery.Services.Customers.EndToEndTests;
 public class EndToEndTestCollection
     : ICollectionFixture<
         SharedFixtureWithEfCoreAndMongo<Api.CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext>
-    >,
-        ICollectionFixture<CustomersServiceMockServersFixture>
+    >
 {
     public const string Name = "End-To-End Test";
 }

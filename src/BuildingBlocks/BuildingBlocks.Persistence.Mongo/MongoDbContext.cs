@@ -30,9 +30,6 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
 
     public void Dispose()
     {
-        while (Session is { IsInTransaction: true })
-            Thread.Sleep(TimeSpan.FromMilliseconds(100));
-
         GC.SuppressFinalize(this);
     }
 

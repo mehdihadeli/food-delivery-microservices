@@ -11,17 +11,33 @@ public class NullExternalEventBus : IExternalEventBus
         return Task.CompletedTask;
     }
 
-    public Task PublishAsync(IEventEnvelope eventEnvelope, CancellationToken cancellationToken = default)
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task PublishAsync(
-        IEventEnvelope eventEnvelope,
+    public Task PublishAsync<TMessage>(
+        TMessage message,
         string? exchangeOrTopic = null,
         string? queue = null,
         CancellationToken cancellationToken = default
     )
+        where TMessage : IMessage
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task PublishAsync<TMessage>(
+        IEventEnvelope<TMessage> eventEnvelope,
+        CancellationToken cancellationToken = default
+    )
+        where TMessage : IMessage
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task PublishAsync<TMessage>(
+        IEventEnvelope<TMessage> eventEnvelope,
+        string? exchangeOrTopic = null,
+        string? queue = null,
+        CancellationToken cancellationToken = default
+    )
+        where TMessage : IMessage
     {
         return Task.CompletedTask;
     }

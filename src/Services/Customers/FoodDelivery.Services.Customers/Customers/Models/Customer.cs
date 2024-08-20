@@ -57,6 +57,8 @@ public class Customer : Aggregate<CustomerId>
                 phoneNumber,
                 identityId,
                 DateTime.Now,
+                address?.Country,
+                address?.City,
                 address?.Detail,
                 birthDate!,
                 nationality!

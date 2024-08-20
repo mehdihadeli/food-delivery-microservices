@@ -24,6 +24,8 @@ public record CustomerCreated(
     string PhoneNumber,
     Guid IdentityId,
     DateTime CreatedAt,
+    string? Country,
+    string? City,
     string? Address,
     DateTime? BirthDate,
     string? Nationality
@@ -37,6 +39,8 @@ public record CustomerCreated(
         string? phoneNumber,
         Guid identityId,
         DateTime createdAt,
+        string? country,
+        string? city,
         string? address,
         DateTime? birthDate,
         string? nationality
@@ -51,6 +55,8 @@ public record CustomerCreated(
                 phoneNumber!,
                 identityId,
                 createdAt,
+                country,
+                city,
                 address!,
                 birthDate,
                 nationality!
@@ -99,7 +105,7 @@ internal class CustomerCreatedHandler(ICommandBus commandBus, IMapper mapper) : 
     public Task Handle(CustomerCreated notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
-        var mongoReadCommand = mapper.Map<CreateCustomerRead>(notification);
+        var mongoReadCommand = notification.ToCreateCustomerRead();
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         // Schedule multiple read sides to execute here

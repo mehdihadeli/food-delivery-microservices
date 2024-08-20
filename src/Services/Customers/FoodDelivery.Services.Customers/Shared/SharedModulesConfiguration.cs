@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.Web.Module;
 using BuildingBlocks.Core;
+using FoodDelivery.Services.Customers.Shared.Data.Extensions;
 using FoodDelivery.Services.Customers.Shared.Extensions.WebApplicationBuilderExtensions;
 using FoodDelivery.Services.Customers.Shared.Extensions.WebApplicationExtensions;
 

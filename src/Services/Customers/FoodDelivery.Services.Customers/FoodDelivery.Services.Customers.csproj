@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Customers\Extensions\" />
     <Folder Include="Shared\Data\Migrations" />
   </ItemGroup>
 

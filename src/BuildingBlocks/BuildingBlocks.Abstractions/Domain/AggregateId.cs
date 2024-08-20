@@ -32,8 +32,5 @@ public record AggregateId : AggregateId<long>
         return new AggregateId(value);
     }
 
-    public static implicit operator long(AggregateId id)
-    {
-        return id.Value;
-    }
+    public static implicit operator long(AggregateId? id) => id?.Value ?? default;
 }

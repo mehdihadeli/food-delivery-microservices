@@ -6,13 +6,12 @@ using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity;
 using Microsoft.Extensions.Options;
 
-namespace FoodDelivery.Services.Customers.Shared.Extensions.WebApplicationBuilderExtensions;
+namespace FoodDelivery.Services.Customers.Shared.Clients;
 
 public static partial class WebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddCustomHttpClients(this WebApplicationBuilder builder)
     {
-        builder.Services.AddValidatedOptions<IdentityApiClientOptions>();
         builder.Services.AddValidatedOptions<PolicyOptions>();
 
         AddCatalogsApiClient(builder);
@@ -24,6 +23,7 @@ public static partial class WebApplicationBuilderExtensions
 
     private static void AddIdentityApiClient(WebApplicationBuilder builder)
     {
+        builder.Services.AddValidatedOptions<IdentityApiClientOptions>();
         builder.Services.AddHttpClient<IIdentityApiClient, IdentityApiClient>(
             (client, sp) =>
             {

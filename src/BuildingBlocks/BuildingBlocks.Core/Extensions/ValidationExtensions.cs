@@ -225,7 +225,9 @@ public static class ValidationExtensions
     )
     {
         // Use Regex to validate phone number format
-        var regex = new Regex(@"^[+]?(\d{1,2})?[\s.-]?(\d{3})[\s.-]?(\d{4})[\s.-]?(\d{4})$");
+        // valid phones: +10---------- , (+10)----------
+        var regex = new Regex(@"^[+]?[(]?[+]?[0-9]{1,4}[)]?[-\s./0-9]{9,12}$");
+
         if (!regex.IsMatch(phoneNumber))
         {
             throw new ValidationException($"{argumentName} is not a valid phone number.");
@@ -240,7 +242,8 @@ public static class ValidationExtensions
     )
     {
         // Use Regex to validate mobile number format
-        var regex = new Regex(@"^(?:(?:\+|00)([1-9]{1,3}))?([1-9]\d{9})$");
+        var regex = new Regex(@"^(?:\+|00)?(\(\d{1,3}\)|\d{1,3})?([1-9]\d{9})$");
+
         if (!regex.IsMatch(mobileNumber))
         {
             throw new ValidationException($"{argumentName} is not a valid mobile number.");

@@ -21,8 +21,7 @@ internal static class DependencyInjectionExtensions
         services
             .AddTransient<IDomainEventPublisher, DomainEventPublisher>()
             .AddTransient<IDomainNotificationEventPublisher, DomainNotificationEventPublisher>()
-            .AddTransient<IInternalEventBus, InternalEventBus>()
-            .AddTransient<IExternalEventBus, NullExternalEventBus>();
+            .AddTransient<IInternalEventBus, InternalEventBus>();
 
         services.AddTransient<IAggregatesDomainEventsRequestStorage, AggregatesDomainEventsStorage>();
         services.AddScoped<IDomainEventsAccessor, DomainEventAccessor>();

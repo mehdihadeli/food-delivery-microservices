@@ -6,6 +6,7 @@ using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Messaging.PersistMessage;
 using BuildingBlocks.Abstractions.Queries;
+using BuildingBlocks.Core.Events;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
 using BuildingBlocks.Core.Types;
@@ -15,6 +16,7 @@ using BuildingBlocks.Persistence.Mongo;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using MassTransit;
+using MassTransit.Context;
 using MassTransit.Testing;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
@@ -94,7 +96,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     public HttpClient NormalUserHttpClient => _normalClient ??= CreateNormalUserHttpClient();
 
     public WireMockServer WireMockServer { get; }
-    public string? WireMockServerUrl { get; }
+    public string WireMockServerUrl { get; } = null!;
 
     //https://github.com/xunit/xunit/issues/565
     //https://github.com/xunit/xunit/pull/1705
@@ -144,7 +146,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
         // new WireMockServer() is equivalent to call WireMockServer.Start()
         WireMockServer = WireMockServer.Start();
-        WireMockServerUrl = WireMockServer.Url;
+        WireMockServerUrl = WireMockServer.Url!;
 
         Factory = new CustomWebApplicationFactory<TEntryPoint>();
     }
@@ -201,10 +203,10 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         );
 
         // with `AddOverrideInMemoryConfig` config changes are accessible after services registration and build process
-        Factory.AddOverrideInMemoryConfig(new Dictionary<string, string>() { });
+        Factory.AddOverrideInMemoryConfig(new Dictionary<string, string>());
         Factory.ConfigurationAction += cfg =>
         {
-            // Or we can override configuration explicitly and it is accessible via IOptions<> and Configuration
+            // Or we can override configuration explicitly, and it is accessible via IOptions<> and Configuration
             cfg["WireMockUrl"] = WireMockServerUrl;
         };
 
@@ -426,48 +428,127 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         }
     }
 
-    public async Task WaitForPublishing<TMessage>(CancellationToken cancellationToken = default)
-        where TMessage : class, IMessage
+    public async Task WaitForPublishing<T>(CancellationToken cancellationToken = default)
+        where T : class, IMessage
     {
-        await WaitUntilConditionMet(async () =>
-        {
-            // message has been published for this harness.
-            var published = await MasstransitHarness.Published.Any<TMessage>(cancellationToken);
-            // there is a fault when publishing for this harness.
-            var faulty = await MasstransitHarness.Published.Any<Fault<TMessage>>(cancellationToken);
+        // will block the thread until there is a publishing message
+        await MasstransitHarness.Published.Any(
+            message =>
+            {
+                var messageFilter = new PublishedMessageFilter();
+                var faultMessageFilter = new PublishedMessageFilter();
 
-            return published & !faulty;
-        });
+                messageFilter.Includes.Add<T>();
+                messageFilter.Includes.Add<EventEnvelope<T>>();
+                messageFilter.Includes.Add<IEventEnvelope<T>>();
+                messageFilter.Includes.Add<IEventEnvelope>(x =>
+                    (x.MessageObject as IEventEnvelope)!.Message.GetType() == typeof(T)
+                );
+
+                faultMessageFilter.Includes.Add<Fault<EventEnvelope<T>>>();
+                faultMessageFilter.Includes.Add<Fault<IEventEnvelope<T>>>();
+                faultMessageFilter.Includes.Add<T>();
+
+                var faulty = faultMessageFilter.Any(message);
+                var published = messageFilter.Any(message);
+
+                return published & !faulty;
+            },
+            cancellationToken
+        );
     }
 
-    public async Task WaitForConsuming<TMessage>(CancellationToken cancellationToken = default)
-        where TMessage : class, IMessage
+    public async Task WaitForSending<T>(CancellationToken cancellationToken = default)
+        where T : class, IMessage
     {
-        await WaitUntilConditionMet(async () =>
-        {
-            //consumer consumed the message.
-            var consumed = await MasstransitHarness.Consumed.Any<TMessage>(cancellationToken);
-            //there was a fault when consuming for this harness.
-            var faulty = await MasstransitHarness.Consumed.Any<Fault<TMessage>>(cancellationToken);
+        // will block the thread until there is a publishing message
+        await MasstransitHarness.Sent.Any(
+            message =>
+            {
+                var messageFilter = new SentMessageFilter();
+                var faultMessageFilter = new SentMessageFilter();
 
-            return consumed && !faulty;
-        });
+                messageFilter.Includes.Add<T>();
+                messageFilter.Includes.Add<EventEnvelope<T>>();
+                messageFilter.Includes.Add<IEventEnvelope<T>>();
+                messageFilter.Includes.Add<IEventEnvelope>(x =>
+                    (x.MessageObject as IEventEnvelope)!.Message.GetType() == typeof(T)
+                );
+
+                faultMessageFilter.Includes.Add<Fault<EventEnvelope<T>>>();
+                faultMessageFilter.Includes.Add<Fault<IEventEnvelope<T>>>();
+                faultMessageFilter.Includes.Add<Fault<T>>();
+
+                var faulty = faultMessageFilter.Any(message);
+                var published = messageFilter.Any(message);
+
+                return published & !faulty;
+            },
+            cancellationToken
+        );
+    }
+
+    public async Task WaitForConsuming<T>(CancellationToken cancellationToken = default)
+        where T : class, IMessage
+    {
+        // will block the thread until there is a consuming message
+        await MasstransitHarness.Consumed.Any(
+            message =>
+            {
+                var messageFilter = new ReceivedMessageFilter();
+                var faultMessageFilter = new ReceivedMessageFilter();
+
+                messageFilter.Includes.Add<IEventEnvelope<T>>();
+                messageFilter.Includes.Add<EventEnvelope<T>>();
+                messageFilter.Includes.Add<IEventEnvelope>(x =>
+                    (x.MessageObject as IEventEnvelope)!.Message.GetType() == typeof(T)
+                );
+                messageFilter.Includes.Add<T>();
+
+                faultMessageFilter.Includes.Add<Fault<EventEnvelope<T>>>();
+                faultMessageFilter.Includes.Add<Fault<T>>();
+                faultMessageFilter.Includes.Add<Fault<IEventEnvelope<T>>>();
+
+                var faulty = faultMessageFilter.Any(message);
+                var published = messageFilter.Any(message);
+
+                return published & !faulty;
+            },
+            cancellationToken
+        );
     }
 
     public async Task WaitForConsuming<TMessage, TConsumedBy>(CancellationToken cancellationToken = default)
-        where TMessage : class
+        where TMessage : class, IMessage
         where TConsumedBy : class, IConsumer
     {
         var consumerHarness = ServiceProvider.GetRequiredService<IConsumerTestHarness<TConsumedBy>>();
-        await WaitUntilConditionMet(async () =>
-        {
-            //consumer consumed the message.
-            var consumed = await consumerHarness.Consumed.Any<TMessage>(cancellationToken);
-            //there was a fault when consuming for this harness.
-            var faulty = await consumerHarness.Consumed.Any<Fault<TMessage>>(cancellationToken);
 
-            return consumed && !faulty;
-        });
+        // will block the thread until there is a consuming message
+        await consumerHarness.Consumed.Any(
+            message =>
+            {
+                var messageFilter = new ReceivedMessageFilter();
+                var faultMessageFilter = new ReceivedMessageFilter();
+
+                messageFilter.Includes.Add<IEventEnvelope<TMessage>>();
+                messageFilter.Includes.Add<EventEnvelope<TMessage>>();
+                messageFilter.Includes.Add<IEventEnvelope>(x =>
+                    (x.MessageObject as IEventEnvelope)!.Message.GetType() == typeof(TMessage)
+                );
+                messageFilter.Includes.Add<TMessage>();
+
+                faultMessageFilter.Includes.Add<Fault<EventEnvelope<TMessage>>>();
+                faultMessageFilter.Includes.Add<Fault<TMessage>>();
+                faultMessageFilter.Includes.Add<Fault<IEventEnvelope<TMessage>>>();
+
+                var faulty = faultMessageFilter.Any(message);
+                var published = messageFilter.Any(message);
+
+                return published & !faulty;
+            },
+            cancellationToken
+        );
     }
 
     // public async ValueTask<IHypothesis<TMessage>> ShouldConsumeWithNewConsumer<TMessage>(

@@ -134,11 +134,16 @@ internal static partial class WebApplicationBuilderExtensions
         });
 
         builder.AddCustomMassTransit(
-            (context, cfg) =>
+            configureReceiveEndpoints: (context, cfg) =>
             {
                 cfg.AddCustomerEndpoints(context);
             },
-            autoConfigEndpoints: false
+            configureMessagingOptions: msgCfg =>
+            {
+                msgCfg.AutoConfigEndpoints = false;
+                msgCfg.OutboxEnabled = true;
+                msgCfg.InboxEnabled = true;
+            }
         );
 
         builder.Services.AddCustomValidators(Assembly.GetExecutingAssembly());

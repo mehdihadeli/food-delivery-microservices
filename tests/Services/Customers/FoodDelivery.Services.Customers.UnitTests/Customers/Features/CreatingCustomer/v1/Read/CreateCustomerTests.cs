@@ -33,7 +33,7 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
         _customersReadUnitOfWork
             .CustomersRepository.AddAsync(Arg.Is(insertCustomer), Arg.Any<CancellationToken>())
             .Returns(insertCustomer);
-        var handler = new CreateCustomerReadHandler(Mapper, _customersReadUnitOfWork);
+        var handler = new CreateCustomerReadHandler(_customersReadUnitOfWork);
 
         // Act
         await handler.Handle(fakeCreateCustomerReadCommand, CancellationToken.None);

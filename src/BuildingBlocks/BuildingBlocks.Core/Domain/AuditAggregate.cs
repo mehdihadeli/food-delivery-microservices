@@ -9,6 +9,6 @@ public abstract class AuditAggregate<TId> : Aggregate<TId>, IAuditableEntity<TId
 }
 
 public abstract class AuditAggregate<TIdentity, TId> : AuditAggregate<TIdentity>
-    where TIdentity : Identity<TId> { }
+    where TIdentity : Identity<TId>;
 
-public abstract class AuditAggregate : AuditAggregate<Identity<long>, long> { }
+public abstract class AuditAggregate : AuditAggregate<Identity<long>, long>;

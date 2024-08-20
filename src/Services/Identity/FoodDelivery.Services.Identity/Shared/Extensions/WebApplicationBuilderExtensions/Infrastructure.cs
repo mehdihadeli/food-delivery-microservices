@@ -114,11 +114,16 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomRateLimit();
 
         builder.AddCustomMassTransit(
-            (context, cfg) =>
+            configureReceiveEndpoints: (context, cfg) =>
             {
                 cfg.AddUserPublishers();
             },
-            autoConfigEndpoints: false
+            configureMessagingOptions: msgCfg =>
+            {
+                msgCfg.AutoConfigEndpoints = false;
+                msgCfg.OutboxEnabled = true;
+                msgCfg.InboxEnabled = true;
+            }
         );
 
         builder.AddCustomEasyCaching();

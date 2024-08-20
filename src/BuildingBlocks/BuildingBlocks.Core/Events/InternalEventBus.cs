@@ -33,7 +33,7 @@ public class InternalEventBus(IMediator mediator, AsyncPolicy policy) : IInterna
             c =>
             {
                 // TODO: using metadata for tracing ang monitoring here
-                return mediator.Publish(eventEnvelope.Data, c);
+                return mediator.Publish(eventEnvelope.Message, c);
             },
             ct
         );
@@ -43,7 +43,7 @@ public class InternalEventBus(IMediator mediator, AsyncPolicy policy) : IInterna
     {
         // calling generic `Publish<T>` in `InternalEventBus` class
         var genericPublishMethod = _publishMethods.GetOrAdd(
-            eventEnvelope.Data.GetType(),
+            eventEnvelope.Message.GetType(),
             eventType =>
                 typeof(InternalEventBus)
                     .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)

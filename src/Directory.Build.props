@@ -16,6 +16,11 @@
     <AnalysisModeSecurity>All</AnalysisModeSecurity>
   </PropertyGroup>
 
+  <!--  https://mapperly.riok.app/docs/configuration/generated-source/-->
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
+
   <PropertyGroup>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>

@@ -2,7 +2,6 @@ using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Events;
-using FoodDelivery.Services.Customers.TestShared.Fixtures;
 using FoodDelivery.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
 using FoodDelivery.Services.Shared.Customers.Customers.Events.V1.Integration;
 using FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
@@ -27,7 +26,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
     {
         _userRegistered = new FakeUserRegisteredV1().Generate();
 
-        CustomersServiceMockServersFixture.IdentityServiceMock.SetupGetUserByEmail(_userRegistered);
+        IdentityServiceWireMock.SetupGetUserByEmail(_userRegistered);
     }
 
     [Fact]

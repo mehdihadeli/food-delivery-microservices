@@ -1,15 +1,17 @@
 using System.Reflection;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messaging;
 using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Core.Events;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Reflection;
-using BuildingBlocks.Validation;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using RabbitMQ.Client;
 using IExternalEventBus = BuildingBlocks.Abstractions.Messaging.IExternalEventBus;
 
 namespace BuildingBlocks.Integration.MassTransit;
@@ -20,10 +22,13 @@ public static class DependencyInjectionExtensions
         this WebApplicationBuilder builder,
         Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureReceiveEndpoints = null,
         Action<IBusRegistrationConfigurator>? configureBusRegistration = null,
-        bool autoConfigEndpoints = false,
+        Action<MessagingOptions>? configureMessagingOptions = null,
         params Assembly[] scanAssemblies
     )
     {
+        builder.Services.AddValidationOptions(configureMessagingOptions);
+        var messagingOptions = builder.Configuration.BindOptions(configureMessagingOptions);
+
         // - should be placed out of action delegate for getting correct calling assembly
         // - Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
         // loads all referenced assemblies explicitly.
@@ -67,7 +72,7 @@ public static class DependencyInjectionExtensions
 
                     cfg.PublishTopology.BrokerTopologyOptions = PublishBrokerTopologyOptions.FlattenHierarchy;
 
-                    if (autoConfigEndpoints)
+                    if (messagingOptions.AutoConfigEndpoints)
                     {
                         // https://masstransit-project.com/usage/consumers.html#consumer
                         cfg.ConfigureEndpoints(context);
@@ -81,10 +86,20 @@ public static class DependencyInjectionExtensions
                         "/",
                         hostConfigurator =>
                         {
+                            hostConfigurator.PublisherConfirmation = true;
                             hostConfigurator.Username(rabbitMqOptions.UserName);
                             hostConfigurator.Password(rabbitMqOptions.Password);
                         }
                     );
+
+                    // for setting exchange name for message type as default. masstransit by default uses fully message type name for primary exchange name.
+                    cfg.MessageTopology.SetEntityNameFormatter(new CustomEntityNameFormatter());
+
+                    ApplyMessagesPublishTopology(cfg.PublishTopology, assemblies);
+                    ApplyMessagesConsumeTopology(cfg.ConsumeTopology, assemblies);
+                    ApplyMessagesSendTopology(cfg.SendTopology, assemblies);
+
+                    configureReceiveEndpoints?.Invoke(context, cfg);
 
                     // https://masstransit-project.com/usage/exceptions.html#retry
                     // https://markgossa.com/2022/06/masstransit-exponential-back-off.html
@@ -93,23 +108,64 @@ public static class DependencyInjectionExtensions
                     // cfg.UseInMemoryOutbox();
 
                     // https: // github.com/MassTransit/MassTransit/issues/2018
+                    // https://github.com/MassTransit/MassTransit/issues/4831
                     cfg.Publish<IIntegrationEvent>(p => p.Exclude = true);
                     cfg.Publish<IntegrationEvent>(p => p.Exclude = true);
                     cfg.Publish<IMessage>(p => p.Exclude = true);
                     cfg.Publish<Message>(p => p.Exclude = true);
                     cfg.Publish<ITxRequest>(p => p.Exclude = true);
-
-                    // for setting exchange name for message type as default. masstransit by default uses fully message type name for exchange name.
-                    cfg.MessageTopology.SetEntityNameFormatter(new CustomEntityNameFormatter());
-
-                    configureReceiveEndpoints?.Invoke(context, cfg);
+                    cfg.Publish<IEventEnvelope>(p => p.Exclude = true);
                 }
             );
         }
 
-        builder.Services.TryAddTransient<IExternalEventBus, MassTransitBus>();
+        builder.Services.AddTransient<IExternalEventBus, MassTransitBus>();
+        builder.Services.AddTransient<IBusDirectPublisher, MasstransitDirectPublisher>();
 
         return builder;
+    }
+
+    private static void ApplyMessagesSendTopology(
+        IRabbitMqSendTopologyConfigurator sendTopology,
+        Assembly[] assemblies
+    ) { }
+
+    private static void ApplyMessagesConsumeTopology(
+        IConsumeTopologyConfigurator consumeTopology,
+        Assembly[] assemblies
+    ) { }
+
+    private static void ApplyMessagesPublishTopology(
+        IRabbitMqPublishTopologyConfigurator publishTopology,
+        Assembly[] assemblies
+    )
+    {
+        // Get all types that implement the IMessage interface
+        var messageTypes = ReflectionUtilities
+            .GetAllTypesImplementingInterface<IIntegrationEvent>(assemblies)
+            .Where(x => !x.IsGenericType);
+
+        // Print the results
+        foreach (var type in messageTypes)
+        {
+            var eventEnvelopeInterfaceMessageType = typeof(IEventEnvelope<>).MakeGenericType(type);
+            var eventEnvelopeInterfaceConfigurator = publishTopology.GetMessageTopology(
+                eventEnvelopeInterfaceMessageType
+            );
+
+            // setup primary exchange
+            eventEnvelopeInterfaceConfigurator.Durable = true;
+            eventEnvelopeInterfaceConfigurator.ExchangeType = ExchangeType.Direct;
+
+            var eventEnvelopeMessageType = typeof(EventEnvelope<>).MakeGenericType(type);
+            var eventEnvelopeMessageTypeConfigurator = publishTopology.GetMessageTopology(eventEnvelopeMessageType);
+            eventEnvelopeMessageTypeConfigurator.Durable = true;
+            eventEnvelopeMessageTypeConfigurator.ExchangeType = ExchangeType.Direct;
+
+            var messageConfigurator = publishTopology.GetMessageTopology(type);
+            messageConfigurator.Durable = true;
+            messageConfigurator.ExchangeType = ExchangeType.Direct;
+        }
     }
 
     private static IRetryConfigurator AddRetryConfiguration(IRetryConfigurator retryConfigurator)

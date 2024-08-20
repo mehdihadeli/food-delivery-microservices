@@ -4,11 +4,11 @@ namespace BuildingBlocks.Core.Domain;
 
 public class AuditableEntity<TId> : Entity<TId>, IAuditableEntity<TId>
 {
-    public DateTime? LastModified { get; protected set; } = default!;
-    public int? LastModifiedBy { get; protected set; } = default!;
+    public DateTime? LastModified { get; init; } = default!;
+    public int? LastModifiedBy { get; init; } = default!;
 }
 
 public abstract class AuditableEntity<TIdentity, TId> : AuditableEntity<TIdentity>
-    where TIdentity : Identity<TId> { }
+    where TIdentity : Identity<TId>;
 
-public class AuditableEntity : AuditableEntity<Identity<long>, long> { }
+public class AuditableEntity : AuditableEntity<Identity<long>, long>;

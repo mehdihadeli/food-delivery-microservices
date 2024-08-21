@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 
-public record ProcessRestockNotification(long ProductId, int CurrentStock) : ITxCommand
+internal record ProcessRestockNotification(long ProductId, int CurrentStock) : ITxCommand
 {
     public static ProcessRestockNotification Of(long productId, int currentStock)
     {

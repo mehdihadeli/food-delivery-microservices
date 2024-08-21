@@ -12,6 +12,5 @@ public interface IHttpQuery
 {
     HttpContext HttpContext { get; init; }
     IQueryBus QueryBus { get; init; }
-    IMapper Mapper { get; init; }
     CancellationToken CancellationToken { get; init; }
 }

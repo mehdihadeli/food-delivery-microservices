@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
@@ -7,7 +6,7 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Applicatio
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 
-public record UpdateMongoRestockSubscriptionReadModel(
+internal record UpdateMongoRestockSubscriptionReadModel(
     long RestockSubscriptionId,
     long CustomerId,
     string Email,
@@ -18,7 +17,7 @@ public record UpdateMongoRestockSubscriptionReadModel(
     bool IsDeleted = false
 ) : InternalCommand;
 
-internal class UpdateMongoRestockSubscriptionReadModelHandler(CustomersReadUnitOfWork unitOfWork, IMapper mapper)
+internal class UpdateMongoRestockSubscriptionReadModelHandler(CustomersReadUnitOfWork unitOfWork)
     : ICommandHandler<UpdateMongoRestockSubscriptionReadModel>
 {
     public async Task Handle(UpdateMongoRestockSubscriptionReadModel command, CancellationToken cancellationToken)

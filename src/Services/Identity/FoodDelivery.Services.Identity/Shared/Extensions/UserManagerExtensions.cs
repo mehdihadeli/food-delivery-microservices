@@ -34,8 +34,8 @@ public static class UserManagerExtensions
             .AsNoTracking()
             .ApplyPagingAsync<ApplicationUser, TResult>(
                 request,
-                mapper.ConfigurationProvider,
                 sieveProcessor,
+                mapper.ConfigurationProvider,
                 cancellationToken: cancellationToken
             );
     }

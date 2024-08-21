@@ -1,4 +1,3 @@
-using AutoMapper;
 using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity;
 using FoodDelivery.Services.Customers.Shared.Data;
@@ -16,19 +15,10 @@ public class QueryTestCollection : ICollectionFixture<CustomerServiceUnitTestBas
 public class CustomerServiceUnitTestBase : IAsyncDisposable
 {
     // We don't need to inject `CustomersServiceMockServersFixture` class fixture in the constructor because it initialized by `collection fixture` and its static properties are accessible in the codes
-    public CustomerServiceUnitTestBase()
-    {
-        Mapper = MapperFactory.Create();
-        CustomersDbContext = DbContextFactory.Create();
 
-        IdentityApiClient = Substitute.For<IIdentityApiClient>();
-        CatalogApiClient = Substitute.For<ICatalogApiClient>();
-    }
-
-    public IMapper Mapper { get; }
-    public CustomersDbContext CustomersDbContext { get; }
-    public IIdentityApiClient IdentityApiClient { get; }
-    public ICatalogApiClient CatalogApiClient { get; }
+    public CustomersDbContext CustomersDbContext { get; } = DbContextFactory.Create();
+    public IIdentityApiClient IdentityApiClient { get; } = Substitute.For<IIdentityApiClient>();
+    public ICatalogApiClient CatalogApiClient { get; } = Substitute.For<ICatalogApiClient>();
 
     public async ValueTask DisposeAsync()
     {

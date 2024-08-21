@@ -9,7 +9,7 @@ namespace FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
 // https://github.com/nickdodd79/AutoBogus#autofakert
 // `Faker` has a problem with non-default constructor but `AutoFaker` works also with none-default constructor
 // because AutoFaker generate data also for private set and init members (not read only get) it doesn't work properly with `CustomInstantiator` and we should exclude theme one by one, so it is better we use Faker<>
-public sealed class FakeUpdateCustomer : AutoFaker<UpdateCustomer>
+internal sealed class FakeUpdateCustomer : AutoFaker<UpdateCustomer>
 {
     public FakeUpdateCustomer(long customerId)
     {

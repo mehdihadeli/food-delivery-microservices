@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -48,7 +47,7 @@ internal class GetRestockSubscriptionBySubscriptionIdEndpoint
         >
     > HandleAsync([AsParameters] GetRestockSubscriptionBySubscriptionIdRequestParameters requestParameters)
     {
-        var (restockSubscriptionId, _, queryProcessor, mapper, cancellationToken) = requestParameters;
+        var (restockSubscriptionId, _, queryProcessor, cancellationToken) = requestParameters;
         var result = await queryProcessor.SendAsync(
             GetRestockSubscriptionBySubscriptionId.Of(restockSubscriptionId),
             cancellationToken
@@ -68,7 +67,6 @@ internal record GetRestockSubscriptionBySubscriptionIdRequestParameters(
     [FromRoute] long RestockSubscriptionId,
     HttpContext HttpContext,
     IQueryBus QueryBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;
 

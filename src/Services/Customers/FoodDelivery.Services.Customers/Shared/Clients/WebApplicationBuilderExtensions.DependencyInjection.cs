@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Resiliency;
@@ -30,11 +29,10 @@ public static partial class WebApplicationBuilderExtensions
                 var identityApiOptions = sp.GetRequiredService<IOptions<IdentityApiClientOptions>>();
                 var policyOptions = sp.GetRequiredService<IOptions<PolicyOptions>>();
                 identityApiOptions.Value.NotBeNull();
-                var mapper = sp.GetRequiredService<IMapper>();
 
                 var baseAddress = identityApiOptions.Value.BaseApiAddress;
                 client.BaseAddress = new Uri(baseAddress);
-                return new IdentityApiClient(client, mapper, identityApiOptions, policyOptions);
+                return new IdentityApiClient(client, identityApiOptions, policyOptions);
             }
         );
     }
@@ -48,11 +46,10 @@ public static partial class WebApplicationBuilderExtensions
                 var catalogApiOptions = sp.GetRequiredService<IOptions<CatalogsApiClientOptions>>();
                 var policyOptions = sp.GetRequiredService<IOptions<PolicyOptions>>();
                 catalogApiOptions.Value.NotBeNull();
-                var mapper = sp.GetRequiredService<IMapper>();
 
                 var baseAddress = catalogApiOptions.Value.BaseApiAddress;
                 client.BaseAddress = new Uri(baseAddress);
-                return new CatalogApiClient(client, mapper, catalogApiOptions, policyOptions);
+                return new CatalogApiClient(client, catalogApiOptions, policyOptions);
             }
         );
     }

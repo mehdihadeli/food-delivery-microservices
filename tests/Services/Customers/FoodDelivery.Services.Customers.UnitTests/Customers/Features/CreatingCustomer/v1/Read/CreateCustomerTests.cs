@@ -1,5 +1,5 @@
+using FoodDelivery.Services.Customers.Customers;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
-using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
 using FoodDelivery.Services.Customers.UnitTests.Common;
@@ -28,7 +28,7 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
     {
         // Arrange
         var fakeCreateCustomerReadCommand = new FakeCreateCustomerRead().Generate();
-        var insertCustomer = Mapper.Map<Customer>(fakeCreateCustomerReadCommand);
+        var insertCustomer = fakeCreateCustomerReadCommand.ToCustomer();
 
         _customersReadUnitOfWork
             .CustomersRepository.AddAsync(Arg.Is(insertCustomer), Arg.Any<CancellationToken>())

@@ -3,13 +3,12 @@ using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
+using FoodDelivery.Services.Customers.Shared.Clients;
 using FoodDelivery.Services.Customers.Shared.Clients.Identity;
-using FoodDelivery.Services.Customers.Shared.Clients.Identity.Dtos;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Dtos;
 using FoodDelivery.Services.Customers.UnitTests.Common;
-using FoodDelivery.Services.Customers.Users.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -26,14 +25,8 @@ namespace FoodDelivery.Services.Customers.UnitTests.Customers.Features.CreatingC
 // https://www.reddit.com/r/dotnet/comments/rxuqrb/testing_mediator_handlers/
 public class CreateCustomerTests : CustomerServiceUnitTestBase
 {
-    private readonly ILogger<CreateCustomerHandler> _logger;
-    private readonly IIdentityApiClient _identityApiClient;
-
-    public CreateCustomerTests()
-    {
-        _logger = new NullLogger<CreateCustomerHandler>();
-        _identityApiClient = Substitute.For<IIdentityApiClient>();
-    }
+    private readonly ILogger<CreateCustomerHandler> _logger = new NullLogger<CreateCustomerHandler>();
+    private readonly IIdentityApiClient _identityApiClient = Substitute.For<IIdentityApiClient>();
 
     [CategoryTrait(TestCategory.Unit)]
     [Fact]
@@ -50,7 +43,7 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
         // 2) mocking `IdentityApiClient` for unit test
         var fakeIdentityUser = new FakeUserIdentityDto().Generate();
 
-        var user = Mapper.Map<UserIdentity>(fakeIdentityUser);
+        var user = fakeIdentityUser.ToUserIdentity();
 
         //https://nsubstitute.github.io/help/return-for-args/
         //https://nsubstitute.github.io/help/set-return-value/

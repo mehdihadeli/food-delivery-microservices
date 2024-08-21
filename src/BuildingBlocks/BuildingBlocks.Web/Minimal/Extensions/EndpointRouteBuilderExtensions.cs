@@ -1,9 +1,7 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Problem.HttpResults;
 using Humanizer;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -97,8 +95,8 @@ public static class EndpointRouteBuilderExtensions
     public static RouteHandlerBuilder MapQueryEndpoint<TRequestParameters, TResponse, TQuery, TQueryResult>(
         this IEndpointRouteBuilder builder,
         string pattern,
-        Func<TRequestParameters, TQuery>? mapRequestToQuery = null,
-        Func<TQueryResult, TResponse>? mapQueryResultToResponse = null
+        Func<TRequestParameters, TQuery> mapRequestToQuery,
+        Func<TQueryResult, TResponse> mapQueryResultToResponse
     )
         where TRequestParameters : IHttpQuery
         where TResponse : class
@@ -115,18 +113,13 @@ public static class EndpointRouteBuilderExtensions
         async Task<Ok<TResponse>> Handle([AsParameters] TRequestParameters requestParameters)
         {
             var queryProcessor = requestParameters.QueryBus;
-            var mapper = requestParameters.Mapper;
             var cancellationToken = requestParameters.CancellationToken;
 
-            var query = mapRequestToQuery is not null
-                ? mapRequestToQuery(requestParameters)
-                : mapper.Map<TQuery>(requestParameters);
+            var query = mapRequestToQuery(requestParameters);
 
             var res = await queryProcessor.SendAsync(query, cancellationToken);
 
-            var response = mapQueryResultToResponse is not null
-                ? mapQueryResultToResponse(res)
-                : mapper.Map<TResponse>(res);
+            var response = mapQueryResultToResponse(res);
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types

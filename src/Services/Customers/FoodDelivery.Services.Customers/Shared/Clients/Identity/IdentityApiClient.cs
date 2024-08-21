@@ -15,19 +15,16 @@ namespace FoodDelivery.Services.Customers.Shared.Clients.Identity;
 
 public class IdentityApiClient : IIdentityApiClient
 {
-    private readonly IMapper _mapper;
     private readonly HttpClient _httpClient;
     private readonly IdentityApiClientOptions _options;
     private readonly AsyncPolicyWrap<HttpResponseMessage> _combinedPolicy;
 
     public IdentityApiClient(
         HttpClient httpClient,
-        IMapper mapper,
         IOptions<IdentityApiClientOptions> options,
         IOptions<PolicyOptions> policyOptions
     )
     {
-        _mapper = mapper;
         _httpClient = httpClient.NotBeNull();
         _options = options.Value;
 
@@ -77,7 +74,7 @@ public class IdentityApiClient : IIdentityApiClient
         var userDto = await httpResponse.Content.ReadFromJsonAsync<GetUserByEmailClientDto>(
             cancellationToken: cancellationToken
         );
-        var user = _mapper.Map<UserIdentity>(userDto?.UserIdentity);
+        var user = userDto?.UserIdentity?.ToUserIdentity();
 
         return user;
     }
@@ -108,7 +105,7 @@ public class IdentityApiClient : IIdentityApiClient
         var userDto = await httpResponse.Content.ReadFromJsonAsync<CreateUserIdentityClientDto>(
             cancellationToken: cancellationToken
         );
-        var user = _mapper.Map<UserIdentity>(userDto?.UserIdentity);
+        var user = userDto?.UserIdentity.ToUserIdentity();
 
         return user;
     }

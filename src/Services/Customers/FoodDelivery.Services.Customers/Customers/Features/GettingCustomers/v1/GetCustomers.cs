@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Paging;
@@ -43,16 +42,14 @@ internal class GetCustomersValidator : AbstractValidator<GetCustomers>
     }
 }
 
-internal class GetCustomersHandler(ICustomersReadUnitOfWork unitOfWork, IMapper mapper, ISieveProcessor sieveProcessor)
+internal class GetCustomersHandler(ICustomersReadUnitOfWork unitOfWork, ISieveProcessor sieveProcessor)
     : IQueryHandler<GetCustomers, GetCustomersResult>
 {
-    private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
-
     public async Task<GetCustomersResult> Handle(GetCustomers request, CancellationToken cancellationToken)
     {
         var customer = await unitOfWork.CustomersRepository.GetByPageFilter<CustomerReadDto, string>(
             request,
-            mapper.ConfigurationProvider,
+            CustomersModuleMapping.ProjectToCustomerReadDto,
             sortExpression: x => x.City!,
             cancellationToken: cancellationToken
         );

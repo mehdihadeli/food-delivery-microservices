@@ -62,8 +62,8 @@ internal class GetProductsHandler(IMapper mapper, ICatalogDbContext catalogDbCon
             .AsNoTracking()
             .ApplyPagingAsync<Product, ProductReadModel>(
                 request,
-                mapper.ConfigurationProvider,
                 sieveProcessor,
+                mapper.ConfigurationProvider,
                 cancellationToken: cancellationToken
             );
 

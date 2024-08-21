@@ -1,5 +1,4 @@
 using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Domain;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
@@ -8,11 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime.v1;
 
-public record DeleteRestockSubscriptionsByTime(DateTime? From = null, DateTime? To = null) : ITxCommand;
+internal record DeleteRestockSubscriptionsByTime(DateTime? From = null, DateTime? To = null) : ITxCommand;
 
 internal class DeleteRestockSubscriptionsByTimeHandler(
     CustomersDbContext customersDbContext,
-    IDomainEventPublisher domainEventPublisher,
     ICommandBus commandBus,
     ILogger<DeleteRestockSubscriptionsByTimeHandler> logger
 ) : ICommandHandler<DeleteRestockSubscriptionsByTime>

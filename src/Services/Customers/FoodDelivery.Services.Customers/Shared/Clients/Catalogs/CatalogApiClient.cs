@@ -15,19 +15,16 @@ namespace FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
 
 public class CatalogApiClient : ICatalogApiClient
 {
-    private readonly IMapper _mapper;
     private readonly HttpClient _httpClient;
     private readonly CatalogsApiClientOptions _options;
     private readonly AsyncPolicyWrap<HttpResponseMessage> _combinedPolicy;
 
     public CatalogApiClient(
         HttpClient httpClient,
-        IMapper mapper,
         IOptions<CatalogsApiClientOptions> options,
         IOptions<PolicyOptions> policyOptions
     )
     {
-        _mapper = mapper;
         _httpClient = httpClient.NotBeNull();
         _options = options.Value;
 
@@ -76,7 +73,7 @@ public class CatalogApiClient : ICatalogApiClient
             cancellationToken: cancellationToken
         );
 
-        var product = _mapper.Map<Product>(productDto?.Product);
+        var product = productDto?.Product.ToProduct();
 
         return product;
     }

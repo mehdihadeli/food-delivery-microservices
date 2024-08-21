@@ -6,7 +6,6 @@ using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.Shared.Data.Extensions;
-using FoodDelivery.Services.Customers.Shared.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Events.Domain;
 
@@ -17,7 +16,7 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.Creating
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our commands and events, just primitive types
-public record RestockSubscriptionCreated(
+internal record RestockSubscriptionCreated(
     long Id,
     long ProductId,
     long CustomerId,
@@ -65,22 +64,14 @@ public record RestockSubscriptionCreated(
     }
 }
 
-internal class RestockSubscriptionCreatedHandler : IDomainEventHandler<RestockSubscriptionCreated>
+internal class RestockSubscriptionCreatedHandler(ICommandBus commandBus, CustomersDbContext customersDbContext)
+    : IDomainEventHandler<RestockSubscriptionCreated>
 {
-    private readonly ICommandBus _commandBus;
-    private readonly CustomersDbContext _customersDbContext;
-
-    public RestockSubscriptionCreatedHandler(ICommandBus commandBus, CustomersDbContext customersDbContext)
-    {
-        _commandBus = commandBus;
-        _customersDbContext = customersDbContext;
-    }
-
     public async Task Handle(RestockSubscriptionCreated notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
 
-        var customer = await _customersDbContext.FindCustomerByIdAsync(CustomerId.Of(notification.CustomerId));
+        var customer = await customersDbContext.FindCustomerByIdAsync(CustomerId.Of(notification.CustomerId));
 
         if (customer is null)
         {
@@ -94,6 +85,6 @@ internal class RestockSubscriptionCreatedHandler : IDomainEventHandler<RestockSu
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         // Schedule multiple read sides to execute here
-        await _commandBus.ScheduleAsync(new IInternalCommand[] { mongoReadCommand }, cancellationToken);
+        await commandBus.ScheduleAsync(new IInternalCommand[] { mongoReadCommand }, cancellationToken);
     }
 }

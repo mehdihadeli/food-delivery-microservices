@@ -105,6 +105,25 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>(TDbContext dbC
         );
     }
 
+    public async Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
+        IPageRequest pageRequest,
+        Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
+        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default
+    )
+        where TResult : class
+    {
+        return await DbSet.ApplyPagingAsync<TEntity, TResult, TSortKey>(
+            pageRequest,
+            sieveProcessor,
+            projectionFunc,
+            predicate,
+            sortExpression,
+            cancellationToken
+        );
+    }
+
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         entity.NotBeNull();

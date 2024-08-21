@@ -6,10 +6,6 @@ using Sieve.Services;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Data.Repositories.Mongo;
 
-public class RestockSubscriptionReadRepository
-    : MongoRepositoryBase<CustomersReadDbContext, RestockSubscription, Guid>,
-        IRestockSubscriptionReadRepository
-{
-    public RestockSubscriptionReadRepository(CustomersReadDbContext context, ISieveProcessor sieveProcessor)
-        : base(context, sieveProcessor) { }
-}
+public class RestockSubscriptionReadRepository(CustomersReadDbContext context, ISieveProcessor sieveProcessor)
+    : MongoRepositoryBase<CustomersReadDbContext, RestockSubscription, Guid>(context, sieveProcessor),
+        IRestockSubscriptionReadRepository;

@@ -14,7 +14,7 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.Processi
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our commands and events, just primitive types
-public record RestockNotificationProcessed(long Id, DateTime ProcessedTime) : DomainEvent;
+internal record RestockNotificationProcessed(long Id, DateTime ProcessedTime) : DomainEvent;
 
 internal class RestockNotificationProcessedHandler(ICommandBus commandBus, CustomersDbContext customersDbContext)
     : IDomainEventHandler<RestockNotificationProcessed>

@@ -154,8 +154,6 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.Services.AddCustomValidators(Assembly.GetExecutingAssembly());
 
-        builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
         builder.AddCustomEasyCaching();
 
         builder.AddCustomHttpClients();

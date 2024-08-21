@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
@@ -27,7 +26,7 @@ internal class GetCustomerByCustomerIdValidator : AbstractValidator<GetCustomerB
 
 // totally we don't need to unit test our handlers according jimmy bogard blogs and videos and we should extract our business to domain or seperated class so we don't need repository pattern for test, but for a sample I use it here
 // https://www.reddit.com/r/dotnet/comments/rxuqrb/testing_mediator_handlers/
-internal class GetCustomerByCustomerIdHandler(ICustomersReadUnitOfWork unitOfWork, IMapper mapper)
+internal class GetCustomerByCustomerIdHandler(ICustomersReadUnitOfWork unitOfWork)
     : IQueryHandler<GetCustomerByCustomerId, GetCustomerByCustomerIdResult>
 {
     public async Task<GetCustomerByCustomerIdResult> Handle(
@@ -44,7 +43,7 @@ internal class GetCustomerByCustomerIdHandler(ICustomersReadUnitOfWork unitOfWor
         if (customer == null)
             throw new CustomerNotFoundException(query.CustomerId);
 
-        var customerDto = mapper.Map<CustomerReadDto>(customer);
+        var customerDto = customer.ToCustomerReadDto();
 
         return new GetCustomerByCustomerIdResult(customerDto);
     }

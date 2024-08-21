@@ -13,12 +13,7 @@ namespace FoodDelivery.Services.Customers.UnitTests.Customers.Features.UpdatingC
 
 public class UpdateCustomerTests : CustomerServiceUnitTestBase
 {
-    private readonly ILogger<UpdateCustomerHandler> _logger;
-
-    public UpdateCustomerTests()
-    {
-        _logger = new NullLogger<UpdateCustomerHandler>();
-    }
+    private readonly ILogger<UpdateCustomerHandler> _logger = new NullLogger<UpdateCustomerHandler>();
 
     [CategoryTrait(TestCategory.Unit)]
     [Fact]

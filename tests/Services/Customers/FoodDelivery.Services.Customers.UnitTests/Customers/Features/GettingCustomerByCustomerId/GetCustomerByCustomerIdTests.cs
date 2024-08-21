@@ -38,7 +38,7 @@ public class GetCustomerByCustomerIdTests : CustomerServiceUnitTestBase
 
         // Act
         var query = new GetCustomerByCustomerId(customerReadModel.CustomerId);
-        var handler = new GetCustomerByCustomerIdHandler(_customersReadUnitOfWork, Mapper);
+        var handler = new GetCustomerByCustomerIdHandler(_customersReadUnitOfWork);
         var res = await handler.Handle(query, CancellationToken.None);
 
         await _customersReadUnitOfWork
@@ -58,7 +58,7 @@ public class GetCustomerByCustomerIdTests : CustomerServiceUnitTestBase
         // Arrange
         var invalidId = new Faker().Random.Number(1, 100);
         var query = new GetCustomerByCustomerId(invalidId);
-        var handler = new GetCustomerByCustomerIdHandler(_customersReadUnitOfWork, Mapper);
+        var handler = new GetCustomerByCustomerIdHandler(_customersReadUnitOfWork);
 
         // Act
         Func<Task> act = async () => _ = await handler.Handle(query, CancellationToken.None);

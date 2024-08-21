@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
@@ -46,19 +45,8 @@ internal class GetRestockSubscriptionsEndpoint
         Results<Ok<GetRestockSubscriptionsResponse>, ValidationProblem, UnAuthorizedHttpProblemResult>
     > HandleAsync([AsParameters] GetRestockSubscriptionsRequestParameters requestParameters)
     {
-        var (
-            pageNumber,
-            pageSize,
-            filters,
-            sortOrder,
-            emails,
-            from,
-            to,
-            context,
-            queryProcessor,
-            mapper,
-            cancellationToken
-        ) = requestParameters;
+        var (pageNumber, pageSize, filters, sortOrder, emails, from, to, context, queryProcessor, cancellationToken) =
+            requestParameters;
 
         var result = await queryProcessor.SendAsync(
             GetRestockSubscriptions.Of(
@@ -96,6 +84,5 @@ public record GetRestockSubscriptionsRequestParameters(
     DateTime? To,
     HttpContext HttpContext,
     IQueryBus QueryBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery, IPageRequest;

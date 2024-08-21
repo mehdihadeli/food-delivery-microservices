@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Events.Internal;
@@ -11,11 +10,8 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.Deleting
 
 public record RestockSubscriptionDeleted(long RestockSubscriptionId) : DomainEvent;
 
-internal class RestockSubscriptionDeletedHandler(
-    ICommandBus commandBus,
-    IMapper mapper,
-    CustomersDbContext customersDbContext
-) : IDomainEventHandler<RestockSubscriptionDeleted>
+internal class RestockSubscriptionDeletedHandler(ICommandBus commandBus, CustomersDbContext customersDbContext)
+    : IDomainEventHandler<RestockSubscriptionDeleted>
 {
     public async Task Handle(RestockSubscriptionDeleted notification, CancellationToken cancellationToken)
     {

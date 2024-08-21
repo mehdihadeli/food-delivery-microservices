@@ -3,7 +3,7 @@ using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Rea
 
 namespace FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
 
-public sealed class FakeCreateCustomerRead : AutoFaker<CreateCustomerRead>
+internal sealed class FakeCreateCustomerRead : AutoFaker<CreateCustomerRead>
 {
     public FakeCreateCustomerRead()
     {

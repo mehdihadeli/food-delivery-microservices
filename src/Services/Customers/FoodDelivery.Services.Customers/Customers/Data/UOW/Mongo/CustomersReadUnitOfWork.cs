@@ -4,19 +4,12 @@ using FoodDelivery.Services.Customers.Shared.Data;
 
 namespace FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 
-public class CustomersReadUnitOfWork : MongoUnitOfWork<CustomersReadDbContext>, ICustomersReadUnitOfWork
+public class CustomersReadUnitOfWork(
+    CustomersReadDbContext context,
+    IRestockSubscriptionReadRepository restockRepository,
+    ICustomerReadRepository customerRepository
+) : MongoUnitOfWork<CustomersReadDbContext>(context), ICustomersReadUnitOfWork
 {
-    public CustomersReadUnitOfWork(
-        CustomersReadDbContext context,
-        IRestockSubscriptionReadRepository restockRepository,
-        ICustomerReadRepository customerRepository
-    )
-        : base(context)
-    {
-        RestockSubscriptionsRepository = restockRepository;
-        CustomersRepository = customerRepository;
-    }
-
-    public IRestockSubscriptionReadRepository RestockSubscriptionsRepository { get; }
-    public ICustomerReadRepository CustomersRepository { get; }
+    public IRestockSubscriptionReadRepository RestockSubscriptionsRepository { get; } = restockRepository;
+    public ICustomerReadRepository CustomersRepository { get; } = customerRepository;
 }

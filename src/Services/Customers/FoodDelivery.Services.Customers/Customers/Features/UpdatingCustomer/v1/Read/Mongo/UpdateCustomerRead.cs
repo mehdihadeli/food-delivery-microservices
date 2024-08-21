@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
@@ -78,10 +77,10 @@ internal class UpdateCustomerReadValidator : AbstractValidator<UpdateCustomerRea
     }
 }
 
-internal class UpdateCustomerReadHandler(ICustomersReadUnitOfWork customersReadUnitOfWork, IMapper mapper)
+internal class UpdateCustomerReadHandler(ICustomersReadUnitOfWork customersReadUnitOfWork)
     : ICommandHandler<UpdateCustomerRead>
 {
-    // totally we don't need to unit test our handlers according jimmy bogard blogs and videos and we should extract our business to domain or seperated class so we don't need repository pattern for test, but for a sample I use it here
+    // totally we don't need to unit test our handlers according jimmy bogard blogs and videos, and we should extract our business to domain or seperated class so we don't need repository pattern for test, but for a sample I use it here
     // https://www.reddit.com/r/dotnet/comments/rxuqrb/testing_mediator_handlers/
 
     public async Task Handle(UpdateCustomerRead command, CancellationToken cancellationToken)
@@ -98,9 +97,9 @@ internal class UpdateCustomerReadHandler(ICustomersReadUnitOfWork customersReadU
             throw new CustomerNotFoundException(command.CustomerId);
         }
 
-        var updateCustomer = mapper.Map(command, existingCustomer);
+        command.ToCustomer(existingCustomer);
 
-        await customersReadUnitOfWork.CustomersRepository.UpdateAsync(updateCustomer, cancellationToken);
+        await customersReadUnitOfWork.CustomersRepository.UpdateAsync(existingCustomer, cancellationToken);
 
         await customersReadUnitOfWork.CommitAsync(cancellationToken);
     }

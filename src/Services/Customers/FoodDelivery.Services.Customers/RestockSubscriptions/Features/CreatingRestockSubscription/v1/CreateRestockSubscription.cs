@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Domain.ValueObjects;
 using BuildingBlocks.Core.Extensions;
@@ -18,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 
-public record CreateRestockSubscription(long CustomerId, long ProductId, string Email)
+internal record CreateRestockSubscription(long CustomerId, long ProductId, string Email)
     : ITxCreateCommand<CreateRestockSubscriptionResult>
 {
     /// <summary>
@@ -53,7 +52,6 @@ internal class CreateRestockSubscriptionValidator : AbstractValidator<CreateRest
 internal class CreateRestockSubscriptionHandler(
     CustomersDbContext customersDbContext,
     ICatalogApiClient catalogApiClient,
-    IMapper mapper,
     ILogger<CreateRestockSubscriptionHandler> logger
 ) : ICommandHandler<CreateRestockSubscription, CreateRestockSubscriptionResult>
 {
@@ -102,7 +100,7 @@ internal class CreateRestockSubscriptionHandler(
             restockSubscription.Id
         );
 
-        var restockSubscriptionDto = mapper.Map<RestockSubscriptionDto>(restockSubscription);
+        var restockSubscriptionDto = restockSubscription.ToRestockSubscriptionDto();
 
         return new CreateRestockSubscriptionResult(restockSubscriptionDto.Id);
     }

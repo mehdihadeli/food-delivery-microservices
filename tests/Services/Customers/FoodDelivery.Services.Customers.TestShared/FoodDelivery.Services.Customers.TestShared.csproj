@@ -17,5 +17,7 @@
 <!--  https://www.meziantou.net/declaring-internalsvisibleto-in-the-csproj.htm-->
   <ItemGroup>
     <InternalsVisibleTo Include="FoodDelivery.Services.Customers.UnitTests"/>
+    <InternalsVisibleTo Include="FoodDelivery.Services.Customers.EndToEndTests"/>
+    <InternalsVisibleTo Include="FoodDelivery.Services.Customers.IntegrationTests"/>
   </ItemGroup>
 </Project>

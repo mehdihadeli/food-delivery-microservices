@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
@@ -9,11 +8,9 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.Processi
 public record UpdateMongoRestockSubscriptionsReadModelByTime(DateTime? From, DateTime? To, bool IsDeleted = false)
     : InternalCommand;
 
-internal class UpdateMongoRestockSubscriptionsReadModelByTimeHandler(IMapper mapper, CustomersReadUnitOfWork unitOfWork)
+internal class UpdateMongoRestockSubscriptionsReadModelByTimeHandler(CustomersReadUnitOfWork unitOfWork)
     : ICommandHandler<UpdateMongoRestockSubscriptionsReadModelByTime>
 {
-    private readonly IMapper _mapper = mapper;
-
     public async Task Handle(
         UpdateMongoRestockSubscriptionsReadModelByTime command,
         CancellationToken cancellationToken

@@ -43,7 +43,7 @@ internal class DeleteRestockSubscriptionHandler(
         }
 
         // for raising a deleted domain event
-        exists!.Delete();
+        exists.Delete();
 
         customersDbContext.Entry(exists).State = EntityState.Deleted;
         customersDbContext.Entry(exists.ProductInformation).State = EntityState.Unchanged;

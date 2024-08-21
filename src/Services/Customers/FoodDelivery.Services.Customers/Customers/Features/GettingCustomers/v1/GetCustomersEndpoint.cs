@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
@@ -43,8 +42,7 @@ internal class GetCustomersEndpoint
         [AsParameters] GetCustomersRequestParameters requestParameters
     )
     {
-        var (context, queryProcessor, mapper, cancellationToken, pageSize, pageNumber, filters, sortOrder) =
-            requestParameters;
+        var (context, queryProcessor, cancellationToken, pageSize, pageNumber, filters, sortOrder) = requestParameters;
 
         var query = GetCustomers.Of(
             new PageRequest
@@ -69,7 +67,6 @@ internal class GetCustomersEndpoint
 internal record GetCustomersRequestParameters(
     HttpContext HttpContext,
     IQueryBus QueryBus,
-    IMapper Mapper,
     CancellationToken CancellationToken,
     int PageSize = 10,
     int PageNumber = 1,

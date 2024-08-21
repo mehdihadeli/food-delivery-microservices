@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -43,7 +42,7 @@ internal class DeleteRestockSubscriptionByTimeEndpoint
         Results<UnAuthorizedHttpProblemResult, NotFoundHttpProblemResult, NoContent, ValidationProblem>
     > HandleAsync([AsParameters] DeleteRestockSubscriptionByTimeRequestParameters requestParameters)
     {
-        var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
+        var (request, context, commandBus, cancellationToken) = requestParameters;
 
         var command = new DeleteRestockSubscriptionsByTime(request.From, request.To);
 
@@ -57,7 +56,6 @@ internal record DeleteRestockSubscriptionByTimeRequestParameters(
     [FromBody] DeleteRestockSubscriptionByTimeRequest Request,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<DeleteRestockSubscriptionByTimeRequest>;
 

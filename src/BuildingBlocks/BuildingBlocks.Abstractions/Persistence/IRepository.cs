@@ -46,6 +46,15 @@ public interface IReadRepository<TEntity, in TId>
         CancellationToken cancellationToken = default
     )
         where TResult : class;
+
+    Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
+        IPageRequest pageRequest,
+        Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
+        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default
+    )
+        where TResult : class;
 }
 
 public interface IWriteRepository<TEntity, in TId>

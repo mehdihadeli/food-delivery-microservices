@@ -15,7 +15,7 @@ namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1
 // https://buildplease.com/pages/vos-in-events/
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
-public sealed record UpdateCustomer(
+internal sealed record UpdateCustomer(
     long Id,
     string FirstName,
     string LastName,

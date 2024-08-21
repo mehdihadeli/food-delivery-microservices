@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -42,7 +41,7 @@ internal class CreateRestockSubscriptionEndpoint
         Results<CreatedAtRoute<CreateRestockSubscriptionResponse>, UnAuthorizedHttpProblemResult, ValidationProblem>
     > HandleAsync([AsParameters] CreateRestockSubscriptionRequestParameters requestParameters)
     {
-        var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
+        var (request, context, commandBus, cancellationToken) = requestParameters;
 
         var command = CreateRestockSubscription.Of(request.CustomerId, request.ProductId, request.Email);
 
@@ -62,10 +61,9 @@ internal record CreateRestockSubscriptionRequestParameters(
     [FromBody] CreateRestockSubscriptionRequest Request,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<CreateRestockSubscriptionRequest>;
 
 public record CreateRestockSubscriptionResponse(long RestockSubscriptionId);
 
-public record CreateRestockSubscriptionRequest(long CustomerId, long ProductId, string Email);
+internal record CreateRestockSubscriptionRequest(long CustomerId, long ProductId, string Email);

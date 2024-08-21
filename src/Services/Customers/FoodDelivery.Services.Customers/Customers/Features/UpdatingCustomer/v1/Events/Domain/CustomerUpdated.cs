@@ -1,11 +1,9 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
-using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Read.Mongo;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
 
@@ -15,7 +13,7 @@ namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1
 // https://buildplease.com/pages/vos-in-events/
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
-public record CustomerUpdated(
+internal record CustomerUpdated(
     long Id,
     string FirstName,
     string LastName,
@@ -83,12 +81,12 @@ internal class CustomerUpdatedValidator : AbstractValidator<CustomerUpdated>
     }
 }
 
-internal class CustomerCreatedHandler(ICommandBus commandBus, IMapper mapper) : IDomainEventHandler<CustomerUpdated>
+internal class CustomerCreatedHandler(ICommandBus commandBus) : IDomainEventHandler<CustomerUpdated>
 {
     public Task Handle(CustomerUpdated notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
-        var mongoReadCommand = mapper.Map<UpdateCustomerRead>(notification);
+        var mongoReadCommand = notification.ToUpdateCustomerRead();
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         // Schedule multiple read sides to execute here

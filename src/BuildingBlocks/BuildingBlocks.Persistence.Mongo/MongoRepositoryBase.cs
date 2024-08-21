@@ -123,6 +123,27 @@ public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity
             );
     }
 
+    public async Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
+        IPageRequest pageRequest,
+        Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
+        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default
+    )
+        where TResult : class
+    {
+        return await DbSet
+            .AsQueryable()
+            .ApplyPagingAsync<TEntity, TResult, TSortKey>(
+                pageRequest,
+                _sieveProcessor,
+                projectionFunc,
+                predicate,
+                sortExpression,
+                cancellationToken
+            );
+    }
+
     public Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         Context.AddCommand(async () =>

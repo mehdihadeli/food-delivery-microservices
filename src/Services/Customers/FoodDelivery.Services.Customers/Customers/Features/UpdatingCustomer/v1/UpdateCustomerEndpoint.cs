@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -29,9 +28,9 @@ internal class UpdateCustomerEndpoint : ICommandMinimalEndpoint<UpdateCustomerRe
 
     public async Task<IResult> HandleAsync(UpdateCustomerRequestParameters requestParameters)
     {
-        var (request, id, context, commandBus, mapper, cancellationToken) = requestParameters;
+        var (request, id, context, commandBus, cancellationToken) = requestParameters;
 
-        var command = mapper.Map<UpdateCustomer>(request);
+        var command = request.ToUpdateCustomer();
         command = command with { Id = id };
 
         await commandBus.SendAsync(command, cancellationToken);
@@ -49,7 +48,6 @@ internal record UpdateCustomerRequestParameters(
     [FromRoute] long Id,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<UpdateCustomerRequest>;
 

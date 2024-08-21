@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -39,7 +38,7 @@ internal class CreateCustomerEndpoint
         Results<CreatedAtRoute<CreateCustomerResponse>, UnAuthorizedHttpProblemResult, ValidationProblem>
     > HandleAsync(CreateCustomerRequestParameters requestParameters)
     {
-        var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
+        var (request, context, commandBus, cancellationToken) = requestParameters;
 
         var command = CreateCustomer.Of(request.Email);
 
@@ -61,10 +60,9 @@ internal record CreateCustomerRequestParameters(
     [FromBody] CreateCustomerRequest Request,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<CreateCustomerRequest>;
 
-public record CreateCustomerRequest(string? Email);
+internal record CreateCustomerRequest(string? Email);
 
 public record CreateCustomerResponse(long CustomerId);

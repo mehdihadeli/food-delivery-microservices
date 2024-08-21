@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Paging;
@@ -54,7 +53,7 @@ internal class GetRestockSubscriptionsValidator : AbstractValidator<GetRestockSu
     }
 }
 
-internal class GeRestockSubscriptionsHandler(CustomersReadUnitOfWork customersReadUnitOfWork, IMapper mapper)
+internal class GeRestockSubscriptionsHandler(CustomersReadUnitOfWork customersReadUnitOfWork)
     : IQueryHandler<GetRestockSubscriptions, GetRestockSubscriptionsResult>
 {
     public async Task<GetRestockSubscriptionsResult> Handle(
@@ -62,12 +61,9 @@ internal class GeRestockSubscriptionsHandler(CustomersReadUnitOfWork customersRe
         CancellationToken cancellationToken
     )
     {
-        var restockSubscriptions = await customersReadUnitOfWork.RestockSubscriptionsRepository.GetByPageFilter<
-            RestockSubscriptionDto,
-            DateTime
-        >(
+        var restockSubscriptions = await customersReadUnitOfWork.RestockSubscriptionsRepository.GetByPageFilter(
             query,
-            mapper.ConfigurationProvider,
+            RestockSubscriptionsModuleMapping.ProjectToRestockSubscriptionDto,
             sortExpression: x => x.Created,
             predicate: x =>
                 x.IsDeleted == false

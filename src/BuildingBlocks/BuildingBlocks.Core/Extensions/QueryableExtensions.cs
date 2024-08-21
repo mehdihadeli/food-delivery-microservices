@@ -8,7 +8,7 @@ using Sieve.Services;
 
 namespace BuildingBlocks.Core.Extensions;
 
-// we should not operation related to Ef or Mongo here and we should design as general with IQueryable to work with any providers
+// we should not relate to Ef or Mongo here, and we should design as general with IQueryable to work with any providers
 public static class QueryableExtensions
 {
     public static async Task<IPageList<TEntity>> ApplyPagingAsync<TEntity>(
@@ -30,7 +30,7 @@ public static class QueryableExtensions
         // https://github.com/Biarity/Sieve/issues/34#issuecomment-403817573
         var result = sieveProcessor.Apply(sieveModel, queryable, applyPagination: false);
         var total = result.Count();
-        result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false); // Only
+        result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false);
 
         var items = await result.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
 
@@ -40,8 +40,8 @@ public static class QueryableExtensions
     public static async Task<IPageList<TResult>> ApplyPagingAsync<TEntity, TResult>(
         this IQueryable<TEntity> queryable,
         IPageRequest pageRequest,
-        IConfigurationProvider configurationProvider,
         ISieveProcessor sieveProcessor,
+        IConfigurationProvider configurationProvider,
         CancellationToken cancellationToken
     )
         where TEntity : class
@@ -60,12 +60,72 @@ public static class QueryableExtensions
         var total = result.Count();
         result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false); // Only applies pagination
 
-        var items = await result
-            .ProjectTo<TResult>(configurationProvider)
-            .ToAsyncEnumerable()
-            .ToListAsync(cancellationToken: cancellationToken);
+        var projectedQuery = result.ProjectTo<TResult>(configurationProvider);
+
+        var items = await projectedQuery.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
 
         return PageList<TResult>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
+    }
+
+    public static async Task<IPageList<TResult>> ApplyPagingAsync<TEntity, TResult>(
+        this IQueryable<TEntity> queryable,
+        IPageRequest pageRequest,
+        ISieveProcessor sieveProcessor,
+        Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
+        CancellationToken cancellationToken
+    )
+        where TEntity : class
+        where TResult : class
+    {
+        var sieveModel = new SieveModel
+        {
+            PageSize = pageRequest.PageSize,
+            Page = pageRequest.PageNumber,
+            Sorts = pageRequest.SortOrder,
+            Filters = pageRequest.Filters
+        };
+
+        // https://github.com/Biarity/Sieve/issues/34#issuecomment-403817573
+        var result = sieveProcessor.Apply(sieveModel, queryable, applyPagination: false);
+        var total = result.Count();
+        result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false); // Only applies pagination
+
+        var projectedQuery = projectionFunc(result);
+
+        var items = await projectedQuery.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
+
+        return PageList<TResult>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
+    }
+
+    public static async Task<IPageList<TResult>> ApplyPagingAsync<TEntity, TResult, TSortKey>(
+        this IQueryable<TEntity> collection,
+        IPageRequest pageRequest,
+        ISieveProcessor sieveProcessor,
+        Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
+        CancellationToken cancellationToken = default
+    )
+        where TEntity : class
+        where TResult : class
+    {
+        IQueryable<TEntity> query = collection;
+        if (predicate is not null)
+        {
+            query = query.Where(predicate);
+        }
+
+        if (sortExpression is not null)
+        {
+            query = query.OrderByDescending(sortExpression);
+        }
+
+        return await query.ApplyPagingAsync<TEntity, TResult>(
+            pageRequest,
+            sieveProcessor,
+            projectionFunc,
+            cancellationToken
+        );
     }
 
     public static async Task<IPageList<TResult>> ApplyPagingAsync<TEntity, TResult>(
@@ -124,8 +184,8 @@ public static class QueryableExtensions
 
         return await query.ApplyPagingAsync<TEntity, TResult>(
             pageRequest,
-            configuration,
             sieveProcessor,
+            configuration,
             cancellationToken
         );
     }

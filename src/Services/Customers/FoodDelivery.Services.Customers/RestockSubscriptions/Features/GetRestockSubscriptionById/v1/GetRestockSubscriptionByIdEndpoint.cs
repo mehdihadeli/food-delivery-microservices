@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -48,7 +47,7 @@ internal class GetRestockSubscriptionByIdEndpoint
         >
     > HandleAsync([AsParameters] GetRestockSubscriptionByIdRequestParameters requestParameters)
     {
-        var (id, _, queryProcessor, mapper, cancellationToken) = requestParameters;
+        var (id, _, queryProcessor, cancellationToken) = requestParameters;
         var result = await queryProcessor.SendAsync(GetRestockSubscriptionById.Of(id), cancellationToken);
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
@@ -63,7 +62,6 @@ internal record GetRestockSubscriptionByIdRequestParameters(
     [FromRoute] Guid Id,
     HttpContext HttpContext,
     IQueryBus QueryBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;
 

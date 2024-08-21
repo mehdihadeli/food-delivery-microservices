@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
@@ -47,7 +46,7 @@ internal class GetCustomerByIdEndpointEndpoint
         >
     > HandleAsync([AsParameters] GetCustomerByIdRequestParameters requestParameters)
     {
-        var (id, _, queryProcessor, mapper, cancellationToken) = requestParameters;
+        var (id, _, queryProcessor, cancellationToken) = requestParameters;
         var result = await queryProcessor.SendAsync(GetCustomerById.Of(id), cancellationToken);
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
@@ -62,7 +61,6 @@ internal record GetCustomerByIdRequestParameters(
     [FromRoute] Guid Id,
     HttpContext HttpContext,
     IQueryBus QueryBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;
 

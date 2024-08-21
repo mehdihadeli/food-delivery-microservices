@@ -1,11 +1,9 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
-using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
 
@@ -16,7 +14,7 @@ namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our commands and events, just primitive types
-public record CustomerCreated(
+internal record CustomerCreated(
     long Id,
     string FirstName,
     string LastName,
@@ -100,7 +98,7 @@ internal class CustomerCreatedValidator : AbstractValidator<CustomerCreated>
     }
 }
 
-internal class CustomerCreatedHandler(ICommandBus commandBus, IMapper mapper) : IDomainEventHandler<CustomerCreated>
+internal class CustomerCreatedHandler(ICommandBus commandBus) : IDomainEventHandler<CustomerCreated>
 {
     public Task Handle(CustomerCreated notification, CancellationToken cancellationToken)
     {

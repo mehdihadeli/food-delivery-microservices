@@ -13,7 +13,6 @@ public interface IHttpCommand<TRequest>
     TRequest Request { get; init; }
     HttpContext HttpContext { get; init; }
     ICommandBus CommandBus { get; init; }
-    IMapper Mapper { get; init; }
     CancellationToken CancellationToken { get; init; }
 }
 
@@ -21,6 +20,5 @@ public interface IHttpCommand
 {
     HttpContext HttpContext { get; init; }
     ICommandBus CommandBus { get; init; }
-    IMapper Mapper { get; init; }
     CancellationToken CancellationToken { get; init; }
 }

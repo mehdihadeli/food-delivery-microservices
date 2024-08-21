@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
 using FluentValidation;
@@ -8,7 +7,7 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Applicatio
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GetRestockSubscriptionById.v1;
 
-public record GetRestockSubscriptionById(Guid Id) : IQuery<GetRestockSubscriptionByIdResult>
+internal record GetRestockSubscriptionById(Guid Id) : IQuery<GetRestockSubscriptionByIdResult>
 {
     public static GetRestockSubscriptionById Of(Guid id)
     {
@@ -25,7 +24,7 @@ internal class GetRestockSubscriptionByIdValidator : AbstractValidator<GetRestoc
     }
 }
 
-internal class GetRestockSubscriptionByIdHandler(CustomersReadUnitOfWork unitOfWork, IMapper mapper)
+internal class GetRestockSubscriptionByIdHandler(CustomersReadUnitOfWork unitOfWork)
     : IQueryHandler<GetRestockSubscriptionById, GetRestockSubscriptionByIdResult>
 {
     public async Task<GetRestockSubscriptionByIdResult> Handle(
@@ -45,7 +44,7 @@ internal class GetRestockSubscriptionByIdHandler(CustomersReadUnitOfWork unitOfW
             throw new RestockSubscriptionNotFoundException(query.Id);
         }
 
-        var subscriptionDto = mapper.Map<RestockSubscriptionDto>(restockSubscription);
+        var subscriptionDto = restockSubscription.ToRestockSubscriptionDto();
 
         return new GetRestockSubscriptionByIdResult(subscriptionDto);
     }

@@ -1,15 +1,13 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
-using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
 
-public record CreateCustomerRead(
+internal record CreateCustomerRead(
     long CustomerId,
     Guid IdentityId,
     string Email,

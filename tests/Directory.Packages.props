@@ -5,9 +5,9 @@
     <EnablePackageVersionOverride>true</EnablePackageVersionOverride>
   </PropertyGroup>
   <PropertyGroup>
-    <Version>1.2.4-dev.4</Version>
-    <InformationalVersion>1.2.4-dev.4</InformationalVersion>
-    <ApplicationVersion>1.2.4</ApplicationVersion>
+    <Version>1.2.3</Version>
+    <InformationalVersion>1.2.3</InformationalVersion>
+    <ApplicationVersion>1.2.3</ApplicationVersion>
   </PropertyGroup>
   <PropertyGroup>
     <IsPublishable>false</IsPublishable>

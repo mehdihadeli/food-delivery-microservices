@@ -26,7 +26,7 @@
   <ItemGroup>
     <PackageReference Include="Duende.BFF.Yarp" />
     <PackageReference Include="Serilog.AspNetCore" />
-    <PackageReference Include="Serilog.Sinks.SpectreConsole" />
+    <PackageReference Include="Serilog.Sinks.Spectre" />
     <PackageReference Include="Yarp.ReverseProxy" />
   </ItemGroup>
 

@@ -36,8 +36,6 @@ public static partial class WebApplicationBuilderExtensions
             // Postgres
             builder.Services.AddPostgresDbContext<IdentityContext>(configuration);
 
-            // add migrations and seeders dependencies, or we could add seeders inner each modules
-            builder.Services.TryAddScoped<IDataSeeder, IdentityDataSeeder>();
             builder.Services.TryAddScoped<IMigrationExecutor, IdentityMigrationExecutor>();
         }
 

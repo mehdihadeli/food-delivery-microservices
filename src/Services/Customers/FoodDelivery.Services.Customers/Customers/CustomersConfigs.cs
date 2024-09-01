@@ -1,9 +1,6 @@
 using Asp.Versioning.Builder;
-using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
-using FoodDelivery.Services.Customers.Customers.Data;
 using FoodDelivery.Services.Customers.Shared;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace FoodDelivery.Services.Customers.Customers;
 
@@ -15,8 +12,6 @@ internal class CustomersConfigs : IModuleConfiguration
 
     public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
-        builder.Services.TryAddScoped<IDataSeeder, CustomersDataSeeder>();
-
         //// we could add event mappers manually, also they can find automatically by scanning assemblies
         // builder.Services.TryAddSingleton<IIntegrationEventMapper, CustomersEventMapper>();
         return builder;

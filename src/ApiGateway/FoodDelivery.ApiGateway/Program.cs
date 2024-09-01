@@ -1,21 +1,16 @@
 using System.IdentityModel.Tokens.Jwt;
-using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Logging;
 using MassTransit;
-using Microsoft.IdentityModel.Logging;
 using Serilog;
 using Serilog.Events;
-using Serilog.Sinks.SpectreConsole;
+using Serilog.Sinks.Spectre;
 using Yarp.ReverseProxy.Transforms;
 using MessageHeaders = BuildingBlocks.Core.Messaging.MessageHeaders;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
     .Enrich.FromLogContext()
-    .WriteTo.SpectreConsole(
-        "{Timestamp:HH:mm:ss} [{Level:u4}] {Message:lj}{NewLine}{Exception}",
-        LogEventLevel.Information
-    )
+    .WriteTo.Spectre("{Timestamp:HH:mm:ss} [{Level:u4}] {Message:lj}{NewLine}{Exception}", LogEventLevel.Information)
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);

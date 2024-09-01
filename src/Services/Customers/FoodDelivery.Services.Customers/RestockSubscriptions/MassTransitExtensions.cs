@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Messaging;
+using BuildingBlocks.Integration.MassTransit;
 using FoodDelivery.Services.Shared.Customers.RestockSubscriptions.Events.V1.Integration;
 using Humanizer;
 using MassTransit;
@@ -8,16 +9,18 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions;
 
 internal static class MassTransitExtensions
 {
-    internal static void AddRestockSubscriptionPublishers(this IRabbitMqBusFactoryConfigurator cfg)
+    internal static void ConfigureRestockSubscriptionMessagesTopology(this IRabbitMqBusFactoryConfigurator cfg)
     {
         cfg.Message<IEventEnvelope<RestockSubscriptionCreatedV1>>(e =>
         {
             // we configured some shared settings for all publish message in masstransit publish topologies
 
             // name of the primary exchange
-            e.SetEntityName(
-                $"{nameof(RestockSubscriptionCreatedV1).Underscore()}{MessagingConstants.PrimaryExchangePostfix}"
-            );
+            // https://masstransit.io/documentation/configuration/topology/message
+            // e.SetEntityName(
+            //     $"{nameof(RestockSubscriptionCreatedV1).Underscore()}{MessagingConstants.PrimaryExchangePostfix}"
+            // );
+            e.SetEntityNameFormatter(new CustomEntityNameFormatter<IEventEnvelope<RestockSubscriptionCreatedV1>>());
         });
 
         cfg.Publish<IEventEnvelope<RestockSubscriptionCreatedV1>>(e =>

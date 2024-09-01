@@ -12,14 +12,11 @@ using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests.Customers.Features.GettingCustomerByCustomerId.v1;
 
-public class GetCustomerByCustomerIdTests : CustomerServiceIntegrationTestBase
+public class GetCustomerByCustomerIdTests(
+    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
+    ITestOutputHelper outputHelper
+) : CustomerServiceIntegrationTestBase(sharedFixture, outputHelper)
 {
-    public GetCustomerByCustomerIdTests(
-        SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-        ITestOutputHelper outputHelper
-    )
-        : base(sharedFixture, outputHelper) { }
-
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
     internal async Task can_returns_valid_read_customer_model()

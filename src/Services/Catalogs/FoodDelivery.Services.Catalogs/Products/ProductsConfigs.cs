@@ -20,7 +20,6 @@ internal class ProductsConfigs : IModuleConfiguration
 
     public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
-        builder.Services.TryAddScoped<IDataSeeder, ProductDataSeeder>();
         builder.Services.TryAddSingleton<IEventMapper, ProductEventMapper>();
 
         return builder;
@@ -38,10 +37,10 @@ internal class ProductsConfigs : IModuleConfiguration
         var routeCategoryName = Tag;
         var products = endpoints.NewVersionedApi(name: routeCategoryName).WithTags(Tag);
 
-        // create a new sub group for each version
+        // create a new subgroup for each version
         var productsV1 = products.MapGroup(ProductsPrefixUri).HasDeprecatedApiVersion(0.9).HasApiVersion(1.0);
 
-        // create a new sub group for each version
+        // create a new subgroup for each version
         var productsV2 = products.MapGroup(ProductsPrefixUri).HasApiVersion(2.0);
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-7.0#route-groups

@@ -3,3 +3,4 @@
 
 # dotnet format --verbosity diagnostic
 dotnet csharpier . && git add -A .
+dotnet csharpier --check .

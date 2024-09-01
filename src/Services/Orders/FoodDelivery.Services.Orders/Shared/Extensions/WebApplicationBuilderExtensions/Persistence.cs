@@ -34,8 +34,6 @@ internal static partial class WebApplicationBuilderExtensions
         {
             services.AddPostgresDbContext<OrdersDbContext>(configuration);
 
-            // add migrations and seeders dependencies, or we could add seeders inner each modules
-            services.TryAddScoped<IDataSeeder, OrdersDataSeeder>();
             services.TryAddScoped<IMigrationExecutor, OrdersMigrationExecutor>();
         }
 

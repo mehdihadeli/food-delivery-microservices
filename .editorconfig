@@ -248,6 +248,8 @@ resharper_web_config_module_not_resolved_highlighting = warning
 resharper_web_config_type_not_resolved_highlighting = warning
 resharper_web_config_wrong_module_highlighting = warning
 
+# https://www.jetbrains.com/help/rider/ClassNeverInstantiated.Global.html
+resharper_class_never_instantiated_global_highlighting = none
 
 ##################################################################################
 ## https://github.com/DotNetAnalyzers/StyleCopAnalyzers/tree/master/documentation
@@ -374,6 +376,8 @@ dotnet_diagnostic.sa1101.severity = None
 
 # The keywords within the declaration of an element do not follow a standard ordering scheme.
 dotnet_diagnostic.SA1206.severity = None
+
+dotnet_diagnostic.SA1404.severity = None
 
 ##################################################################################
 ## https://github.com/meziantou/Meziantou.Analyzer/tree/main/docs

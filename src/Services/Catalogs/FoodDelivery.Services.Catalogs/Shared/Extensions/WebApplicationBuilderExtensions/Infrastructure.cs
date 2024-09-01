@@ -100,7 +100,7 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomMassTransit(
             (busRegistrationContext, busFactoryConfigurator) =>
             {
-                busFactoryConfigurator.AddProductPublishers();
+                busFactoryConfigurator.ConfigureProductMessagesTopology();
             }
         );
 

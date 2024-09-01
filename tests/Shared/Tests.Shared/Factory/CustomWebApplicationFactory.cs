@@ -1,5 +1,3 @@
-using System.Reflection;
-using BuildingBlocks.Core.Persistence.Extensions;
 using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Security.Jwt;
 using Microsoft.AspNetCore.Authentication;

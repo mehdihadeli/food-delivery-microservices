@@ -12,6 +12,7 @@ using BuildingBlocks.Core.Reflection.Extensions;
 using Humanizer;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using IExternalEventBus = BuildingBlocks.Abstractions.Messaging.IExternalEventBus;
@@ -20,9 +21,18 @@ namespace BuildingBlocks.Integration.MassTransit;
 
 public static class DependencyInjectionExtensions
 {
+    /// <summary>
+    /// Add Masstransit.
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <param name="configureMessagesTopologies">All configurations related to message topology, publish configuration and recive endpoint configurations.</param>
+    /// <param name="configureBusRegistration"></param>
+    /// <param name="configureMessagingOptions"></param>
+    /// <param name="scanAssemblies"></param>
+    /// <returns></returns>
     public static WebApplicationBuilder AddCustomMassTransit(
         this WebApplicationBuilder builder,
-        Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureReceiveEndpoints = null,
+        Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureMessagesTopologies = null,
         Action<IBusRegistrationConfigurator>? configureBusRegistration = null,
         Action<MessagingOptions>? configureMessagingOptions = null,
         params Assembly[] scanAssemblies
@@ -50,12 +60,21 @@ public static class DependencyInjectionExtensions
 
         void ConfiguratorAction(IBusRegistrationConfigurator busRegistrationConfigurator)
         {
+            // https://masstransit.io/documentation/configuration#health-check-options
+            busRegistrationConfigurator.ConfigureHealthCheckOptions(options =>
+            {
+                options.Name = "masstransit";
+                options.MinimalFailureStatus = HealthStatus.Unhealthy;
+                options.Tags.Add("health");
+            });
+
             configureBusRegistration?.Invoke(busRegistrationConfigurator);
 
             // https://masstransit-project.com/usage/configuration.html#receive-endpoints
             busRegistrationConfigurator.AddConsumers(assemblies);
 
-            // exclude namespace for the messages
+            // https://masstransit.io/documentation/configuration#endpoint-name-formatters
+            // uses by `ConfigureEndpoints` for naming `queues` and `receive endpoint` names
             busRegistrationConfigurator.SetEndpointNameFormatter(new SnakeCaseEndpointNameFormatter(false));
 
             // Ref: https://masstransit-project.com/advanced/topology/rabbitmq.html
@@ -72,11 +91,20 @@ public static class DependencyInjectionExtensions
                 {
                     cfg.UseConsumeFilter(typeof(CorrelationConsumeFilter<>), context);
 
-                    cfg.PublishTopology.BrokerTopologyOptions = PublishBrokerTopologyOptions.FlattenHierarchy;
+                    // https: // github.com/MassTransit/MassTransit/issues/2018
+                    // https://github.com/MassTransit/MassTransit/issues/4831
+                    cfg.Publish<IIntegrationEvent>(p => p.Exclude = true);
+                    cfg.Publish<IntegrationEvent>(p => p.Exclude = true);
+                    cfg.Publish<IMessage>(p => p.Exclude = true);
+                    cfg.Publish<Message>(p => p.Exclude = true);
+                    cfg.Publish<ITxRequest>(p => p.Exclude = true);
+                    cfg.Publish<IEventEnvelope>(p => p.Exclude = true);
 
                     if (messagingOptions.AutoConfigEndpoints)
                     {
-                        // https://masstransit-project.com/usage/consumers.html#consumer
+                        // https://masstransit.io/documentation/configuration#consumer-registration
+                        // https://masstransit.io/documentation/configuration#configure-endpoints
+                        // MassTransit is able to configure receive endpoints for all registered consumer types. Receive endpoint names are generated using an endpoint name formatter
                         cfg.ConfigureEndpoints(context);
                     }
 
@@ -95,31 +123,38 @@ public static class DependencyInjectionExtensions
                     );
 
                     // for setting exchange name for message type as default. masstransit by default uses fully message type name for primary exchange name.
+                    // https://masstransit.io/documentation/configuration/topology/message
                     cfg.MessageTopology.SetEntityNameFormatter(new CustomEntityNameFormatter());
 
                     ApplyMessagesPublishTopology(cfg.PublishTopology, assemblies);
                     ApplyMessagesConsumeTopology(cfg, context, assemblies);
                     ApplyMessagesSendTopology(cfg.SendTopology, assemblies);
 
-                    configureReceiveEndpoints?.Invoke(context, cfg);
+                    configureMessagesTopologies?.Invoke(context, cfg);
 
                     // https://masstransit-project.com/usage/exceptions.html#retry
                     // https://markgossa.com/2022/06/masstransit-exponential-back-off.html
                     cfg.UseMessageRetry(r => AddRetryConfiguration(r));
-
-                    // cfg.UseInMemoryOutbox();
-
-                    // https: // github.com/MassTransit/MassTransit/issues/2018
-                    // https://github.com/MassTransit/MassTransit/issues/4831
-                    cfg.Publish<IIntegrationEvent>(p => p.Exclude = true);
-                    cfg.Publish<IntegrationEvent>(p => p.Exclude = true);
-                    cfg.Publish<IMessage>(p => p.Exclude = true);
-                    cfg.Publish<Message>(p => p.Exclude = true);
-                    cfg.Publish<ITxRequest>(p => p.Exclude = true);
-                    cfg.Publish<IEventEnvelope>(p => p.Exclude = true);
                 }
             );
         }
+
+        builder
+            .Services.AddOptions<MassTransitHostOptions>()
+            .Configure(options =>
+            {
+                options.WaitUntilStarted = true;
+                options.StartTimeout = TimeSpan.FromSeconds(30);
+                options.StopTimeout = TimeSpan.FromSeconds(60);
+            });
+
+        builder
+            .Services.AddOptions<HostOptions>()
+            .Configure(options =>
+            {
+                options.StartupTimeout = TimeSpan.FromSeconds(60);
+                options.ShutdownTimeout = TimeSpan.FromSeconds(60);
+            });
 
         builder.Services.AddTransient<IExternalEventBus, MassTransitBus>();
         builder.Services.AddTransient<IBusDirectPublisher, MasstransitDirectPublisher>();
@@ -150,6 +185,9 @@ public static class DependencyInjectionExtensions
             var eventEnvelopeInterfaceConfigurator = consumeTopology.GetMessageTopology(
                 eventEnvelopeInterfaceMessageType
             );
+
+            // indicate whether the topic or exchange for the message type should be created and subscribed to the queue when consumed on a reception endpoint.
+            // // with setting `ConfigureConsumeTopology` to `false`, we should create `primary exchange` and its bounded exchange manually with using `re.Bind` otherwise with `ConfigureConsumeTopology=true` it get publish topology for message type `T` with `_publishTopology.GetMessageTopology<T>()` and use its ExchangeType and ExchangeName based ofo default EntityFormatter
             eventEnvelopeInterfaceConfigurator.ConfigureConsumeTopology = true;
 
             // none event-envelope message types

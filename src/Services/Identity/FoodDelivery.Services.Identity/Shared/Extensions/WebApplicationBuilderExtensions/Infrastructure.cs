@@ -114,9 +114,9 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomRateLimit();
 
         builder.AddCustomMassTransit(
-            configureReceiveEndpoints: (context, cfg) =>
+            configureMessagesTopologies: (context, cfg) =>
             {
-                cfg.AddUserPublishers();
+                cfg.ConfigureUserMessagesTopology();
             },
             configureMessagingOptions: msgCfg =>
             {

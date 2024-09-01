@@ -1,7 +1,5 @@
-using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
 using FoodDelivery.Services.Catalogs.Categories.Contracts;
-using FoodDelivery.Services.Catalogs.Categories.Data;
 using FoodDelivery.Services.Catalogs.Categories.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -11,7 +9,6 @@ internal class Configs : IModuleConfiguration
 {
     public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
-        builder.Services.TryAddScoped<IDataSeeder, CategoryDataSeeder>();
         builder.Services.TryAddScoped<ICategoryChecker, CategoryChecker>();
 
         return builder;

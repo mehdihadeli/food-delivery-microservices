@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Core.Web.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -15,15 +16,25 @@ public class SeedWorker(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (!webHostEnvironment.IsEnvironment("test"))
+        logger.LogInformation("Seed worker started");
+
+        using var serviceScope = serviceScopeFactory.CreateScope();
+
+        // https://stackoverflow.com/questions/38238043/how-and-where-to-call-database-ensurecreated-and-database-migrate
+        // https://www.michalbialecki.com/2020/07/20/adding-entity-framework-core-5-migrations-to-net-5-project/
+        var testSeeders = serviceScope.ServiceProvider.GetServices<ITestDataSeeder>();
+        var seeders = serviceScope.ServiceProvider.GetServices<IDataSeeder>();
+        if (webHostEnvironment.IsTest())
         {
-            logger.LogInformation("Seed worker started");
-
-            // https://stackoverflow.com/questions/38238043/how-and-where-to-call-database-ensurecreated-and-database-migrate
-            // https://www.michalbialecki.com/2020/07/20/adding-entity-framework-core-5-migrations-to-net-5-project/
-            using var serviceScope = serviceScopeFactory.CreateScope();
-            var seeders = serviceScope.ServiceProvider.GetServices<IDataSeeder>();
-
+            foreach (var testDataSeeder in testSeeders.OrderBy(x => x.Order))
+            {
+                logger.LogInformation("Seeding '{Seed}' started...", testDataSeeder.GetType().Name);
+                await testDataSeeder.SeedAllAsync();
+                logger.LogInformation("Seeding '{Seed}' ended...", testDataSeeder.GetType().Name);
+            }
+        }
+        else
+        {
             foreach (var seeder in seeders.OrderBy(x => x.Order))
             {
                 logger.LogInformation("Seeding '{Seed}' started...", seeder.GetType().Name);
@@ -35,10 +46,7 @@ public class SeedWorker(
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        if (!webHostEnvironment.IsEnvironment("test"))
-        {
-            logger.LogInformation("Seed worker stopped");
-        }
+        logger.LogInformation("Seed worker stopped");
 
         return base.StopAsync(cancellationToken);
     }

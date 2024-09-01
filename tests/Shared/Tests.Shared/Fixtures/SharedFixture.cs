@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Security.Claims;
 using AutoBogus;
 using BuildingBlocks.Abstractions.Commands;
@@ -9,6 +10,7 @@ using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Events;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messaging.MessagePersistence;
+using BuildingBlocks.Core.Persistence.Extensions;
 using BuildingBlocks.Core.Types;
 using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Persistence.EfCore.Postgres;

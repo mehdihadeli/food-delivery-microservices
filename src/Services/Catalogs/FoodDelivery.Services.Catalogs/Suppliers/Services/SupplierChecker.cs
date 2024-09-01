@@ -5,19 +5,12 @@ using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 
 namespace FoodDelivery.Services.Catalogs.Suppliers.Services;
 
-public class SupplierChecker : ISupplierChecker
+public class SupplierChecker(ICatalogDbContext catalogDbContext) : ISupplierChecker
 {
-    private readonly ICatalogDbContext _catalogDbContext;
-
-    public SupplierChecker(ICatalogDbContext catalogDbContext)
-    {
-        _catalogDbContext = catalogDbContext;
-    }
-
     public bool SupplierExists(SupplierId supplierId)
     {
         supplierId.NotBeNull();
-        var category = _catalogDbContext.FindSupplierById(supplierId);
+        var category = catalogDbContext.FindSupplierById(supplierId);
 
         return category is not null;
     }

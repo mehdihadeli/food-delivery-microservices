@@ -9,14 +9,11 @@ using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests.Customers.Features.GettingCustomers.v1;
 
-public class GetCustomersTests : CustomerServiceIntegrationTestBase
+public class GetCustomersTests(
+    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
+    ITestOutputHelper outputHelper
+) : CustomerServiceIntegrationTestBase(sharedFixture, outputHelper)
 {
-    public GetCustomersTests(
-        SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-        ITestOutputHelper outputHelper
-    )
-        : base(sharedFixture, outputHelper) { }
-
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
     internal async Task can_get_existing_customers_list_from_db()

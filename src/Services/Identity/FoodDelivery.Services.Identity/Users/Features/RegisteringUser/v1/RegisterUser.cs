@@ -68,8 +68,8 @@ internal class RegisterUserValidator : AbstractValidator<RegisterUser>
             .WithMessage("Phone Number is required.")
             .MinimumLength(7)
             .WithMessage("PhoneNumber must not be less than 7 characters.")
-            .MaximumLength(15)
-            .WithMessage("PhoneNumber must not exceed 15 characters.");
+            .MaximumLength(20)
+            .WithMessage("PhoneNumber must not exceed 20 characters.");
         RuleFor(v => v.ConfirmPassword)
             .Equal(x => x.Password)
             .WithMessage("The password and confirmation password do not match.")

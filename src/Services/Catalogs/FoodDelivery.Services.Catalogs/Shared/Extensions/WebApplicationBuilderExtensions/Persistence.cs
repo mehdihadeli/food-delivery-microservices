@@ -36,8 +36,6 @@ public static partial class WebApplicationBuilderExtensions
         {
             services.AddPostgresDbContext<CatalogDbContext>(configuration);
 
-            // add migrations and seeders dependencies, or we could add seeders inner each modules
-            services.TryAddScoped<IDataSeeder, CatalogsDataSeeder>();
             services.TryAddScoped<IMigrationExecutor, CatalogsMigrationExecutor>();
         }
 

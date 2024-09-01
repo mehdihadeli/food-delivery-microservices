@@ -1,7 +1,5 @@
-using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Web.Module;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
-using FoodDelivery.Services.Catalogs.Brands.Data;
 using FoodDelivery.Services.Catalogs.Brands.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -11,7 +9,6 @@ internal class Configs : IModuleConfiguration
 {
     public WebApplicationBuilder AddModuleServices(WebApplicationBuilder builder)
     {
-        builder.Services.TryAddScoped<IDataSeeder, BrandDataSeeder>();
         builder.Services.TryAddScoped<IBrandChecker, BrandChecker>();
 
         return builder;

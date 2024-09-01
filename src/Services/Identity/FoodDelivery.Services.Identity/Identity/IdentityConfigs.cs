@@ -28,8 +28,6 @@ internal class IdentityConfigs : IModuleConfiguration
     {
         builder.AddCustomIdentity(builder.Configuration);
 
-        builder.Services.TryAddScoped<IDataSeeder, IdentityDataSeeder>();
-
         if (builder.Environment.IsTest() == false)
             builder.AddCustomIdentityServer();
 

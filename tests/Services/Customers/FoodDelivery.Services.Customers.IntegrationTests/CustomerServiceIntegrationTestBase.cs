@@ -74,10 +74,4 @@ public class CustomerServiceIntegrationTestBase
         // identityApiOptions.Value.BaseApiAddress = MockServersFixture.IdentityServiceMock.Url!;
         // catalogApiOptions.Value.BaseApiAddress = MockServersFixture.CatalogsServiceMock.Url!;
     }
-
-    protected override void RegisterTestConfigureServices(IServiceCollection services)
-    {
-        //// here we use same data seeder of service but if we need different data seeder for test for can replace it
-        // services.ReplaceScoped<IDataSeeder, CustomersTestDataSeeder>();
-    }
 }

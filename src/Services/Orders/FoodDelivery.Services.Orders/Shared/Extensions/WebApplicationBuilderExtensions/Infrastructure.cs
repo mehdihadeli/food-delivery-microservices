@@ -134,7 +134,7 @@ internal static partial class WebApplicationBuilderExtensions
         });
 
         builder.AddCustomMassTransit(
-            configureReceiveEndpoints: (context, cfg) =>
+            configureMessagesTopologies: (context, cfg) =>
             {
                 cfg.AddCustomerEndpoints(context);
             },

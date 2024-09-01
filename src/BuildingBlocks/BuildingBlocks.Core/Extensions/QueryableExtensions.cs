@@ -3,6 +3,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Core.Paging;
+using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
 using Sieve.Services;
 
@@ -29,10 +30,13 @@ public static class QueryableExtensions
 
         // https://github.com/Biarity/Sieve/issues/34#issuecomment-403817573
         var result = sieveProcessor.Apply(sieveModel, queryable, applyPagination: false);
+#pragma warning disable AsyncFixer02
+        // The provider for the source 'IQueryable' doesn't implement 'IAsyncQueryProvider'. Only providers that implement 'IAsyncQueryProvider' can be used for Entity Framework asynchronous operations.
         var total = result.Count();
+#pragma warning restore AsyncFixer02
         result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false);
 
-        var items = await result.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
+        var items = await result.AsNoTracking().ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
 
         return PageList<TEntity>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
     }
@@ -57,12 +61,18 @@ public static class QueryableExtensions
 
         // https://github.com/Biarity/Sieve/issues/34#issuecomment-403817573
         var result = sieveProcessor.Apply(sieveModel, queryable, applyPagination: false);
+#pragma warning disable AsyncFixer02
+        // The provider for the source 'IQueryable' doesn't implement 'IAsyncQueryProvider'. Only providers that implement 'IAsyncQueryProvider' can be used for Entity Framework asynchronous operations.
         var total = result.Count();
+#pragma warning restore AsyncFixer02
         result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false); // Only applies pagination
 
         var projectedQuery = result.ProjectTo<TResult>(configurationProvider);
 
-        var items = await projectedQuery.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
+        var items = await projectedQuery
+            .AsNoTracking()
+            .ToAsyncEnumerable()
+            .ToListAsync(cancellationToken: cancellationToken);
 
         return PageList<TResult>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
     }
@@ -87,12 +97,18 @@ public static class QueryableExtensions
 
         // https://github.com/Biarity/Sieve/issues/34#issuecomment-403817573
         var result = sieveProcessor.Apply(sieveModel, queryable, applyPagination: false);
+#pragma warning disable AsyncFixer02
+        // The provider for the source 'IQueryable' doesn't implement 'IAsyncQueryProvider'. Only providers that implement 'IAsyncQueryProvider' can be used for Entity Framework asynchronous operations.
         var total = result.Count();
+#pragma warning restore AsyncFixer02
         result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false); // Only applies pagination
 
         var projectedQuery = projectionFunc(result);
 
-        var items = await projectedQuery.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
+        var items = await projectedQuery
+            .AsNoTracking()
+            .ToAsyncEnumerable()
+            .ToListAsync(cancellationToken: cancellationToken);
 
         return PageList<TResult>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
     }
@@ -120,12 +136,7 @@ public static class QueryableExtensions
             query = query.OrderByDescending(sortExpression);
         }
 
-        return await query.ApplyPagingAsync<TEntity, TResult>(
-            pageRequest,
-            sieveProcessor,
-            projectionFunc,
-            cancellationToken
-        );
+        return await query.ApplyPagingAsync(pageRequest, sieveProcessor, projectionFunc, cancellationToken);
     }
 
     public static async Task<IPageList<TResult>> ApplyPagingAsync<TEntity, TResult>(
@@ -148,11 +159,15 @@ public static class QueryableExtensions
 
         // https://github.com/Biarity/Sieve/issues/34#issuecomment-403817573
         var result = sieveProcessor.Apply(sieveModel, queryable, applyPagination: false);
+#pragma warning disable AsyncFixer02
+        // The provider for the source 'IQueryable' doesn't implement 'IAsyncQueryProvider'. Only providers that implement 'IAsyncQueryProvider' can be used for Entity Framework asynchronous operations.
         var total = result.Count();
+#pragma warning restore AsyncFixer02
         result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false); // Only applies pagination
 
         var items = await result
             .Select(x => map(x))
+            .AsNoTracking()
             .ToAsyncEnumerable()
             .ToListAsync(cancellationToken: cancellationToken);
 

@@ -136,13 +136,13 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomRateLimit();
 
         builder.AddCustomMassTransit(
-            configureReceiveEndpoints: (context, cfg) =>
+            configureMessagesTopologies: (context, cfg) =>
             {
-                cfg.AddUsersEndpoints(context);
-                cfg.AddProductEndpoints(context);
+                cfg.ConfigureUsersMessagesTopology(context);
+                cfg.ConfigureProductMessagesTopology(context);
 
-                cfg.AddCustomerPublishers();
-                cfg.AddRestockSubscriptionPublishers();
+                cfg.ConfigureCustomerMessagesTopology();
+                cfg.ConfigureRestockSubscriptionMessagesTopology();
             },
             configureMessagingOptions: msgCfg =>
             {

@@ -2,18 +2,18 @@ using BuildingBlocks.Abstractions.Persistence;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace FoodDelivery.Services.Identity.Identity.Data;
+namespace FoodDelivery.Services.Identity.IntegrationTests;
 
-public class IdentityDataSeeder(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
-    : IDataSeeder
+public class IdentityTestSeeder(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+    : ITestDataSeeder
 {
+    public int Order => 1;
+
     public async Task SeedAllAsync()
     {
         await SeedRoles();
         await SeedUsers();
     }
-
-    public int Order => 1;
 
     private async Task SeedRoles()
     {
@@ -40,22 +40,6 @@ public class IdentityDataSeeder(UserManager<ApplicationUser> userManager, RoleMa
 
             if (result.Succeeded)
                 await userManager.AddToRoleAsync(user, ApplicationRole.Admin.Name);
-        }
-
-        if (await userManager.FindByEmailAsync("mehdi2@test.com") == null)
-        {
-            var user = new ApplicationUser
-            {
-                UserName = "mehdi2",
-                FirstName = "Mehdi",
-                LastName = "Test",
-                Email = "mehdi2@test.com"
-            };
-
-            var result = await userManager.CreateAsync(user, "123456");
-
-            if (result.Succeeded)
-                await userManager.AddToRoleAsync(user, ApplicationRole.User.Name);
         }
     }
 }

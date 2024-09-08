@@ -1,3 +1,3 @@
 namespace FoodDelivery.Services.Customers.Api;
 
-public class CustomersApiMetadata { }
+public class CustomersApiMetadata;

@@ -10,7 +10,7 @@ namespace FoodDelivery.Services.Identity.Identity.Features.GeneratingRefreshToke
 
 internal record GenerateRefreshToken(Guid UserId, string? Token = null) : ICommand<GenerateRefreshTokenResult>
 {
-    public static GenerateRefreshToken Of(Guid userId, string? token = null) => new(userId.NotBeEmpty(), token);
+    public static GenerateRefreshToken Of(Guid userId, string? token = null) => new(userId.NotBeInvalid(), token);
 }
 
 internal class GenerateRefreshTokenHandler(IdentityContext context)

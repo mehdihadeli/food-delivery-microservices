@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Domain.ValueObjects;
+using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Validation.Extensions;
@@ -58,6 +59,8 @@ internal class CreateCustomerHandler(
             throw new CustomerAlreadyExistsException($"Customer with email '{command.Email}' already exists.");
 
         var identityUser = await identityApiClient.GetUserByEmailAsync(command.Email, cancellationToken);
+        if (identityUser is null)
+            throw new NotFoundAppException($"user with email {command.Email} not found.");
 
         var customer = Customer.Create(
             CustomerId.Of(command.Id),

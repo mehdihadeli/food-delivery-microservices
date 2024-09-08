@@ -1,4 +1,5 @@
 using BuildingBlocks.Core.Extensions.ServiceCollection;
+using BuildingBlocks.Core.Web;
 using FoodDelivery.Services.Catalogs.Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -15,7 +16,7 @@ public class DependencyTests
     {
         var factory = new WebApplicationFactory<CatalogsApiMetadata>().WithWebHostBuilder(webHostBuilder =>
         {
-            webHostBuilder.UseEnvironment("test");
+            webHostBuilder.UseEnvironment(Environments.DependencyTest);
 
             webHostBuilder.ConfigureTestServices(services =>
             {

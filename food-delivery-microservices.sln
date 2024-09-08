@@ -542,6 +542,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodDelivery.Services.Ident
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodDelivery.Services.Identity.TestShared", "tests\Services\Identity\FoodDelivery.Services.Identity.TestShared\FoodDelivery.Services.Identity.TestShared.csproj", "{D12A7726-3B12-4CCD-A3F4-4ABDD28BD44C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodDelivery.Services.Identity.DependencyTests", "tests\Services\Identity\FoodDelivery.Services.Identity.DependencyTests\FoodDelivery.Services.Identity.DependencyTests.csproj", "{12AB9357-D6EE-404A-AADB-7D31BBFAFCD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -812,6 +814,10 @@ Global
 		{D12A7726-3B12-4CCD-A3F4-4ABDD28BD44C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D12A7726-3B12-4CCD-A3F4-4ABDD28BD44C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D12A7726-3B12-4CCD-A3F4-4ABDD28BD44C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12AB9357-D6EE-404A-AADB-7D31BBFAFCD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12AB9357-D6EE-404A-AADB-7D31BBFAFCD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12AB9357-D6EE-404A-AADB-7D31BBFAFCD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12AB9357-D6EE-404A-AADB-7D31BBFAFCD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -968,6 +974,7 @@ Global
 		{D9A193CB-020A-4367-A954-6D4EDAD9E327} = {A9B8E9D0-8E3C-4495-B8FE-CBBAE3D46E62}
 		{84A67508-47F8-41D8-95D8-3493FF35554A} = {A9B8E9D0-8E3C-4495-B8FE-CBBAE3D46E62}
 		{D12A7726-3B12-4CCD-A3F4-4ABDD28BD44C} = {A9B8E9D0-8E3C-4495-B8FE-CBBAE3D46E62}
+		{12AB9357-D6EE-404A-AADB-7D31BBFAFCD7} = {A9B8E9D0-8E3C-4495-B8FE-CBBAE3D46E62}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD0585D6-CBA4-4818-86D8-0D914F18E390}

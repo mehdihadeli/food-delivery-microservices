@@ -32,8 +32,12 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
     public async Task can_update_customer_read_with_valid_inputs()
     {
         // Arrange
-        var fakeUpdateCustomerReadCommand = new FakeUpdateCustomerRead().Generate();
         var existCustomer = new FakeCustomerReadModel().Generate();
+        var fakeUpdateCustomerReadCommand = new FakeUpdateCustomerRead(
+            existCustomer.Id,
+            existCustomer.CustomerId,
+            existCustomer.IdentityId
+        ).Generate();
         var updateCustomer = fakeUpdateCustomerReadCommand.ToCustomer();
 
         _customersReadUnitOfWork
@@ -71,7 +75,7 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
     public async Task must_throw_not_found_exception_when_customer_not_exist()
     {
         // Arrange
-        var fakeUpdateCustomerReadCommand = new FakeUpdateCustomerRead().Generate();
+        var fakeUpdateCustomerReadCommand = new FakeUpdateCustomerRead(Guid.NewGuid(), 230, Guid.NewGuid()).Generate();
 
         _customersReadUnitOfWork
             .CustomersRepository.FindOneAsync(Arg.Any<Expression<Func<Customer, bool>>>(), Arg.Any<CancellationToken>())

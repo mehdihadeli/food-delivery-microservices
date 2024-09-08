@@ -12,7 +12,7 @@ namespace FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
 
 internal record GetUserById(Guid Id) : IQuery<GetUserByIdResult>
 {
-    public static GetUserById Of(Guid id) => new GetUserById(id.NotBeEmpty());
+    public static GetUserById Of(Guid id) => new GetUserById(id.NotBeInvalid());
 }
 
 internal class GetUserByIdValidator : AbstractValidator<GetUserById>

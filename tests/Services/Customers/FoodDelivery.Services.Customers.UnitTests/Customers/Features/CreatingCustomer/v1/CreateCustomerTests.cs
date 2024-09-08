@@ -81,7 +81,7 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
         // Assert
         //https://fluentassertions.com/exceptions/
         await act.Should()
-            .ThrowAsync<HttpResponseException>()
+            .ThrowAsync<NotFoundAppException>()
             .WithMessage("*")
             .Where(e => e.StatusCode == StatusCodes.Status404NotFound);
     }
@@ -100,7 +100,7 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
         };
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentNullException>();
+        await act.Should().ThrowAsync<ValidationException>();
     }
 
     [CategoryTrait(TestCategory.Unit)]

@@ -14,5 +14,5 @@ public record UserStateUpdated(Guid UserId, UserState OldUserState, UserState Ne
     /// <param name="newUserState"></param>
     /// <returns></returns>
     public static UserStateUpdated Of(Guid userId, UserState oldUserState, UserState newUserState) =>
-        new(userId.NotBeEmpty(), oldUserState, newUserState);
+        new(userId.NotBeInvalid(), oldUserState, newUserState);
 }

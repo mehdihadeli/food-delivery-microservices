@@ -88,7 +88,7 @@ internal class UpdateCustomerReadHandler(ICustomersReadUnitOfWork customersReadU
         command.NotBeNull();
 
         var existingCustomer = await customersReadUnitOfWork.CustomersRepository.FindOneAsync(
-            x => x.CustomerId == command.CustomerId,
+            x => x.CustomerId == command.CustomerId && x.Id == command.Id && x.IdentityId == command.IdentityId,
             cancellationToken
         );
 
@@ -97,9 +97,9 @@ internal class UpdateCustomerReadHandler(ICustomersReadUnitOfWork customersReadU
             throw new CustomerNotFoundException(command.CustomerId);
         }
 
-        command.ToCustomer(existingCustomer);
+        var updatedCustomer = command.ToCustomer();
 
-        await customersReadUnitOfWork.CustomersRepository.UpdateAsync(existingCustomer, cancellationToken);
+        await customersReadUnitOfWork.CustomersRepository.UpdateAsync(updatedCustomer, cancellationToken);
 
         await customersReadUnitOfWork.CommitAsync(cancellationToken);
     }

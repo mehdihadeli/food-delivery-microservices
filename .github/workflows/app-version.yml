@@ -1,157 +1,157 @@
-name: Update App Version
-
-on:
-  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
-  # https://github.com/peter-evans/create-pull-request/issues/1608
-  schedule:
-    - cron: '0 0 * * *' # run at midnight every day
-
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'info'
-        type: choice
-        options:
-          - info
-          - warning
-          - debug
-
-jobs:
-  update-main-version:
-    runs-on: ubuntu-latest
-
-    permissions:
-      pull-requests: write # app-version pull request
-      contents: write
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-        with:
-          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
-          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
-          fetch-depth: 0
-          ref: 'main'
-      - run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-
-      - name: Application Version
-        id: app-version-step
-        shell: bash
-        if: success()
-        # https://gist.github.com/rponte/fdc0724dd984088606b0
-        # https://linuxhint.com/bash_if_else_examples/
-        # https://github.com/semantic-release/semantic-release/issues/2703
-        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
-        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
-        # environment variable available to any 'subsequent steps' (not in the current step that is set) in a workflow job by defining or updating the environment variable and writing this to the GITHUB_ENV environment file
-        run: |
-            LATEST_TAG=$(git describe --abbrev=0 --tags --exclude "*dev*" --exclude "*beta*" --exclude "*preview*" --exclude "*ops*" | sed 's/^v//')
-            echo "latest tag for main branch is: $LATEST_TAG"
-            echo "APP_VERSION=$LATEST_TAG" >> "$GITHUB_ENV"
-            echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
-            ./update-version.sh "$LATEST_TAG"
-
-      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
-      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md
-      # https://github.com/peter-evans/create-pull-request/issues/1608
-      - name: Create Update Version Pull Request
-        uses: peter-evans/create-pull-request@v4
-        if: success()
-        with:
-          author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-          commit-message: "chore: ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
-          title: "chore: ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          delete-branch: true
-          # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch
-          # branch-suffix: timestamp
-          assignees: mehdihadeli
-          reviewers: mehdihadeli
-          branch: upgrade-app-version-${{ env.APP_VERSION }}
-          labels: |
-            chore
-          # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
-          add-paths: |
-            *.Packages.props
-
-  update-develop-version:
-    runs-on: ubuntu-latest
-
-    permissions:
-      pull-requests: write # app-version pull request
-      contents: write
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-        with:
-          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
-          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
-          fetch-depth: 0
-          ref: 'develop'
-      - run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-
-      - name: Application Version
-        id: app-version-step
-        shell: bash
-        if: success()
-        # https://gist.github.com/rponte/fdc0724dd984088606b0
-        # https://linuxhint.com/bash_if_else_examples/
-        # https://github.com/semantic-release/semantic-release/issues/2703
-        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
-        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
-        # environment variable available to any 'subsequent steps' (not in the current step that is set) in a workflow job by defining or updating the environment variable and writing this to the GITHUB_ENV environment file
-        run: |
-          LATEST_TAG=$(git describe --abbrev=0 --tags --match "*dev*" | sed 's/^v//')
-          echo "latest tag for develop branch is: $LATEST_TAG"
-          echo "APP_VERSION=$LATEST_TAG" >> "$GITHUB_ENV"
-          echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
-          ./update-version.sh "$LATEST_TAG"
-
-      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
-      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md
-      # https://github.com/peter-evans/create-pull-request/issues/1608
-      - name: Create Update Version Pull Request
-        uses: peter-evans/create-pull-request@v4
-        if: success()
-        with:
-          author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-          commit-message: "chore: ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
-          title: "chore: ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          delete-branch: true
-          # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch
-          # branch-suffix: timestamp
-          assignees: mehdihadeli
-          reviewers: mehdihadeli
-          branch: upgrade-app-version-${{ env.APP_VERSION }}
-          labels: |
-            chore
-          # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
-          add-paths: |
-            *.Packages.props
-
-#      # we could create a temporary personal token for push app version in a commit directly with this plugin: https://github.com/peter-murray/workflow-application-token-action
-
-#      # https://github.com/semantic-release/semantic-release/discussions/2557
-#      # https://github.com/semantic-release/github/issues/175
-#      # this needs a PAT with write permission without doing pull request
-#    - name: Commit Updated Application Version File
-#      uses: stefanzweifel/git-auto-commit-action@v4
-#      if: ${{ success() }}
-#      with:
-#        commit_message: 'chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]'
-#        file_pattern: '**/Directory.Packages.props'
-#        disable_globbing: true
-#        # https://github.com/stefanzweifel/git-auto-commit-action#usage
-#        commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com> # defaults to author of the commit that triggered the run
-#        commit_user_name: github-actions[bot] # defaults to "github-actions[bot]"
-#        commit_user_email: github-actions[bot]@users.noreply.github.com # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
-
-
+#name: Update App Version
+#
+#on:
+#  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+#  # https://github.com/peter-evans/create-pull-request/issues/1608
+#  schedule:
+#    - cron: '0 0 * * *' # run at midnight every day
+#
+#  workflow_dispatch:
+#    inputs:
+#      logLevel:
+#        description: 'Log level'
+#        required: true
+#        default: 'info'
+#        type: choice
+#        options:
+#          - info
+#          - warning
+#          - debug
+#
+#jobs:
+#  update-main-version:
+#    runs-on: ubuntu-latest
+#
+#    permissions:
+#      pull-requests: write # app-version pull request
+#      contents: write
+#
+#    steps:
+#      - name: Check out code
+#        uses: actions/checkout@v3
+#        with:
+#          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+#          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
+#          fetch-depth: 0
+#          ref: 'main'
+#      - run: |
+#          git config user.name 'github-actions[bot]'
+#          git config user.email 'github-actions[bot]@users.noreply.github.com'
+#
+#      - name: Application Version
+#        id: app-version-step
+#        shell: bash
+#        if: success()
+#        # https://gist.github.com/rponte/fdc0724dd984088606b0
+#        # https://linuxhint.com/bash_if_else_examples/
+#        # https://github.com/semantic-release/semantic-release/issues/2703
+#        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
+#        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
+#        # environment variable available to any 'subsequent steps' (not in the current step that is set) in a workflow job by defining or updating the environment variable and writing this to the GITHUB_ENV environment file
+#        run: |
+#            LATEST_TAG=$(git describe --abbrev=0 --tags --exclude "*dev*" --exclude "*beta*" --exclude "*preview*" --exclude "*ops*" | sed 's/^v//')
+#            echo "latest tag for main branch is: $LATEST_TAG"
+#            echo "APP_VERSION=$LATEST_TAG" >> "$GITHUB_ENV"
+#            echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+#            ./update-version.sh "$LATEST_TAG"
+#
+#      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
+#      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md
+#      # https://github.com/peter-evans/create-pull-request/issues/1608
+#      - name: Create Update Version Pull Request
+#        uses: peter-evans/create-pull-request@v4
+#        if: success()
+#        with:
+#          author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+#          commit-message: "chore: ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
+#          title: "chore: ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          delete-branch: true
+#          # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch
+#          # branch-suffix: timestamp
+#          assignees: mehdihadeli
+#          reviewers: mehdihadeli
+#          branch: upgrade-app-version-${{ env.APP_VERSION }}
+#          labels: |
+#            chore
+#          # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
+#          add-paths: |
+#            *.Packages.props
+#
+#  update-develop-version:
+#    runs-on: ubuntu-latest
+#
+#    permissions:
+#      pull-requests: write # app-version pull request
+#      contents: write
+#
+#    steps:
+#      - name: Check out code
+#        uses: actions/checkout@v3
+#        with:
+#          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+#          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
+#          fetch-depth: 0
+#          ref: 'develop'
+#      - run: |
+#          git config user.name 'github-actions[bot]'
+#          git config user.email 'github-actions[bot]@users.noreply.github.com'
+#
+#      - name: Application Version
+#        id: app-version-step
+#        shell: bash
+#        if: success()
+#        # https://gist.github.com/rponte/fdc0724dd984088606b0
+#        # https://linuxhint.com/bash_if_else_examples/
+#        # https://github.com/semantic-release/semantic-release/issues/2703
+#        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
+#        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
+#        # environment variable available to any 'subsequent steps' (not in the current step that is set) in a workflow job by defining or updating the environment variable and writing this to the GITHUB_ENV environment file
+#        run: |
+#          LATEST_TAG=$(git describe --abbrev=0 --tags --match "*dev*" | sed 's/^v//')
+#          echo "latest tag for develop branch is: $LATEST_TAG"
+#          echo "APP_VERSION=$LATEST_TAG" >> "$GITHUB_ENV"
+#          echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+#          ./update-version.sh "$LATEST_TAG"
+#
+#      # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md
+#      # https://github.com/peter-evans/create-pull-request/blob/main/docs/examples.md
+#      # https://github.com/peter-evans/create-pull-request/issues/1608
+#      - name: Create Update Version Pull Request
+#        uses: peter-evans/create-pull-request@v4
+#        if: success()
+#        with:
+#          author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+#          commit-message: "chore: ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
+#          title: "chore: ⬆️ upgrading application version to: ${{ steps.app-version-step.outputs.app-version }} [skip ci]"
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          delete-branch: true
+#          # https://github.com/peter-evans/create-pull-request#alternative-strategy---always-create-a-new-pull-request-branch
+#          # branch-suffix: timestamp
+#          assignees: mehdihadeli
+#          reviewers: mehdihadeli
+#          branch: upgrade-app-version-${{ env.APP_VERSION }}
+#          labels: |
+#            chore
+#          # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
+#          add-paths: |
+#            *.Packages.props
+#
+##      # we could create a temporary personal token for push app version in a commit directly with this plugin: https://github.com/peter-murray/workflow-application-token-action
+#
+##      # https://github.com/semantic-release/semantic-release/discussions/2557
+##      # https://github.com/semantic-release/github/issues/175
+##      # this needs a PAT with write permission without doing pull request
+##    - name: Commit Updated Application Version File
+##      uses: stefanzweifel/git-auto-commit-action@v4
+##      if: ${{ success() }}
+##      with:
+##        commit_message: 'chore(release): ⬆️ upgrading application version to: ${{ steps.semantic-version.outputs.semantic_nextRelease_version }} [skip ci]'
+##        file_pattern: '**/Directory.Packages.props'
+##        disable_globbing: true
+##        # https://github.com/stefanzweifel/git-auto-commit-action#usage
+##        commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com> # defaults to author of the commit that triggered the run
+##        commit_user_name: github-actions[bot] # defaults to "github-actions[bot]"
+##        commit_user_email: github-actions[bot]@users.noreply.github.com # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
+#
+#

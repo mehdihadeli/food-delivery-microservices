@@ -41,7 +41,7 @@ internal record RestockSubscriptionCreated(
         customerId.NotBeNegativeOrZero();
         productName.NotBeNullOrWhiteSpace();
         email.NotBeNullOrWhiteSpace();
-        created.NotBeEmpty();
+        created.NotBeInvalid();
 
         return new RestockSubscriptionCreated(id, productId, customerId, productName, email, created, processed);
     }

@@ -19,6 +19,8 @@ namespace BuildingBlocks.HealthCheck;
 // https://github.com/prometheus-net/prometheus-net
 public static class DependencyInjectionExtensions
 {
+    private static readonly string[] _defaultTags = ["live", "ready",];
+
     public static WebApplicationBuilder AddCustomHealthCheck(
         this WebApplicationBuilder builder,
         Action<IHealthChecksBuilder>? healthChecksBuilder = null,
@@ -38,10 +40,24 @@ public static class DependencyInjectionExtensions
 
         var healCheckBuilder = builder
             .Services.AddHealthChecks()
-            .AddDiskStorageHealthCheck(_ => { }, tags: new[] { "live", "ready" })
-            .AddPingHealthCheck(_ => { }, tags: new[] { "live", "ready" })
-            .AddPrivateMemoryHealthCheck(512 * 1024 * 1024, tags: new[] { "live", "ready" })
-            .AddDnsResolveHealthCheck(_ => { }, tags: new[] { "live", "ready" })
+            .AddDiskStorageHealthCheck(_ => { }, tags: _defaultTags)
+            .AddPingHealthCheck(_ => { }, tags: _defaultTags)
+            .AddPrivateMemoryHealthCheck(512 * 1024 * 1024, tags: _defaultTags)
+            .AddDnsResolveHealthCheck(_ => { }, tags: _defaultTags)
+            .AddResourceUtilizationHealthCheck(o =>
+            {
+                o.CpuThresholds = new ResourceUsageThresholds
+                {
+                    DegradedUtilizationPercentage = 80,
+                    UnhealthyUtilizationPercentage = 90,
+                };
+                o.MemoryThresholds = new ResourceUsageThresholds
+                {
+                    DegradedUtilizationPercentage = 80,
+                    UnhealthyUtilizationPercentage = 90,
+                };
+                o.SamplingWindow = TimeSpan.FromSeconds(5);
+            })
             .ForwardToPrometheus();
 
         healthChecksBuilder?.Invoke(healCheckBuilder);

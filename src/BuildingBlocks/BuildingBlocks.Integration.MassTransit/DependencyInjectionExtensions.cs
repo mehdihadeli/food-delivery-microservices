@@ -9,6 +9,7 @@ using BuildingBlocks.Core.Extensions.ServiceCollection;
 using BuildingBlocks.Core.Messaging;
 using BuildingBlocks.Core.Reflection;
 using BuildingBlocks.Core.Reflection.Extensions;
+using BuildingBlocks.Core.Web.Extensions;
 using Humanizer;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
@@ -49,7 +50,7 @@ public static class DependencyInjectionExtensions
                 ? scanAssemblies
                 : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).ToArray();
 
-        if (!builder.Environment.IsEnvironment("test"))
+        if (!builder.Environment.IsTest())
         {
             builder.Services.AddMassTransit(ConfiguratorAction);
         }

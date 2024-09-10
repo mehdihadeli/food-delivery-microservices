@@ -1,7 +1,5 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Web.Problem;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
-using BuildingBlocks.Core.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Scrutor;
@@ -17,10 +15,7 @@ public static class DependencyInjectionExtensions
         params Assembly[] scanAssemblies
     )
     {
-        var assemblies =
-            scanAssemblies.Length != 0
-                ? scanAssemblies
-                : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).Distinct().ToArray();
+        var assemblies = scanAssemblies.Length != 0 ? scanAssemblies : [Assembly.GetCallingAssembly()];
 
         services.AddProblemDetails(configure);
         services.Replace(ServiceDescriptor.Singleton<IProblemDetailsService, ProblemDetailsService>());

@@ -4,7 +4,8 @@
   "description": "food-delivery-microservices",
   "scripts": {
     "prepare": "husky && dotnet tool restore",
-    "install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
+    "install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg",
+	"upgrade-packages": "dotnet outdated food-delivery-microservices.sln"
   },
   "repository": {
     "type": "git",

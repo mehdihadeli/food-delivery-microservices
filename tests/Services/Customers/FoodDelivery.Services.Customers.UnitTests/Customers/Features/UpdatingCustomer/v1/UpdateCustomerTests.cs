@@ -1,3 +1,4 @@
+using BuildingBlocks.Core.Exception.Types;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
@@ -51,7 +52,7 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
         };
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentNullException>();
+        await act.Should().ThrowAsync<ValidationException>();
     }
 
     [CategoryTrait(TestCategory.Unit)]

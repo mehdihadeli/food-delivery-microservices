@@ -1,7 +1,6 @@
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
-using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
 using Tests.Shared.XunitCategories;
 
@@ -28,7 +27,10 @@ public class CustomerTests
                 customerInput.Email,
                 customerInput.PhoneNumber,
                 customerInput.Name,
-                customerInput.IdentityId
+                customerInput.IdentityId,
+                customerInput.Address,
+                customerInput.BirthDate,
+                customerInput.Nationality
             );
 
             // Assert

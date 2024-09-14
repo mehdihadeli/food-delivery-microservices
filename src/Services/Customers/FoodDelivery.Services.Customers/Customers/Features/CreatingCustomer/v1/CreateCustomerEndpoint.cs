@@ -2,6 +2,7 @@ using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.Problem.HttpResults;
+using FoodDelivery.Services.Customers.Customers.Features.GettingCustomerByCustomerId.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -36,7 +37,7 @@ internal class CreateCustomerEndpoint
 
     public async Task<
         Results<CreatedAtRoute<CreateCustomerResponse>, UnAuthorizedHttpProblemResult, ValidationProblem>
-    > HandleAsync(CreateCustomerRequestParameters requestParameters)
+    > HandleAsync([AsParameters] CreateCustomerRequestParameters requestParameters)
     {
         var (request, context, commandBus, cancellationToken) = requestParameters;
 
@@ -48,8 +49,8 @@ internal class CreateCustomerEndpoint
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
         return TypedResults.CreatedAtRoute(
             new CreateCustomerResponse(result.CustomerId),
-            nameof(GettingCustomerById),
-            new { id = result.CustomerId }
+            nameof(GetCustomerByCustomerId),
+            new { customerId = result.CustomerId }
         );
     }
 }

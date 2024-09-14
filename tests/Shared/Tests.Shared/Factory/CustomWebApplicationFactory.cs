@@ -13,6 +13,7 @@ using NSubstitute;
 using Serilog;
 using Serilog.Events;
 using WebMotions.Fake.Authentication.JwtBearer;
+using Environments = BuildingBlocks.Core.Web.Environments;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Tests.Shared.Factory;
@@ -80,7 +81,7 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
     // https://timdeschryver.dev/blog/how-to-test-your-csharp-web-api
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        builder.UseEnvironment("test");
+        builder.UseEnvironment(Environments.Test);
         builder.UseContentRoot(".");
 
         // UseSerilog on WebHostBuilder is absolute so we should use IHostBuilder

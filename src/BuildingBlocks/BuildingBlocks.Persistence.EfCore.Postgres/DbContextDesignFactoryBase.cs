@@ -1,4 +1,5 @@
 using BuildingBlocks.Core.Persistence.EfCore;
+using BuildingBlocks.Core.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -14,7 +15,7 @@ public abstract class DbContextDesignFactoryBase<TDbContext>(string connectionSt
     {
         Console.WriteLine($"BaseDirectory: {AppContext.BaseDirectory}");
 
-        var environmentName = env ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "test";
+        var environmentName = env ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environments.Test;
 
         var builder = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory ?? "")

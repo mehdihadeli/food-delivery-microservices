@@ -2,6 +2,7 @@ using Bogus;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using Tests.Shared.XunitCategories;
+using ValidationException = BuildingBlocks.Core.Exception.Types.ValidationException;
 
 namespace FoodDelivery.Services.Customers.UnitTests.Customers.ValueObjects;
 
@@ -37,6 +38,6 @@ public class CustomerIdTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        act.Should().Throw<ValidationException>();
     }
 }

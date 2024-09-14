@@ -35,7 +35,7 @@ public static class ValidationExtensions
         return argument;
     }
 
-    public static string NotBeEmpty(
+    public static string NotBeInvalid(
         this string argument,
         [CallerArgumentExpression("argument")] string? argumentName = null
     )
@@ -74,7 +74,7 @@ public static class ValidationExtensions
         return argument;
     }
 
-    public static Guid NotBeEmpty(
+    public static Guid NotBeInvalid(
         this Guid argument,
         [CallerArgumentExpression("argument")] string? argumentName = null
     )
@@ -87,7 +87,7 @@ public static class ValidationExtensions
         return argument;
     }
 
-    public static Guid NotBeEmpty(
+    public static Guid NotBeInvalid(
         [NotNull] this Guid? argument,
         [CallerArgumentExpression("argument")] string? argumentName = null
     )
@@ -97,7 +97,7 @@ public static class ValidationExtensions
             throw new ValidationException(message: $"{argumentName} cannot be null or empty.");
         }
 
-        return argument.Value.NotBeEmpty();
+        return argument.Value.NotBeInvalid();
     }
 
     public static int NotBeNegativeOrZero(
@@ -105,7 +105,7 @@ public static class ValidationExtensions
         [CallerArgumentExpression("argument")] string? argumentName = null
     )
     {
-        if (argument == 0)
+        if (argument <= 0)
         {
             throw new ValidationException($"{argumentName} cannot be zero.");
         }
@@ -131,9 +131,9 @@ public static class ValidationExtensions
         [CallerArgumentExpression("argument")] string? argumentName = null
     )
     {
-        if (argument == 0)
+        if (argument <= 0)
         {
-            throw new ValidationException($"{argumentName} cannot be zero.");
+            throw new ValidationException($"{argumentName} cannot be negative or zero.");
         }
 
         return argument;
@@ -157,9 +157,9 @@ public static class ValidationExtensions
         [CallerArgumentExpression("argument")] string? argumentName = null
     )
     {
-        if (argument == 0)
+        if (argument <= 0)
         {
-            throw new ValidationException($"{argumentName} cannot be zero.");
+            throw new ValidationException($"{argumentName} cannot be negative or zero.");
         }
 
         return argument;
@@ -183,7 +183,7 @@ public static class ValidationExtensions
         [CallerArgumentExpression("argument")] string? argumentName = null
     )
     {
-        if (argument == 0)
+        if (argument <= 0)
         {
             throw new ValidationException($"{argumentName} cannot be zero.");
         }
@@ -277,29 +277,31 @@ public static class ValidationExtensions
             throw new ValidationException(message: $"{argumentName} cannot be null or empty.");
         }
 
-        enumValue.NotBeEmpty();
+        enumValue.NotBeInvalid();
 
         return enumValue;
     }
 
-    public static TEnum NotBeEmpty<TEnum>(
+    public static TEnum NotBeInvalid<TEnum>(
         [NotNull] this TEnum enumValue,
         [CallerArgumentExpression("enumValue")] string? argumentName = null
     )
         where TEnum : Enum
     {
         enumValue.NotBeNull();
-        if (enumValue.Equals(default(TEnum)))
+
+        // returns `true` if `enumValue` corresponds to one of the defined values in `TEnum`
+        if (!Enum.IsDefined(typeof(TEnum), enumValue))
         {
             throw new ValidationException(
-                $"The value of '{argumentName}' cannot be the default value of '{typeof(TEnum).Name}' enum."
+                $"The value of '{argumentName}' is not valid for enum of '{typeof(TEnum).Name}'."
             );
         }
 
         return enumValue;
     }
 
-    public static void NotBeEmpty(
+    public static void NotBeInvalid(
         this DateTime dateTime,
         [CallerArgumentExpression("dateTime")] string? argumentName = null
     )

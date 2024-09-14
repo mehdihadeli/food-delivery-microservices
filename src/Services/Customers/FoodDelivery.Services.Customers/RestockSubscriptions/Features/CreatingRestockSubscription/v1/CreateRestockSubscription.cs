@@ -7,6 +7,7 @@ using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Products;
+using FoodDelivery.Services.Customers.Products.Exceptions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Exceptions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Write;
@@ -73,6 +74,11 @@ internal class CreateRestockSubscriptionHandler(
         }
 
         var product = await catalogApiClient.GetProductByIdAsync(request.ProductId, cancellationToken);
+
+        if (product is null)
+        {
+            throw new ProductNotFoundException(request.ProductId);
+        }
 
         if (product!.AvailableStock > 0)
             throw new ProductHasStockException(product.Id, product.AvailableStock, product.Name);

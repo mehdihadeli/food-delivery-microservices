@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Web.Problem;
+using Humanizer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -59,22 +60,36 @@ public class ProblemDetailsService(
         IExceptionHandlerFeature exceptionFeature
     )
     {
-        if (problemDetailMappers is { })
+        if (problemDetailMappers is { } && problemDetailMappers.Any())
         {
             foreach (var problemDetailMapper in problemDetailMappers)
             {
-                var mappedStatusCode = problemDetailMapper.GetMappedStatusCodes(exceptionFeature.Error);
-                if (mappedStatusCode > 0)
-                {
-                    PopulateNewProblemDetail(
-                        context.ProblemDetails,
-                        context.HttpContext,
-                        mappedStatusCode,
-                        exceptionFeature.Error
-                    );
-                    context.HttpContext.Response.StatusCode = mappedStatusCode;
-                }
+                MapProblemDetail(context, exceptionFeature, problemDetailMapper);
             }
+        }
+        else
+        {
+            var defaultMapper = new DefaultProblemDetailMapper();
+            MapProblemDetail(context, exceptionFeature, defaultMapper);
+        }
+    }
+
+    private static void MapProblemDetail(
+        ProblemDetailsContext context,
+        IExceptionHandlerFeature exceptionFeature,
+        IProblemDetailMapper problemDetailMapper
+    )
+    {
+        var mappedStatusCode = problemDetailMapper.GetMappedStatusCodes(exceptionFeature.Error);
+        if (mappedStatusCode > 0)
+        {
+            PopulateNewProblemDetail(
+                context.ProblemDetails,
+                context.HttpContext,
+                mappedStatusCode,
+                exceptionFeature.Error
+            );
+            context.HttpContext.Response.StatusCode = mappedStatusCode;
         }
     }
 
@@ -86,7 +101,7 @@ public class ProblemDetailsService(
     )
     {
         // We should override ToString method in the exception for showing correct title.
-        existingProblemDetails.Title = exception.ToString();
+        existingProblemDetails.Title = exception.GetType().Name.Humanize(LetterCasing.Title);
         existingProblemDetails.Detail = exception.Message;
         existingProblemDetails.Status = statusCode;
         existingProblemDetails.Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}";

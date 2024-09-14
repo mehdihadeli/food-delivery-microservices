@@ -137,10 +137,10 @@ public class Product : Aggregate<ProductId>
         name.NotBeNull();
         Name = name;
 
-        status.NotBeEmpty();
+        status.NotBeInvalid();
         ProductStatus = status;
 
-        productType.NotBeEmpty();
+        productType.NotBeInvalid();
         ProductType = productType;
 
         dimensions.NotBeNull();
@@ -149,7 +149,7 @@ public class Product : Aggregate<ProductId>
         size.NotBeNull();
         Size = size;
 
-        color.NotBeEmpty();
+        color.NotBeInvalid();
         Color = color;
 
         // input validation will do in the command and our value objects, here we just do business validation

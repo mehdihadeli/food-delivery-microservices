@@ -11,7 +11,7 @@ internal record GetRestockSubscriptionById(Guid Id) : IQuery<GetRestockSubscript
 {
     public static GetRestockSubscriptionById Of(Guid id)
     {
-        id.NotBeEmpty();
+        id.NotBeInvalid();
         return new GetRestockSubscriptionById(id);
     }
 }

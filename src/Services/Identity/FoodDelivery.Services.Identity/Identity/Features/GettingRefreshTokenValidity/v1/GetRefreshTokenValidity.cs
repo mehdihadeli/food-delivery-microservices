@@ -8,7 +8,7 @@ namespace FoodDelivery.Services.Identity.Identity.Features.GettingRefreshTokenVa
 internal record GetRefreshTokenValidity(Guid UserId, string RefreshToken) : IQuery<bool>
 {
     public static GetRefreshTokenValidity Of(Guid userId, string? refreshToken) =>
-        new(userId.NotBeEmpty(), refreshToken.NotBeNull());
+        new(userId.NotBeInvalid(), refreshToken.NotBeNull());
 }
 
 internal class GetRefreshTokenValidityQueryHandler : IQueryHandler<GetRefreshTokenValidity, bool>

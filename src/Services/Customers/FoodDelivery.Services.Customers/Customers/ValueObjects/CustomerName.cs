@@ -17,17 +17,14 @@ public class CustomerName : ValueObject
 
     public static CustomerName Of([NotNull] string? firstName, [NotNull] string? lastName)
     {
-        firstName.NotBeNullOrWhiteSpace();
-        lastName.NotBeNullOrWhiteSpace();
-
-        if (firstName.Length is > 100 or < 3)
+        if (string.IsNullOrEmpty(firstName) || firstName.Length is > 100 or < 3)
         {
-            throw new InvalidNameException(firstName);
+            throw new InvalidNameException(firstName ?? "First Name can't be null or empty.");
         }
 
-        if (lastName.Length is > 100 or < 3)
+        if (string.IsNullOrEmpty(lastName) || lastName.Length is > 100 or < 3)
         {
-            throw new InvalidNameException(lastName);
+            throw new InvalidNameException(lastName ?? "Last Name can't be null or empty.");
         }
 
         return new CustomerName { FirstName = firstName, LastName = lastName };

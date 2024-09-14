@@ -48,7 +48,7 @@ public record CustomerUpdatedV1(
         lastName.NotBeNullOrWhiteSpace();
         email.NotBeNullOrWhiteSpace().NotBeInvalidEmail();
         phoneNumber.NotBeNullOrWhiteSpace();
-        identityId.NotBeEmpty();
+        identityId.NotBeInvalid();
 
         return new CustomerUpdatedV1(
             id,

@@ -26,7 +26,7 @@ internal class UpdateCustomerEndpoint : ICommandMinimalEndpoint<UpdateCustomerRe
         // .ProducesProblem("UnAuthorized request.", StatusCodes.Status401Unauthorized)
     }
 
-    public async Task<IResult> HandleAsync(UpdateCustomerRequestParameters requestParameters)
+    public async Task<IResult> HandleAsync([AsParameters] UpdateCustomerRequestParameters requestParameters)
     {
         var (request, id, context, commandBus, cancellationToken) = requestParameters;
 

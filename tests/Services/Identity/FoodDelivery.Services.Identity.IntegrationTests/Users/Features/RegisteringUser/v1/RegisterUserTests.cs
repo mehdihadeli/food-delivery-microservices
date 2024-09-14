@@ -27,7 +27,7 @@ public class RegisterUserTests : IdentityServiceIntegrationTestBase
                 faker.Person.LastName,
                 faker.Person.UserName,
                 faker.Person.Email,
-                faker.Phone.PhoneNumber(),
+                faker.Phone.PhoneNumber("(+##)##########"),
                 "123456",
                 "123456"
             ))

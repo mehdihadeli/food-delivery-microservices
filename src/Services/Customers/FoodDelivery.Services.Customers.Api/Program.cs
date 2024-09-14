@@ -55,13 +55,9 @@ builder.AddModulesServices();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment() || app.Environment.IsTest())
+if (app.Environment.IsDependencyTest())
 {
-    // app.Services.ValidateDependencies(
-    //     builder.Services,
-    //     typeof(CustomersMetadata).Assembly,
-    //     Assembly.GetExecutingAssembly()
-    // );
+    return;
 }
 
 /*----------------- Module Middleware Setup ------------------*/

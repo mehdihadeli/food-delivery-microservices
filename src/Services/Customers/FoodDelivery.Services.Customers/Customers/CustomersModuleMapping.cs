@@ -4,6 +4,7 @@ using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Rea
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Read.Mongo;
+using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using Riok.Mapperly.Abstractions;
 
 namespace FoodDelivery.Services.Customers.Customers;
@@ -112,16 +113,28 @@ internal static partial class CustomersModuleMapping
     )]
     internal static partial UpdateCustomerRead ToUpdateCustomerRead(this Models.Customer customer);
 
-    [MapProperty(nameof(UpdateCustomerRead.CustomerId), nameof(Models.Reads.Customer.CustomerId))]
-    [MapProperty(nameof(UpdateCustomerRead.Id), nameof(Models.Reads.Customer.Id))]
-    [MapProperty(nameof(UpdateCustomerRead.OccurredOn), nameof(Models.Reads.Customer.Created))]
-    internal static partial Models.Reads.Customer ToCustomer(this UpdateCustomerRead updateCustomerRead);
-
     // https://mapperly.riok.app/docs/configuration/existing-target/
-    [MapProperty(nameof(UpdateCustomerRead.CustomerId), nameof(Models.Reads.Customer.CustomerId))]
-    [MapProperty(nameof(UpdateCustomerRead.Id), nameof(Models.Reads.Customer.Id))]
-    [MapProperty(nameof(UpdateCustomerRead.OccurredOn), nameof(Models.Reads.Customer.Created))]
-    internal static partial void ToCustomer(this UpdateCustomerRead updateCustomerRead, Models.Reads.Customer customer);
+    // Todo: doesn't map correctly
+    internal static Models.Reads.Customer ToCustomer(this UpdateCustomerRead updateCustomerRead)
+    {
+        return new Customer
+        {
+            Created = updateCustomerRead.OccurredOn,
+            Email = updateCustomerRead.Email,
+            CustomerId = updateCustomerRead.CustomerId,
+            IdentityId = updateCustomerRead.IdentityId,
+            FirstName = updateCustomerRead.FirstName,
+            LastName = updateCustomerRead.LastName,
+            FullName = updateCustomerRead.FullName,
+            PhoneNumber = updateCustomerRead.PhoneNumber,
+            Country = updateCustomerRead.Country,
+            City = updateCustomerRead.City,
+            DetailAddress = updateCustomerRead.DetailAddress,
+            Nationality = updateCustomerRead.Nationality,
+            BirthDate = updateCustomerRead.BirthDate,
+            Id = updateCustomerRead.Id
+        };
+    }
 
     [MapperIgnoreTarget(nameof(UpdateCustomerRead.Id))]
     [MapProperty(nameof(CustomerUpdated.Id), nameof(UpdateCustomerRead.CustomerId))]

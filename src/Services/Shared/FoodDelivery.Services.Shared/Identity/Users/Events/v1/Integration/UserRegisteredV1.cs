@@ -35,7 +35,7 @@ public record UserRegisteredV1(
     )
     {
         return new UserRegisteredV1(
-            identityId.NotBeEmpty(),
+            identityId.NotBeInvalid(),
             email.NotBeEmptyOrNull().NotBeInvalidEmail(),
             phoneNumber.NotBeEmptyOrNull(),
             userName.NotBeEmptyOrNull(),

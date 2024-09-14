@@ -3,6 +3,7 @@ using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Products;
+using FoodDelivery.Services.Customers.Products.Exceptions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Exceptions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.ValueObjects;
@@ -77,7 +78,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
         };
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentNullException>();
+        await act.Should().ThrowAsync<ValidationException>();
     }
 
     [CategoryTrait(TestCategory.Unit)]
@@ -120,7 +121,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
         // Assert
         //https://fluentassertions.com/exceptions/
         await act.Should()
-            .ThrowAsync<HttpResponseException>()
+            .ThrowAsync<ProductNotFoundException>()
             .WithMessage("*")
             .Where(e => e.StatusCode == StatusCodes.Status404NotFound);
     }

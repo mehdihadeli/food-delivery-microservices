@@ -8,7 +8,7 @@ public record MachineInstanceInfo : IMachineInstanceInfo
     public MachineInstanceInfo(Guid clientId, string? clientGroup)
     {
         clientGroup.NotBeNullOrWhiteSpace();
-        clientId.NotBeEmpty();
+        clientId.NotBeInvalid();
 
         ClientId = clientId;
         ClientGroup = clientGroup;

@@ -94,7 +94,7 @@ runs:
 
     - name: Upload artifact
       if: success()
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.service-name}}_image_artifacts
         path: image_name.txt

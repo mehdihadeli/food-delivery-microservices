@@ -188,7 +188,7 @@ jobs:
 
       - name: Upload CD Status artifact
         if: success()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
            name: ${{ inputs.service-name}}_cd_status_artifacts
            path: cd_status.txt

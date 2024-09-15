@@ -68,7 +68,7 @@ runs:
       # https://github.blog/changelog/2020-10-08-github-actions-ability-to-change-retention-days-for-artifacts-and-logs/
       # https://github.com/actions/upload-artifact#upload-an-entire-directory
     - name: Upload Test And Coverage Results Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: steps.test-results-zip.outcome == 'success'
       with:
         name: ${{ inputs.service-name}}_test_artifacts

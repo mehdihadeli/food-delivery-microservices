@@ -107,7 +107,8 @@
         "vscode-icons-team.vscode-icons",
         "csharpier.csharpier-vscode",
         "redhat.vscode-yaml",
-        "kennylong.kubernetes-yaml-formatter"
+        "kennylong.kubernetes-yaml-formatter",
+        "sonarsource.sonarlint-vscode"
       ]
     }
   },

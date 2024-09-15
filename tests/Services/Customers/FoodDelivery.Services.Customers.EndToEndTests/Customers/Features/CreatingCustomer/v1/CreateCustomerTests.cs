@@ -6,6 +6,7 @@ using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Requests;
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Tests.Shared.Extensions;
 using Tests.Shared.Fixtures;
@@ -84,7 +85,7 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
                 new
                 {
                     Detail = $"Customer with email '{fakeCustomer.Email.Value}' already exists.",
-                    Title = nameof(CustomerAlreadyExistsException),
+                    Title = nameof(CustomerAlreadyExistsException).Humanize(LetterCasing.Title),
                 }
             )
             .And.Be409Conflict();
@@ -106,7 +107,11 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
         response
             .Should()
             .ContainsProblemDetail(
-                new ProblemDetails { Detail = "Email address is invalid.", Title = nameof(ValidationException), }
+                new ProblemDetails
+                {
+                    Detail = "Email address is invalid.",
+                    Title = nameof(ValidationException).Humanize(LetterCasing.Title),
+                }
             )
             .And.Be400BadRequest();
     }

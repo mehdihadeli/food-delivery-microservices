@@ -15,46 +15,49 @@ template: |
   $CHANGES
   **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
 categories:
-  - title: 🚀 Features
-    labels:
-      - feature
-  - title: ♻️ Enhancement
-    labels:
-      - enhancement
-      - refactor
-  - title: 🐛 Bug Fixes
-    labels:
-      - fix
-      - bug
-  - title: 👷 CI
-    labels:
-      - ci
-  - title: ⚠️ Breaking Changes
-    labels:
-      - breaking-changes
-  - title: ⛔️ Deprecated
-    labels:
-      - deprecated
-  - title: 🗑 Removed
-    labels:
-      - removed
-  - title: 🔐 Security
-    labels:
-      - security
-  - title: 📄 Documentation
-    labels:
-      - docs
-      - documentation
-  - title: 🧩 Dependency Updates
-    labels:
-      - deps
-      - dependencies
-  - title: 🧰 Maintenance
-    label: 'chore'
-  - title: 🧺 Miscellaneous #Everything except ABAP
-    label: misc
-  - title: 🚩 Other changes
-## putting no labels pr to `Other Changes` category with no label - https://github.com/release-drafter/release-drafter/issues/139#issuecomment-480473934
+- title: 🚀 Features
+  labels:
+  - feature
+- title: ♻️ Enhancement
+  labels:
+  - enhancement
+  - refactor
+- title: 🐛 Bug Fixes
+  labels:
+  - fix
+  - bug
+- title: 👷 CI
+  labels:
+  - ci
+- title: 🧪 Test
+  labels:
+  - test
+- title: ⚠️ Breaking Changes
+  labels:
+  - breaking-changes
+- title: ⛔️ Deprecated
+  labels:
+  - deprecated
+- title: 🗑 Removed
+  labels:
+  - removed
+- title: 🔐 Security
+  labels:
+  - security
+- title: 📄 Documentation
+  labels:
+  - docs
+  - documentation
+- title: 🧩 Dependency Updates
+  labels:
+  - deps
+  - dependencies
+- title: 🧰 Maintenance
+  label: 'chore'
+- title: 🧺 Miscellaneous #Everything except ABAP
+  label: misc
+- title: 🚩 Other changes
+  ## putting no labels pr to `Other Changes` category with no label - https://github.com/release-drafter/release-drafter/issues/139#issuecomment-480473934
 
 
 # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
@@ -64,52 +67,62 @@ categories:
 # Using regex for defining rules - https://regexr.com/
 # https://stackoverflow.com/questions/58899999/regexp-to-match-conventional-commit-syntax
 autolabeler:
-  - label: 'chore'
-    branch:
-      - '(chore)(\([a-z ]+\))?\/.'
-    title:
-      - '^(chore)(\([a-z ]+\))?: .'
-  - label: 'bug'
-    branch:
-      - '(fix)(\([a-z ]+\))?\/.'
-    title:
-      - '^(fix)(\([a-z ]+\))?: .'
-  - label: 'feature'
-    branch:
-      - '(feat)(\([a-z ]+\))?\/.'
-    title:
-      - '^(feat)(\([a-z ]+\))?: .'
-  - label: 'ci/cd'
-    branch:
-      - '(ci)(\([a-z ]+\))?\/.'
-    title:
-      - '^(ci)(\([a-z ]+\))?: .'
-  - label: 'minor'
-    branch:
-      - '(feat)(\([a-z ]+\))?\/.'
-    title:
-      - '^(feat)(\([a-z ]+\))?: .'
-  - label: 'patch'
-    branch:
-      - '(fix)(\([a-z ]+\))?\/.'
-      - '(ci)(\([a-z ]+\))?\/.'
-    title:
-      - '^(fix)(\([a-z ]+\))?: .'
-      - '^(ci)(\([a-z ]+\))?: .'
+- label: 'chore'
+  branch:
+  - '(chore)(\([a-z ]+\))?\/.'
+  title:
+  - '^(chore)(\([a-z ]+\))?: .'
+- label: 'bug'
+  branch:
+  - '(fix)(\([a-z ]+\))?\/.'
+  title:
+  - '^(fix)(\([a-z ]+\))?: .'
+- label: 'refactor'
+  branch:
+  - '(refactor)(\([a-z ]+\))?\/.'
+  title:
+  - '^(refactor)(\([a-z ]+\))?: .'
+- label: 'test'
+  branch:
+  - '(test)(\([a-z ]+\))?\/.'
+  title:
+  - '^(test)(\([a-z ]+\))?: .'
+- label: 'feature'
+  branch:
+  - '(feat)(\([a-z ]+\))?\/.'
+  title:
+  - '^(feat)(\([a-z ]+\))?: .'
+- label: 'ci/cd'
+  branch:
+  - '(ci)(\([a-z ]+\))?\/.'
+  title:
+  - '^(ci)(\([a-z ]+\))?: .'
+- label: 'minor'
+  branch:
+  - '(feat)(\([a-z ]+\))?\/.'
+  title:
+  - '^(feat)(\([a-z ]+\))?: .'
+- label: 'patch'
+  branch:
+  - '(fix)(\([a-z ]+\))?\/.'
+  - '(ci)(\([a-z ]+\))?\/.'
+  title:
+  - '^(fix)(\([a-z ]+\))?: .'
+  - '^(ci)(\([a-z ]+\))?: .'
 
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:
   major:
     labels:
-      - breaking-changes
+    - breaking-changes
   minor:
     labels:
-      - minor
+    - minor
   patch:
     labels:
-      - patch
+    - patch
   default: patch
 
 exclude-labels:
-  - skip-changelog
+- skip-changelog

@@ -1,8 +1,6 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -18,10 +16,11 @@ internal static class GetProductByIdEndpoint
         //         GetProductByIdResult>("/{id}")
         return app.MapGet("/{id}", Handle)
             // .RequireAuthorization()
-            .WithTags(ProductsConfigs.Tag)
+            .WithTags(ProductsConfigurations.Tag)
             .WithName(nameof(GetProductById))
             .WithDisplayName(nameof(GetProductById).Humanize())
-            .WithSummaryAndDescription(nameof(GetProductById).Humanize(), nameof(GetProductById).Humanize())
+            .WithSummary(nameof(GetProductById).Humanize())
+            .WithDescription(nameof(GetProductById).Humanize())
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses?#typedresults-vs-results
             // .Produces<GetProductByIdResponse>("Product fetched successfully.", StatusCodes.Status200OK)
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
@@ -38,7 +37,7 @@ internal static class GetProductByIdEndpoint
             >
         > Handle([AsParameters] GetProductByIdRequestParameters requestParameters)
         {
-            var (id, _, queryProcessor, mapper, cancellationToken) = requestParameters;
+            var (id, _, queryProcessor, cancellationToken) = requestParameters;
             var result = await queryProcessor.SendAsync(GetProductById.Of(id), cancellationToken);
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
@@ -54,7 +53,6 @@ internal record GetProductByIdRequestParameters(
     [FromRoute] long Id,
     HttpContext HttpContext,
     IQueryBus QueryBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;
 

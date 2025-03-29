@@ -1,8 +1,7 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using Cassandra.Mapping;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -16,13 +15,11 @@ internal static class ReplenishProductStockEndpoint
         return endpoints
             .MapPost("/{productId}/replenish-stock", Handle)
             .RequireAuthorization()
-            .WithTags(ProductsConfigs.Tag)
+            .WithTags(ProductsConfigurations.Tag)
             .WithName(nameof(ReplenishProductStock))
             .WithDisplayName(nameof(ReplenishProductStock).Humanize())
-            .WithSummaryAndDescription(
-                nameof(ReplenishProductStock).Humanize(),
-                nameof(ReplenishProductStock).Humanize()
-            )
+            .WithSummary(nameof(ReplenishProductStock).Humanize())
+            .WithDescription(nameof(ReplenishProductStock).Humanize())
             // .Produces("Debit-Stock performed successfully. (No Content)", StatusCodes.Status204NoContent)
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             // .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -33,7 +30,7 @@ internal static class ReplenishProductStockEndpoint
             Results<NoContent, UnAuthorizedHttpProblemResult, ValidationProblem, NotFoundHttpProblemResult>
         > Handle([AsParameters] ReplenishProductStockRequestParameters requestParameters)
         {
-            var (request, productId, context, commandBus, _, cancellationToken) = requestParameters;
+            var (request, productId, context, commandBus, cancellationToken) = requestParameters;
 
             await commandBus.SendAsync(ReplenishProductStock.Of(productId, request.DebitQuantity), cancellationToken);
 
@@ -49,7 +46,6 @@ internal record ReplenishProductStockRequestParameters(
     [FromRoute] long ProductId,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<ReplenishProductStockRequest>;
 

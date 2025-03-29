@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Reflection.Extensions;
+using BuildingBlocks.Core.Extensions;
 
 namespace BuildingBlocks.Caching;
 

@@ -1,9 +1,11 @@
 using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Events.Internal;
 
 namespace BuildingBlocks.Core.Events;
 
 public class NullDomainEventsAccessor : IDomainEventsAccessor
 {
-    public IReadOnlyList<IDomainEvent> UnCommittedDomainEvents { get; } = new List<IDomainEvent>();
+    public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
+    {
+        return new List<IDomainEvent>();
+    }
 }

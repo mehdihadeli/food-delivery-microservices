@@ -14,14 +14,13 @@ namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our commands and events, just primitive types
-internal record CustomerCreated(
+public record CustomerCreated(
     long Id,
     string FirstName,
     string LastName,
     string Email,
     string PhoneNumber,
     Guid IdentityId,
-    DateTime CreatedAt,
     string? Country,
     string? City,
     string? Address,
@@ -36,7 +35,6 @@ internal record CustomerCreated(
         string? email,
         string? phoneNumber,
         Guid identityId,
-        DateTime createdAt,
         string? country,
         string? city,
         string? address,
@@ -52,7 +50,6 @@ internal record CustomerCreated(
                 email!,
                 phoneNumber!,
                 identityId,
-                createdAt,
                 country,
                 city,
                 address!,
@@ -79,7 +76,7 @@ internal record CustomerCreated(
     }
 }
 
-internal class CustomerCreatedValidator : AbstractValidator<CustomerCreated>
+public class CustomerCreatedValidator : AbstractValidator<CustomerCreated>
 {
     public CustomerCreatedValidator()
     {
@@ -98,15 +95,15 @@ internal class CustomerCreatedValidator : AbstractValidator<CustomerCreated>
     }
 }
 
-internal class CustomerCreatedHandler(ICommandBus commandBus) : IDomainEventHandler<CustomerCreated>
+public class CustomerCreatedHandler(ICommandBus commandBus) : IDomainEventHandler<CustomerCreated>
 {
-    public Task Handle(CustomerCreated notification, CancellationToken cancellationToken)
+    public async ValueTask Handle(CustomerCreated notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
         var mongoReadCommand = notification.ToCreateCustomerRead();
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         // Schedule multiple read sides to execute here
-        return commandBus.ScheduleAsync(new IInternalCommand[] { mongoReadCommand }, cancellationToken);
+        await commandBus.ScheduleAsync(mongoReadCommand, cancellationToken);
     }
 }

@@ -4,7 +4,9 @@ using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
+using Mediator;
 using Microsoft.EntityFrameworkCore;
+using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1;
 
@@ -15,7 +17,7 @@ namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our commands and events, just primitive types
-internal record DebitProductStock(long ProductId, int Quantity) : ITxCommand
+public record DebitProductStock(long ProductId, int Quantity) : ITxCommand, ICommand
 {
     public static DebitProductStock Of(long productId, int quantity)
     {
@@ -23,7 +25,7 @@ internal record DebitProductStock(long ProductId, int Quantity) : ITxCommand
     }
 }
 
-internal class DebitProductStockValidator : AbstractValidator<DebitProductStock>
+public class DebitProductStockValidator : AbstractValidator<DebitProductStock>
 {
     public DebitProductStockValidator()
     {
@@ -32,13 +34,14 @@ internal class DebitProductStockValidator : AbstractValidator<DebitProductStock>
     }
 }
 
-internal class DebitProductStockHandler(ICatalogDbContext catalogDbContext) : ICommandHandler<DebitProductStock>
+public class DebitProductStockHandler(ICatalogDbContext catalogDbContext)
+    : BuildingBlocks.Abstractions.Commands.ICommandHandler<DebitProductStock>
 {
-    public async Task Handle(DebitProductStock command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(DebitProductStock request, CancellationToken cancellationToken)
     {
-        command.NotBeNull();
+        request.NotBeNull();
 
-        var (productId, quantity) = command;
+        var (productId, quantity) = request;
 
         var product = await catalogDbContext.Products.FirstOrDefaultAsync(x => x.Id == productId, cancellationToken);
 
@@ -48,5 +51,7 @@ internal class DebitProductStockHandler(ICatalogDbContext catalogDbContext) : IC
         product.DebitStock(quantity);
 
         await catalogDbContext.SaveChangesAsync(cancellationToken);
+
+        return Unit.Value;
     }
 }

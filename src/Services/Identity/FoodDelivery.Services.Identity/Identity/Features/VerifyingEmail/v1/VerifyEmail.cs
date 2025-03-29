@@ -1,12 +1,13 @@
-using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Data;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
+using Mediator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1;
 
@@ -22,28 +23,17 @@ public record VerifyEmail(string Email, string Code) : ICommand
         new(email.NotBeEmptyOrNull().NotBeInvalidEmail(), code.NotBeEmptyOrNull());
 }
 
-internal class VerifyEmailHandler : ICommandHandler<VerifyEmail>
+public class VerifyEmailHandler(
+    UserManager<ApplicationUser> userManager,
+    IdentityContext dbContext,
+    ILogger<VerifyEmailHandler> logger
+) : BuildingBlocks.Abstractions.Commands.ICommandHandler<VerifyEmail>
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IdentityContext _dbContext;
-    private readonly ILogger<VerifyEmailHandler> _logger;
-
-    public VerifyEmailHandler(
-        UserManager<ApplicationUser> userManager,
-        IdentityContext dbContext,
-        ILogger<VerifyEmailHandler> logger
-    )
-    {
-        _userManager = userManager;
-        _dbContext = dbContext;
-        _logger = logger;
-    }
-
-    public async Task Handle(VerifyEmail command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(VerifyEmail command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
-        var user = await _userManager.FindByEmailAsync(command.Email);
+        var user = await userManager.FindByEmailAsync(command.Email);
         user.NotBeNull(new IdentityUserNotFoundException(command.Email));
 
         if (user.EmailConfirmed)
@@ -51,7 +41,7 @@ internal class VerifyEmailHandler : ICommandHandler<VerifyEmail>
             throw new EmailAlreadyVerifiedException(user.Email!);
         }
 
-        var emailVerificationCode = await _dbContext
+        var emailVerificationCode = await dbContext
             .Set<EmailVerificationCode>()
             .Where(x => x.Email == command.Email && x.Code == command.Code && x.UsedAt == null)
             .SingleOrDefaultAsync(cancellationToken: cancellationToken);
@@ -67,11 +57,13 @@ internal class VerifyEmailHandler : ICommandHandler<VerifyEmail>
         }
 
         user.EmailConfirmed = true;
-        await _userManager.UpdateAsync(user);
+        await userManager.UpdateAsync(user);
 
         emailVerificationCode.UsedAt = DateTime.Now;
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Email verified successfully for userId:{UserId}", user.Id);
+        logger.LogInformation("Email verified successfully for userId:{UserId}", user.Id);
+
+        return Unit.Value;
     }
 }

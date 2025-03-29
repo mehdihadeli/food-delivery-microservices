@@ -18,7 +18,7 @@ using Microsoft.Extensions.Options;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.Login.v1;
 
-internal record Login(string UserNameOrEmail, string Password, bool Remember) : ICommand<LoginResult>, ITxRequest
+public record Login(string UserNameOrEmail, string Password, bool Remember) : ICommand<LoginResult>, ITxRequest
 {
     /// <summary>
     /// Login with in-line validator.
@@ -33,7 +33,7 @@ internal record Login(string UserNameOrEmail, string Password, bool Remember) : 
     }
 }
 
-internal class LoginValidator : AbstractValidator<Login>
+public class LoginValidator : AbstractValidator<Login>
 {
     public LoginValidator()
     {
@@ -42,7 +42,7 @@ internal class LoginValidator : AbstractValidator<Login>
     }
 }
 
-internal class LoginHandler(
+public class LoginHandler(
     UserManager<ApplicationUser> userManager,
     ICommandBus commandBus,
     IQueryBus queryBus,
@@ -55,7 +55,7 @@ internal class LoginHandler(
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
-    public async Task<LoginResult> Handle(Login command, CancellationToken cancellationToken)
+    public async ValueTask<LoginResult> Handle(Login command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
         var identityUser =
@@ -113,7 +113,7 @@ internal class LoginHandler(
                         Token = accessToken.Token,
                         CreatedAt = DateTime.Now,
                         ExpiredAt = accessToken.ExpireAt,
-                        CreatedByIp = IpUtilities.GetIpAddress()
+                        CreatedByIp = IpUtilities.GetIpAddress(),
                     },
                     cancellationToken
                 );
@@ -133,7 +133,7 @@ internal class LoginHandler(
     }
 }
 
-internal record LoginResult(
+public record LoginResult(
     Guid UserId,
     string UserName,
     string FirstName,

@@ -1,27 +1,23 @@
-using System.Net;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace BuildingBlocks.Validation;
+namespace Shared.Validation;
 
-public class ValidationResultModel
+public class ValidationResultModel<TRequest>
 {
-    public ValidationResultModel(ValidationResult? validationResult = null)
+    public ValidationResultModel(ValidationResult? validationResult)
     {
+        var validationError = $"Validation failed for type {typeof(TRequest).Name}";
         Errors = validationResult
             ?.Errors.Select(error => new ValidationError(error.PropertyName, error.ErrorMessage))
             .ToList();
-        Message = JsonConvert.SerializeObject(Errors);
+
+        Message = JsonConvert.SerializeObject(new { Message = validationError, Errors = Errors });
     }
 
-    public int StatusCode { get; set; } = (int)HttpStatusCode.BadRequest;
     public string Message { get; set; }
 
     public IList<ValidationError>? Errors { get; }
-
-    public override string ToString()
-    {
-        return JsonSerializer.Serialize(this);
-    }
 }

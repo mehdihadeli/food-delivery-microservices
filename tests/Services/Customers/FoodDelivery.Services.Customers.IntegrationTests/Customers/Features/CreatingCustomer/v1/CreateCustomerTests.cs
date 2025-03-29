@@ -1,12 +1,10 @@
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Core.Events;
 using BuildingBlocks.Core.Exception.Types;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
-using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
+using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Internal.Mongo;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FoodDelivery.Services.Shared.Customers.Customers.Events.V1.Integration;
+using FoodDelivery.Services.Shared.Customers.Customers.Events.Integration.v1;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
@@ -30,7 +28,7 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        var createdCustomerResponse = await SharedFixture.SendAsync(command);
+        var createdCustomerResponse = await SharedFixture.CommandAsync(command);
 
         // Assert
         createdCustomerResponse.CustomerId.Should().BeGreaterThan(0);
@@ -54,12 +52,12 @@ public class CreateCustomerTests(
         var command = new CreateCustomer("test@example.com");
 
         // Act
-        Func<Task> act = async () => await SharedFixture.SendAsync(command);
+        Func<Task> act = async () => await SharedFixture.CommandAsync(command);
 
         // Assert
         //https://fluentassertions.com/exceptions/
         await act.Should()
-            .ThrowAsync<HttpResponseException>()
+            .ThrowAsync<NotFoundException>()
             .Where(x => x.StatusCode == StatusCodes.Status404NotFound && !string.IsNullOrWhiteSpace(x.Message));
     }
 
@@ -72,9 +70,9 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        await SharedFixture.SendAsync(command);
+        await SharedFixture.CommandAsync(command);
 
-        Func<Task> act = async () => await SharedFixture.SendAsync(new CreateCustomer(fakeIdentityUser.Email));
+        Func<Task> act = async () => await SharedFixture.CommandAsync(new CreateCustomer(fakeIdentityUser.Email));
 
         // Assert
         //https://fluentassertions.com/exceptions/
@@ -90,10 +88,10 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        await SharedFixture.SendAsync(command);
+        await SharedFixture.CommandAsync(command);
 
         // Assert
-        await SharedFixture.ShouldProcessedPersistInternalCommand<CreateCustomerRead>();
+        await SharedFixture.ShouldProcessingInternalCommand<CreateCustomerRead>();
     }
 
     [Fact]
@@ -105,7 +103,7 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        await SharedFixture.SendAsync(command);
+        await SharedFixture.CommandAsync(command);
 
         // Assert
         await SharedFixture.WaitUntilConditionMet(async () =>
@@ -130,10 +128,10 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        var _ = await SharedFixture.SendAsync(command);
+        var _ = await SharedFixture.CommandAsync(command);
 
         // Assert
-        await SharedFixture.WaitForPublishing<CustomerCreatedV1>();
+        await SharedFixture.ShouldPublishing<CustomerCreatedV1>();
     }
 
     [Fact]
@@ -145,9 +143,9 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        var _ = await SharedFixture.SendAsync(command);
+        var _ = await SharedFixture.CommandAsync(command);
 
         // Assert
-        await SharedFixture.ShouldProcessedOutboxPersistMessage<CustomerCreatedV1>();
+        await SharedFixture.ShouldProcessingOutboxMessage<CustomerCreatedV1>();
     }
 }

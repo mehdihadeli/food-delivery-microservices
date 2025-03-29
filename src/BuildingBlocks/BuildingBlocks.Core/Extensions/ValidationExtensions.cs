@@ -1,16 +1,16 @@
+namespace BuildingBlocks.Core.Extensions;
+
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using BuildingBlocks.Core.Exception.Types;
-
-namespace BuildingBlocks.Core.Extensions;
 
 // https://dev.to/lambdasharp/c-asserting-a-value-is-not-null-in-null-aware-code-f8m
 // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/nullable-analysis
 // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/caller-information
 public static class ValidationExtensions
 {
-    private static readonly HashSet<string> _allowedCurrency = new() { "USD", "EUR", };
+    private static readonly HashSet<string> _allowedCurrency = new() { "USD", "EUR" };
 
     public static T NotBeNull<T>(
         [NotNull] this T? argument,
@@ -35,7 +35,7 @@ public static class ValidationExtensions
         return argument;
     }
 
-    public static string NotBeInvalid(
+    public static string NotBeEmpty(
         this string argument,
         [CallerArgumentExpression("argument")] string? argumentName = null
     )
@@ -74,7 +74,7 @@ public static class ValidationExtensions
         return argument;
     }
 
-    public static Guid NotBeInvalid(
+    public static Guid NotBeEmpty(
         this Guid argument,
         [CallerArgumentExpression("argument")] string? argumentName = null
     )
@@ -87,7 +87,7 @@ public static class ValidationExtensions
         return argument;
     }
 
-    public static Guid NotBeInvalid(
+    public static Guid NotBeEmpty(
         [NotNull] this Guid? argument,
         [CallerArgumentExpression("argument")] string? argumentName = null
     )
@@ -97,7 +97,7 @@ public static class ValidationExtensions
             throw new ValidationException(message: $"{argumentName} cannot be null or empty.");
         }
 
-        return argument.Value.NotBeInvalid();
+        return argument.Value.NotBeEmpty();
     }
 
     public static int NotBeNegativeOrZero(
@@ -277,12 +277,12 @@ public static class ValidationExtensions
             throw new ValidationException(message: $"{argumentName} cannot be null or empty.");
         }
 
-        enumValue.NotBeInvalid();
+        enumValue.NotBeEmpty();
 
         return enumValue;
     }
 
-    public static TEnum NotBeInvalid<TEnum>(
+    public static TEnum NotBeEmpty<TEnum>(
         [NotNull] this TEnum enumValue,
         [CallerArgumentExpression("enumValue")] string? argumentName = null
     )
@@ -301,7 +301,7 @@ public static class ValidationExtensions
         return enumValue;
     }
 
-    public static void NotBeInvalid(
+    public static void NotBeEmpty(
         this DateTime dateTime,
         [CallerArgumentExpression("dateTime")] string? argumentName = null
     )

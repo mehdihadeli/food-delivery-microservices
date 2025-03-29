@@ -13,15 +13,14 @@ public record Money
     public decimal Value { get; private set; }
     public string Currency { get; private set; } = default!;
 
-    public static Money Of(decimal? value, string? currency)
+    public static Money Of(decimal value, string currency)
     {
         // validations should be placed here instead of constructor
-        value.NotBeNull();
         value.NotBeNegativeOrZero();
         currency.NotBeNullOrWhiteSpace();
         currency.NotBeInvalidCurrency();
 
-        return new Money { Currency = currency, Value = value.Value };
+        return new Money { Currency = currency, Value = value };
     }
 
     public static Money operator *(int left, Money right)

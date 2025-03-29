@@ -1,7 +1,5 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -20,10 +18,8 @@ public static class RevokeAllAccessTokensEndpoint
             // .Produces(StatusCodes.Status204NoContent)
             .WithName(nameof(RevokeAllAccessTokens))
             .WithDisplayName(nameof(RevokeAllAccessTokens).Humanize())
-            .WithSummaryAndDescription(
-                nameof(RevokeAllAccessTokens).Humanize(),
-                nameof(RevokeAllAccessTokens).Humanize()
-            );
+            .WithSummary(nameof(RevokeAllAccessTokens).Humanize())
+            .WithDescription(nameof(RevokeAllAccessTokens).Humanize());
 
         return endpoints;
 
@@ -31,7 +27,7 @@ public static class RevokeAllAccessTokensEndpoint
             [AsParameters] RevokeAllTokensRequestParameters requestParameters
         )
         {
-            var (context, commandBus, mapper, cancellationToken) = requestParameters;
+            var (context, commandBus, cancellationToken) = requestParameters;
 
             var command = RevokeAllAccessTokens.Of(context.User.Identity!.Name!);
 
@@ -47,6 +43,5 @@ public static class RevokeAllAccessTokensEndpoint
 internal record RevokeAllTokensRequestParameters(
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand;

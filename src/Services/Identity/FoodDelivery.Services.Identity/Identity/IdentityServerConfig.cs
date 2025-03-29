@@ -9,6 +9,7 @@ namespace FoodDelivery.Services.Identity.Identity;
 // https://docs.duendesoftware.com/identityserver/v5/fundamentals/resources/api_scopes/
 public static class IdentityServerConfig
 {
+    // An identity resource is a named group of claims about a user that can be requested using the scope parameter.
     public static IEnumerable<IdentityResource> IdentityResources =>
         new List<IdentityResource>
         {
@@ -17,7 +18,7 @@ public static class IdentityServerConfig
             new IdentityResources.Email(),
             new IdentityResources.Phone(),
             new IdentityResources.Address(),
-            new("roles", "User Roles", new List<string> { "role" })
+            new("roles", "User Roles", new List<string> { "role" }),
         };
 
     public static IEnumerable<ApiScope> ApiScopes =>
@@ -29,8 +30,8 @@ public static class IdentityServerConfig
             new ApiResource("ShopApiResource", "FoodDelivery.Services.Catalogs Web API Resource")
             {
                 Scopes = { "food-delivery-api" },
-                UserClaims = { JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id }
-            }
+                UserClaims = { JwtClaimTypes.Role, JwtClaimTypes.Name, JwtClaimTypes.Id },
+            },
         };
 
     public static IEnumerable<Client> Clients =>
@@ -48,8 +49,8 @@ public static class IdentityServerConfig
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.Email,
                     "roles",
-                    "food-delivery-api"
-                }
+                    "food-delivery-api",
+                },
             },
             new()
             {
@@ -63,8 +64,8 @@ public static class IdentityServerConfig
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.Email,
                     "roles",
-                    "food-delivery-api"
-                }
-            }
+                    "food-delivery-api",
+                },
+            },
         };
 }

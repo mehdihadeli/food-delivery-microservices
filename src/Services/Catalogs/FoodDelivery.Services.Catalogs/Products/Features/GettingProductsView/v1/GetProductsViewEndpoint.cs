@@ -1,10 +1,8 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Paging;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -18,10 +16,11 @@ public static class GetProductsViewEndpoint
     {
         return endpoints
             .MapGet("/products-view/{page}/{pageSize}", Handle)
-            .WithTags(ProductsConfigs.Tag)
+            .WithTags(ProductsConfigurations.Tag)
             // .RequireAuthorization()
             .WithDisplayName(nameof(GetProductsView).Humanize())
-            .WithSummaryAndDescription(nameof(GetProductsView).Humanize(), nameof(GetProductsView).Humanize())
+            .WithSummary(nameof(GetProductsView).Humanize())
+            .WithDescription(nameof(GetProductsView).Humanize())
             .WithName(nameof(GetProductsView))
             // .Produces<GetProductsViewResult>(StatusCodes.Status200OK)
             // .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -32,14 +31,14 @@ public static class GetProductsViewEndpoint
             [AsParameters] GetProductsViewRequestParameters requestParameters
         )
         {
-            var (context, queryProcessor, mapper, cancellationToken, _, _, _, _) = requestParameters;
+            var (context, queryProcessor, cancellationToken, _, _, _, _) = requestParameters;
             var query = GetProductsView.Of(
                 new PageRequest
                 {
                     PageNumber = requestParameters.PageNumber,
                     PageSize = requestParameters.PageSize,
                     Filters = requestParameters.Filters,
-                    SortOrder = requestParameters.SortOrder
+                    SortOrder = requestParameters.SortOrder,
                 }
             );
 
@@ -55,7 +54,6 @@ public static class GetProductsViewEndpoint
 internal record GetProductsViewRequestParameters(
     HttpContext HttpContext,
     IQueryBus QueryBus,
-    IMapper Mapper,
     CancellationToken CancellationToken,
     int PageSize = 10,
     int PageNumber = 1,

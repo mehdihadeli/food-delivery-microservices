@@ -12,8 +12,6 @@
   <ItemGroup>
     <PackageReference Include="Dapper" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-    <PackageReference Include="FluentMigrator.Extensions.Postgres" />
-    <PackageReference Include="FluentMigrator.Runner.Postgres" />
     <PackageReference Include="SqlKata" />
   </ItemGroup>
 </Project>

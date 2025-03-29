@@ -12,13 +12,9 @@
 
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Http" />
-    <PackageReference Include="Asp.Versioning.Mvc" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
-    <PackageReference Include="MinimalApis.Extensions" />
-    <PackageReference Include="System.Threading.RateLimiting" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" />
+    <PackageReference Include="LinqKit.Core" />
   </ItemGroup>
 
   <ItemGroup>

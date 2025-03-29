@@ -12,7 +12,7 @@ namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our commands and events, just primitive types
-internal record ProductRestockThresholdReached(
+public record ProductRestockThresholdReached(
     long ProductId,
     int AvailableStock,
     int RestockThreshold,
@@ -44,16 +44,15 @@ internal record ProductRestockThresholdReached(
     }
 }
 
-internal class ProductRestockThresholdReachedHandler(ICatalogDbContext catalogDbContext)
+public class ProductRestockThresholdReachedHandler(ICatalogDbContext catalogDbContext)
     : IDomainEventHandler<ProductRestockThresholdReached>
 {
     private readonly ICatalogDbContext _catalogDbContext = catalogDbContext;
 
-    public Task Handle(ProductRestockThresholdReached notification, CancellationToken cancellationToken)
+    public ValueTask Handle(ProductRestockThresholdReached notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
 
-        // For example send an email to get more products
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

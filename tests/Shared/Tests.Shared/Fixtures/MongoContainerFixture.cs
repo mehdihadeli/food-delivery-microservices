@@ -22,14 +22,14 @@ public class MongoContainerFixture : IAsyncLifetime
         mongoContainerOptions.NotBeNull();
         MongoContainerOptions = mongoContainerOptions;
 
-        var postgresContainerBuilder = new MongoDbBuilder()
+        var mongoDbBuilder = new MongoDbBuilder()
             .WithName(mongoContainerOptions.Name)
             .WithCleanUp(true)
             // https://github.com/testcontainers/testcontainers-dotnet/issues/734
             // testcontainers has a problem with using mongo:latest version for now we use testcontainer default image
             .WithImage(mongoContainerOptions.ImageName);
 
-        Container = postgresContainerBuilder.Build();
+        Container = mongoDbBuilder.Build();
     }
 
     public async Task ResetDbAsync(CancellationToken cancellationToken = default)

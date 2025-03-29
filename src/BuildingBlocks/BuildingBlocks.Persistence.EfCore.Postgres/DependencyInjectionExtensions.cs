@@ -3,14 +3,14 @@ using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Persistence.EfCore;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
+using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Persistence.EfCore.Interceptors;
 using Core.Persistence.Postgres;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace BuildingBlocks.Persistence.EfCore.Postgres;
 
@@ -18,7 +18,6 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddPostgresDbContext<TDbContext>(
         this IServiceCollection services,
-        IConfiguration configuration,
         Assembly? migrationAssembly = null,
         Action<DbContextOptionsBuilder>? builder = null,
         Action<PostgresOptions>? configurator = null,
@@ -29,25 +28,32 @@ public static class DependencyInjectionExtensions
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
         // Add option to the dependency injection
-        services.AddValidationOptions(configurator);
+        services.AddValidationOptions(configurator: configurator);
 
-        var options = configuration.BindOptions(configurator);
-
-        services.TryAddScoped<IConnectionFactory>(sp => new NpgsqlConnectionFactory(
-            options.ConnectionString.NotBeEmptyOrNull()
-        ));
+        services.AddScoped<IConnectionFactory>(sp =>
+        {
+            var postgresOptions = sp.GetRequiredService<IOptions<PostgresOptions>>().Value;
+            postgresOptions.ConnectionString.NotBeNullOrWhiteSpace();
+            return new NpgsqlConnectionFactory(postgresOptions.ConnectionString);
+        });
 
         services.AddDbContext<TDbContext>(
-            (sp, dbContextOptionsBuilder) =>
+            (sp, options) =>
             {
-                dbContextOptionsBuilder
+                var postgresOptions = sp.GetRequiredService<IOptions<PostgresOptions>>().Value;
+
+                // https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-9.0/breaking-changes#pending-model-changes
+                // https://github.com/dotnet/efcore/issues/35158
+                options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+
+                options
                     .UseNpgsql(
-                        options.ConnectionString,
+                        postgresOptions.ConnectionString,
                         sqlOptions =>
                         {
                             var name =
                                 migrationAssembly?.GetName().Name
-                                ?? options.MigrationAssembly
+                                ?? postgresOptions.MigrationAssembly
                                 ?? typeof(TDbContext).Assembly.GetName().Name;
 
                             sqlOptions.MigrationsAssembly(name);
@@ -58,23 +64,23 @@ public static class DependencyInjectionExtensions
                     .UseSnakeCaseNamingConvention();
 
                 // ref: https://andrewlock.net/series/using-strongly-typed-entity-ids-to-avoid-primitive-obsession/
-                dbContextOptionsBuilder.ReplaceService<
-                    IValueConverterSelector,
-                    StronglyTypedIdValueConverterSelector<long>
-                >();
+                options.ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector<long>>();
 
-                dbContextOptionsBuilder.AddInterceptors(
+                options.AddInterceptors(
                     new AuditInterceptor(),
                     new SoftDeleteInterceptor(),
-                    new ConcurrencyInterceptor()
+                    new ConcurrencyInterceptor(),
+                    new AggregatesDomainEventsStorageInterceptor(
+                        sp.GetRequiredService<IAggregatesDomainEventsRequestStorage>()
+                    )
                 );
 
-                builder?.Invoke(dbContextOptionsBuilder);
+                builder?.Invoke(options);
             }
         );
 
-        services.TryAddScoped<IDbFacadeResolver>(provider => provider.GetService<TDbContext>()!);
-        services.TryAddScoped<IDomainEventContext>(provider => provider.GetService<TDbContext>()!);
+        services.AddScoped<IDbFacadeResolver>(provider => provider.GetService<TDbContext>()!);
+        services.AddScoped<IDomainEventContext>(provider => provider.GetService<TDbContext>()!);
 
         services.AddPostgresRepositories(assembliesToScan);
         services.AddPostgresUnitOfWork(assembliesToScan);
@@ -87,7 +93,7 @@ public static class DependencyInjectionExtensions
         params Assembly[] assembliesToScan
     )
     {
-        var scanAssemblies = assembliesToScan.Length != 0 ? assembliesToScan : [Assembly.GetCallingAssembly(),];
+        var scanAssemblies = assembliesToScan.Length != 0 ? assembliesToScan : [Assembly.GetCallingAssembly()];
         services.Scan(scan =>
             scan.FromAssemblies(scanAssemblies)
                 .AddClasses(classes => classes.AssignableTo(typeof(IRepository<,>)), false)
@@ -104,7 +110,7 @@ public static class DependencyInjectionExtensions
         params Assembly[] assembliesToScan
     )
     {
-        var scanAssemblies = assembliesToScan.Length != 0 ? assembliesToScan : [Assembly.GetCallingAssembly(),];
+        var scanAssemblies = assembliesToScan.Length != 0 ? assembliesToScan : [Assembly.GetCallingAssembly()];
         services.Scan(scan =>
             scan.FromAssemblies(scanAssemblies)
                 .AddClasses(classes => classes.AssignableTo(typeof(IEfUnitOfWork<>)), false)

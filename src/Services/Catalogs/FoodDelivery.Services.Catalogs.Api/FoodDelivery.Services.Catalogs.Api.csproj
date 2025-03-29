@@ -13,6 +13,7 @@
     <ContainerImageTag>dev</ContainerImageTag>
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:latest</ContainerBaseImage>
   </PropertyGroup>
+  
 <!--  <ItemGroup>-->
 <!--    <ContainerEnvironmentVariable Include="ASPNETCORE_ENVIRONMENT" Value="docker" />-->
 <!--  </ItemGroup>-->

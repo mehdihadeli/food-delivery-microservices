@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Tests.Shared.Auth;
 
-public static class MockJwtTokens
+internal static class MockJwtTokens
 {
     public static string Issuer { get; } = Guid.NewGuid().ToString();
     public static SecurityKey SecurityKey { get; }

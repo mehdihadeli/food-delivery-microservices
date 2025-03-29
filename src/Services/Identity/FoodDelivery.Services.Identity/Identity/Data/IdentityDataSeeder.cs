@@ -7,13 +7,13 @@ namespace FoodDelivery.Services.Identity.Identity.Data;
 public class IdentityDataSeeder(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
     : IDataSeeder
 {
-    public async Task SeedAllAsync()
+    public int Order => 1;
+
+    public async Task SeedAllAsync(CancellationToken cancellationToken)
     {
         await SeedRoles();
         await SeedUsers();
     }
-
-    public int Order => 1;
 
     private async Task SeedRoles()
     {
@@ -49,7 +49,7 @@ public class IdentityDataSeeder(UserManager<ApplicationUser> userManager, RoleMa
                 UserName = "mehdi2",
                 FirstName = "Mehdi",
                 LastName = "Test",
-                Email = "mehdi2@test.com"
+                Email = "mehdi2@test.com",
             };
 
             var result = await userManager.CreateAsync(user, "123456");

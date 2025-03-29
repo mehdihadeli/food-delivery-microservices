@@ -1,4 +1,4 @@
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BuildingBlocks.Web.Minimal.Extensions;
@@ -43,7 +43,7 @@ public static class TypedResultsExtensions
         {
             Detail = detail,
             Instance = instance,
-            Type = type
+            Type = type,
         };
 
         problemDetails.Title = title ?? problemDetails.Title;

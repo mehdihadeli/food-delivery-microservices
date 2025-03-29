@@ -17,7 +17,7 @@ namespace FoodDelivery.Services.Catalogs.Shared.Data.Migrations.Catalogs
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -37,11 +37,6 @@ namespace FoodDelivery.Services.Catalogs.Shared.Data.Migrations.Catalogs
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("integer")
                         .HasColumnName("created_by");
-
-                    b.Property<long>("OriginalVersion")
-                        .IsConcurrencyToken()
-                        .HasColumnType("bigint")
-                        .HasColumnName("original_version");
 
                     b.HasKey("Id")
                         .HasName("pk_brands");
@@ -72,11 +67,6 @@ namespace FoodDelivery.Services.Catalogs.Shared.Data.Migrations.Catalogs
                     b.Property<string>("Description")
                         .HasColumnType("text")
                         .HasColumnName("description");
-
-                    b.Property<long>("OriginalVersion")
-                        .IsConcurrencyToken()
-                        .HasColumnType("bigint")
-                        .HasColumnName("original_version");
 
                     b.HasKey("Id")
                         .HasName("pk_categories");
@@ -156,11 +146,6 @@ namespace FoodDelivery.Services.Catalogs.Shared.Data.Migrations.Catalogs
                     b.Property<string>("Description")
                         .HasColumnType("text")
                         .HasColumnName("description");
-
-                    b.Property<long>("OriginalVersion")
-                        .IsConcurrencyToken()
-                        .HasColumnType("bigint")
-                        .HasColumnName("original_version");
 
                     b.Property<string>("ProductStatus")
                         .IsRequired()

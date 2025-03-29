@@ -3,7 +3,6 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../../'))" />
  
   <ItemGroup>
-    <Using Include="MediatR" />
     <Using Include="System.Collections.Generic" />
     <Using Include="System.Reflection" />
     <Using Include="System.Threading.Tasks" />

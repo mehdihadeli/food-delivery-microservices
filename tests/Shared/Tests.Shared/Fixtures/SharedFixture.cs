@@ -1,16 +1,14 @@
 using System.Net.Http.Headers;
-using System.Reflection;
 using System.Security.Claims;
 using AutoBogus;
 using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Abstractions.Messages;
+using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Abstractions.Queries;
-using BuildingBlocks.Core.Events;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Messaging.MessagePersistence;
-using BuildingBlocks.Core.Persistence.Extensions;
+using BuildingBlocks.Core.Messages.MessagePersistence;
+using BuildingBlocks.Core.Messages.MessagePersistence.BackgroundServices;
+using BuildingBlocks.Core.Persistence;
 using BuildingBlocks.Core.Types;
 using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Persistence.EfCore.Postgres;
@@ -18,14 +16,12 @@ using BuildingBlocks.Persistence.Mongo;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using MassTransit;
-using MassTransit.Context;
 using MassTransit.Testing;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using Serilog;
 using Tests.Shared.Auth;
@@ -33,7 +29,9 @@ using Tests.Shared.Extensions;
 using Tests.Shared.Factory;
 using WireMock.Server;
 using Xunit.Sdk;
-using IExternalEventBus = BuildingBlocks.Abstractions.Messaging.IExternalEventBus;
+using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
+using IExternalEventBus = BuildingBlocks.Abstractions.Messages.IExternalEventBus;
+using IMessage = BuildingBlocks.Abstractions.Messages.IMessage;
 
 namespace Tests.Shared.Fixtures;
 
@@ -49,15 +47,13 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     private HttpClient? _normalClient;
     private HttpClient? _guestClient;
 
-    public Func<Task>? OnSharedFixtureInitialized;
-    public Func<Task>? OnSharedFixtureDisposed;
-    public bool AlreadyMigrated { get; set; }
-
+    public WireMockServer WireMockServer { get; }
+    public string WireMockServerUrl { get; }
+    public event Func<Task>? SharedFixtureInitialized;
+    public event Func<Task>? SharedFixtureDisposed;
     public ILogger Logger { get; }
     public PostgresContainerFixture PostgresContainerFixture { get; }
     public MongoContainerFixture MongoContainerFixture { get; }
-
-    public Mongo2GoFixture Mongo2GoFixture { get; } = default!;
     public RabbitMQContainerFixture RabbitMqContainerFixture { get; }
     public CustomWebApplicationFactory<TEntryPoint> Factory { get; private set; }
     public IServiceProvider ServiceProvider => _serviceProvider ??= Factory.Services;
@@ -97,9 +93,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     /// </summary>
     public HttpClient NormalUserHttpClient => _normalClient ??= CreateNormalUserHttpClient();
 
-    public WireMockServer WireMockServer { get; }
-    public string WireMockServerUrl { get; } = null!;
-
     //https://github.com/xunit/xunit/issues/565
     //https://github.com/xunit/xunit/pull/1705
     //https://xunit.net/docs/capturing-output#output-in-extensions
@@ -117,6 +110,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             .ForContext<SharedFixture<TEntryPoint>>();
 
         // //https://github.com/testcontainers/testcontainers-dotnet/blob/8db93b2eb28bc2bc7d579981da1651cd41ec03f8/docs/custom_configuration/index.md#enable-logging
+        // //// TODO: Breaking change in the testcontainer upgrade
         // TestcontainersSettings.Logger = new Serilog.Extensions.Logging.SerilogLoggerFactory(Logger).CreateLogger(
         //     "TestContainer"
         // );
@@ -124,7 +118,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         // Service provider will build after getting with get accessors, we don't want to build our service provider here
         PostgresContainerFixture = new PostgresContainerFixture(messageSink);
         MongoContainerFixture = new MongoContainerFixture(messageSink);
-        //Mongo2GoFixture = new Mongo2GoFixture(messageSink);
         RabbitMqContainerFixture = new RabbitMQContainerFixture(messageSink);
 
         AutoFaker.Configure(b =>
@@ -161,76 +154,87 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         await Factory.InitializeAsync();
         await PostgresContainerFixture.InitializeAsync();
         await MongoContainerFixture.InitializeAsync();
-        //await Mongo2GoFixture.InitializeAsync();
         await RabbitMqContainerFixture.InitializeAsync();
 
-        // with `AddOverrideEnvKeyValues` config changes are accessible during services registration
-        Factory.AddOverrideEnvKeyValues(
-            new Dictionary<string, string>
-            {
-                {
-                    $"{nameof(PostgresOptions)}:{nameof(PostgresOptions.ConnectionString)}",
-                    PostgresContainerFixture.Container.GetConnectionString()
-                },
-                {
-                    $"{nameof(MessagePersistenceOptions)}:{nameof(PostgresOptions.ConnectionString)}",
-                    PostgresContainerFixture.Container.GetConnectionString()
-                },
-                {
-                    $"{nameof(MongoOptions)}:{nameof(MongoOptions.ConnectionString)}",
-                    MongoContainerFixture.Container.GetConnectionString()
-                },
-                {
-                    $"{nameof(MongoOptions)}:{nameof(MongoOptions.DatabaseName)}",
-                    MongoContainerFixture.MongoContainerOptions.DatabaseName
-                },
-                //{"MongoOptions:ConnectionString", Mongo2GoFixture.MongoDbRunner.ConnectionString}, //initialize mongo2go connection
-                {
-                    $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.UserName)}",
-                    RabbitMqContainerFixture.RabbitMqContainerOptions.UserName
-                },
-                {
-                    $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Password)}",
-                    RabbitMqContainerFixture.RabbitMqContainerOptions.Password
-                },
-                {
-                    $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Host)}",
-                    RabbitMqContainerFixture.Container.Hostname
-                },
-                {
-                    $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Port)}",
-                    RabbitMqContainerFixture.HostPort.ToString()
-                },
-            }
-        );
+        // or using `AddOverrideEnvKeyValues` and using `__` as seperator to change configs that are accessible during services registration
+        Factory.AddOverrideInMemoryConfig(keyValues =>
+        {
+            keyValues.Add(
+                $"{nameof(PostgresOptions)}:{nameof(PostgresOptions.ConnectionString)}",
+                PostgresContainerFixture.Container.GetConnectionString()
+            );
+
+            keyValues.Add(
+                $"{nameof(MessagePersistenceOptions)}:{nameof(PostgresOptions.ConnectionString)}",
+                PostgresContainerFixture.Container.GetConnectionString()
+            );
+
+            keyValues.Add(
+                $"{nameof(MongoOptions)}:{nameof(MongoOptions.ConnectionString)}",
+                MongoContainerFixture.Container.GetConnectionString()
+            );
+
+            keyValues.Add(
+                $"{nameof(MongoOptions)}:{nameof(MongoOptions.DatabaseName)}",
+                MongoContainerFixture.MongoContainerOptions.DatabaseName
+            );
+
+            keyValues.Add(
+                $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.UserName)}",
+                RabbitMqContainerFixture.RabbitMqContainerOptions.UserName
+            );
+
+            keyValues.Add(
+                $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Password)}",
+                RabbitMqContainerFixture.RabbitMqContainerOptions.Password
+            );
+
+            keyValues.Add(
+                $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Host)}",
+                RabbitMqContainerFixture.Container.Hostname
+            );
+
+            keyValues.Add(
+                $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Port)}",
+                RabbitMqContainerFixture.HostPort.ToString()
+            );
+        });
 
         // with `AddOverrideInMemoryConfig` config changes are accessible after services registration and build process
-        Factory.AddOverrideInMemoryConfig(new Dictionary<string, string>());
-        Factory.ConfigurationAction += cfg =>
+        Factory.WithTestConfiguration(cfg =>
         {
             // Or we can override configuration explicitly, and it is accessible via IOptions<> and Configuration
             cfg["WireMockUrl"] = WireMockServerUrl;
-        };
+        });
 
-        var initCallback = OnSharedFixtureInitialized?.Invoke();
-        if (initCallback != null)
-            await initCallback;
+        //// 1. If we need fine-grained control over the behavior of the services during tests, we can remove all IHostedService in CustomWebApplicationFactory for existing app and add required ones with `AddTestHostedService` in SharedFixture `InitializeAsync` and run them manually with `TestWorkersRunner`.
+        //// 2. We can use Existing IHostedService Implementations if we want our tests to be as realistic as possible.
+        // Factory.AddTestHostedService<MigrationWorker>();
+        // Factory.AddTestHostedService<DataSeedWorker>();
+        // Factory.AddTestHostedService<MessagePersistenceBackgroundService>();
+        // Factory.AddTestHostedService<MassTransitHostedService>();
+
+        if (SharedFixtureInitialized is not null)
+        {
+            await SharedFixtureInitialized.Invoke();
+        }
     }
 
     public async Task DisposeAsync()
     {
         await PostgresContainerFixture.DisposeAsync();
         await MongoContainerFixture.DisposeAsync();
-        //await Mongo2GoFixture.DisposeAsync();
         await RabbitMqContainerFixture.DisposeAsync();
+
         WireMockServer.Stop();
         AdminHttpClient.Dispose();
         NormalUserHttpClient.Dispose();
         GuestClient.Dispose();
 
-        var disposeCallback = OnSharedFixtureDisposed?.Invoke();
-        if (disposeCallback != null)
-            await disposeCallback;
+        if (SharedFixtureDisposed is not null)
+        {
+            await SharedFixtureDisposed.Invoke();
+        }
 
         await Factory.DisposeAsync();
 
@@ -242,50 +246,35 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         await RabbitMqContainerFixture.CleanupQueuesAsync(cancellationToken);
     }
 
+    public void WithTestConfigureServices(Action<IServiceCollection> services)
+    {
+        Factory.WithTestConfigureServices(services);
+    }
+
+    public void WithTestConfigureAppConfiguration(Action<WebHostBuilderContext, IConfigurationBuilder> appConfiguration)
+    {
+        Factory.WithTestConfigureAppConfiguration(appConfiguration);
+    }
+
+    public void WithTestConfiguration(Action<IConfiguration> configurations)
+    {
+        Factory.WithTestConfiguration(configurations);
+    }
+
+    public void AddOverrideEnvKeyValues(Action<IDictionary<string, string>> keyValuesAction)
+    {
+        Factory.AddOverrideEnvKeyValues(keyValuesAction);
+    }
+
+    public void AddOverrideInMemoryConfig(Action<IDictionary<string, string>> keyValuesAction)
+    {
+        Factory.AddOverrideInMemoryConfig(keyValuesAction);
+    }
+
     public async Task ResetDatabasesAsync(CancellationToken cancellationToken = default)
     {
         await PostgresContainerFixture.ResetDbAsync(cancellationToken);
         await MongoContainerFixture.ResetDbAsync(cancellationToken);
-        //await Mongo2GoFixture.ResetDbAsync(cancellationToken); //get new connection for mongo2go with clean db
-
-        ////Mongo2Go - set new connection with clean db from mongo2go to our app
-        // var mongoOptions = ServiceProvider.GetRequiredService<MongoOptions>();
-        // mongoOptions.ConnectionString = Mongo2GoFixture.MongoDbRunner.ConnectionString;
-    }
-
-    /// <summary>
-    /// We could use `WithWebHostBuilder` method for specific config and customize existing `CustomWebApplicationFactory`
-    /// </summary>
-    public CustomWebApplicationFactory<TEntryPoint> WithWebHostBuilder(Action<IWebHostBuilder> builder)
-    {
-        Factory = Factory.WithWebHostBuilder(builder);
-        return Factory;
-    }
-
-    public CustomWebApplicationFactory<TEntryPoint> WithHostBuilder(Action<IHostBuilder> builder)
-    {
-        Factory = Factory.WithHostBuilder(builder);
-        return Factory;
-    }
-
-    public CustomWebApplicationFactory<TEntryPoint> WithConfigureAppConfigurations(
-        Action<HostBuilderContext, IConfigurationBuilder> cfg
-    )
-    {
-        Factory.WithConfigureAppConfigurations(cfg);
-        return Factory;
-    }
-
-    public void ConfigureTestConfigureApp(Action<HostBuilderContext, IConfigurationBuilder>? configBuilder)
-    {
-        if (configBuilder is not null)
-            Factory.TestConfigureApp += configBuilder;
-    }
-
-    public void ConfigureTestServices(Action<IServiceCollection>? services)
-    {
-        if (services is not null)
-            Factory.TestConfigureServices += services;
     }
 
     public void SetOutputHelper(ITestOutputHelper outputHelper)
@@ -297,7 +286,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
     public void SetAdminUser()
     {
-        var admin = CreateAdminUserMock();
+        var admin = SharedFixture<TEntryPoint>.CreateAdminUserMock();
         var identity = new ClaimsIdentity(admin.Claims);
         var claimsPrincipal = new ClaimsPrincipal(identity);
 
@@ -317,7 +306,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     public async Task<T> ExecuteScopeAsync<T>(Func<IServiceProvider, Task<T>> action)
     {
         await using var scope = ServiceProvider.CreateAsyncScope();
-
         var result = await action(scope.ServiceProvider);
 
         return result;
@@ -336,8 +324,8 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         });
     }
 
-    public async Task<TResponse> SendAsync<TResponse>(
-        ICommand<TResponse> request,
+    public async Task<TResponse> CommandAsync<TResponse>(
+        BuildingBlocks.Abstractions.Commands.ICommand<TResponse> command,
         CancellationToken cancellationToken = default
     )
         where TResponse : class
@@ -346,23 +334,22 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         {
             var commandBus = sp.GetRequiredService<ICommandBus>();
 
-            return await commandBus.SendAsync(request, cancellationToken);
+            return await commandBus.SendAsync(command, cancellationToken);
         });
     }
 
-    public async Task SendAsync<T>(T request, CancellationToken cancellationToken = default)
-        where T : class, ICommand
+    public async Task CommandAsync(ICommand command, CancellationToken cancellationToken = default)
     {
         await ExecuteScopeAsync(async sp =>
         {
             var commandBus = sp.GetRequiredService<ICommandBus>();
 
-            await commandBus.SendAsync(request, cancellationToken);
+            await commandBus.SendAsync(command, cancellationToken);
         });
     }
 
     public async Task<TResponse> QueryAsync<TResponse>(
-        IQuery<TResponse> query,
+        BuildingBlocks.Abstractions.Queries.IQuery<TResponse> query,
         CancellationToken cancellationToken = default
     )
         where TResponse : class
@@ -390,7 +377,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     }
 
     public async ValueTask PublishMessageAsync<TMessage>(
-        IEventEnvelope<TMessage> eventEnvelope,
+        IMessageEnvelope<TMessage> messageEnvelope,
         CancellationToken cancellationToken = default
     )
         where TMessage : class, IMessage
@@ -399,7 +386,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         {
             var bus = sp.GetRequiredService<IExternalEventBus>();
 
-            await bus.PublishAsync(eventEnvelope, cancellationToken);
+            await bus.PublishAsync(messageEnvelope, cancellationToken);
         });
     }
 
@@ -430,7 +417,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         }
     }
 
-    public async Task WaitForPublishing<T>(CancellationToken cancellationToken = default)
+    public async Task ShouldPublishing<T>(CancellationToken cancellationToken = default)
         where T : class, IMessage
     {
         // will block the thread until there is a publishing message
@@ -441,14 +428,8 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
                 var faultMessageFilter = new PublishedMessageFilter();
 
                 messageFilter.Includes.Add<T>();
-                messageFilter.Includes.Add<EventEnvelope<T>>();
-                messageFilter.Includes.Add<IEventEnvelope<T>>();
-                messageFilter.Includes.Add<IEventEnvelope>(x =>
-                    (x.MessageObject as IEventEnvelope)!.Message.GetType() == typeof(T)
-                );
-
-                faultMessageFilter.Includes.Add<Fault<EventEnvelope<T>>>();
-                faultMessageFilter.Includes.Add<Fault<IEventEnvelope<T>>>();
+                messageFilter.Includes.Add<IMessageEnvelope<T>>();
+                faultMessageFilter.Includes.Add<Fault<IMessageEnvelope<T>>>();
                 faultMessageFilter.Includes.Add<T>();
 
                 var faulty = faultMessageFilter.Any(message);
@@ -460,7 +441,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         );
     }
 
-    public async Task WaitForSending<T>(CancellationToken cancellationToken = default)
+    public async Task ShouldSending<T>(CancellationToken cancellationToken = default)
         where T : class, IMessage
     {
         // will block the thread until there is a publishing message
@@ -471,14 +452,8 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
                 var faultMessageFilter = new SentMessageFilter();
 
                 messageFilter.Includes.Add<T>();
-                messageFilter.Includes.Add<EventEnvelope<T>>();
-                messageFilter.Includes.Add<IEventEnvelope<T>>();
-                messageFilter.Includes.Add<IEventEnvelope>(x =>
-                    (x.MessageObject as IEventEnvelope)!.Message.GetType() == typeof(T)
-                );
-
-                faultMessageFilter.Includes.Add<Fault<EventEnvelope<T>>>();
-                faultMessageFilter.Includes.Add<Fault<IEventEnvelope<T>>>();
+                messageFilter.Includes.Add<IMessageEnvelope<T>>();
+                faultMessageFilter.Includes.Add<Fault<IMessageEnvelope<T>>>();
                 faultMessageFilter.Includes.Add<Fault<T>>();
 
                 var faulty = faultMessageFilter.Any(message);
@@ -490,7 +465,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         );
     }
 
-    public async Task WaitForConsuming<T>(CancellationToken cancellationToken = default)
+    public async Task ShouldConsuming<T>(CancellationToken cancellationToken = default)
         where T : class, IMessage
     {
         // will block the thread until there is a consuming message
@@ -500,16 +475,11 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
                 var messageFilter = new ReceivedMessageFilter();
                 var faultMessageFilter = new ReceivedMessageFilter();
 
-                messageFilter.Includes.Add<IEventEnvelope<T>>();
-                messageFilter.Includes.Add<EventEnvelope<T>>();
-                messageFilter.Includes.Add<IEventEnvelope>(x =>
-                    (x.MessageObject as IEventEnvelope)!.Message.GetType() == typeof(T)
-                );
+                messageFilter.Includes.Add<IMessageEnvelope<T>>();
                 messageFilter.Includes.Add<T>();
 
-                faultMessageFilter.Includes.Add<Fault<EventEnvelope<T>>>();
+                faultMessageFilter.Includes.Add<Fault<IMessageEnvelope<T>>>();
                 faultMessageFilter.Includes.Add<Fault<T>>();
-                faultMessageFilter.Includes.Add<Fault<IEventEnvelope<T>>>();
 
                 var faulty = faultMessageFilter.Any(message);
                 var published = messageFilter.Any(message);
@@ -520,7 +490,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         );
     }
 
-    public async Task WaitForConsuming<TMessage, TConsumedBy>(CancellationToken cancellationToken = default)
+    public async Task ShouldConsuming<TMessage, TConsumedBy>(CancellationToken cancellationToken = default)
         where TMessage : class, IMessage
         where TConsumedBy : class, IConsumer
     {
@@ -533,16 +503,11 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
                 var messageFilter = new ReceivedMessageFilter();
                 var faultMessageFilter = new ReceivedMessageFilter();
 
-                messageFilter.Includes.Add<IEventEnvelope<TMessage>>();
-                messageFilter.Includes.Add<EventEnvelope<TMessage>>();
-                messageFilter.Includes.Add<IEventEnvelope>(x =>
-                    (x.MessageObject as IEventEnvelope)!.Message.GetType() == typeof(TMessage)
-                );
+                messageFilter.Includes.Add<IMessageEnvelope<TMessage>>();
                 messageFilter.Includes.Add<TMessage>();
 
-                faultMessageFilter.Includes.Add<Fault<EventEnvelope<TMessage>>>();
                 faultMessageFilter.Includes.Add<Fault<TMessage>>();
-                faultMessageFilter.Includes.Add<Fault<IEventEnvelope<TMessage>>>();
+                faultMessageFilter.Includes.Add<Fault<IMessageEnvelope<TMessage>>>();
 
                 var faulty = faultMessageFilter.Any(message);
                 var published = messageFilter.Any(message);
@@ -588,7 +553,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     //     return hypothesis;
     // }
 
-    public async ValueTask ShouldProcessedOutboxPersistMessage<TMessage>(CancellationToken cancellationToken = default)
+    public async ValueTask ShouldProcessingOutboxMessage<TMessage>(CancellationToken cancellationToken = default)
         where TMessage : class, IMessage
     {
         await WaitUntilConditionMet(async () =>
@@ -601,20 +566,18 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
                 var filter = await messagePersistenceService.GetByFilterAsync(
                     x =>
                         x.DeliveryType == MessageDeliveryType.Outbox
-                        && TypeMapper.GetFullTypeName(typeof(TMessage)) == x.DataType,
+                        && TypeMapper.AddFullTypeName(typeof(TMessage)) == x.DataType,
                     cancellationToken
                 );
 
-                var res = filter.Any(x => x.MessageStatus == MessageStatus.Processed);
-
-                if (res is true) { }
+                var res = filter.Any(x => x.MessageStatus == MessageStatus.Delivered);
 
                 return res;
             });
         });
     }
 
-    public async ValueTask ShouldProcessedPersistInternalCommand<TInternalCommand>(
+    public async ValueTask ShouldProcessingInternalCommand<TInternalCommand>(
         CancellationToken cancellationToken = default
     )
         where TInternalCommand : class, IInternalCommand
@@ -629,11 +592,11 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
                 var filter = await messagePersistenceService.GetByFilterAsync(
                     x =>
                         x.DeliveryType == MessageDeliveryType.Internal
-                        && TypeMapper.GetFullTypeName(typeof(TInternalCommand)) == x.DataType,
+                        && TypeMapper.AddFullTypeName(typeof(TInternalCommand)) == x.DataType,
                     cancellationToken
                 );
 
-                var res = filter.Any(x => x.MessageStatus == MessageStatus.Processed);
+                var res = filter.Any(x => x.MessageStatus == MessageStatus.Delivered);
 
                 return res;
             });
@@ -670,29 +633,29 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         return userClient;
     }
 
-    private MockAuthUser CreateAdminUserMock()
+    private static MockAuthUser CreateAdminUserMock()
     {
         var roleClaim = new Claim(ClaimTypes.Role, Constants.Users.Admin.Role);
         var otherClaims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, Constants.Users.Admin.UserId),
             new(ClaimTypes.Name, Constants.Users.Admin.UserName),
-            new(ClaimTypes.Email, Constants.Users.Admin.Email)
+            new(ClaimTypes.Email, Constants.Users.Admin.Email),
         };
 
-        return _ = new MockAuthUser(otherClaims.Concat(new[] { roleClaim }).ToArray());
+        return _ = new MockAuthUser(otherClaims.Concat([roleClaim]).ToArray());
     }
 
-    private MockAuthUser CreateNormalUserMock()
+    private static MockAuthUser CreateNormalUserMock()
     {
         var roleClaim = new Claim(ClaimTypes.Role, Constants.Users.NormalUser.Role);
         var otherClaims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, Constants.Users.NormalUser.UserId),
             new(ClaimTypes.Name, Constants.Users.NormalUser.UserName),
-            new(ClaimTypes.Email, Constants.Users.NormalUser.Email)
+            new(ClaimTypes.Email, Constants.Users.NormalUser.Email),
         };
 
-        return _ = new MockAuthUser(otherClaims.Concat(new[] { roleClaim }).ToArray());
+        return _ = new MockAuthUser(otherClaims.Concat([roleClaim]).ToArray());
     }
 }

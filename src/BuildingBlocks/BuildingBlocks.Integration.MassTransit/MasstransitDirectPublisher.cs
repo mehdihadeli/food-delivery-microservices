@@ -1,52 +1,57 @@
+using System.Globalization;
 using System.Reflection;
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Core.Messaging;
+using BuildingBlocks.Abstractions.Messages;
+using BuildingBlocks.Core.Messages;
 using Humanizer;
 using MassTransit;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using MessageHeaders = BuildingBlocks.Core.Messages.MessageHeaders;
 
 namespace BuildingBlocks.Integration.MassTransit;
 
-public class MasstransitDirectPublisher(IBus bus) : IBusDirectPublisher
+public class MasstransitDirectPublisher(IBus bus, IOptions<MasstransitOptions> masstransitOptions) : IBusDirectPublisher
 {
+    private readonly MasstransitOptions _masstransitOptions = masstransitOptions.Value;
+
     public async Task PublishAsync<TMessage>(
-        IEventEnvelope<TMessage> eventEnvelope,
+        IMessageEnvelope<TMessage> messageEnvelope,
         CancellationToken cancellationToken = default
     )
-        where TMessage : IMessage
+        where TMessage : class, IMessage
     {
         // https://github.com/MassTransit/MassTransit/blob/eb3c9ee1007cea313deb39dc7c4eb796b7e61579/src/MassTransit/SqlTransport/SqlTransport/ConnectionContextSupervisor.cs#L35
         await bus.Publish(
-            eventEnvelope,
-            envelopeWrapperContext => FillMasstransitContextInformation(eventEnvelope, envelopeWrapperContext),
-            cancellationToken
-        );
+                messageEnvelope.Message,
+                publishContext => FillMasstransitContextInformation(messageEnvelope, publishContext),
+                cancellationToken
+            )
+            .ConfigureAwait(false);
     }
 
-    public Task PublishAsync(IEventEnvelope eventEnvelope, CancellationToken cancellationToken = default)
+    public Task PublishAsync(IMessageEnvelopeBase messageEnvelope, CancellationToken cancellationToken = default)
     {
-        var messageType = eventEnvelope.Message.GetType();
+        var messageType = messageEnvelope.Message.GetType();
 
         MethodInfo publishMethod = typeof(IBusDirectPublisher)
             .GetMethods()
             .FirstOrDefault(x => x.GetGenericArguments().Length != 0 && x.GetParameters().Length == 2)!;
         MethodInfo genericPublishMethod = publishMethod.MakeGenericMethod(messageType);
 
-        Task publishTask = (Task)genericPublishMethod.Invoke(this, new object[] { eventEnvelope, cancellationToken });
+        Task publishTask = (Task)genericPublishMethod.Invoke(this, new object[] { messageEnvelope, cancellationToken });
 
         return publishTask!;
     }
 
     public async Task PublishAsync<TMessage>(
-        IEventEnvelope<TMessage> eventEnvelope,
+        IMessageEnvelope<TMessage> messageEnvelope,
         string? exchangeOrTopic = null,
         string? queue = null,
         CancellationToken cancellationToken = default
     )
-        where TMessage : IMessage
+        where TMessage : class, IMessage
     {
-        var bindExchangeName = eventEnvelope.Message.GetType().Name.Underscore();
+        var bindExchangeName = messageEnvelope.Message.GetType().Name.Underscore();
 
         if (string.IsNullOrEmpty(exchangeOrTopic))
         {
@@ -61,23 +66,25 @@ public class MasstransitDirectPublisher(IBus bus) : IBusDirectPublisher
             exchangeType: ExchangeType.Direct
         );
 
-        var sendEndpoint = await bus.GetSendEndpoint(new Uri(endpointAddress));
+        var sendEndpoint = await bus.GetSendEndpoint(new Uri(endpointAddress)).ConfigureAwait(false);
         // https://github.com/MassTransit/MassTransit/blob/eb3c9ee1007cea313deb39dc7c4eb796b7e61579/src/MassTransit/SqlTransport/SqlTransport/ConnectionContextSupervisor.cs#L53
-        await sendEndpoint.Send(
-            eventEnvelope,
-            envelopeWrapperContext => FillMasstransitContextInformation(eventEnvelope, envelopeWrapperContext),
-            cancellationToken
-        );
+        await sendEndpoint
+            .Send(
+                messageEnvelope.Message,
+                sendContext => FillMasstransitContextInformation(messageEnvelope, sendContext),
+                cancellationToken
+            )
+            .ConfigureAwait(false);
     }
 
     public Task PublishAsync(
-        IEventEnvelope eventEnvelope,
+        IMessageEnvelopeBase messageEnvelope,
         string? exchangeOrTopic = null,
         string? queue = null,
         CancellationToken cancellationToken = default
     )
     {
-        var messageType = eventEnvelope.Message.GetType();
+        var messageType = messageEnvelope.Message.GetType();
 
         MethodInfo publishMethod = typeof(IBusDirectPublisher)
             .GetMethods()
@@ -87,42 +94,70 @@ public class MasstransitDirectPublisher(IBus bus) : IBusDirectPublisher
         Task publishTask = (Task)
             genericPublishMethod.Invoke(
                 this,
-                new object[] { eventEnvelope, exchangeOrTopic, queue, cancellationToken }
+                new object[] { messageEnvelope, exchangeOrTopic, queue, cancellationToken }
             );
 
         return publishTask!;
     }
 
-    private static void FillMasstransitContextInformation(
-        IEventEnvelope eventEnvelope,
-        PublishContext<IEventEnvelope> envelopeWrapperContext
+    private void FillMasstransitContextInformation<TMessage>(
+        IMessageEnvelope<TMessage> messageEnvelope,
+        PublishContext<TMessage> envelopeWrapperContext
     )
+        where TMessage : class, IMessage
     {
         // https://masstransit.io/documentation/concepts/messages#message-headers
         // https://www.enterpriseintegrationpatterns.com/patterns/messaging/EnvelopeWrapper.html
         // Just for filling masstransit related field, but we have a separated envelope message.
-        envelopeWrapperContext.MessageId = eventEnvelope.Metadata.MessageId;
-        envelopeWrapperContext.CorrelationId = eventEnvelope.Metadata.CorrelationId;
-        envelopeWrapperContext.SetRoutingKey(eventEnvelope.Message.GetType().Name.Underscore());
+        envelopeWrapperContext.MessageId = messageEnvelope.Metadata.MessageId;
+        envelopeWrapperContext.CorrelationId = messageEnvelope.Metadata.CorrelationId;
 
-        foreach (var header in eventEnvelope.Metadata.Headers)
+        if (!_masstransitOptions.ConfigureConsumeTopology)
+        {
+            // if `ConfigureConsumeTopology` is false we use direct exchange with message type name as routing-key, otherwise we use direct exchange with null routing-key (default exchange)
+            envelopeWrapperContext.SetRoutingKey(messageEnvelope.Message.GetType().Name.Underscore());
+        }
+
+        envelopeWrapperContext.Headers.Set(MessageHeaders.Type, messageEnvelope.Metadata.MessageType);
+        envelopeWrapperContext.Headers.Set(MessageHeaders.Name, messageEnvelope.Metadata.Name);
+        envelopeWrapperContext.Headers.Set(MessageHeaders.CausationId, messageEnvelope.Metadata.CausationId);
+        envelopeWrapperContext.Headers.Set(MessageHeaders.CorrelationId, messageEnvelope.Metadata.CorrelationId);
+        envelopeWrapperContext.Headers.Set(
+            MessageHeaders.Created,
+            messageEnvelope.Metadata.Created.ToString(CultureInfo.InvariantCulture)
+        );
+        foreach (var header in messageEnvelope.Metadata.Headers)
         {
             envelopeWrapperContext.Headers.Set(header.Key, header.Value);
         }
     }
 
-    private static void FillMasstransitContextInformation(
-        IEventEnvelope eventEnvelope,
-        SendContext<IEventEnvelope> envelopeWrapperContext
+    private void FillMasstransitContextInformation<TMessage>(
+        IMessageEnvelope<TMessage> messageEnvelope,
+        SendContext<TMessage> envelopeWrapperContext
     )
+        where TMessage : class, IMessage
     {
         // https://masstransit.io/documentation/concepts/messages#message-headers
         // https://www.enterpriseintegrationpatterns.com/patterns/messaging/EnvelopeWrapper.html
         // Just for filling masstransit related field, but we have a separated envelope message.
-        envelopeWrapperContext.MessageId = eventEnvelope.Metadata.MessageId;
-        envelopeWrapperContext.CorrelationId = eventEnvelope.Metadata.CorrelationId;
+        envelopeWrapperContext.MessageId = messageEnvelope.Metadata.MessageId;
+        envelopeWrapperContext.CorrelationId = messageEnvelope.Metadata.CorrelationId;
+        if (!_masstransitOptions.ConfigureConsumeTopology)
+        {
+            // if `ConfigureConsumeTopology` is false we use direct exchange with message type name as routing-key, otherwise we use direct exchange with null routing-key (default exchange)
+            envelopeWrapperContext.SetRoutingKey(messageEnvelope.Message.GetType().Name.Underscore());
+        }
 
-        foreach (var header in eventEnvelope.Metadata.Headers)
+        envelopeWrapperContext.Headers.Set(MessageHeaders.Type, messageEnvelope.Metadata.MessageType);
+        envelopeWrapperContext.Headers.Set(MessageHeaders.Name, messageEnvelope.Metadata.Name);
+        envelopeWrapperContext.Headers.Set(MessageHeaders.CausationId, messageEnvelope.Metadata.CausationId);
+        envelopeWrapperContext.Headers.Set(MessageHeaders.CorrelationId, messageEnvelope.Metadata.CorrelationId);
+        envelopeWrapperContext.Headers.Set(
+            MessageHeaders.Created,
+            messageEnvelope.Metadata.Created.ToString(CultureInfo.InvariantCulture)
+        );
+        foreach (var header in messageEnvelope.Metadata.Headers)
         {
             envelopeWrapperContext.Headers.Set(header.Key, header.Value);
         }

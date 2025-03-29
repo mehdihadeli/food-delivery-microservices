@@ -1,8 +1,7 @@
 using System.Text;
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Messaging;
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Serialization;
-using BuildingBlocks.Core.Events;
+using BuildingBlocks.Core.Messages;
 using MemoryPack;
 using Type = System.Type;
 
@@ -12,34 +11,34 @@ public class MemoryPackMessageSerializer(MemoryPackSerializerOptions options) : 
 {
     public string ContentType => "binary/memorypack";
 
-    public string Serialize(IEventEnvelope eventEnvelope)
+    public string Serialize(IMessageEnvelopeBase iMessageEnvelope)
     {
-        return Encoding.UTF8.GetString(MemoryPackSerializer.Serialize(eventEnvelope, options));
+        return Encoding.UTF8.GetString(MemoryPackSerializer.Serialize(iMessageEnvelope, options));
     }
 
-    public string Serialize<T>(IEventEnvelope<T> eventEnvelope)
-        where T : IMessage
+    public string Serialize<T>(IMessageEnvelope<T> messageEnvelope)
+        where T : class, IMessage
     {
-        return Encoding.UTF8.GetString(MemoryPackSerializer.Serialize(eventEnvelope, options));
+        return Encoding.UTF8.GetString(MemoryPackSerializer.Serialize(messageEnvelope, options));
     }
 
-    public IEventEnvelope? Deserialize(string eventEnvelope, Type messageType)
+    public IMessageEnvelopeBase? Deserialize(string eventEnvelope, Type? messageType)
     {
-        // Get the generic type definition of EventEnvelope
-        Type eventEnvelopeType = typeof(EventEnvelope<>);
+        // Get the generic type definition of MessageEnvelopeFactory
+        Type eventEnvelopeType = typeof(MessageEnvelope<>);
         Type eventEnvelopGenericType = eventEnvelopeType.MakeGenericType(messageType);
 
         ReadOnlySpan<byte> byteSpan = StringToReadOnlySpan(eventEnvelope);
 
-        return MemoryPackSerializer.Deserialize(eventEnvelopGenericType, byteSpan, options) as IEventEnvelope;
+        return MemoryPackSerializer.Deserialize(eventEnvelopGenericType, byteSpan, options) as IMessageEnvelopeBase;
     }
 
-    public IEventEnvelope<T>? Deserialize<T>(string eventEnvelope)
-        where T : IMessage
+    public IMessageEnvelope<T>? Deserialize<T>(string eventEnvelope)
+        where T : class, IMessage
     {
         ReadOnlySpan<byte> byteSpan = StringToReadOnlySpan(eventEnvelope);
 
-        return MemoryPackSerializer.Deserialize<EventEnvelope<T>>(byteSpan, options);
+        return MemoryPackSerializer.Deserialize<MessageEnvelope<T>>(byteSpan, options);
     }
 
     private static ReadOnlySpan<byte> StringToReadOnlySpan(string input)

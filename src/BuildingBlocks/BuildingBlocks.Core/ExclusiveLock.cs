@@ -1,20 +1,13 @@
-using System.Collections.Concurrent;
-using BuildingBlocks.Abstractions.Core;
-using SqlStreamStore.Logging;
-
 namespace BuildingBlocks.Core;
 
-public class ExclusiveLock : IExclusiveLock
-{
-    private readonly ConcurrentDictionary<object, SemaphoreSlim> _semaphoreDictionary;
-    private readonly ConcurrentDictionary<object, object> _lockDictionary;
-    private readonly ILog _logger = LogProvider.For<ExclusiveLock>();
+using System.Collections.Concurrent;
+using BuildingBlocks.Abstractions.Core;
+using Microsoft.Extensions.Logging;
 
-    public ExclusiveLock()
-    {
-        _semaphoreDictionary = new ConcurrentDictionary<object, SemaphoreSlim>();
-        _lockDictionary = new ConcurrentDictionary<object, object>();
-    }
+public class ExclusiveLock(ILogger<ExclusiveLock> logger) : IExclusiveLock
+{
+    private readonly ConcurrentDictionary<object, SemaphoreSlim> _semaphoreDictionary = new();
+    private readonly ConcurrentDictionary<object, object> _lockDictionary = new();
 
     public Task<object> AquireAsync(object obj, CancellationToken token = default(CancellationToken))
     {
@@ -42,7 +35,7 @@ public class ExclusiveLock : IExclusiveLock
         }
         catch (System.Exception e)
         {
-            _logger.Error("Exception when performing exclusive execute", e);
+            logger.LogError("Exception when performing exclusive execute, {Error}", e);
         }
         finally
         {
@@ -61,7 +54,7 @@ public class ExclusiveLock : IExclusiveLock
         }
         catch (System.Exception e)
         {
-            _logger.ErrorException("Exception when performing exclusive execute async", e);
+            logger.LogError("Exception when performing exclusive execute async, {Error}", e);
         }
         finally
         {

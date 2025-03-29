@@ -7,16 +7,16 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Applicatio
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GetRestockSubscriptionById.v1;
 
-internal record GetRestockSubscriptionById(Guid Id) : IQuery<GetRestockSubscriptionByIdResult>
+public record GetRestockSubscriptionById(Guid Id) : IQuery<GetRestockSubscriptionByIdResult>
 {
     public static GetRestockSubscriptionById Of(Guid id)
     {
-        id.NotBeInvalid();
+        id.NotBeEmpty();
         return new GetRestockSubscriptionById(id);
     }
 }
 
-internal class GetRestockSubscriptionByIdValidator : AbstractValidator<GetRestockSubscriptionById>
+public class GetRestockSubscriptionByIdValidator : AbstractValidator<GetRestockSubscriptionById>
 {
     public GetRestockSubscriptionByIdValidator()
     {
@@ -24,10 +24,10 @@ internal class GetRestockSubscriptionByIdValidator : AbstractValidator<GetRestoc
     }
 }
 
-internal class GetRestockSubscriptionByIdHandler(CustomersReadUnitOfWork unitOfWork)
+public class GetRestockSubscriptionByIdHandler(CustomersReadUnitOfWork unitOfWork)
     : IQueryHandler<GetRestockSubscriptionById, GetRestockSubscriptionByIdResult>
 {
-    public async Task<GetRestockSubscriptionByIdResult> Handle(
+    public async ValueTask<GetRestockSubscriptionByIdResult> Handle(
         GetRestockSubscriptionById query,
         CancellationToken cancellationToken
     )

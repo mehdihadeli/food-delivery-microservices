@@ -1,30 +1,31 @@
 using System.Globalization;
 using System.Security.Cryptography;
-using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Email;
 using FoodDelivery.Services.Identity.Shared.Data;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
+using Mediator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.SendingEmailVerificationCode.v1;
 
-internal record SendEmailVerificationCode(string Email) : ICommand
+public record SendEmailVerificationCode(string Email) : ICommand
 {
     public static SendEmailVerificationCode Of(string? email) => new(email.NotBeEmptyOrNull());
 }
 
-internal class SendEmailVerificationCodeCommandHandler(
+public class SendEmailVerificationCodeCommandHandler(
     UserManager<ApplicationUser> userManager,
     IdentityContext context,
     IEmailSender emailSender,
     ILogger<SendEmailVerificationCodeCommandHandler> logger
-) : ICommandHandler<SendEmailVerificationCode>
+) : BuildingBlocks.Abstractions.Commands.ICommandHandler<SendEmailVerificationCode>
 {
-    public async Task Handle(SendEmailVerificationCode command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(SendEmailVerificationCode command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
         var identityUser = await userManager.FindByEmailAsync(command.Email);
@@ -52,7 +53,7 @@ internal class SendEmailVerificationCodeCommandHandler(
         {
             Code = verificationCode,
             Email = command.Email,
-            SentAt = DateTime.Now
+            SentAt = DateTime.Now,
         };
 
         await context.Set<EmailVerificationCode>().AddAsync(emailVerificationCode, cancellationToken);
@@ -70,5 +71,7 @@ internal class SendEmailVerificationCodeCommandHandler(
         await emailSender.SendAsync(emailObject);
 
         logger.LogInformation("Verification email sent successfully for userId:{UserId}", identityUser.Id);
+
+        return Unit.Value;
     }
 }

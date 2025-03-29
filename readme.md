@@ -26,35 +26,43 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
 
 - [https://github.com/mehdihadeli/vertical-slice-api-template](https://github.com/mehdihadeli/vertical-slice-api-template)
 
-# ⭐ Support
+## ⭐ Support
 
 If you like feel free to ⭐ this repository, It helps out :)
 
 Thanks a bunch for supporting me!
 
-# Table of Contents
+## Table of Contents
 
-- [Features](#features)
-- [Plan](#plan)
-- [Setup](#setup)
-  - [Dev Certificate](#dev-certificate)
-  - [Conventional Commit](#conventional-commit)
-  - [Formatting](#formatting)
-  - [Analizers](#analizers)
-- [Technologies - Libraries](#technologies---libraries)
-- [The Domain and Bounded Context - Service Boundary](#the-domain-and-bounded-context---service-boundary)
-- [Application Architecture](#application-architecture)
-- [Application Structure](#application-structure)
-- [Vertical Slice Flow](#vertical-slice-flow)
-- [Prerequisites](#prerequisites)
-- [How to Run](#how-to-run)
-  - [Using PM2](#using-pm2)
-  - [Using Docker-Compose](#using-docker-compose)
-  - [Using Tye](#using-tye)
-  - [Using Kubernetes](#using-kubernetes)
-- [Contribution](#contribution)
-- [Project References](#project-references)
-- [License](#license)
+- [🍔 Food Delivery Microservices](#-food-delivery-microservices)
+  - [⭐ Support](#-support)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Plan](#plan)
+  - [Technologies - Libraries](#technologies---libraries)
+  - [Setup](#setup)
+    - [Dev Certificate](#dev-certificate)
+    - [Conventional Commit](#conventional-commit)
+    - [Formatting](#formatting)
+    - [Analizers](#analizers)
+  - [The Domain And Bounded Context - Service Boundary](#the-domain-and-bounded-context---service-boundary)
+  - [Application Architecture](#application-architecture)
+  - [Application Structure](#application-structure)
+    - [High Level Structure](#high-level-structure)
+  - [Vertical Slice Flow](#vertical-slice-flow)
+  - [Prerequisites](#prerequisites)
+  - [How to Run](#how-to-run)
+    - [Using PM2](#using-pm2)
+    - [Using Docker-Compose](#using-docker-compose)
+    - [Using Tye](#using-tye)
+    - [Using Kubernetes](#using-kubernetes)
+      - [Plain Kubernetes](#plain-kubernetes)
+        - [Prerequisites](#prerequisites-1)
+        - [Installation](#installation)
+  - [Contribution](#contribution)
+  - [Project References](#project-references)
+  - [License](#license)
+  - [Star History](#star-history)
 
 ## Features
 
@@ -211,6 +219,7 @@ For formatting, I use mix of [belav/csharpier](https://github.com/belav/csharpie
 
 - You can integrate csharpier with your [prefered IDE](https://csharpier.com/docs/Editors).
 - You can use [your IDE watcher](https://dev.to/tsotsi1/dotnet-c-code-format-on-jetbrain-ide-rider-504i) on save for applying `dotnet format` rules. For Rider it is like this:
+
 ```bash
 FileType: C#
 Scope: Open Files
@@ -288,15 +297,15 @@ The bellow architecture shows that there is one public API (API Gateway) which i
 
 ![](./assets/microservices.png)
 
-Microservices are event based which means they can publish and/or subscribe to any events occurring in the setup. By using this approach for communicating between services, each microservice does not need to know about the other services or handle errors occurred in other microservices.
+Microservices are [event based](https://event-driven.io/en/internal_external_events/) which means they can publish and/or subscribe to any events occurring in the setup. By using this approach for communicating between services, each microservice does not need to know about the other services or handle errors occurred in other microservices.
 
-In this architecture we use [CQRS Pattern](https://www.eventecommerce.com/cqrs-pattern) for separating read and write model beside of other [CQRS Advantages](https://youtu.be/dK4Yb6-LxAk?t=1029). Here for now I don't use [Event Sourcing](https://www.eventecommerce.com/blog/event-sourcing-and-cqrs) for simplicity but I will use it in future for syncing read and write side with sending streams and using [Projection Feature](https://event-driven.io/en/how_to_do_events_projections_with_entity_framework/) for some subscribers to syncing their data through sent streams and creating our [Custom Read Models](https://codeopinion.com/projections-in-event-sourcing-build-any-model-you-want/) in subscribers side.
+In this architecture we use [CQRS Pattern](https://www.kurrent.io/cqrs-pattern) for separating read and write model beside of other [CQRS Advantages](https://youtu.be/dK4Yb6-LxAk?t=1029). Here for now I don't use [Event Sourcing](https://www.kurrent.io/blog/event-sourcing-and-cqrs) for simplicity but I will use it in future for syncing read and write side with sending streams and using [Projection Feature](https://event-driven.io/en/projections_and_read_models_in_event_driven_architecture/) for some subscribers to syncing their data through sent streams and creating our [Custom Read Models](https://codeopinion.com/projections-in-event-sourcing-build-any-model-you-want/) in subscribers side.
 
-Here I have a write model that uses a postgres database for handling better `Consistency` and `ACID Transaction` guaranty. beside o this write side I use a read side model that uses MongoDB for better performance of our read side without any joins with suing some nested document in our document also better scalability with some good scaling features of MongoDB.
+Here I have a write model that uses a postgres database for handling better `Consistency` and `ACID Transaction` guaranty. beside o this write side I use a read side model that uses MongoDB for better performance of our read side without any joins with suing some nested document, also better scalability with some good scaling features in MongoDB.
 
 For syncing our read side and write side we have 2 options with using Event Driven Architecture (without using events streams in event sourcing):
 
-- If our `Read Sides` are in `Same Service`, during saving data in write side I save a [Internal Command](https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing) record in my `Command Processor` storage (like something we do in outbox pattern) and after commiting write side, our `command processor manager` reads unsent commands and sends them to their `Command Handlers` in same corresponding service and this handlers could save their read models in our MongoDb database as a read side.
+- If our `Read Sides` are in `Same Service`, during saving data in write side I save a [Internal Command](https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing) record in my `Command Processor` storage (like something we do in outbox pattern) and after committing write side, our `command processor manager` reads unsent commands and sends them to their `Command Handlers` in same corresponding service and this handlers could save their read models in our MongoDb database as a read side.
 
 - If our `Read Sides` are in `Another Services` we publish an integration event (with saving this message in the outbox) after committing our write side and all of our `Subscribers` could get this event and save it in their read models (MongoDB).
 

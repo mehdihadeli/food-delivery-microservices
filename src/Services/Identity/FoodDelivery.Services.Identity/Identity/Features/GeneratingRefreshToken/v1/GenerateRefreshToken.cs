@@ -8,15 +8,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.GeneratingRefreshToken.v1;
 
-internal record GenerateRefreshToken(Guid UserId, string? Token = null) : ICommand<GenerateRefreshTokenResult>
+public record GenerateRefreshToken(Guid UserId, string? Token = null) : ICommand<GenerateRefreshTokenResult>
 {
-    public static GenerateRefreshToken Of(Guid userId, string? token = null) => new(userId.NotBeInvalid(), token);
+    public static GenerateRefreshToken Of(Guid userId, string? token = null) => new(userId.NotBeEmpty(), token);
 }
 
-internal class GenerateRefreshTokenHandler(IdentityContext context)
+public class GenerateRefreshTokenHandler(IdentityContext context)
     : ICommandHandler<GenerateRefreshToken, GenerateRefreshTokenResult>
 {
-    public async Task<GenerateRefreshTokenResult> Handle(
+    public async ValueTask<GenerateRefreshTokenResult> Handle(
         GenerateRefreshToken command,
         CancellationToken cancellationToken
     )
@@ -37,7 +37,7 @@ internal class GenerateRefreshTokenHandler(IdentityContext context)
                 Token = token,
                 CreatedAt = DateTime.Now,
                 ExpiredAt = DateTime.Now.AddDays(1),
-                CreatedByIp = IpUtilities.GetIpAddress()
+                CreatedByIp = IpUtilities.GetIpAddress(),
             };
 
             await context.Set<Shared.Models.RefreshToken>().AddAsync(refreshToken, cancellationToken);
@@ -74,7 +74,7 @@ internal class GenerateRefreshTokenHandler(IdentityContext context)
                 IsActive = refreshToken.IsActive,
                 IsExpired = refreshToken.IsExpired,
                 IsRevoked = refreshToken.IsRevoked,
-                RevokedAt = refreshToken.RevokedAt
+                RevokedAt = refreshToken.RevokedAt,
             }
         );
     }

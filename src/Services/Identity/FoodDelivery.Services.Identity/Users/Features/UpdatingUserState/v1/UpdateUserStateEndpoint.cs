@@ -1,9 +1,7 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
-using FoodDelivery.Services.Identity.Shared.Models;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using FoodDelivery.Services.Shared.Identity.Users;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -21,7 +19,8 @@ internal static class UpdateUserStateEndpoint
             // .ProducesProblem(StatusCodes.Status404NotFound)
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             .WithName(nameof(UpdateUserState))
-            .WithSummaryAndDescription(nameof(UpdateUserState).Humanize(), nameof(UpdateUserState).Humanize())
+            .WithSummary(nameof(UpdateUserState).Humanize())
+            .WithDescription(nameof(UpdateUserState).Humanize())
             .WithDisplayName(nameof(UpdateUserState).Humanize())
             .MapToApiVersion(1.0);
 
@@ -29,7 +28,7 @@ internal static class UpdateUserStateEndpoint
             [AsParameters] UpdateUserStateRequestParameters requestParameters
         )
         {
-            var (request, userId, context, commandBus, mapper, cancellationToken) = requestParameters;
+            var (request, userId, context, commandBus, cancellationToken) = requestParameters;
             var command = UpdateUserState.Of(userId, request.UserState);
 
             await commandBus.SendAsync(command, cancellationToken);
@@ -46,7 +45,6 @@ internal record UpdateUserStateRequestParameters(
     [FromRoute] Guid UserId,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<UpdateUserStateRequest>;
 

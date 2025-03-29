@@ -1,34 +1,27 @@
+using AutoBogus;
+using Bogus;
 using BuildingBlocks.Abstractions.Persistence;
+using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Catalogs.Brands.Data;
 
-public class BrandDataSeeder : IDataSeeder
+public class BrandDataSeeder(ICatalogDbContext context) : IDataSeeder
 {
-    private readonly ICatalogDbContext _context;
-
-    public BrandDataSeeder(ICatalogDbContext context)
+    public async Task SeedAllAsync(CancellationToken cancellationToken)
     {
-        _context = context;
-    }
-
-    public async Task SeedAllAsync()
-    {
-        if (await _context.Brands.AnyAsync())
+        if (await context.Brands.AnyAsync(cancellationToken: cancellationToken))
             return;
 
-        // https://www.youtube.com/watch?v=T9pwE1GAr_U
-        // https://jackhiston.com/2017/10/1/how-to-create-bogus-data-in-c/
-        // https://khalidabuhakmeh.com/seed-entity-framework-core-with-bogus
-        // https://github.com/bchavez/Bogus#bogus-api-support
-        // https://github.com/bchavez/Bogus/blob/master/Examples/EFCoreSeedDb/Program.cs#L74
+        long id = 1;
+        var brandFaker = new Faker<Brand>().CustomInstantiator(f =>
+            Brand.Create(BrandId.Of(id++), BrandName.Of(f.Company.CompanyName()))
+        );
+        var brands = brandFaker.Generate(5);
 
-        // faker works with normal syntax because brand has a default constructor
-        var brands = new BrandFaker().Generate(5);
-
-        await _context.Brands.AddRangeAsync(brands);
-        await _context.SaveChangesAsync();
+        await context.Brands.AddRangeAsync(brands, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public int Order => 3;

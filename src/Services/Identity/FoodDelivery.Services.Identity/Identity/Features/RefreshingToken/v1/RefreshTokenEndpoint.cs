@@ -1,8 +1,6 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -21,19 +19,20 @@ public static class RefreshTokenEndpoint
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             .WithName(nameof(RefreshToken))
             .WithDisplayName(nameof(RefreshToken).Humanize())
-            .WithSummaryAndDescription(nameof(RefreshToken).Humanize(), nameof(RefreshToken).Humanize());
+            .WithSummary(nameof(RefreshToken).Humanize())
+            .WithDescription(nameof(RefreshToken).Humanize());
 
         async Task<Results<Ok<RefreshTokenResponse>, NotFoundHttpProblemResult, ValidationProblem>> Handle(
             [AsParameters] RefreshTokenRequestParameters requestParameters
         )
         {
-            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, cancellationToken) = requestParameters;
 
             var command = RefreshToken.Of(request.AccessToken, request.RefreshToken);
 
             var result = await commandBus.SendAsync(command, cancellationToken);
 
-            var response = mapper.Map<RefreshTokenResponse>(result);
+            var response = result.ToRefreshTokenResponse();
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-7.0#multiple-response-types
@@ -48,7 +47,6 @@ internal record RefreshTokenRequestParameters(
     [FromBody] RefreshTokenRequest Request,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RefreshTokenRequest>;
 

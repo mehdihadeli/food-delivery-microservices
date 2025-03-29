@@ -1,4 +1,4 @@
-using FoodDelivery.Services.Identity.Shared.Models;
+using FoodDelivery.Services.Shared.Identity.Users;
 
 namespace FoodDelivery.Services.Identity.Users.Dtos.v1;
 

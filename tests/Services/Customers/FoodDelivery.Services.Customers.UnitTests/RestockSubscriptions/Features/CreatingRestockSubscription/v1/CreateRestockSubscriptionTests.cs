@@ -8,10 +8,10 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRest
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Exceptions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Clients;
-using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
-using FoodDelivery.Services.Customers.Shared.Clients.Catalogs.Dtos;
-using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
-using FoodDelivery.Services.Customers.TestShared.Fakes.RestockSubscriptions.Entities;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models;
+using FoodDelivery.Services.Customers.TestShared.Fakes.RestockSubscriptions.Models;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Dtos;
 using FoodDelivery.Services.Customers.UnitTests.Common;
 using Microsoft.AspNetCore.Http;
@@ -26,7 +26,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
 {
     private readonly ILogger<CreateRestockSubscriptionHandler> _logger =
         new NullLogger<CreateRestockSubscriptionHandler>();
-    private readonly ICatalogApiClient _catalogApiClient = Substitute.For<ICatalogApiClient>();
+    private readonly ICatalogsRestClient _iICatalogsClient = Substitute.For<ICatalogsRestClient>();
 
     [CategoryTrait(TestCategory.Unit)]
     [Fact]
@@ -45,12 +45,12 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
         //https://nsubstitute.github.io/help/return-for-args/
         //https://nsubstitute.github.io/help/set-return-value/
         //https://nsubstitute.github.io/help/argument-matchers/
-        _catalogApiClient
+        _iICatalogsClient
             .GetProductByIdAsync(Arg.Is<long>(x => x == fakeProductDto!.Id), Arg.Any<CancellationToken>())
             .Returns(product);
 
         var command = new CreateRestockSubscription(customer.Id, fakeProductDto.Id, customer.Email);
-        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, _catalogApiClient, _logger);
+        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, _iICatalogsClient, _logger);
 
         // Act
         var res = await handler.Handle(command, CancellationToken.None);
@@ -69,7 +69,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
     public async Task must_throw_argument_exception_with_null_command()
     {
         // Arrange
-        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, CatalogApiClient, _logger);
+        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, IICatalogsClient, _logger);
 
         //Act
         Func<Task> act = async () =>
@@ -87,7 +87,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
     {
         // Arrange
         var command = new CreateRestockSubscription(CustomerId.Of(1), ProductId.Of(1), "m@test.com");
-        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, CatalogApiClient, _logger);
+        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, IICatalogsClient, _logger);
 
         //Act
         Func<Task> act = async () =>
@@ -110,7 +110,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
 
         // Arrange
         var command = new CreateRestockSubscription(customer.Id, ProductId.Of(1), customer.Email.Value);
-        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, CatalogApiClient, _logger);
+        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, IICatalogsClient, _logger);
 
         //Act
         Func<Task> act = async () =>
@@ -142,13 +142,13 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
         //https://nsubstitute.github.io/help/return-for-args/
         //https://nsubstitute.github.io/help/set-return-value/
         //https://nsubstitute.github.io/help/argument-matchers/
-        _catalogApiClient
+        _iICatalogsClient
             .GetProductByIdAsync(Arg.Is<long>(x => x == fakeProductDto!.Id), Arg.Any<CancellationToken>())
             .Returns(product);
 
         // Arrange
         var command = new CreateRestockSubscription(customer.Id, ProductId.Of(1), customer.Email.Value);
-        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, _catalogApiClient, _logger);
+        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, _iICatalogsClient, _logger);
 
         //Act
         Func<Task> act = async () =>
@@ -176,7 +176,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
         //https://nsubstitute.github.io/help/return-for-args/
         //https://nsubstitute.github.io/help/set-return-value/
         //https://nsubstitute.github.io/help/argument-matchers/
-        _catalogApiClient
+        _iICatalogsClient
             .GetProductByIdAsync(Arg.Is<long>(x => x == fakeProductDto!.Id), Arg.Any<CancellationToken>())
             .Returns(product);
 
@@ -190,7 +190,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
 
         // Arrange
         var command = new CreateRestockSubscription(customer.Id, ProductId.Of(1), customer.Email.Value);
-        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, _catalogApiClient, _logger);
+        var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, _iICatalogsClient, _logger);
 
         //Act
         Func<Task> act = async () =>

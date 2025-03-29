@@ -126,24 +126,15 @@ public abstract class EfDbContextBase(DbContextOptions options)
         return Database.CreateExecutionStrategy().ExecuteAsync(operation);
     }
 
-    public IReadOnlyList<IDomainEvent> GetAllUncommittedEvents()
+    public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
     {
         var domainEvents = ChangeTracker
-            .Entries<IHaveAggregate>()
+            .Entries<IAggregateBase>()
             .Where(x => x.Entity.GetUncommittedDomainEvents().Any())
-            .SelectMany(x => x.Entity.GetUncommittedDomainEvents())
+            .SelectMany(x => x.Entity.DequeueUncommittedDomainEvents())
             .ToList();
 
         return domainEvents.ToImmutableList();
-    }
-
-    public void MarkUncommittedDomainEventAsCommitted()
-    {
-        ChangeTracker
-            .Entries<IHaveAggregate>()
-            .Where(x => x.Entity.GetUncommittedDomainEvents().Any())
-            .ToList()
-            .ForEach(x => x.Entity.MarkUncommittedDomainEventAsCommitted());
     }
 
     public Task ExecuteTransactionalAsync(Func<Task> action, CancellationToken cancellationToken = default)

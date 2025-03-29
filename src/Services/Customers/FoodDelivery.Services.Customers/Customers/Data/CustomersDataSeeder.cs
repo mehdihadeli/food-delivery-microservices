@@ -4,7 +4,7 @@ namespace FoodDelivery.Services.Customers.Customers.Data;
 
 public class CustomersDataSeeder : IDataSeeder
 {
-    public Task SeedAllAsync()
+    public Task SeedAllAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

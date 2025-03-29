@@ -1,13 +1,11 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Security.Jwt;
-using EasyCaching.Core;
-using Microsoft.Extensions.Options;
+using Mediator;
+using Microsoft.Extensions.Caching.Hybrid;
+using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.v1;
 
-internal record RevokeAccessToken(string Token, string UserName) : ICommand
+public record RevokeAccessToken(string Token, string UserName) : ICommand
 {
     /// <summary>
     /// RevokeAccessToken with in-line validation.
@@ -24,18 +22,10 @@ internal record RevokeAccessToken(string Token, string UserName) : ICommand
     }
 }
 
-internal class RevokeAccessTokenHandler(
-    IEasyCachingProviderFactory cachingProviderFactory,
-    IOptions<JwtOptions> jwtOptions,
-    IOptions<CacheOptions> cacheOptions
-) : ICommandHandler<RevokeAccessToken>
+public class RevokeAccessTokenHandler(HybridCache hybridCache)
+    : BuildingBlocks.Abstractions.Commands.ICommandHandler<RevokeAccessToken>
 {
-    private readonly IEasyCachingProvider _cachingProvider = cachingProviderFactory.GetCachingProvider(
-        cacheOptions.Value.DefaultCacheType
-    );
-    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
-
-    public async Task Handle(RevokeAccessToken command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(RevokeAccessToken command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
         command.Token.NotBeNullOrWhiteSpace();
@@ -43,11 +33,12 @@ internal class RevokeAccessTokenHandler(
         // https://dev.to/chukwutosin_/how-to-invalidate-a-jwt-using-a-blacklist-28dl
         // https://supertokens.com/blog/revoking-access-with-a-jwt-blacklist
         // The blacklist is saved in the format => "userName_revoked_tokens": [token1, token2,...]
-        await _cachingProvider.SetAsync(
+        await hybridCache.SetAsync(
             $"{command.UserName}_{command.Token}_revoked_token",
             command.Token,
-            TimeSpan.FromSeconds(_jwtOptions.TokenLifeTimeSecond),
-            cancellationToken
+            cancellationToken: cancellationToken
         );
+
+        return Unit.Value;
     }
 }

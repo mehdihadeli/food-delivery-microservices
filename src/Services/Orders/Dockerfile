@@ -28,6 +28,7 @@ WORKDIR /src
 # https://docs.docker.com/build/building/context/
 COPY ./.editorconfig ./
 COPY ./nuget.config ./
+COPY ./global.json ./
 
 COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./

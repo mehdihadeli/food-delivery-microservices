@@ -13,14 +13,13 @@ namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1
 // https://buildplease.com/pages/vos-in-events/
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
-internal record CustomerUpdated(
+public record CustomerUpdated(
     long Id,
     string FirstName,
     string LastName,
     string Email,
     string PhoneNumber,
     Guid IdentityId,
-    DateTime CreatedAt,
     DateTime? BirthDate = null,
     string? Country = null,
     string? City = null,
@@ -35,7 +34,6 @@ internal record CustomerUpdated(
         string? email,
         string? phoneNumber,
         Guid identityId,
-        DateTime createdAt,
         DateTime? birthDate,
         string? country = null,
         string? city = null,
@@ -51,7 +49,6 @@ internal record CustomerUpdated(
                 email!,
                 phoneNumber!,
                 identityId,
-                createdAt,
                 birthDate,
                 country,
                 city,
@@ -62,7 +59,7 @@ internal record CustomerUpdated(
     }
 }
 
-internal class CustomerUpdatedValidator : AbstractValidator<CustomerUpdated>
+public class CustomerUpdatedValidator : AbstractValidator<CustomerUpdated>
 {
     public CustomerUpdatedValidator()
     {
@@ -81,15 +78,15 @@ internal class CustomerUpdatedValidator : AbstractValidator<CustomerUpdated>
     }
 }
 
-internal class CustomerCreatedHandler(ICommandBus commandBus) : IDomainEventHandler<CustomerUpdated>
+public class CustomerCreatedHandler(ICommandBus commandBus) : IDomainEventHandler<CustomerUpdated>
 {
-    public Task Handle(CustomerUpdated notification, CancellationToken cancellationToken)
+    public async ValueTask Handle(CustomerUpdated notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
         var mongoReadCommand = notification.ToUpdateCustomerRead();
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         // Schedule multiple read sides to execute here
-        return commandBus.ScheduleAsync(new IInternalCommand[] { mongoReadCommand }, cancellationToken);
+        await commandBus.ScheduleAsync(mongoReadCommand, cancellationToken);
     }
 }

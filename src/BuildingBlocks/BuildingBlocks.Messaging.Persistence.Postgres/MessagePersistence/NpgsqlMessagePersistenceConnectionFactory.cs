@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Messaging.MessagePersistence;
+using BuildingBlocks.Core.Messages.MessagePersistence;
 using Core.Persistence.Postgres;
 
 namespace BuildingBlocks.Messaging.Persistence.Postgres.MessagePersistence;

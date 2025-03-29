@@ -43,17 +43,14 @@ public static class PredicateBuilder
             ">=" => MakeBinary(ExpressionType.GreaterThanOrEqual, left, value),
             "<" => MakeBinary(ExpressionType.LessThan, left, value),
             "<=" => MakeBinary(ExpressionType.LessThanOrEqual, left, value),
-            "Contains"
-            or "StartsWith"
-            or "EndsWith"
-                => Expression.Call(
-                    MakeString(left),
-                    comparison,
-                    Type.EmptyTypes,
-                    Expression.Constant(value, typeof(string))
-                ),
+            "Contains" or "StartsWith" or "EndsWith" => Expression.Call(
+                MakeString(left),
+                comparison,
+                Type.EmptyTypes,
+                Expression.Constant(value, typeof(string))
+            ),
             "In" => MakeList(left, value.Split(',')),
-            _ => throw new NotSupportedException($"Invalid comparison operator '{comparison}'.")
+            _ => throw new NotSupportedException($"Invalid comparison operator '{comparison}'."),
         };
     }
 
@@ -86,11 +83,10 @@ public static class PredicateBuilder
             else
             {
                 var valueType = Nullable.GetUnderlyingType(left.Type) ?? left.Type;
-                typedValue = valueType.IsEnum
-                    ? Enum.Parse(valueType, value)
-                    : valueType == typeof(Guid)
-                        ? Guid.Parse(value)
-                        : Convert.ChangeType(value, valueType);
+                typedValue =
+                    valueType.IsEnum ? Enum.Parse(valueType, value)
+                    : valueType == typeof(Guid) ? Guid.Parse(value)
+                    : Convert.ChangeType(value, valueType);
             }
         }
 

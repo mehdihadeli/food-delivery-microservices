@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using BuildingBlocks.Core.Extensions;
 
 namespace BuildingBlocks.Core.Domain.ValueObjects;
@@ -18,19 +17,14 @@ public record Address
 
     public static Address Empty => new();
 
-    public static Address Of(
-        [NotNull] string? country,
-        [NotNull] string? city,
-        [NotNull] string? detail,
-        [NotNull] PostalCode? postalCode
-    )
+    public static Address Of(string country, string city, string detail, PostalCode postalCode)
     {
         var address = new Address
         {
             Country = country.NotBeNullOrWhiteSpace(),
             City = city.NotBeNullOrWhiteSpace(),
             Detail = detail.NotBeNullOrWhiteSpace(),
-            PostalCode = postalCode.NotBeNull()
+            PostalCode = postalCode.NotBeNull(),
         };
 
         return address;

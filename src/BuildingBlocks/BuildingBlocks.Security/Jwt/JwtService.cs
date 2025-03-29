@@ -90,7 +90,7 @@ public class JwtService(IOptions<JwtOptions> jwtOptions) : IJwtService
             Claims = jwtClaims.ConvertClaimsToDictionary(),
             Issuer = _jwtOptions.Issuer,
             Audience = _jwtOptions.Issuer,
-            NotBefore = now
+            NotBefore = now,
         };
 
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();

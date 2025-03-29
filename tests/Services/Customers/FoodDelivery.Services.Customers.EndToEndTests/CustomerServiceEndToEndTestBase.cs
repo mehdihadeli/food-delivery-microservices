@@ -1,11 +1,12 @@
 using FoodDelivery.Services.Customers.Api;
-using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
-using FoodDelivery.Services.Customers.Shared.Clients.Identity;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Rest;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Servers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Tests.Shared.Fixtures;
+using Tests.Shared.TestBase;
 using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.EndToEndTests;
@@ -23,7 +24,7 @@ public class CustomerServiceEndToEndTestBase
         {
             if (_identityServiceWireMock is null)
             {
-                var option = SharedFixture.ServiceProvider.GetRequiredService<IOptions<IdentityApiClientOptions>>();
+                var option = SharedFixture.ServiceProvider.GetRequiredService<IOptions<IdentityRestClientOptions>>();
                 _identityServiceWireMock = new IdentityServiceWireMock(SharedFixture.WireMockServer, option.Value);
             }
 
@@ -37,7 +38,7 @@ public class CustomerServiceEndToEndTestBase
         {
             if (_catalogsServiceWireMock is null)
             {
-                var option = SharedFixture.ServiceProvider.GetRequiredService<IOptions<CatalogsApiClientOptions>>();
+                var option = SharedFixture.ServiceProvider.GetRequiredService<IOptions<CatalogsRestClientOptions>>();
                 _catalogsServiceWireMock = new CatalogsServiceWireMock(SharedFixture.WireMockServer, option.Value);
             }
 
@@ -64,13 +65,13 @@ public class CustomerServiceEndToEndTestBase
         sharedFixture.Factory.AddOverrideEnvKeyValues(
             new Dictionary<string, string>
             {
-                { "IdentityApiClientOptions:BaseApiAddress", SharedFixture.WireMockServerUrl },
-                { "CatalogsApiClientOptions:BaseApiAddress", SharedFixture.WireMockServerUrl },
+                { "IdentityRestClientOptions:BaseApiAddress", SharedFixture.WireMockServerUrl },
+                { "CatalogsRestClientOptions:BaseApiAddress", SharedFixture.WireMockServerUrl },
             }
         );
 
-        // var catalogApiOptions = Scope.ServiceProvider.GetRequiredService<IOptions<CatalogsApiClientOptions>>();
-        // var identityApiOptions = Scope.ServiceProvider.GetRequiredService<IOptions<IdentityApiClientOptions>>();
+        // var catalogApiOptions = Scope.ServiceProvider.GetRequiredService<IOptions<CatalogsRestClientOptions>>();
+        // var identityApiOptions = Scope.ServiceProvider.GetRequiredService<IOptions<IdentityRestClientOptions>>();
         //
         // identityApiOptions.Value.BaseApiAddress = MockServersFixture.IdentityServiceMock.Url!;
         // catalogApiOptions.Value.BaseApiAddress = MockServersFixture.CatalogsServiceMock.Url!;

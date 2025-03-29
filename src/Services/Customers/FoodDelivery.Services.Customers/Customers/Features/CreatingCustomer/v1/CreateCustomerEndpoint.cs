@@ -1,7 +1,6 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Customers.Customers.Features.GettingCustomerByCustomerId.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,20 +16,20 @@ internal class CreateCustomerEndpoint
         ValidationProblem
     >
 {
-    public string GroupName => CustomersConfigs.Tag;
-    public string PrefixRoute => CustomersConfigs.CustomersPrefixUri;
+    public string GroupName => CustomersConfigurations.Tag;
+    public string PrefixRoute => CustomersConfigurations.CustomersPrefixUri;
     public double Version => 1.0;
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
         return builder
             .MapPost("/", HandleAsync)
-            .RequireAuthorization()
+            //.RequireAuthorization()
             .WithName(nameof(CreateCustomer))
             .WithDisplayName(nameof(CreateCustomer).Humanize())
-            .WithSummaryAndDescription(nameof(CreateCustomer).Humanize(), nameof(CreateCustomer).Humanize());
-
-        // .Produces<CreateCustomerRequest>("Customer created successfully.", StatusCodes.Status201Created)
+            .WithSummary(nameof(CreateCustomer).Humanize())
+            .WithDescription(nameof(CreateCustomer).Humanize());
+        // .Produces<CreateCustomerRequest>("CustomerReadModel created successfully.", StatusCodes.Status201Created)
         // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
         // .ProducesProblem("UnAuthorized request.", StatusCodes.Status401Unauthorized)
     }

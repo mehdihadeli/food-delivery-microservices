@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Paging;
@@ -13,7 +12,7 @@ using Sieve.Services;
 
 namespace FoodDelivery.Services.Identity.Users.Features.GettingUsers.v1;
 
-internal record GetUsers : PageQuery<GetUsersResult>
+public record GetUsers : PageQuery<GetUsersResult>
 {
     /// <summary>
     /// GetUsers with in-line validator.
@@ -30,13 +29,13 @@ internal record GetUsers : PageQuery<GetUsersResult>
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 Filters = filters,
-                SortOrder = sortOrder
+                SortOrder = sortOrder,
             }
         );
     }
 }
 
-internal class GetUsersValidator : AbstractValidator<GetUsers>
+public class GetUsersValidator : AbstractValidator<GetUsers>
 {
     public GetUsersValidator()
     {
@@ -50,15 +49,15 @@ internal class GetUsersValidator : AbstractValidator<GetUsers>
     }
 }
 
-internal class GetUsersHandler(UserManager<ApplicationUser> userManager, IMapper mapper, ISieveProcessor sieveProcessor)
+public class GetUsersHandler(UserManager<ApplicationUser> userManager, ISieveProcessor sieveProcessor)
     : IQueryHandler<GetUsers, GetUsersResult>
 {
-    public async Task<GetUsersResult> Handle(GetUsers request, CancellationToken cancellationToken)
+    public async ValueTask<GetUsersResult> Handle(GetUsers request, CancellationToken cancellationToken)
     {
         var users = await userManager.FindAllUsersByPageAsync<IdentityUserDto>(
             request,
-            mapper,
             sieveProcessor,
+            x => x.ToIdentityUsersDto(),
             cancellationToken
         );
 
@@ -66,4 +65,4 @@ internal class GetUsersHandler(UserManager<ApplicationUser> userManager, IMapper
     }
 }
 
-internal record GetUsersResult(IPageList<IdentityUserDto> IdentityUsers);
+public record GetUsersResult(IPageList<IdentityUserDto> IdentityUsers);

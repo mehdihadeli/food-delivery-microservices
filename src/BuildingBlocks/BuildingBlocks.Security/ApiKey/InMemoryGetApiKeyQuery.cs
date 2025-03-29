@@ -30,7 +30,7 @@ public class InMemoryGetApiKeyQuery : IGetApiKeyQuery
                 "06795D9D-A770-44B9-9B27-03C6ABDB1BAE",
                 new DateTime(2021, 01, 01),
                 new List<string> { Roles.ThirdParty }
-            )
+            ),
         };
 
         _apiKeys = existingApiKeys.ToDictionary(x => x.Key, x => x);

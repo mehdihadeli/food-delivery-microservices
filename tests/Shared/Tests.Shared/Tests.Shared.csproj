@@ -4,7 +4,7 @@
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Integration.MassTransit\BuildingBlocks.Integration.MassTransit.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Logging\BuildingBlocks.Logging.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.SerilogLogging\BuildingBlocks.SerilogLogging.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Messaging.Persistence.Postgres\BuildingBlocks.Messaging.Persistence.Postgres.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.Mongo\BuildingBlocks.Persistence.Mongo.csproj" />
@@ -13,39 +13,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" />
-    <PackageReference Include="Mongo2Go" />
+    <PackageReference Include="Meziantou.Extensions.Logging.InMemory" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Serilog.Sinks.XUnit" />
     <PackageReference Include="Testcontainers.MongoDb" />
+    <PackageReference Include="Testcontainers.MsSql" />
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="Testcontainers.RabbitMq" />
+    <PackageReference Include="WebMotions.Fake.Authentication.JwtBearer" />
     <PackageReference Include="WireMock.Net" />
-    <PackageReference Include="Hypothesist" />
-    <PackageReference Include="MassTransit" />
-    <PackageReference Include="Verify.Xunit" />
     <PackageReference Include="XunitContext" />
     <PackageReference Include="Respawn" />
-    <PackageReference Include="Squadron.Mongo" />
     <PackageReference Include="Testcontainers" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="FluentAssertions.Web" />
-    <PackageReference Include="FluentResults.Extensions.FluentAssertions" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp" />
     <PackageReference Include="NSubstitute" />
-    <PackageReference Include="Serilog.Sinks.Debug" />
-    <PackageReference Include="Serilog.Sinks.Xunit" />
-    <PackageReference Include="MartinCostello.Logging.XUnit" />
-    <PackageReference Include="System.Reactive.Linq" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="AutoBogus" />
     <PackageReference Include="AutoBogus.NSubstitute" />
-    <PackageReference Include="WebMotions.Fake.Authentication.JwtBearer" />
-    <PackageReference Include="Bazinga.AspNetCore.Authentication.Basic" />
-    <PackageReference Include="RestAssured.NET" />
-    <PackageReference Include="Thinkcode.RabbitMQ.OpenAPI" />
     <PackageReference Include="EasyNetQ.Management.Client" />
+    <PackageReference Include="Hypothesist" />
   </ItemGroup>
 
-<!-- What xunit NuGet Packages Should I Use? - https://xunit.net/docs/nuget-packages-->
+
+  <!-- What xunit NuGet Packages Should I Use? - https://xunit.net/docs/nuget-packages-->
   <ItemGroup>
     <PackageReference Include="xunit" />
     <!-- https://xunit.net/docs/nuget-packages#xunit.runner.visualstudio-->

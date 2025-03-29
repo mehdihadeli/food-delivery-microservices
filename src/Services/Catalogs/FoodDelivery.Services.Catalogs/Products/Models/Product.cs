@@ -5,6 +5,7 @@ using FoodDelivery.Services.Catalogs.Brands;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
+using FoodDelivery.Services.Catalogs.Categories.Contracts;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Domain;
 using FoodDelivery.Services.Catalogs.Products.Features.ChangingMaxThreshold.v1;
@@ -18,7 +19,6 @@ using FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1.E
 using FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1.Events.Domain;
 using FoodDelivery.Services.Catalogs.Products.Rules;
 using FoodDelivery.Services.Catalogs.Products.ValueObjects;
-using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 
@@ -33,11 +33,7 @@ namespace FoodDelivery.Services.Catalogs.Products.Models;
 // https://event-driven.io/en/explicit_validation_in_csharp_just_got_simpler/
 public class Product : Aggregate<ProductId>
 {
-    private List<ProductImage> _images = new();
-
-    // EF
-    // this constructor is needed when we have a parameter constructor that has some navigation property classes in the parameters and ef will skip it and try to find other constructor, here default constructor (maybe will fix .net 8)
-    private Product() { }
+    private readonly IList<ProductImage> _images = new List<ProductImage>();
 
     public Name Name { get; private set; } = default!;
     public ProductType ProductType { get; private set; }
@@ -46,7 +42,7 @@ public class Product : Aggregate<ProductId>
     public ProductInformation ProductInformation { get; private set; }
     public ProductColor Color { get; private set; }
     public ProductStatus ProductStatus { get; private set; }
-    public Category? Category { get; private set; } = default!;
+    public Category? Category { get; private set; }
     public CategoryId CategoryId { get; private set; } = default!;
     public SupplierId SupplierId { get; private set; } = default!;
     public Supplier? Supplier { get; private set; }
@@ -55,47 +51,105 @@ public class Product : Aggregate<ProductId>
     public Size Size { get; private set; } = default!;
     public Stock Stock { get; set; } = default!;
     public Dimensions Dimensions { get; private set; } = default!;
-    public IReadOnlyList<ProductImage>? Images => _images;
+    public IReadOnlyList<ProductImage> Images => _images.ToImmutableList();
+
+    // EF
+    // this constructor is needed when we have a parameter constructor that has some navigation property classes in the parameters and ef will skip it and try to find other constructor, here default constructor (maybe will fix .net 8)
+    private Product() { }
+
+    private Product(
+        ProductId id,
+        Name name,
+        ProductInformation productInformation,
+        Stock stock,
+        ProductStatus status,
+        ProductType type,
+        Dimensions dimensions,
+        Size size,
+        ProductColor color,
+        string? description,
+        Price price,
+        CategoryId categoryId,
+        SupplierId supplierId,
+        BrandId brandId,
+        IList<ProductImage>? images = null
+    )
+    {
+        Id = id;
+        Name = name;
+        ProductInformation = productInformation;
+        Stock = stock;
+        ProductStatus = status;
+        ProductType = type;
+        Dimensions = dimensions;
+        Size = size;
+        Color = color;
+        Description = description;
+        Price = price;
+        CategoryId = categoryId;
+        SupplierId = supplierId;
+        BrandId = brandId;
+        if (images != null)
+        {
+            _images = images;
+        }
+    }
 
     // https://github.com/ardalis/DDD-NoDuplicates
     // https://stackoverflow.com/questions/66289815/dependent-entities-within-same-aggregate/66299403
     // https://stackoverflow.com/questions/66330442/ddd-and-cqrs-how-to-make-sure-if-provided-relation-id-really-exists-as-another?noredirect=1&lq=1
     // https://github.com/kgrzybek/modular-monolith-with-ddd/blob/master/src/Modules/Registrations/Domain/UserRegistrations/UserRegistration.cs#L52
     // https://enterprisecraftsmanship.com/posts/domain-vs-application-services/
+    // https://enterprisecraftsmanship.com/posts/what-is-domain-logic/
     // https://event-driven.io/en/how_to_validate_business_logic/
     // https://www.dandoescode.com/blog/domain-driven-design-patterns-for-aggregate-creation-mastery
     // https://www.kamilgrzybek.com/blog/posts/domain-model-validation
+    // https://enterprisecraftsmanship.com/posts/how-to-know-if-your-domain-model-is-properly-isolated/
+    // https://enterprisecraftsmanship.com/posts/domain-model-isolation/
+    // https://enterprisecraftsmanship.com/posts/domain-model-purity-completeness/
     public static Product Create(
-        ProductId? id,
-        Name? name,
-        ProductInformation? productInformation,
-        Stock? stock,
+        ProductId id,
+        Name name,
+        ProductInformation productInformation,
+        Stock stock,
         ProductStatus status,
         ProductType type,
-        Dimensions? dimensions,
-        Size? size,
+        Dimensions dimensions,
+        Size size,
         ProductColor color,
         string? description,
-        Price? price,
-        CategoryId? categoryId,
-        SupplierId? supplierId,
-        BrandId? brandId,
-        AggregateFuncOperation<CategoryId?, bool>? categoryChecker,
-        ISupplierChecker? supplierChecker,
-        IBrandChecker? brandChecker,
+        Price price,
+        CategoryId categoryId,
+        SupplierId supplierId,
+        BrandId brandId,
+        ICategoryChecker categoryChecker,
+        ISupplierChecker supplierChecker,
+        IBrandChecker brandChecker,
         IList<ProductImage>? images = null
     )
     {
         // input validation will do in the `command` and our `value objects` before arriving to entity and makes or domain cleaner, here we just do business validation
-        var product = new Product { Id = id.NotBeNull(), Stock = stock.NotBeNull() };
+        RuleChecker.CheckRule(new SupplierShouldExistRule(supplierChecker, supplierId));
+        RuleChecker.CheckRule(new BrandIdShouldExistRuleWithExceptionType(brandChecker, brandId));
+        RuleChecker.CheckRule(new CategoryIdShouldExistRuleWithExceptionType(categoryChecker, categoryId));
 
-        product.ChangeProductDetail(name, status, type, dimensions, size, color, productInformation, description);
-
-        product.ChangePrice(price);
-        product.AddProductImages(images);
-        product.ChangeCategory(categoryChecker, categoryId);
-        product.ChangeBrand(brandChecker, brandId);
-        product.ChangeSupplier(supplierChecker, supplierId);
+        var product = new Product(
+            id.NotBeNull(),
+            name.NotBeNull(),
+            productInformation.NotBeNull(),
+            stock.NotBeNull(),
+            status,
+            type,
+            dimensions.NotBeNull(),
+            size.NotBeNull(),
+            color,
+            description,
+            price.NotBeNull(),
+            categoryId.NotBeNull(),
+            supplierId.NotBeNull(),
+            brandId.NotBeNull(),
+            images
+        );
 
         // here we do not use auto-mapping because we want to validate the data
         product.AddDomainEvents(
@@ -123,13 +177,13 @@ public class Product : Aggregate<ProductId>
     // https://event-driven.io/en/property-sourcing/
     // https://stackoverflow.com/questions/59558931/should-there-be-an-update-event-per-property-or-an-update-event-per-entity-with
     public void ChangeProductDetail(
-        Name? name,
+        Name name,
         ProductStatus status,
         ProductType productType,
-        Dimensions? dimensions,
-        Size? size,
+        Dimensions dimensions,
+        Size size,
         ProductColor color,
-        ProductInformation? productInformation,
+        ProductInformation productInformation,
         string? description
     )
     {
@@ -137,10 +191,10 @@ public class Product : Aggregate<ProductId>
         name.NotBeNull();
         Name = name;
 
-        status.NotBeInvalid();
+        status.NotBeEmpty();
         ProductStatus = status;
 
-        productType.NotBeInvalid();
+        productType.NotBeEmpty();
         ProductType = productType;
 
         dimensions.NotBeNull();
@@ -149,7 +203,7 @@ public class Product : Aggregate<ProductId>
         size.NotBeNull();
         Size = size;
 
-        color.NotBeInvalid();
+        color.NotBeEmpty();
         Color = color;
 
         // input validation will do in the command and our value objects, here we just do business validation
@@ -168,7 +222,7 @@ public class Product : Aggregate<ProductId>
     /// Raise a <see cref="ProductPriceChanged"/>.
     /// </remarks>
     /// <param name="price">The price to be changed.</param>
-    public void ChangePrice(Price? price)
+    public void ChangePrice(Price price)
     {
         price.NotBeNull();
         if (Price == price)
@@ -280,7 +334,7 @@ public class Product : Aggregate<ProductId>
     /// </summary>
     /// <param name="categoryChecker">The checker for CategoryId.</param>
     /// <param name="categoryId">The categoryId to be changed.</param>
-    public void ChangeCategory(AggregateFuncOperation<CategoryId?, bool>? categoryChecker, CategoryId? categoryId)
+    public void ChangeCategory(ICategoryChecker categoryChecker, CategoryId categoryId)
     {
         CheckRule(new CategoryIdShouldExistRuleWithExceptionType(categoryChecker, categoryId));
 
@@ -295,7 +349,7 @@ public class Product : Aggregate<ProductId>
     /// </summary>
     /// <param name="supplierChecker">The supplier checker.</param>
     /// <param name="supplierId">The supplierId to be changed.</param>
-    public void ChangeSupplier(ISupplierChecker? supplierChecker, SupplierId? supplierId)
+    public void ChangeSupplier(ISupplierChecker supplierChecker, SupplierId supplierId)
     {
         CheckRule(new SupplierShouldExistRule(supplierChecker, supplierId));
 
@@ -309,7 +363,7 @@ public class Product : Aggregate<ProductId>
     /// </summary>
     /// <param name="brandChecker">The brand checker.</param>
     /// <param name="brandId">The brandId to be changed.</param>
-    public void ChangeBrand(IBrandChecker? brandChecker, BrandId? brandId)
+    public void ChangeBrand(IBrandChecker brandChecker, BrandId brandId)
     {
         CheckRule(new BrandIdShouldExistRuleWithExceptionType(brandChecker, brandId));
 
@@ -318,15 +372,14 @@ public class Product : Aggregate<ProductId>
         AddDomainEvents(ProductBrandChanged.Of(brandId, Id));
     }
 
-    public void AddProductImages(IList<ProductImage>? productImages)
+    public void AddProductImages(IList<ProductImage> productImages)
     {
-        if (productImages is null)
+        if (productImages.Count == 0)
         {
-            _images = null!;
             return;
         }
 
-        _images.AddRange(productImages);
+        _images.ToList().AddRange(productImages);
     }
 
     public void Deconstruct(

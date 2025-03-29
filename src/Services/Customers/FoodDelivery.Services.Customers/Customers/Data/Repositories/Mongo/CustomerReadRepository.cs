@@ -6,10 +6,6 @@ using Sieve.Services;
 
 namespace FoodDelivery.Services.Customers.Customers.Data.Repositories.Mongo;
 
-public class CustomerReadRepository
-    : MongoRepositoryBase<CustomersReadDbContext, Customer, Guid>,
-        ICustomerReadRepository
-{
-    public CustomerReadRepository(CustomersReadDbContext context, ISieveProcessor sieveProcessor)
-        : base(context, sieveProcessor) { }
-}
+public class CustomerReadRepository(CustomersReadDbContext context, ISieveProcessor sieveProcessor)
+    : MongoRepositoryBase<CustomersReadDbContext, CustomerReadModel, Guid>(context, sieveProcessor),
+        ICustomerReadRepository;

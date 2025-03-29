@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using BuildingBlocks.Core.Extensions;
 using FluentValidation;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
@@ -21,7 +19,7 @@ public record Email
     // in the constructor it should not be read only without set (for bypassing calculate fields)- https://learn.microsoft.com/en-us/ef/core/modeling/constructors#read-only-properties
     public string Value { get; private set; }
 
-    public static Email Of([NotNull] string? value)
+    public static Email Of(string value)
     {
         // validations should be placed here instead of constructor
         new EmailValidator()!.ValidateAndThrow(value);
@@ -42,6 +40,7 @@ public record Email
         public EmailValidator()
         {
             RuleFor(email => email).EmailAddress();
+            RuleFor(email => email).NotNull();
             RuleFor(email => email).NotEmpty();
         }
     }

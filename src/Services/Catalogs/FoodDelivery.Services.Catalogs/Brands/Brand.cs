@@ -6,23 +6,35 @@ namespace FoodDelivery.Services.Catalogs.Brands;
 
 public class Brand : Aggregate<BrandId>
 {
-    public BrandName Name { get; private set; } = default!;
+    // EF
+    // this constructor is needed when we have a parameter constructor that has some navigation property classes in the parameters and ef will skip it and try to find other constructor, here default constructor (maybe will fix .net 8)
+    private Brand() { }
 
-    public static Brand Of(BrandId id, BrandName name)
+    private Brand(BrandId brandId, BrandName name)
     {
-        // input validation will do in the `command` and our `value objects` before arriving to entity and makes or domain cleaner (but we have to check against for our value objects), here we just do business validation
+        Id = brandId;
+        Name = name;
+    }
+
+    public BrandName Name { get; private set; }
+
+    public static Brand Create(BrandId id, BrandName name)
+    {
         id.NotBeNull();
         name.NotBeNull();
 
-        var brand = new Brand { Id = id, };
+        var brand = new Brand(id, name);
 
-        brand.ChangeName(name);
+        // brand.AddDomainEvents(new BrandCreated(id, name));
 
         return brand;
     }
 
-    public void ChangeName(BrandName name)
+    public void ChangeName(BrandName newName)
     {
-        Name = name;
+        var oldName = Name;
+        Name = newName;
+
+        // brand.AddDomainEvents(new BrandNameChanged(oldName, newName));
     }
 }

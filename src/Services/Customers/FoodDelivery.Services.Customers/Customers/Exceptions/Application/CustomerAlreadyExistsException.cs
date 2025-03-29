@@ -11,13 +11,13 @@ public class CustomerAlreadyExistsException : AppException
         : base(message, StatusCodes.Status409Conflict) { }
 
     public CustomerAlreadyExistsException(Guid identityId)
-        : base($"Customer with IdentityId: '{identityId}' already exists.", StatusCodes.Status409Conflict)
+        : base($"CustomerReadModel with IdentityId: '{identityId}' already exists.", StatusCodes.Status409Conflict)
     {
         IdentityId = identityId;
     }
 
     public CustomerAlreadyExistsException(long customerId)
-        : base($"Customer with ID: '{customerId}' already exists.", StatusCodes.Status409Conflict)
+        : base($"CustomerReadModel with ID: '{customerId}' already exists.", StatusCodes.Status409Conflict)
     {
         CustomerId = customerId;
     }

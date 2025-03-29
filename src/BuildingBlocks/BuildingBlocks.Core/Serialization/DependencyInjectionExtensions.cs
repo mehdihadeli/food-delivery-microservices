@@ -25,7 +25,7 @@ internal static class DependencyInjectionExtensions
 
         var settings = new JsonSerializerSettings
         {
-            ContractResolver = new ContractResolverWithPrivate { NamingStrategy = strategy }
+            ContractResolver = new ContractResolverWithPrivate { NamingStrategy = strategy },
         };
 
         if (indented)

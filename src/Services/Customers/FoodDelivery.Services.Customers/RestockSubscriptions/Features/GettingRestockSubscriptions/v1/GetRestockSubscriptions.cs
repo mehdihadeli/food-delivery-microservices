@@ -9,7 +9,7 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptions.v1;
 
-internal record GetRestockSubscriptions : PageQuery<GetRestockSubscriptionsResult>
+public record GetRestockSubscriptions : PageQuery<GetRestockSubscriptionsResult>
 {
     public static GetRestockSubscriptions Of(
         PageRequest pageRequest,
@@ -29,7 +29,7 @@ internal record GetRestockSubscriptions : PageQuery<GetRestockSubscriptionsResul
                 SortOrder = sortOrder,
                 Emails = emails.ToList(),
                 From = from,
-                To = to
+                To = to,
             }
         );
     }
@@ -39,7 +39,7 @@ internal record GetRestockSubscriptions : PageQuery<GetRestockSubscriptionsResul
     public DateTime? To { get; init; }
 }
 
-internal class GetRestockSubscriptionsValidator : AbstractValidator<GetRestockSubscriptions>
+public class GetRestockSubscriptionsValidator : AbstractValidator<GetRestockSubscriptions>
 {
     public GetRestockSubscriptionsValidator()
     {
@@ -53,17 +53,17 @@ internal class GetRestockSubscriptionsValidator : AbstractValidator<GetRestockSu
     }
 }
 
-internal class GeRestockSubscriptionsHandler(CustomersReadUnitOfWork customersReadUnitOfWork)
+public class GeRestockSubscriptionsHandler(CustomersReadUnitOfWork customersReadUnitOfWork)
     : IQueryHandler<GetRestockSubscriptions, GetRestockSubscriptionsResult>
 {
-    public async Task<GetRestockSubscriptionsResult> Handle(
+    public async ValueTask<GetRestockSubscriptionsResult> Handle(
         GetRestockSubscriptions query,
         CancellationToken cancellationToken
     )
     {
         var restockSubscriptions = await customersReadUnitOfWork.RestockSubscriptionsRepository.GetByPageFilter(
             query,
-            RestockSubscriptionsModuleMapping.ProjectToRestockSubscriptionDto,
+            projectionFunc: x => x.ToRestockSubscriptionsDto(),
             sortExpression: x => x.Created,
             predicate: x =>
                 x.IsDeleted == false
@@ -81,4 +81,4 @@ internal class GeRestockSubscriptionsHandler(CustomersReadUnitOfWork customersRe
     }
 }
 
-internal record GetRestockSubscriptionsResult(IPageList<RestockSubscriptionDto> RestockSubscriptions);
+public record GetRestockSubscriptionsResult(IPageList<RestockSubscriptionDto> RestockSubscriptions);

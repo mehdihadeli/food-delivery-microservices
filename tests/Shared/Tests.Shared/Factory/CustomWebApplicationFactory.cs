@@ -1,5 +1,6 @@
 using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Security.Jwt;
+using Meziantou.Extensions.Logging.InMemory;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -7,11 +8,13 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Serilog;
 using Serilog.Events;
+using Serilog.Extensions.Logging;
 using WebMotions.Fake.Authentication.JwtBearer;
 using Environments = BuildingBlocks.Core.Web.Environments;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -20,55 +23,51 @@ namespace Tests.Shared.Factory;
 
 // https://bartwullems.blogspot.com/2022/01/net-6-minimal-apiintegration-testing.html
 // https://milestone.topics.it/2021/04/28/you-wanna-test-http.html
-public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>, IAsyncLifetime
+public class CustomWebApplicationFactory<TEntryPoint>(Action<IWebHostBuilder>? webHostBuilder = null)
+    : WebApplicationFactory<TEntryPoint>,
+        IAsyncLifetime
     where TEntryPoint : class
 {
     private ITestOutputHelper? _outputHelper;
-    private Action<IWebHostBuilder>? _customWebHostBuilder;
-    private Action<IHostBuilder>? _customHostBuilder;
-    private Action<HostBuilderContext, IConfigurationBuilder>? _configureAppConfigurations;
-    private Action<IServiceCollection>? _testServices;
     private readonly Dictionary<string, string?> _inMemoryConfigs = new();
+    private Action<IServiceCollection>? _testConfigureServices;
+    private Action<IConfiguration>? _testConfiguration;
+    private Action<WebHostBuilderContext, IConfigurationBuilder>? _testConfigureAppConfiguration;
+    private readonly List<Type> _testHostedServicesTypes = new();
 
-    public Action<IConfiguration>? ConfigurationAction { get; set; }
-    public Action<IServiceCollection>? TestConfigureServices { get; set; }
-    public Action<HostBuilderContext, IConfigurationBuilder>? TestConfigureApp { get; set; }
+    /// <summary>
+    /// Use for tracking occured log events for testing purposes
+    /// </summary>
+    public InMemoryLoggerProvider InMemoryLogTrackerProvider { get; } = new();
+
+    public void WithTestConfigureServices(Action<IServiceCollection> services)
+    {
+        _testConfigureServices += services;
+    }
+
+    public void WithTestConfiguration(Action<IConfiguration> configurations)
+    {
+        _testConfiguration += configurations;
+    }
+
+    public void WithTestConfigureAppConfiguration(
+        Action<WebHostBuilderContext, IConfigurationBuilder> appConfigurations
+    )
+    {
+        _testConfigureAppConfiguration += appConfigurations;
+    }
+
+    public void AddTestHostedService<THostedService>()
+        where THostedService : class, IHostedService
+    {
+        _testHostedServicesTypes.Add(typeof(THostedService));
+    }
 
     public ILogger Logger => Services.GetRequiredService<ILogger<CustomWebApplicationFactory<TEntryPoint>>>();
 
     public void ClearOutputHelper() => _outputHelper = null;
 
     public void SetOutputHelper(ITestOutputHelper value) => _outputHelper = value;
-
-    public CustomWebApplicationFactory<TEntryPoint> WithTestServices(Action<IServiceCollection> services)
-    {
-        _testServices += services;
-
-        return this;
-    }
-
-    public CustomWebApplicationFactory<TEntryPoint> WithConfigureAppConfigurations(
-        Action<HostBuilderContext, IConfigurationBuilder> builder
-    )
-    {
-        _configureAppConfigurations += builder;
-
-        return this;
-    }
-
-    public new CustomWebApplicationFactory<TEntryPoint> WithWebHostBuilder(Action<IWebHostBuilder> builder)
-    {
-        _customWebHostBuilder = builder;
-
-        return this;
-    }
-
-    public CustomWebApplicationFactory<TEntryPoint> WithHostBuilder(Action<IHostBuilder> builder)
-    {
-        _customHostBuilder = builder;
-
-        return this;
-    }
 
     // https://github.com/davidfowl/TodoApi/
     // https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests
@@ -88,8 +87,14 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
         builder.UseSerilog(
             (ctx, loggerConfiguration) =>
             {
+                // https://www.meziantou.net/how-to-test-the-logs-from-ilogger-in-dotnet.htm
+                // We could also create a serilog sink for this in-memoryLoggerProvider for keep-tracking logs in the test and their states
+                var loggerProviderCollections = new LoggerProviderCollection();
+                loggerProviderCollections.AddProvider(InMemoryLogTrackerProvider);
+                loggerConfiguration.WriteTo.Providers(loggerProviderCollections);
+
                 //https://github.com/trbenning/serilog-sinks-xunit
-                if (_outputHelper is not null)
+                if (_outputHelper is { })
                 {
                     loggerConfiguration.WriteTo.TestOutput(
                         _outputHelper,
@@ -111,46 +116,36 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
             }
         );
 
-        // //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/
-        // //https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration-providers#json-configuration-provider
-        builder.ConfigureAppConfiguration(
-            (hostingContext, configurationBuilder) =>
-            {
-                // configurationBuilder.Sources.Clear();
-                // IHostEnvironment env = hostingContext.HostingEnvironment;
-                //
-                // configurationBuilder
-                //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                //     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
-                //     .AddJsonFile("integrationappsettings.json", true, true);
-                //
-                // var integrationConfig = configurationBuilder.Build();
-                //
-                // configurationBuilder.AddConfiguration(integrationConfig);
-
-                //// add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
-                //// https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
-                configurationBuilder.AddInMemoryCollection(_inMemoryConfigs);
-
-                ConfigurationAction?.Invoke(hostingContext.Configuration);
-                _configureAppConfigurations?.Invoke(hostingContext, configurationBuilder);
-                TestConfigureApp?.Invoke(hostingContext, configurationBuilder);
-            }
-        );
-
-        _customHostBuilder?.Invoke(builder);
-
         return base.CreateHost(builder);
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        // test services will call after registering all application services in program.cs and can override them with `Replace` or `Remove` dependencies
+        webHostBuilder?.Invoke(builder);
+
+        builder.ConfigureAppConfiguration(
+            (hostingContext, configurationBuilder) =>
+            {
+                //// add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
+                //// https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
+                configurationBuilder.AddInMemoryCollection(_inMemoryConfigs);
+
+                _testConfiguration?.Invoke(hostingContext.Configuration);
+                _testConfigureAppConfiguration?.Invoke(hostingContext, configurationBuilder);
+            }
+        );
+
         builder.ConfigureTestServices(services =>
         {
             //// https://andrewlock.net/converting-integration-tests-to-net-core-3/
-            //// Don't run IHostedServices when running as a test
-            // services.RemoveAll(typeof(IHostedService));
+            //// 1. If we need fine-grained control over the behavior of the services during tests, we can remove all IHostedService in CustomWebApplicationFactory for existing app and add required ones with `AddTestHostedService` in SharedFixture `InitializeAsync` and run them manually with `TestWorkersRunner`.
+            //// 2. We can use Existing IHostedService Implementations if we want our tests to be as realistic as possible.
+            // services.RemoveAll<IHostedService>();
+            // // add test hosted services
+            // foreach (var hostedServiceType in _testHostedServicesTypes)
+            // {
+            //     services.AddSingleton(typeof(IHostedService), hostedServiceType);
+            // }
 
             // TODO: Web could use this in E2E test for running another service during our test
             // https://milestone.topics.it/2021/11/10/http-client-factory-in-integration-testing.html
@@ -189,18 +184,42 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
                     scheme: FakeJwtBearerDefaults.AuthenticationScheme
                 );
 
-            _testServices?.Invoke(services);
-            TestConfigureServices?.Invoke(services);
+            _testConfigureServices?.Invoke(services);
         });
 
-        // //https://github.com/dotnet/aspnetcore/issues/45372
+        // override Configure is not valid in test: //https://github.com/dotnet/aspnetcore/issues/45372
         // wb.Configure(x =>
         // {
         // });
 
-        _customWebHostBuilder?.Invoke(builder);
-
         base.ConfigureWebHost(builder);
+    }
+
+    public void AddOverrideInMemoryConfig(Action<IDictionary<string, string>> inmemoryConfigsAction)
+    {
+        var inmemoryConfigs = new Dictionary<string, string>();
+        inmemoryConfigsAction.Invoke(inmemoryConfigs);
+
+        // overriding app configs with using in-memory configs
+        // add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
+        // https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
+        foreach (var inmemoryConfig in inmemoryConfigs)
+        {
+            // Use `TryAdd` for prevent adding repetitive elements because of using IntegrationTestBase
+            _inMemoryConfigs.TryAdd(inmemoryConfig.Key, inmemoryConfig.Value);
+        }
+    }
+
+    public void AddOverrideEnvKeyValues(Action<IDictionary<string, string>> keyValuesAction)
+    {
+        var keyValues = new Dictionary<string, string>();
+        keyValuesAction.Invoke(keyValues);
+
+        foreach (var (key, value) in keyValues)
+        {
+            // overriding app configs with using environments
+            Environment.SetEnvironmentVariable(key, value);
+        }
     }
 
     public Task InitializeAsync()
@@ -213,42 +232,11 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
         await base.DisposeAsync();
     }
 
-    public void AddOverrideInMemoryConfig(string key, string value)
-    {
-        // overriding app configs with using in-memory configs
-        // add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
-        // https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
-        _inMemoryConfigs.Add(key, value);
-    }
-
-    public void AddOverrideInMemoryConfig(IDictionary<string, string> inMemConfigs)
-    {
-        // overriding app configs with using in-memory configs
-        // add in-memory configuration instead of using appestings.json and override existing settings and it is accessible via IOptions and Configuration
-        // https://blog.markvincze.com/overriding-configuration-in-asp-net-core-integration-tests/
-        inMemConfigs.ToList().ForEach(x => _inMemoryConfigs.Add(x.Key, x.Value));
-    }
-
-    public void AddOverrideEnvKeyValue(string key, string value)
-    {
-        // overriding app configs with using environments
-        Environment.SetEnvironmentVariable(key, value);
-    }
-
-    public void AddOverrideEnvKeyValues(IDictionary<string, string> keyValues)
-    {
-        foreach (var (key, value) in keyValues)
-        {
-            // overriding app configs with using environments
-            Environment.SetEnvironmentVariable(key, value);
-        }
-    }
-
     private static IHttpContextAccessor CreateCustomTestHttpContextAccessorMock(IServiceProvider serviceProvider)
     {
         var httpContextAccessorMock = Substitute.For<IHttpContextAccessor>();
         using var scope = serviceProvider.CreateScope();
-        httpContextAccessorMock.HttpContext = new DefaultHttpContext { RequestServices = scope.ServiceProvider, };
+        httpContextAccessorMock.HttpContext = new DefaultHttpContext { RequestServices = scope.ServiceProvider };
 
         httpContextAccessorMock.HttpContext.Request.Host = new HostString("localhost", 5000);
         httpContextAccessorMock.HttpContext.Request.Scheme = "http";

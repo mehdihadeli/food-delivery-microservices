@@ -1,4 +1,3 @@
-using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
@@ -6,14 +5,15 @@ using BuildingBlocks.Email;
 using BuildingBlocks.Email.Options;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Shared.Data;
+using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification.v1;
 
-internal record SendRestockNotification(long RestockSubscriptionId, int CurrentStock) : InternalCommand, ITxRequest;
+public record SendRestockNotification(long RestockSubscriptionId, int CurrentStock) : InternalCommand, ITxRequest;
 
-internal class SendRestockNotificationValidator : AbstractValidator<SendRestockNotification>
+public class SendRestockNotificationValidator : AbstractValidator<SendRestockNotification>
 {
     public SendRestockNotificationValidator()
     {
@@ -23,16 +23,16 @@ internal class SendRestockNotificationValidator : AbstractValidator<SendRestockN
     }
 }
 
-internal class SendRestockNotificationHandler(
+public class SendRestockNotificationHandler(
     CustomersDbContext customersDbContext,
     IEmailSender emailSender,
     IOptions<EmailOptions> emailConfig,
     ILogger<SendRestockNotificationHandler> logger
-) : ICommandHandler<SendRestockNotification>
+) : BuildingBlocks.Abstractions.Commands.ICommandHandler<SendRestockNotification>
 {
     private readonly EmailOptions _emailConfig = emailConfig.Value;
 
-    public async Task Handle(SendRestockNotification command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(SendRestockNotification command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
@@ -54,5 +54,7 @@ internal class SendRestockNotificationHandler(
 
             logger.LogInformation("Restock notification sent to email {Email}", restockSubscription.Email);
         }
+
+        return Unit.Value;
     }
 }

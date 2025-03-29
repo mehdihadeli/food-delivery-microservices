@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Extensions.ServiceCollection;
+using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
 using Microsoft.AspNetCore.Builder;
 
 namespace BuildingBlocks.Web.Extensions;
@@ -6,8 +6,6 @@ namespace BuildingBlocks.Web.Extensions;
 // https://learn.microsoft.com/en-us/aspnet/core/security/cors
 public static class Extensions
 {
-    private const string CorsPolicyName = "AllowSpecificOrigins";
-
     public static WebApplicationBuilder AddCustomCors(this WebApplicationBuilder builder)
     {
         builder.Services.AddValidatedOptions<CorsOptions>();

@@ -1,6 +1,11 @@
+using System.Net;
 using System.Threading.RateLimiting;
+using BuildingBlocks.Core.Extensions;
+using Humanizer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace BuildingBlocks.Web.RateLimit;
 
@@ -8,21 +13,41 @@ public static class DependencyInjectionExtensions
 {
     public static WebApplicationBuilder AddCustomRateLimit(this WebApplicationBuilder builder)
     {
-        // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
-        builder.Services.AddRateLimiter(options =>
-        {
-            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        var rateLimitingOptions = builder.Configuration.BindOptions<RateLimitOptions>(nameof(RateLimitOptions));
 
-            // rate limiter that limits all to 10 requests per minute, per authenticated username (or hostname if not authenticated)
-            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        builder.Services.AddRateLimiter(opt =>
+        {
+            // all individual policies should have their own OnRejected, I guess this is fallback only ??? don't know at the moment.
+            opt.OnRejected = (OnRejectedContext context, CancellationToken _) =>
+            {
+                var problemDetailsService =
+                    context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
+                var problemDetails = new ProblemDetails
+                {
+                    Status = (int)HttpStatusCode.TooManyRequests,
+                    Title = HttpStatusCode.TooManyRequests.Humanize(),
+                };
+
+                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+                return problemDetailsService.WriteAsync(
+                    new ProblemDetailsContext { HttpContext = context.HttpContext, ProblemDetails = problemDetails }
+                );
+            };
+
+            opt.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
                 RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
-                    factory: partition => new FixedWindowRateLimiterOptions
+                    partitionKey: httpContext.GetClientIp() ?? "N/A",
+                    factory: _ =>
                     {
-                        AutoReplenishment = true,
-                        PermitLimit = 100,
-                        QueueLimit = 0,
-                        Window = TimeSpan.FromMinutes(1)
+                        var permitLimit = rateLimitingOptions.Limit;
+                        var periodInMs = rateLimitingOptions.PeriodInMs;
+
+                        return new FixedWindowRateLimiterOptions()
+                        {
+                            PermitLimit = permitLimit,
+                            Window = TimeSpan.FromMilliseconds(periodInMs),
+                            QueueLimit = rateLimitingOptions.QueueLimit,
+                        };
                     }
                 )
             );
@@ -31,9 +56,14 @@ public static class DependencyInjectionExtensions
         return builder;
     }
 
-    public static WebApplication UseCustomRateLimit(this WebApplication app)
+    private static string? GetClientIp(this HttpContext httpContext)
     {
-        app.UseRateLimiter();
-        return app;
+        var forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(forwardedFor))
+        {
+            return forwardedFor.Split(',')[0]; // Take the first IP in the list
+        }
+
+        return httpContext.Connection.RemoteIpAddress?.ToString();
     }
 }

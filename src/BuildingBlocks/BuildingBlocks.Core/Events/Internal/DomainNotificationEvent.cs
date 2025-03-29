@@ -1,5 +1,8 @@
-using BuildingBlocks.Abstractions.Events.Internal;
+using BuildingBlocks.Abstractions.Events;
 
 namespace BuildingBlocks.Core.Events.Internal;
 
-public abstract record DomainNotificationEvent : Event, IDomainNotificationEvent;
+public abstract record DomainNotificationEvent<TDomainEvent>(TDomainEvent DomainEvent)
+    : Event,
+        IDomainNotificationEvent<TDomainEvent>
+    where TDomainEvent : IDomainEvent;

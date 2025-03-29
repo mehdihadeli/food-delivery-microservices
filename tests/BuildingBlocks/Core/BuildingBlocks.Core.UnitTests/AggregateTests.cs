@@ -84,7 +84,7 @@ public class AggregateTests
     {
         Pending = 1,
         Confirmed = 2,
-        Cancelled = 4
+        Cancelled = 4,
     }
 
     private class ShoppingCart : Aggregate<Guid>
@@ -103,7 +103,7 @@ public class AggregateTests
                 ClientId = clientId,
                 Id = Guid.NewGuid(),
                 _products = new List<Guid>(),
-                Status = ShoppingCartStatus.Pending
+                Status = ShoppingCartStatus.Pending,
             };
 
             shoppingCart.AddDomainEvents(new ShoppingCartInitialized(shoppingCart.Id, shoppingCart.ClientId));

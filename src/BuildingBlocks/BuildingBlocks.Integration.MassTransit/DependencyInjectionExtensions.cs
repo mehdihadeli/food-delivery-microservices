@@ -1,54 +1,40 @@
 using System.Reflection;
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Messaging;
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.Events;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
-using BuildingBlocks.Core.Messaging;
+using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
+using BuildingBlocks.Core.Messages;
 using BuildingBlocks.Core.Reflection;
-using BuildingBlocks.Core.Reflection.Extensions;
 using BuildingBlocks.Core.Web.Extensions;
 using Humanizer;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using IExternalEventBus = BuildingBlocks.Abstractions.Messaging.IExternalEventBus;
 
 namespace BuildingBlocks.Integration.MassTransit;
 
 public static class DependencyInjectionExtensions
 {
-    /// <summary>
-    /// Add Masstransit.
-    /// </summary>
-    /// <param name="builder"></param>
-    /// <param name="configureMessagesTopologies">All configurations related to message topology, publish configuration and recive endpoint configurations.</param>
-    /// <param name="configureBusRegistration"></param>
-    /// <param name="configureMessagingOptions"></param>
-    /// <param name="scanAssemblies"></param>
-    /// <returns></returns>
-    public static WebApplicationBuilder AddCustomMassTransit(
+    public static WebApplicationBuilder AddMasstransitEventBus(
         this WebApplicationBuilder builder,
         Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureMessagesTopologies = null,
         Action<IBusRegistrationConfigurator>? configureBusRegistration = null,
-        Action<MessagingOptions>? configureMessagingOptions = null,
-        params Assembly[] scanAssemblies
+        Action<RabbitMqOptions>? configurator = null,
+        Action<MasstransitOptions>? configureMasstransitOptions = null
     )
     {
-        builder.Services.AddValidationOptions(configureMessagingOptions);
-        var messagingOptions = builder.Configuration.BindOptions(configureMessagingOptions);
+        // Add option to the dependency injection
+        builder.Services.AddValidationOptions(configurator: configureMasstransitOptions);
+        builder.Services.AddValidationOptions(configurator: configurator);
 
-        // - should be placed out of action delegate for getting correct calling assembly
-        // - Assemblies are lazy loaded so using AppDomain.GetAssemblies is not reliable (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet), so we use `GetAllReferencedAssemblies` and it
-        // loads all referenced assemblies explicitly.
-        var assemblies =
-            scanAssemblies.Length != 0
-                ? scanAssemblies
-                : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).ToArray();
+        var masstransitOptions = builder.Configuration.BindOptions(configureMasstransitOptions);
+
+        // Find all referenced assemblies to current assemblies
+        var assemblies = Assembly.GetCallingAssembly().GetReferencingAssemblies();
 
         if (!builder.Environment.IsTest())
         {
@@ -90,8 +76,6 @@ public static class DependencyInjectionExtensions
             busRegistrationConfigurator.UsingRabbitMq(
                 (context, cfg) =>
                 {
-                    cfg.UseConsumeFilter(typeof(CorrelationConsumeFilter<>), context);
-
                     // https: // github.com/MassTransit/MassTransit/issues/2018
                     // https://github.com/MassTransit/MassTransit/issues/4831
                     cfg.Publish<IIntegrationEvent>(p => p.Exclude = true);
@@ -99,9 +83,12 @@ public static class DependencyInjectionExtensions
                     cfg.Publish<IMessage>(p => p.Exclude = true);
                     cfg.Publish<Message>(p => p.Exclude = true);
                     cfg.Publish<ITxRequest>(p => p.Exclude = true);
-                    cfg.Publish<IEventEnvelope>(p => p.Exclude = true);
+                    cfg.Publish<IMessageEnvelopeBase>(p => p.Exclude = true);
 
-                    if (messagingOptions.AutoConfigEndpoints)
+                    cfg.UseConsumeFilter(typeof(HeadersPropagationFilter<>), context);
+                    // cfg.UseConsumeFilter(typeof(MessageHandlerConsumerFilter<>), context);
+
+                    if (masstransitOptions.AutoConfigEndpoints)
                     {
                         // https://masstransit.io/documentation/configuration#consumer-registration
                         // https://masstransit.io/documentation/configuration#configure-endpoints
@@ -109,7 +96,7 @@ public static class DependencyInjectionExtensions
                         cfg.ConfigureEndpoints(context);
                     }
 
-                    var rabbitMqOptions = builder.Configuration.BindOptions<RabbitMqOptions>();
+                    var rabbitMqOptions = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
 
                     cfg.Host(
                         rabbitMqOptions.Host,
@@ -127,9 +114,12 @@ public static class DependencyInjectionExtensions
                     // https://masstransit.io/documentation/configuration/topology/message
                     cfg.MessageTopology.SetEntityNameFormatter(new CustomEntityNameFormatter());
 
-                    ApplyMessagesPublishTopology(cfg.PublishTopology, assemblies);
-                    ApplyMessagesConsumeTopology(cfg, context, assemblies);
-                    ApplyMessagesSendTopology(cfg.SendTopology, assemblies);
+                    if (masstransitOptions.AutoConfigMessagesTopology)
+                    {
+                        ApplyMessagesPublishTopology(cfg.PublishTopology, assemblies);
+                        ApplyMessagesConsumeTopology(cfg, context, masstransitOptions, assemblies);
+                        ApplyMessagesSendTopology(cfg.SendTopology, assemblies);
+                    }
 
                     configureMessagesTopologies?.Invoke(context, cfg);
 
@@ -157,6 +147,7 @@ public static class DependencyInjectionExtensions
                 options.ShutdownTimeout = TimeSpan.FromSeconds(60);
             });
 
+        // will override default null messaging types - we should not use `TryAddTransient` to replace null types
         builder.Services.AddTransient<IExternalEventBus, MassTransitBus>();
         builder.Services.AddTransient<IBusDirectPublisher, MasstransitDirectPublisher>();
 
@@ -171,54 +162,40 @@ public static class DependencyInjectionExtensions
     private static void ApplyMessagesConsumeTopology(
         IRabbitMqBusFactoryConfigurator rabbitMqBusFactoryConfigurator,
         IBusRegistrationContext context,
+        MasstransitOptions masstransitOptions,
         Assembly[] assemblies
     )
     {
         var consumeTopology = rabbitMqBusFactoryConfigurator.ConsumeTopology;
 
         var messageTypes = ReflectionUtilities
-            .GetAllTypesImplementingInterface<IIntegrationEvent>(assemblies)
+            .GetAllTypesImplementingInterface<IMessage>(assemblies)
             .Where(x => !x.IsGenericType);
 
         foreach (var messageType in messageTypes)
         {
-            var eventEnvelopeInterfaceMessageType = typeof(IEventEnvelope<>).MakeGenericType(messageType);
-            var eventEnvelopeInterfaceConfigurator = consumeTopology.GetMessageTopology(
-                eventEnvelopeInterfaceMessageType
-            );
-
-            // indicate whether the topic or exchange for the message type should be created and subscribed to the queue when consumed on a reception endpoint.
-            // // with setting `ConfigureConsumeTopology` to `false`, we should create `primary exchange` and its bounded exchange manually with using `re.Bind` otherwise with `ConfigureConsumeTopology=true` it get publish topology for message type `T` with `_publishTopology.GetMessageTopology<T>()` and use its ExchangeType and ExchangeName based ofo default EntityFormatter
-            eventEnvelopeInterfaceConfigurator.ConfigureConsumeTopology = true;
-
             // none event-envelope message types
             var messageConfigurator = consumeTopology.GetMessageTopology(messageType);
-            messageConfigurator.ConfigureConsumeTopology = true;
+            messageConfigurator.ConfigureConsumeTopology = masstransitOptions.ConfigureConsumeTopology;
 
-            var eventEnvelopeConsumerInterface = typeof(IConsumer<>).MakeGenericType(eventEnvelopeInterfaceMessageType);
-            var envelopeConsumerConcretedTypes = eventEnvelopeConsumerInterface
+            var messageConsumerInterface = typeof(IConsumer<>).MakeGenericType(messageType);
+            var messageTypeConsumerConcretedTypes = messageConsumerInterface
                 .GetAllTypesImplementingInterface(assemblies)
-                .Where(x => !x.FullName!.Contains(nameof(MassTransit)));
+                .Where(x => !x.FullName!.Contains(nameof(MassTransit), StringComparison.InvariantCulture));
 
-            var consumerType = envelopeConsumerConcretedTypes.SingleOrDefault();
-
-            if (consumerType is null)
+            var messageTypeConsumerType = messageTypeConsumerConcretedTypes.SingleOrDefault();
+            if (messageTypeConsumerType is null)
             {
-                var messageTypeConsumerInterface = typeof(IConsumer<>).MakeGenericType(messageType);
-                var messageTypeConsumerConcretedTypes = messageTypeConsumerInterface
-                    .GetAllTypesImplementingInterface(assemblies)
-                    .Where(x => !x.FullName!.Contains(nameof(MassTransit)));
-                var messageTypeConsumerType = messageTypeConsumerConcretedTypes.SingleOrDefault();
-
-                if (messageTypeConsumerType is null)
-                {
-                    continue;
-                }
-
-                consumerType = messageTypeConsumerType;
+                continue;
             }
 
-            ConfigureMessageReceiveEndpoint(rabbitMqBusFactoryConfigurator, context, messageType, consumerType);
+            ConfigureMessageReceiveEndpoint(
+                rabbitMqBusFactoryConfigurator,
+                context,
+                messageType,
+                messageTypeConsumerType,
+                masstransitOptions
+            );
         }
     }
 
@@ -226,7 +203,8 @@ public static class DependencyInjectionExtensions
         IRabbitMqBusFactoryConfigurator rabbitMqBusFactoryConfigurator,
         IBusRegistrationContext context,
         Type messageType,
-        Type consumerType
+        Type consumerType,
+        MasstransitOptions masstransitOptions
     )
     {
         // https://github.com/MassTransit/MassTransit/blob/eb3c9ee1007cea313deb39dc7c4eb796b7e61579/src/Transports/MassTransit.RabbitMqTransport/RabbitMqTransport/Configuration/RabbitMqReceiveEndpointBuilder.cs#L70
@@ -247,20 +225,23 @@ public static class DependencyInjectionExtensions
                 // a replicated queue to provide high availability and data safety. available in RMQ 3.8+
                 re.SetQuorumQueue();
 
-                // with setting `ConfigureConsumeTopology` to `false`, we should create `primary exchange` and its bounded exchange manually with using `re.Bind` otherwise with `ConfigureConsumeTopology=true` it get publish topology for message type `T` with `_publishTopology.GetMessageTopology<T>()` and use its ExchangeType and ExchangeName based ofo default EntityFormatter
-                re.ConfigureConsumeTopology = true;
+                // with setting `ConfigureConsumeTopology` to `false`, we should create `primary exchange` and its bounded exchange manually with using `re.Bind` otherwise with `ConfigureConsumeTopology=true` it get publish topology for message type `T` with `_publishTopology.GetMessageTopology<T>()` and use its ExchangeType and ExchangeName based ofo default EntityFormatter but routing-key doesn't set.
+                re.ConfigureConsumeTopology = masstransitOptions.ConfigureConsumeTopology;
 
-                // // https://spring.io/blog/2011/04/01/routing-topologies-for-performance-and-scalability-with-rabbitmq
-                // // masstransit uses `wire-tapping` pattern for defining exchanges. Primary exchange will send the message to intermediary fanout exchange
-                // // setup primary exchange and its type
-                // re.Bind(
-                //     $"{type.Name.Underscore()}{MessagingConstants.PrimaryExchangePostfix}",
-                //     e =>
-                //     {
-                //         e.RoutingKey = type.Name.Underscore();
-                //         e.ExchangeType = ExchangeType.Direct;
-                //     }
-                // );
+                if (!masstransitOptions.ConfigureConsumeTopology)
+                {
+                    // https://spring.io/blog/2011/04/01/routing-topologies-for-performance-and-scalability-with-rabbitmq
+                    // masstransit uses `wire-tapping` pattern for defining exchanges. Primary exchange will send the message to intermediary fanout exchange
+                    // setup primary exchange and its type
+                    re.Bind(
+                        $"{messageType.Name.Underscore()}{MessagingConstants.PrimaryExchangePostfix}",
+                        e =>
+                        {
+                            e.RoutingKey = messageType.Name.Underscore();
+                            e.ExchangeType = ExchangeType.Direct;
+                        }
+                    );
+                }
 
                 // https://github.com/MassTransit/MassTransit/discussions/3117
                 // https://masstransit-project.com/usage/configuration.html#receive-endpoints
@@ -278,25 +259,12 @@ public static class DependencyInjectionExtensions
     {
         // Get all types that implement the IMessage interface
         var messageTypes = ReflectionUtilities
-            .GetAllTypesImplementingInterface<IIntegrationEvent>(assemblies)
+            .GetAllTypesImplementingInterface<IMessage>(assemblies)
             .Where(x => !x.IsGenericType);
 
         foreach (var messageType in messageTypes)
         {
-            var eventEnvelopeInterfaceMessageType = typeof(IEventEnvelope<>).MakeGenericType(messageType);
-            var eventEnvelopeInterfaceConfigurator = publishTopology.GetMessageTopology(
-                eventEnvelopeInterfaceMessageType
-            );
-
             // setup primary exchange
-            eventEnvelopeInterfaceConfigurator.Durable = true;
-            eventEnvelopeInterfaceConfigurator.ExchangeType = ExchangeType.Direct;
-
-            var eventEnvelopeMessageType = typeof(EventEnvelope<>).MakeGenericType(messageType);
-            var eventEnvelopeMessageTypeConfigurator = publishTopology.GetMessageTopology(eventEnvelopeMessageType);
-            eventEnvelopeMessageTypeConfigurator.Durable = true;
-            eventEnvelopeMessageTypeConfigurator.ExchangeType = ExchangeType.Direct;
-
             // none event-envelope message types
             var messageConfigurator = publishTopology.GetMessageTopology(messageType);
             messageConfigurator.Durable = true;

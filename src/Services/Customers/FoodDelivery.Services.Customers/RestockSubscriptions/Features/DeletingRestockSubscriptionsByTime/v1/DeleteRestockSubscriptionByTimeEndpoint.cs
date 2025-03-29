@@ -1,7 +1,6 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -17,8 +16,8 @@ internal class DeleteRestockSubscriptionByTimeEndpoint
         ValidationProblem
     >
 {
-    public string GroupName => RestockSubscriptionsConfigs.Tag;
-    public string PrefixRoute => RestockSubscriptionsConfigs.RestockSubscriptionsUrl;
+    public string GroupName => RestockSubscriptionsConfigurations.Tag;
+    public string PrefixRoute => RestockSubscriptionsConfigurations.RestockSubscriptionsUrl;
     public double Version => 1.0;
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
@@ -32,10 +31,8 @@ internal class DeleteRestockSubscriptionByTimeEndpoint
             .WithName(nameof(DeleteRestockSubscriptionsByTime))
             .WithName(nameof(DeleteRestockSubscriptionsByTime))
             .WithDisplayName(nameof(DeleteRestockSubscriptionsByTime).Humanize())
-            .WithSummaryAndDescription(
-                nameof(DeleteRestockSubscriptionsByTime).Humanize(),
-                nameof(DeleteRestockSubscriptionsByTime).Humanize()
-            );
+            .WithSummary(nameof(DeleteRestockSubscriptionsByTime).Humanize())
+            .WithDescription(nameof(DeleteRestockSubscriptionsByTime).Humanize());
     }
 
     public async Task<

@@ -3,19 +3,20 @@ using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Domain;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
+using Mediator;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime.v1;
 
-internal record DeleteRestockSubscriptionsByTime(DateTime? From = null, DateTime? To = null) : ITxCommand;
+public record DeleteRestockSubscriptionsByTime(DateTime? From = null, DateTime? To = null) : ITxCommand;
 
-internal class DeleteRestockSubscriptionsByTimeHandler(
+public class DeleteRestockSubscriptionsByTimeHandler(
     CustomersDbContext customersDbContext,
     ICommandBus commandBus,
     ILogger<DeleteRestockSubscriptionsByTimeHandler> logger
-) : ICommandHandler<DeleteRestockSubscriptionsByTime>
+) : BuildingBlocks.Abstractions.Commands.ICommandHandler<DeleteRestockSubscriptionsByTime>
 {
-    public async Task Handle(DeleteRestockSubscriptionsByTime command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(DeleteRestockSubscriptionsByTime command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
@@ -51,5 +52,7 @@ internal class DeleteRestockSubscriptionsByTimeHandler(
             new UpdateMongoRestockSubscriptionsReadModelByTime(command.From, command.To, IsDeleted: true),
             cancellationToken
         );
+
+        return Unit.Value;
     }
 }

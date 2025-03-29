@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
 using FluentValidation;
@@ -10,12 +9,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
 
-internal record GetUserById(Guid Id) : IQuery<GetUserByIdResult>
+public record GetUserById(Guid Id) : IQuery<GetUserByIdResult>
 {
-    public static GetUserById Of(Guid id) => new GetUserById(id.NotBeInvalid());
+    public static GetUserById Of(Guid id) => new GetUserById(id.NotBeEmpty());
 }
 
-internal class GetUserByIdValidator : AbstractValidator<GetUserById>
+public class GetUserByIdValidator : AbstractValidator<GetUserById>
 {
     public GetUserByIdValidator()
     {
@@ -23,20 +22,20 @@ internal class GetUserByIdValidator : AbstractValidator<GetUserById>
     }
 }
 
-internal class GetUserByIdHandler(UserManager<ApplicationUser> userManager, IMapper mapper)
+public class GetUserByIdHandler(UserManager<ApplicationUser> userManager)
     : IQueryHandler<GetUserById, GetUserByIdResult>
 {
-    public async Task<GetUserByIdResult> Handle(GetUserById query, CancellationToken cancellationToken)
+    public async ValueTask<GetUserByIdResult> Handle(GetUserById query, CancellationToken cancellationToken)
     {
         query.NotBeNull();
 
         var identityUser = await userManager.FindUserWithRoleByIdAsync(query.Id);
         identityUser.NotBeNull(new IdentityUserNotFoundException(query.Id));
 
-        var identityUserDto = mapper.Map<IdentityUserDto>(identityUser);
+        var identityUserDto = identityUser.ToIdentityUserDto();
 
         return new GetUserByIdResult(identityUserDto);
     }
 }
 
-internal record GetUserByIdResult(IdentityUserDto IdentityUser);
+public record GetUserByIdResult(IdentityUserDto IdentityUser);

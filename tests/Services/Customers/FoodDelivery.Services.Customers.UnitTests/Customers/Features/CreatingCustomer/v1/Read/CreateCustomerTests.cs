@@ -1,5 +1,5 @@
 using FoodDelivery.Services.Customers.Customers;
-using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
+using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Internal.Mongo;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
 using FoodDelivery.Services.Customers.UnitTests.Common;
@@ -17,7 +17,7 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
         _customersReadUnitOfWork = Substitute.For<ICustomersReadUnitOfWork>();
         var customersReadRepository = Substitute.For<ICustomerReadRepository>();
         _customersReadUnitOfWork.CustomersRepository.Returns(customersReadRepository);
-        _customersReadUnitOfWork.CommitAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        _customersReadUnitOfWork.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
     }
 
     // totally we don't need to unit test our handlers according jimmy bogard blogs and videos and we should extract our business to domain or seperated class so we don't need repository pattern for test, but for a sample I use it here
@@ -28,7 +28,7 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
     {
         // Arrange
         var fakeCreateCustomerReadCommand = new FakeCreateCustomerRead().Generate();
-        var insertCustomer = fakeCreateCustomerReadCommand.ToCustomer();
+        var insertCustomer = fakeCreateCustomerReadCommand.ToCustomerReadModel();
 
         _customersReadUnitOfWork
             .CustomersRepository.AddAsync(Arg.Is(insertCustomer), Arg.Any<CancellationToken>())
@@ -42,6 +42,6 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
         await _customersReadUnitOfWork
             .CustomersRepository.Received(1)
             .AddAsync(Arg.Is(insertCustomer), Arg.Any<CancellationToken>());
-        await _customersReadUnitOfWork.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+        await _customersReadUnitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

@@ -1,10 +1,9 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Paging;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using Cassandra.Mapping;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,9 +16,10 @@ internal static class GetUsersEndpoint
     {
         return app.MapGet("/", Handle)
             .RequireAuthorization()
-            .WithTags(UsersConfigs.Tag)
+            .WithTags(UsersConfigurations.Tag)
             .WithName(nameof(GetUsers))
-            .WithSummaryAndDescription(nameof(GetUsers).Humanize(), nameof(GetUsers).Humanize())
+            .WithDescription(nameof(GetUsers).Humanize())
+            .WithSummary(nameof(GetUsers).Humanize())
             .WithDisplayName(nameof(GetUsers).Humanize())
             // Api Documentations will produce automatically by typed result in minimal apis.
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses?#typedresults-vs-results
@@ -32,7 +32,7 @@ internal static class GetUsersEndpoint
             [AsParameters] GetUsersRequestParameters requestParameters
         )
         {
-            var (context, queryProcessor, mapper, cancellationToken) = requestParameters;
+            var (context, queryProcessor, cancellationToken) = requestParameters;
 
             var query = GetUsers.Of(
                 new PageRequest
@@ -40,7 +40,7 @@ internal static class GetUsersEndpoint
                     PageNumber = requestParameters.PageNumber,
                     PageSize = requestParameters.PageSize,
                     SortOrder = requestParameters.SortOrder,
-                    Filters = requestParameters.SortOrder
+                    Filters = requestParameters.SortOrder,
                 }
             );
 
@@ -58,7 +58,6 @@ internal static class GetUsersEndpoint
 internal record GetUsersRequestParameters(
     HttpContext HttpContext,
     IQueryBus QueryBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : PageRequest, IHttpQuery;
 

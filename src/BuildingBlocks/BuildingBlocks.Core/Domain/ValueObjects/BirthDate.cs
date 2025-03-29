@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
 using BuildingBlocks.Core.Domain.Exceptions;
-using BuildingBlocks.Core.Extensions;
 
 namespace BuildingBlocks.Core.Domain.ValueObjects;
 
@@ -13,13 +11,6 @@ public record BirthDate
     private BirthDate() { }
 
     public DateTime Value { get; private set; }
-
-    public static BirthDate Of([NotNull] DateTime? value)
-    {
-        value.NotBeNull();
-
-        return Of(value.Value);
-    }
 
     public static BirthDate Of(DateTime value)
     {

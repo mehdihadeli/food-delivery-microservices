@@ -7,7 +7,7 @@ internal class CustomerAlreadyVerifiedException : AppException
     public long CustomerId { get; }
 
     public CustomerAlreadyVerifiedException(long customerId)
-        : base($"Customer with InternalCommandId: '{customerId}' already verified.")
+        : base($"CustomerReadModel with InternalCommandId: '{customerId}' already verified.")
     {
         CustomerId = customerId;
     }

@@ -1,30 +1,23 @@
+namespace BuildingBlocks.Core.Events.Extensions;
+
 using System.Reflection;
 using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Events.Internal;
-using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Core.Messaging;
-using BuildingBlocks.Core.Persistence.EventStore;
-using BuildingBlocks.Core.Reflection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
-namespace BuildingBlocks.Core.Events.Extensions;
+using BuildingBlocks.Core.Extensions;
 
 internal static class DependencyInjectionExtensions
 {
-    internal static IServiceCollection AddEventBus(this IServiceCollection services, params Assembly[] scanAssemblies)
+    internal static IServiceCollection AddEvents(this IServiceCollection services, Assembly[] assemblies)
     {
-        var assemblies =
-            scanAssemblies.Length != 0
-                ? scanAssemblies
-                : ReflectionUtilities.GetReferencedAssemblies(Assembly.GetCallingAssembly()).Distinct().ToArray();
-
         services
             .AddTransient<IDomainEventPublisher, DomainEventPublisher>()
             .AddTransient<IDomainNotificationEventPublisher, DomainNotificationEventPublisher>()
             .AddTransient<IInternalEventBus, InternalEventBus>();
 
-        services.AddTransient<IAggregatesDomainEventsRequestStorage, AggregatesDomainEventsStorage>();
+        services.AddScoped<IAggregatesDomainEventsRequestStorage, AggregatesDomainEventsStorage>();
         services.AddScoped<IDomainEventsAccessor, DomainEventAccessor>();
+
+        // will override by services using their dbcontext
+        services.AddScoped<IDomainEventContext, NullIDomainEventContext>();
 
         RegisterEventMappers(services, assemblies);
 
@@ -35,13 +28,13 @@ internal static class DependencyInjectionExtensions
     {
         services.Scan(scan =>
             scan.FromAssemblies(scanAssemblies)
-                .AddClasses(classes => classes.AssignableTo(typeof(IEventMapper)), false)
+                .AddClasses(classes => classes.AssignableTo<IEventMapper>(), false)
                 .AsImplementedInterfaces()
                 .WithSingletonLifetime()
-                .AddClasses(classes => classes.AssignableTo(typeof(IIntegrationEventMapper)), false)
+                .AddClasses(classes => classes.AssignableTo<IIntegrationEventMapper>(), false)
                 .AsImplementedInterfaces()
                 .WithSingletonLifetime()
-                .AddClasses(classes => classes.AssignableTo(typeof(IIDomainNotificationEventMapper)), false)
+                .AddClasses(classes => classes.AssignableTo<IDomainNotificationEventMapper>(), false)
                 .AsImplementedInterfaces()
                 .WithSingletonLifetime()
         );

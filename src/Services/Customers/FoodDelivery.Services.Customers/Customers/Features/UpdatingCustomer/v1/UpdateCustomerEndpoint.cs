@@ -7,8 +7,8 @@ namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1
 
 internal class UpdateCustomerEndpoint : ICommandMinimalEndpoint<UpdateCustomerRequest, UpdateCustomerRequestParameters>
 {
-    public string GroupName => CustomersConfigs.Tag;
-    public string PrefixRoute => CustomersConfigs.CustomersPrefixUri;
+    public string GroupName => CustomersConfigurations.Tag;
+    public string PrefixRoute => CustomersConfigurations.CustomersPrefixUri;
     public double Version => 1.0;
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
@@ -19,9 +19,10 @@ internal class UpdateCustomerEndpoint : ICommandMinimalEndpoint<UpdateCustomerRe
             .RequireAuthorization()
             .WithName(nameof(UpdateCustomer))
             .WithDisplayName(nameof(UpdateCustomer).Humanize())
-            .WithSummaryAndDescription(nameof(UpdateCustomer).Humanize(), nameof(UpdateCustomer).Humanize());
+            .WithSummary(nameof(UpdateCustomer).Humanize())
+            .WithDescription(nameof(UpdateCustomer).Humanize());
 
-        // .Produces("Customer updated successfully.", StatusCodes.Status204NoContent)
+        // .Produces("CustomerReadModel updated successfully.", StatusCodes.Status204NoContent)
         // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
         // .ProducesProblem("UnAuthorized request.", StatusCodes.Status401Unauthorized)
     }

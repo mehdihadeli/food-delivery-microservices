@@ -15,8 +15,6 @@ public class EfUnitOfWork<TDbContext>(
 ) : IEfUnitOfWork<TDbContext>
     where TDbContext : EfDbContextBase
 {
-    private readonly ILogger<EfUnitOfWork<TDbContext>> _logger = logger;
-
     public TDbContext DbContext => context;
 
     public DbSet<TEntity> Set<TEntity>()
@@ -37,15 +35,15 @@ public class EfUnitOfWork<TDbContext>(
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
-        var domainEvents = domainEventsAccessor.UnCommittedDomainEvents;
+        var domainEvents = domainEventsAccessor.DequeueUncommittedDomainEvents();
         await domainEventPublisher.PublishAsync(domainEvents.ToArray(), cancellationToken);
 
         await context.CommitTransactionAsync(cancellationToken);
     }
 
-    public async Task CommitAsync(CancellationToken cancellationToken = default)
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var domainEvents = domainEventsAccessor.UnCommittedDomainEvents;
+        var domainEvents = domainEventsAccessor.DequeueUncommittedDomainEvents();
         await domainEventPublisher.PublishAsync(domainEvents.ToArray(), cancellationToken);
 
         await context.SaveChangesAsync(cancellationToken);

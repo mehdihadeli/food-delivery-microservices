@@ -1,12 +1,14 @@
+using BuildingBlocks.Abstractions.Messages;
+using BuildingBlocks.Core.Messages;
+
+namespace BuildingBlocks.Core.Persistence.EventStore;
+
 using System.Collections.Immutable;
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 using BuildingBlocks.Core.Domain;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Persistence.EventStore.Extenions;
-
-namespace BuildingBlocks.Core.Persistence.EventStore;
 
 public abstract class AggregateStore(
     IEventStore eventStore,
@@ -25,13 +27,15 @@ public abstract class AggregateStore(
 
         var defaultAggregateState = AggregateFactory<TAggregate>.CreateAggregate();
 
-        var result = await eventStore.AggregateStreamAsync<TAggregate, TId>(
-            streamName,
-            StreamReadPosition.Start,
-            defaultAggregateState,
-            defaultAggregateState.Fold,
-            cancellationToken
-        );
+        var result = await eventStore
+            .AggregateStreamAsync<TAggregate, TId>(
+                streamName,
+                StreamReadPosition.Start,
+                defaultAggregateState,
+                defaultAggregateState.Fold,
+                cancellationToken
+            )
+            .ConfigureAwait(false);
 
         return result;
     }
@@ -58,18 +62,25 @@ public abstract class AggregateStore(
         }
 
         var streamEvents = events
-            .Select(x =>
-                x.ToStreamEvent(new StreamEventMetadata(x.EventId.ToString(), (ulong)x.AggregateSequenceNumber, null))
+            .Select(domainEvent =>
+                StreamEventEnvelopeFactory.From(
+                    domainEvent,
+                    new StreamEventMetadata(
+                        domainEvent.EventId.ToString(),
+                        (ulong)domainEvent.AggregateSequenceNumber,
+                        null
+                    )
+                )
             )
             .ToImmutableList();
 
-        var result = await eventStore.AppendEventsAsync(streamName, streamEvents, version, cancellationToken);
+        var result = await eventStore
+            .AppendEventsAsync(streamName, streamEvents, version, cancellationToken)
+            .ConfigureAwait(false);
 
-        aggregatesDomainEventsStorage.AddEvents(events);
+        aggregatesDomainEventsStorage.AddEventsFromAggregate(aggregate);
 
-        aggregate.MarkUncommittedDomainEventAsCommitted();
-
-        await eventStore.CommitAsync(cancellationToken);
+        await eventStore.CommitAsync(cancellationToken).ConfigureAwait(false);
 
         return result;
     }
@@ -80,6 +91,8 @@ public abstract class AggregateStore(
     )
         where TAggregate : class, IEventSourcedAggregate<TId>, new()
     {
+        aggregate.NotBeNull();
+
         return StoreAsync<TAggregate, TId>(
             aggregate,
             new ExpectedStreamVersion(aggregate.OriginalVersion),

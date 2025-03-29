@@ -1,104 +1,127 @@
-using System.Collections.Concurrent;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Reflection;
-
 namespace BuildingBlocks.Core.Types;
+
+using BuildingBlocks.Core.Reflection;
 
 public static class TypeMapper
 {
-    private static readonly ConcurrentDictionary<Type, string> TypeNameMap = new();
-    private static readonly ConcurrentDictionary<string, Type> TypeMap = new();
+    private static readonly Dictionary<Type, HashSet<string>> _typeToNames = new();
+    private static readonly Dictionary<string, Type?> _nameToType = new();
 
     /// <summary>
-    /// Gets the full type name from a generic Type class.
+    /// Adds a type mapping using the class's simple name.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public static string GetFullTypeName<T>() => ToName(typeof(T));
-
-    /// <summary>
-    /// Gets the type name from a generic Type class without namespace.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public static string GetTypeName<T>() => ToName(typeof(T), false);
-
-    /// <summary>
-    /// Gets the type name from a Type class without namespace.
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static string GetTypeName(Type type) => ToName(type, false);
-
-    /// <summary>
-    /// Gets the full type name from a Type class.
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static string GetFullTypeName(Type type) => ToName(type);
-
-    /// <summary>
-    /// Gets the type name from a instance object without namespace.
-    /// </summary>
-    /// <param name="o"></param>
-    /// <returns></returns>
-    public static string GetTypeNameByObject(object o) => ToName(o.GetType(), false);
-
-    /// <summary>
-    /// Gets the full type name from a instance object.
-    /// </summary>
-    /// <param name="o"></param>
-    /// <returns></returns>
-    public static string GetFullTypeNameByObject(object o) => ToName(o.GetType());
-
-    /// <summary>
-    /// Gets the type class from a type name.
-    /// </summary>
-    /// <param name="typeName"></param>
-    /// <returns></returns>
-    public static Type GetType(string typeName) => ToType(typeName);
-
-    public static void AddType<T>(string name) => AddType(typeof(T), name);
-
-    private static void AddType(Type type, string name)
+    /// <param name="type">The type to be mapped</param>
+    /// <returns>The simple name that was added</returns>
+    /// <exception cref="ArgumentNullException">If type is null</exception>
+    /// <exception cref="ArgumentException">If simple name is already mapped to a different type</exception>
+    public static string AddShortTypeName(Type? type)
     {
-        ToName(type);
-        ToType(name);
+        ArgumentNullException.ThrowIfNull(type);
+
+        string simpleName = type.Name;
+        AddTypeNameInternal(type, simpleName);
+
+        return simpleName;
     }
 
-    public static bool IsTypeRegistered<T>() => TypeNameMap.ContainsKey(typeof(T));
-
-    private static string ToName(Type type, bool fullName = true)
+    /// <summary>
+    /// Adds a type mapping with a custom type name.
+    /// </summary>
+    /// <param name="type">The type to be mapped</param>
+    /// <param name="typeName">The custom name for the type</param>
+    /// <returns>The custom type name that was added</returns>
+    /// <exception cref="ArgumentNullException">If type or typeName is null</exception>
+    /// <exception cref="ArgumentException">If name is already mapped to a different type</exception>
+    public static string AddShortTypeName(Type type, string typeName)
     {
-        type.NotBeNull();
-        return TypeNameMap.GetOrAdd(
-            type,
-            _ =>
-            {
-                var eventTypeName = fullName ? type.FullName! : type.Name;
+        ArgumentNullException.ThrowIfNull(type);
 
-                TypeMap.GetOrAdd(eventTypeName, type);
+        if (string.IsNullOrEmpty(typeName))
+        {
+            throw new ArgumentException("TypeName cannot be null or empty", nameof(typeName));
+        }
 
-                return eventTypeName;
-            }
-        );
+        AddTypeNameInternal(type, typeName);
+
+        return typeName;
     }
 
-    private static Type ToType(string? typeName)
+    /// <summary>
+    /// Adds a type mapping with the full qualified type name.
+    /// </summary>
+    /// <param name="type">The type to be mapped</param>
+    /// <returns>The full qualified name that was added</returns>
+    /// <exception cref="ArgumentNullException">If type is null</exception>
+    public static string AddFullTypeName(Type type)
     {
-        typeName.NotBeNull();
+        ArgumentNullException.ThrowIfNull(type);
 
-        return TypeMap.GetOrAdd(
-            typeName,
-            _ =>
-            {
-                var type = ReflectionUtilities.GetFirstMatchingTypeFromCurrentDomainAssemblies(typeName);
+        string fullName = type.FullName;
+        AddTypeNameInternal(type, fullName);
 
-                if (type == null)
-                    throw new System.Exception($"Type map for '{typeName}' wasn't found!");
+        return fullName;
+    }
 
-                return type;
-            }
-        );
+    private static void AddTypeNameInternal(Type type, string typeName)
+    {
+        // Check if typeName is already mapped to a different type
+        if (_nameToType.TryGetValue(typeName, out Type? existingType) && existingType != null && existingType != type)
+        {
+            throw new ArgumentException($"TypeName '{typeName}' is already mapped to type {existingType.FullName}");
+        }
+
+        // Add to both dictionaries
+        if (!_typeToNames.TryGetValue(type, out HashSet<string>? value))
+        {
+            value = new HashSet<string>();
+            _typeToNames[type] = value;
+        }
+
+        value.Add(typeName);
+        _nameToType[typeName] = type;
+    }
+
+    /// <summary>
+    /// Gets the type based on the type name
+    /// </summary>
+    /// <param name="typeName">The name to look up</param>
+    /// <returns>The corresponding Type object</returns>
+    /// <exception cref="ArgumentException">If typeName is null or empty</exception>
+    /// <exception cref="Exception">If type cannot be found</exception>
+    public static Type? GetType(string typeName)
+    {
+        if (string.IsNullOrEmpty(typeName))
+        {
+            throw new ArgumentException("TypeName cannot be null or empty", nameof(typeName));
+        }
+
+        // First try to get from our mapped types
+        if (_nameToType.TryGetValue(typeName, out Type? type))
+        {
+            return type;
+        }
+
+        // If not found, try to get from reflection
+        type = ReflectionUtilities.GetFirstMatchingTypeFromCurrentDomainAssemblies(typeName);
+
+        if (type == null)
+        {
+            throw new System.Exception($"Type map for '{typeName}' wasn't found!");
+        }
+
+        return type;
+    }
+
+    /// <summary>
+    /// Gets all registered type names for a given type.
+    /// </summary>
+    /// <param name="type">The type to look up</param>
+    /// <returns>Set of all registered type names, or empty set if none found</returns>
+    /// <exception cref="ArgumentNullException">If type is null</exception>
+    public static IReadOnlySet<string> GetAllTypeNames(Type type)
+    {
+        ArgumentNullException.ThrowIfNull(type);
+
+        return _typeToNames.TryGetValue(type, out var names) ? names : new HashSet<string>();
     }
 }

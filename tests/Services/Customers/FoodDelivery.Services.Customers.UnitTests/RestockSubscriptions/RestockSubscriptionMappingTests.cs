@@ -1,13 +1,8 @@
-using AutoBogus;
-using AutoMapper;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.RestockSubscriptions;
-using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
-using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
-using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
-using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Read;
-using FoodDelivery.Services.Customers.TestShared.Fakes.RestockSubscriptions.Entities;
-using FoodDelivery.Services.Customers.UnitTests.Common;
+using FoodDelivery.Services.Customers.TestShared.Fakes.RestockSubscriptions.Commands;
+using FoodDelivery.Services.Customers.TestShared.Fakes.RestockSubscriptions.Models;
+using FoodDelivery.Services.Customers.TestShared.Fakes.RestockSubscriptions.Models.Read;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Customers.UnitTests.RestockSubscriptions;
@@ -38,7 +33,7 @@ public class RestockSubscriptionMappingTests
     [CategoryTrait(TestCategory.Unit)]
     public void can_map_restock_subscription_read_to_restock_subscription_dto()
     {
-        var restockSubscriptionRead = AutoFaker.Generate<RestockSubscription>();
+        var restockSubscriptionRead = new FakeRestockSubscriptionReadModel().Generate();
         var dto = restockSubscriptionRead.ToRestockSubscriptionDto();
         restockSubscriptionRead.RestockSubscriptionId.Should().Be(dto.Id);
         restockSubscriptionRead.CustomerId.Should().Be(dto.CustomerId);
@@ -48,7 +43,7 @@ public class RestockSubscriptionMappingTests
     [CategoryTrait(TestCategory.Unit)]
     public void can_map_create_restock_subscription_read_to_restock_subscription_read()
     {
-        var createMongoRestockSubscriptionRead = AutoFaker.Generate<CreateMongoRestockSubscriptionReadModels>();
+        var createMongoRestockSubscriptionRead = new FakeCreateMongoRestockSubscriptionReadModels().Generate();
         var readModel = createMongoRestockSubscriptionRead.ToRestockSubscription();
 
         createMongoRestockSubscriptionRead.RestockSubscriptionId.Should().Be(readModel.RestockSubscriptionId);
@@ -63,9 +58,9 @@ public class RestockSubscriptionMappingTests
     //         new FakeRestockSubscriptions().Generate(),
     //         false
     //     );
-    //     var readModel = _mapper.Map<RestockSubscription>(updateMongoRestockSubscriptionRead);
+    //     var readModel = _mapper.Map<RestockSubscriptionReadModel>(updateMongoRestockSubscriptionRead);
     //
-    //     updateMongoRestockSubscriptionRead.RestockSubscription.Id.Value.Should().Be(readModel.RestockSubscriptionId);
-    //     updateMongoRestockSubscriptionRead.RestockSubscription.CustomerId.Value.Should().Be(readModel.CustomerId);
+    //     updateMongoRestockSubscriptionRead.RestockSubscriptionReadModel.Id.Value.Should().Be(readModel.RestockSubscriptionId);
+    //     updateMongoRestockSubscriptionRead.RestockSubscriptionReadModel.CustomerId.Value.Should().Be(readModel.CustomerId);
     // }
 }

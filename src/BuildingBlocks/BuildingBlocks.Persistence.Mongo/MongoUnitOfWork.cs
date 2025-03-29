@@ -8,7 +8,7 @@ public class MongoUnitOfWork<TContext>(TContext context) : IMongoUnitOfWork<TCon
 {
     public TContext Context { get; } = context;
 
-    public async Task CommitAsync(CancellationToken cancellationToken = default)
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await Context.SaveChangesAsync(cancellationToken);
     }

@@ -50,8 +50,8 @@ public record ProductStockDebited(
 
 internal class ProductStockDebitedHandler : IDomainEventHandler<ProductStockDebited>
 {
-    public Task Handle(ProductStockDebited notification, CancellationToken cancellationToken)
+    public ValueTask Handle(ProductStockDebited notification, CancellationToken cancellationToken)
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

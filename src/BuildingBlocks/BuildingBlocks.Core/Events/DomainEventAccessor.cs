@@ -7,18 +7,16 @@ public class DomainEventAccessor(
     IDomainEventContext domainEventContext
 ) : IDomainEventsAccessor
 {
-    public IReadOnlyList<IDomainEvent> UnCommittedDomainEvents
+    public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
     {
-        get
+        // works based on `AggregatesDomainEventsRequestStorageInterceptor`
+        var events = aggregatesDomainEventsStorage.DequeueUncommittedDomainEvents();
+        if (events.Count != 0)
         {
-            var events = aggregatesDomainEventsStorage.GetAllUncommittedEvents();
-            if (events.Count != 0)
-            {
-                return events;
-            }
-
-            // Or
-            return domainEventContext.GetAllUncommittedEvents();
+            return events;
         }
+
+        // Or
+        return domainEventContext.DequeueUncommittedDomainEvents();
     }
 }

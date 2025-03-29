@@ -1,8 +1,6 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -22,16 +20,14 @@ public static class SendEmailVerificationCodeEndpoint
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             .WithName(nameof(SendEmailVerificationCode))
             .WithDisplayName(nameof(SendEmailVerificationCode).Humanize())
-            .WithSummaryAndDescription(
-                nameof(SendEmailVerificationCode).Humanize(),
-                nameof(SendEmailVerificationCode).Humanize()
-            );
+            .WithSummary(nameof(SendEmailVerificationCode).Humanize())
+            .WithDescription(nameof(SendEmailVerificationCode).Humanize());
 
         async Task<Results<NoContent, ConflictHttpProblemResult, ValidationProblem>> Handle(
             [AsParameters] SendEmailVerificationCodeRequestParameters requestParameters
         )
         {
-            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, cancellationToken) = requestParameters;
             var command = SendEmailVerificationCode.Of(request.Email);
 
             await commandBus.SendAsync(command, cancellationToken);
@@ -49,6 +45,5 @@ internal record SendEmailVerificationCodeRequestParameters(
     [FromBody] SendEmailVerificationCodeRequest Request,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<SendEmailVerificationCodeRequest>;

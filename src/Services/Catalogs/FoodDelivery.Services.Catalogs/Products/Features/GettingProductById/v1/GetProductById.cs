@@ -1,8 +1,8 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
+using Cassandra.Mapping;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
@@ -12,7 +12,7 @@ using FoodDelivery.Services.Catalogs.Shared.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.v1;
 
-internal record GetProductById(long Id) : CacheQuery<GetProductById, GetProductByIdResult>
+public record GetProductById(long Id) : CacheQuery<GetProductById, GetProductByIdResult>
 {
     /// <summary>
     /// GetProductById query with validation.
@@ -30,7 +30,7 @@ internal record GetProductById(long Id) : CacheQuery<GetProductById, GetProductB
     }
 }
 
-internal class GetProductByIdValidator : AbstractValidator<GetProductById>
+public class GetProductByIdValidator : AbstractValidator<GetProductById>
 {
     public GetProductByIdValidator()
     {
@@ -38,10 +38,10 @@ internal class GetProductByIdValidator : AbstractValidator<GetProductById>
     }
 }
 
-internal class GetProductByIdHandler(ICatalogDbContext catalogDbContext, IMapper mapper)
+public class GetProductByIdHandler(ICatalogDbContext catalogDbContext, IMapper mapper)
     : IQueryHandler<GetProductById, GetProductByIdResult>
 {
-    public async Task<GetProductByIdResult> Handle(GetProductById query, CancellationToken cancellationToken)
+    public async ValueTask<GetProductByIdResult> Handle(GetProductById query, CancellationToken cancellationToken)
     {
         query.NotBeNull();
 
@@ -49,10 +49,10 @@ internal class GetProductByIdHandler(ICatalogDbContext catalogDbContext, IMapper
         if (product is null)
             throw new ProductNotFoundException(query.Id);
 
-        var productsDto = mapper.Map<ProductDto>(product);
+        var productsDto = product.ToProductDto();
 
         return new GetProductByIdResult(productsDto);
     }
 }
 
-internal record GetProductByIdResult(ProductDto Product);
+public record GetProductByIdResult(ProductDto Product);

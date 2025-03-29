@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using BuildingBlocks.Core.Domain.Exceptions;
 using BuildingBlocks.Core.Extensions;
 
@@ -22,14 +21,7 @@ public record Amount
     public decimal Value { get; private set; }
     public static Amount Zero => Of(0);
 
-    public static Amount Of([NotNull] decimal? value)
-    {
-        value.NotBeNull();
-
-        return Of(value.Value);
-    }
-
-    public static Amount Of([NotNull] decimal value)
+    public static Amount Of(decimal value)
     {
         value.NotBeNegativeOrZero();
 

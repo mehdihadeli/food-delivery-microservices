@@ -7,7 +7,7 @@ internal class CustomerAlreadyCompletedException : AppException
     public long CustomerId { get; }
 
     public CustomerAlreadyCompletedException(long customerId)
-        : base($"Customer with ID: '{customerId}' already completed.")
+        : base($"CustomerReadModel with ID: '{customerId}' already completed.")
     {
         CustomerId = customerId;
     }

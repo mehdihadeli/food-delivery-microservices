@@ -1,12 +1,11 @@
-using BuildingBlocks.Abstractions.Events;
-using FoodDelivery.Services.Shared.Catalogs.Products.Events.V1.Integration;
+using FoodDelivery.Services.Shared.Catalogs.Products.Events.Integration.v1;
 using MassTransit;
 
 namespace FoodDelivery.Services.Customers.Products.Features.CreatingProduct.v1.Events.Integration.External;
 
-public class ProductCreatedConsumer : IConsumer<IEventEnvelope<ProductCreatedV1>>
+public class ProductCreatedConsumer : IConsumer<ProductCreatedV1>
 {
-    public Task Consume(ConsumeContext<IEventEnvelope<ProductCreatedV1>> context)
+    public Task Consume(ConsumeContext<ProductCreatedV1> context)
     {
         return Task.CompletedTask;
     }

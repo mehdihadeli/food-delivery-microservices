@@ -1,4 +1,3 @@
-using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Domain.ValueObjects;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
@@ -6,6 +5,8 @@ using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Data;
+using Mediator;
+using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
 
@@ -15,7 +16,7 @@ namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1
 // https://buildplease.com/pages/vos-in-events/
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
-internal sealed record UpdateCustomer(
+public sealed record UpdateCustomer(
     long Id,
     string FirstName,
     string LastName,
@@ -55,7 +56,7 @@ internal sealed record UpdateCustomer(
     }
 }
 
-internal class UpdateCustomerValidator : AbstractValidator<UpdateCustomer>
+public class UpdateCustomerValidator : AbstractValidator<UpdateCustomer>
 {
     public UpdateCustomerValidator()
     {
@@ -73,10 +74,10 @@ internal class UpdateCustomerValidator : AbstractValidator<UpdateCustomer>
     }
 }
 
-internal class UpdateCustomerHandler(CustomersDbContext customersDbContext, ILogger<UpdateCustomerHandler> logger)
-    : ICommandHandler<UpdateCustomer>
+public class UpdateCustomerHandler(CustomersDbContext customersDbContext, ILogger<UpdateCustomerHandler> logger)
+    : BuildingBlocks.Abstractions.Commands.ICommandHandler<UpdateCustomer>
 {
-    public async Task Handle(UpdateCustomer command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(UpdateCustomer command, CancellationToken cancellationToken)
     {
         logger.LogInformation("Updating customer");
 
@@ -103,8 +104,10 @@ internal class UpdateCustomerHandler(CustomersDbContext customersDbContext, ILog
 
         await customersDbContext.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation("Customer with Id: '{@CustomerId}' updated", customer.Id);
+        logger.LogInformation("CustomerReadModel with Id: '{@CustomerId}' updated", customer.Id);
 
         // TODO: Update Identity user with new customer changes
+
+        return Unit.Value;
     }
 }

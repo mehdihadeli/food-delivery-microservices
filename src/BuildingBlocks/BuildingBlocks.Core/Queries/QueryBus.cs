@@ -1,18 +1,21 @@
-using BuildingBlocks.Abstractions.Queries;
-using MediatR;
-
 namespace BuildingBlocks.Core.Queries;
+
+using BuildingBlocks.Abstractions.Queries;
+using Mediator;
 
 public class QueryBus(IMediator mediator) : IQueryBus
 {
-    public Task<TResponse> SendAsync<TResponse>(IQuery<TResponse> query, CancellationToken cancellationToken = default)
+    public ValueTask<TResponse> SendAsync<TResponse>(
+        Abstractions.Queries.IQuery<TResponse> query,
+        CancellationToken cancellationToken = default
+    )
         where TResponse : notnull
     {
         return mediator.Send(query, cancellationToken);
     }
 
     public IAsyncEnumerable<TResponse> SendAsync<TResponse>(
-        IStreamQuery<TResponse> query,
+        Abstractions.Queries.IStreamQuery<TResponse> query,
         CancellationToken cancellationToken = default
     )
         where TResponse : notnull

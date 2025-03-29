@@ -1,14 +1,11 @@
-using AutoMapper;
-using BuildingBlocks.Abstractions.Caching;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Security.Jwt;
-using BuildingBlocks.Web.Minimal.Extensions;
-using EasyCaching.Core;
 using Humanizer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.Logout.v1;
@@ -24,13 +21,13 @@ public static class LogoutEndpoint
             // .Produces(StatusCodes.Status200OK)
             .WithName("Logout")
             .WithDisplayName("Logout".Humanize())
-            .WithSummaryAndDescription("Logout".Humanize(), "Logout".Humanize())
+            .WithSummary("Logout".Humanize())
+            .WithDescription("Logout".Humanize())
             .MapToApiVersion(1.0);
 
         async Task<Ok> Handle([AsParameters] LogoutRequestParameters requestParameters)
         {
-            var (context, commandBus, mapper, caching, jwtOptions, cancellationToken) = requestParameters;
-            var cacheProvider = caching.GetCachingProvider(nameof(CacheProviderType.InMemory));
+            var (context, commandBus, hybridCache, jwtOptions, cancellationToken) = requestParameters;
 
             await context.SignOutAsync();
 
@@ -41,10 +38,14 @@ public static class LogoutEndpoint
                 // The blacklist is saved in the format => "userName_revoked_tokens": [token1, token2,...]
                 var token = GetTokenFromHeader(context);
                 var userName = context.User.Identity!.Name;
-                await cacheProvider.SetAsync(
-                    $"{userName}_{token}_revoked_token",
-                    token,
-                    TimeSpan.FromSeconds(jwtOptions.Value.TokenLifeTimeSecond)
+
+                // https://learn.microsoft.com/en-us/aspnet/core/performance/caching/hybrid#the-setasync-method
+                await hybridCache.SetAsync(
+                    key: $"{userName}_{token}_revoked_token",
+                    value: GetTokenFromHeader(context),
+                    options: null,
+                    tags: null,
+                    cancellationToken
                 );
             }
 
@@ -65,8 +66,7 @@ public static class LogoutEndpoint
 internal record LogoutRequestParameters(
     [FromBody] HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
-    IEasyCachingProviderFactory CachingProviderFactory,
+    HybridCache HybridCache,
     IOptions<JwtOptions> JwtOptions,
     CancellationToken CancellationToken
 ) : IHttpCommand;

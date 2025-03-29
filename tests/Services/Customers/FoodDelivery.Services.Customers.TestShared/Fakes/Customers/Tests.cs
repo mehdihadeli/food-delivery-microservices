@@ -1,8 +1,9 @@
 using Bogus;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
-using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Events;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models.Read;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Customers.TestShared.Fakes.Customers;

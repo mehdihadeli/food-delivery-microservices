@@ -1,7 +1,6 @@
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,8 +16,8 @@ internal class GetCustomerByCustomerIdEndpointEndpoint
         UnAuthorizedHttpProblemResult
     >
 {
-    public string GroupName => CustomersConfigs.Tag;
-    public string PrefixRoute => CustomersConfigs.CustomersPrefixUri;
+    public string GroupName => CustomersConfigurations.Tag;
+    public string PrefixRoute => CustomersConfigurations.CustomersPrefixUri;
     public double Version => 1.0;
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
@@ -28,12 +27,10 @@ internal class GetCustomerByCustomerIdEndpointEndpoint
             // .RequireAuthorization()
             .WithName(nameof(GetCustomerByCustomerId))
             .WithDisplayName(nameof(GetCustomerByCustomerId).Humanize())
-            .WithSummaryAndDescription(
-                nameof(GetCustomerByCustomerId).Humanize(),
-                nameof(GetCustomerByCustomerId).Humanize()
-            );
+            .WithSummary(nameof(GetCustomerByCustomerId).Humanize())
+            .WithDescription(nameof(GetCustomerByCustomerId).Humanize());
 
-        // .Produces<GetCustomerByCustomerIdResponse>("Customer fetched successfully.", StatusCodes.Status200OK)
+        // .Produces<GetCustomerByCustomerIdResponse>("CustomerReadModel fetched successfully.", StatusCodes.Status200OK)
         // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
         // .ProducesProblem(StatusCodes.Status404NotFound)
         // .ProducesProblem(StatusCodes.Status401Unauthorized)

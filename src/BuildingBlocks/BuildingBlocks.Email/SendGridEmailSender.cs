@@ -25,7 +25,7 @@ public class SendGridEmailSender : IEmailSender
     {
         emailObject.NotBeNull();
 
-        var message = new SendGridMessage { Subject = emailObject.Subject, HtmlContent = emailObject.MailBody, };
+        var message = new SendGridMessage { Subject = emailObject.Subject, HtmlContent = emailObject.MailBody };
 
         message.AddTo(new EmailAddress(emailObject.ReceiverEmail));
 

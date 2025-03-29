@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
+using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
 using BuildingBlocks.Core.Persistence.EventStore;
-using BuildingBlocks.Core.Persistence.EventStore.Extenions;
+using BuildingBlocks.Core.Persistence.EventStore.Extensions;
 using BuildingBlocks.Persistence.EventStoreDB.Subscriptions;
 using EventStore.Client;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +21,7 @@ public static class DependencyInjectionExtensions
         configurator?.Invoke(options);
 
         // add option to the dependency injection
-        services.AddValidationOptions<EventStoreDbOptions>(opt => configurator?.Invoke(opt));
+        services.AddValidationOptions<EventStoreDbOptions>(configurator: opt => configurator?.Invoke(opt));
 
         services.TryAddSingleton(new EventStoreClient(EventStoreClientSettings.Create(options.GrpcConnectionString)));
 

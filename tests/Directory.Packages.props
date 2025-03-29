@@ -5,51 +5,44 @@
     <EnablePackageVersionOverride>true</EnablePackageVersionOverride>
   </PropertyGroup>
   <PropertyGroup>
-    <Version>1.2.4-dev.4</Version>
-    <InformationalVersion>1.2.4-dev.4</InformationalVersion>
-    <ApplicationVersion>1.2.4</ApplicationVersion>
-  </PropertyGroup>
-  <PropertyGroup>
     <IsPublishable>false</IsPublishable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AutoBogus" Version="2.13.1" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="NSwag.ApiDescription.Client" Version="14.2.0" />
     <PackageVersion Include="AutoBogus.NSubstitute" Version="2.13.1" />
-    <PackageVersion Include="AutoFixture" Version="4.17.0" />
-    <PackageVersion Include="FluentAssertions" Version="6.9.0" />
-    <PackageVersion Include="FluentAssertions.Web" Version="1.2.5" />
-    <PackageVersion Include="FluentResults.Extensions.FluentAssertions" Version="2.1.0" />
-    <PackageVersion Include="Hypothesist" Version="3.0.91" />
-    <PackageVersion Include="Hypothesist.MassTransit" Version="3.0.91" />
-    <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
-    <PackageVersion Include="MassTransit" Version="8.2.3" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.2" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageVersion Include="AutoFixture" Version="4.18.1" />
+    <PackageVersion Include="FluentAssertions" Version="7.0.0" />
+    <PackageVersion Include="FluentAssertions.Web" Version="1.7.0" />
+    <PackageVersion Include="FluentResults.Extensions.FluentAssertions" Version="2.1.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageVersion Include="Microsoft.VisualStudio.TestPlatform" Version="14.0.0" />
-    <PackageVersion Include="Mongo2Go" Version="3.1.3" />
-    <PackageVersion Include="NSubstitute" Version="5.1.0" />
-    <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.16" />
-    <PackageVersion Include="Respawn" Version="6.0.0" />
-    <PackageVersion Include="Serilog.Sinks.Debug" Version="3.0.0" />
-    <PackageVersion Include="Serilog.Sinks.XUnit" Version="3.0.3" />
-    <PackageVersion Include="Squadron.Mongo" Version="0.17.0" />
+    <PackageVersion Include="NSubstitute" Version="5.3.0" />
+    <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
+    <PackageVersion Include="Respawn" Version="6.2.1" />
+    <PackageVersion Include="RichardSzalay.MockHttp" Version="7.0.0" />
+    <PackageVersion Include="Serilog.Sinks.XUnit" Version="3.0.19" />
     <PackageVersion Include="System.Reactive.Linq" Version="6.0.1" />
-    <PackageVersion Include="Verify.Xunit" Version="19.1.0" />
-    <PackageVersion Include="XunitContext" Version="3.2.5" />
-    <PackageVersion Include="WebMotions.Fake.Authentication.JwtBearer" Version="6.1.0" />
-    <PackageVersion Include="Bazinga.AspNetCore.Authentication.Basic" Version="2.0.1" />
-    <PackageVersion Include="Testcontainers" Version="3.9.0" />
-    <PackageVersion Include="Testcontainers.MongoDb" Version="3.9.0" />
-    <PackageVersion Include="Testcontainers.PostgreSql" Version="3.9.0" />
-    <PackageVersion Include="Testcontainers.RabbitMq" Version="3.9.0" />
-    <PackageVersion Include="RestAssured.NET" Version="2.0.0" />
+    <PackageVersion Include="Testcontainers" Version="4.1.0" />
+    <PackageVersion Include="Testcontainers.MsSql" Version="4.1.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.1.0" />
+    <PackageVersion Include="Testcontainers.MongoDb" Version="4.1.0" />
+    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.1.0" />
+    <PackageVersion Include="WebMotions.Fake.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageVersion Include="XunitContext" Version="3.3.2" />
     <PackageVersion Include="WireMock.NET" Version="1.5.13" />
     <PackageVersion Include="Thinkcode.RabbitMQ.OpenAPI" Version="1.0.8" />
-    <PackageVersion Include="EasyNetQ.Management.Client" Version="1.4.2" />
-    <PackageVersion Include="coverlet.msbuild" Version="3.2.0" />
-    <PackageVersion Include="xunit" Version="2.4.2" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
+    <PackageVersion Include="EasyNetQ.Management.Client" Version="3.0.0" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.2" />
+    <PackageVersion Include="xunit" Version="2.9.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0" />
     <PackageVersion Include="AnyOf" Version="0.3.0" />
+    <PackageVersion Include="Meziantou.Extensions.SeilogLogging.InMemory" Version="1.2.1" />
+    <PackageVersion Include="Microsoft.Kiota.Bundle" Version="1.16.1" />
+    <PackageVersion Include="Hypothesist" Version="3.0.91" />
   </ItemGroup>
 </Project>

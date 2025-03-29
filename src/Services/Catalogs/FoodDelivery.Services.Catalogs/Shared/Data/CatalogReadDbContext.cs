@@ -8,8 +8,8 @@ namespace FoodDelivery.Services.Catalogs.Shared.Data;
 
 public class CatalogReadDbContext : MongoDbContext
 {
-    public CatalogReadDbContext(IOptions<MongoOptions> options)
-        : base(options.Value)
+    public CatalogReadDbContext(IMongoClient mongoClient, IOptions<MongoOptions> options)
+        : base(mongoClient, options)
     {
         Products = GetCollection<ProductReadModel>(nameof(Products).Underscore());
     }

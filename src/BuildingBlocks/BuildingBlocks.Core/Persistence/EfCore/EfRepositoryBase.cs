@@ -1,8 +1,7 @@
 using System.Linq.Expressions;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
+using Ardalis.Specification;
+using Ardalis.Specification.EntityFrameworkCore;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
@@ -13,9 +12,11 @@ namespace BuildingBlocks.Core.Persistence.EfCore;
 
 public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>(TDbContext dbContext, ISieveProcessor sieveProcessor)
     : IRepository<TEntity, TKey>
-    where TEntity : class, IHaveIdentity<TKey>
+    where TEntity : class, Abstractions.Domain.IEntity<TKey>
     where TDbContext : DbContext
 {
+    private readonly SpecificationEvaluator _specificationEvaluator = SpecificationEvaluator.Default;
+
     protected DbSet<TEntity> DbSet { get; } = dbContext.Set<TEntity>();
     protected TDbContext DbContext { get; } = dbContext;
 
@@ -43,6 +44,14 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>(TDbContext dbC
     }
 
     public async Task<bool> AnyAsync(
+        ISpecification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await ApplySpecification(specification, true).AnyAsync(cancellationToken);
+    }
+
+    public async Task<bool> AnyAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default
     )
@@ -55,71 +64,112 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>(TDbContext dbC
         return await DbSet.ToListAsync(cancellationToken);
     }
 
-    public IAsyncEnumerable<TResult> ProjectBy<TResult, TSortKey>(
-        IConfigurationProvider configuration,
-        Expression<Func<TEntity, bool>>? predicate = null,
-        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
+    public async Task<IReadOnlyList<TEntity>> GetAllAsync(
+        ISpecification<TEntity> specification,
         CancellationToken cancellationToken = default
     )
     {
-        var query = DbSet.AsQueryable();
-        if (predicate is not null)
-        {
-            query = query.Where(predicate);
-        }
+        var queryResult = await ApplySpecification(specification).ToListAsync(cancellationToken);
 
-        if (sortExpression is not null)
-        {
-            query = query.OrderByDescending(sortExpression);
-        }
+        return specification.PostProcessingAction is null
+            ? queryResult
+            : specification.PostProcessingAction(queryResult).ToList();
+    }
 
-        return query.ProjectTo<TResult>(configuration).ToAsyncEnumerable();
+    public async Task<IReadOnlyList<TResult>> GetAllAsync<TResult>(
+        ISpecification<TEntity, TResult> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var queryResult = await ApplySpecification(specification).ToListAsync(cancellationToken);
+
+        return specification.PostProcessingAction is null
+            ? queryResult
+            : specification.PostProcessingAction(queryResult).ToList();
+    }
+
+    public async Task<TEntity?> FirstOrDefaultAsync(
+        ISpecification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await ApplySpecification(specification).FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<TResult?> FirstOrDefaultAsync<TResult>(
+        ISpecification<TEntity, TResult> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await ApplySpecification(specification).FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<TEntity?> SingleOrDefaultAsync(
+        ISingleResultSpecification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await ApplySpecification(specification).SingleOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<TResult?> SingleOrDefaultAsync<TResult>(
+        ISingleResultSpecification<TEntity, TResult> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await ApplySpecification(specification).SingleOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<int> CountAsync(
+        ISpecification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await ApplySpecification(specification).CountAsync(cancellationToken);
+    }
+
+    public async Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return await DbSet.CountAsync(cancellationToken);
+    }
+
+    public IQueryable<TResult> ProjectBy<TResult, TSortKey>(
+        Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
+        Expression<Func<TEntity, bool>>? predicate = null
+    )
+        where TResult : class
+    {
+        var query = DbSet.Project(projectionFunc, sortExpression, predicate);
+
+        return query;
     }
 
     public async Task<IPageList<TEntity>> GetByPageFilter<TSortKey>(
         IPageRequest pageRequest,
-        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default
     )
     {
-        return await DbSet.ApplyPagingAsync(pageRequest, sieveProcessor, predicate, sortExpression, cancellationToken);
+        return await DbSet.ApplyPagingAsync(pageRequest, sieveProcessor, sortExpression, predicate, cancellationToken);
     }
 
-    public async Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
-        IPageRequest pageRequest,
-        IConfigurationProvider configuration,
-        Expression<Func<TEntity, TSortKey>> sortExpression,
-        Expression<Func<TEntity, bool>>? predicate = null,
-        CancellationToken cancellationToken = default
-    )
-        where TResult : class
-    {
-        return await DbSet.ApplyPagingAsync<TEntity, TResult, TSortKey>(
-            pageRequest,
-            sieveProcessor,
-            configuration,
-            predicate,
-            sortExpression,
-            cancellationToken
-        );
-    }
-
-    public async Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
+    public async Task<IPageList<TResult>> GetByPageFilter<TSortKey, TResult>(
         IPageRequest pageRequest,
         Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
-        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default
     )
         where TResult : class
     {
-        return await DbSet.ApplyPagingAsync<TEntity, TResult, TSortKey>(
+        return await DbSet.ApplyPagingAsync(
             pageRequest,
             sieveProcessor,
             projectionFunc,
-            predicate,
             sortExpression,
+            predicate,
             cancellationToken
         );
     }
@@ -182,4 +232,12 @@ public abstract class EfRepositoryBase<TDbContext, TEntity, TKey>(TDbContext dbC
     {
         GC.SuppressFinalize(this);
     }
+
+    private IQueryable<TEntity> ApplySpecification(
+        ISpecification<TEntity> specification,
+        bool evaluateCriteriaOnly = false
+    ) => _specificationEvaluator.GetQuery(dbContext.Set<TEntity>().AsQueryable(), specification, evaluateCriteriaOnly);
+
+    private IQueryable<TResult> ApplySpecification<TResult>(ISpecification<TEntity, TResult> specification) =>
+        _specificationEvaluator.GetQuery(dbContext.Set<TEntity>().AsQueryable(), specification);
 }

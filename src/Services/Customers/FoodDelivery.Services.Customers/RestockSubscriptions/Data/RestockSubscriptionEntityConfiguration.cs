@@ -1,6 +1,6 @@
 using BuildingBlocks.Core.Persistence.EfCore;
 using FoodDelivery.Services.Customers.Customers.Models;
-using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Write;
+using FoodDelivery.Services.Customers.RestockSubscriptions.Models;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;

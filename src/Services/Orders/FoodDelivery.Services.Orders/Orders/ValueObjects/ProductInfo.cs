@@ -20,7 +20,7 @@ public record ProductInfo
         {
             Name = name.NotBeEmptyOrNull(),
             ProductId = productId.NotBeNegativeOrZero(),
-            Price = price.NotBeNegativeOrZero()
+            Price = price.NotBeNegativeOrZero(),
         };
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Events;
 
@@ -8,9 +9,9 @@ public class AggregatesDomainEventsStorage : IAggregatesDomainEventsRequestStora
     private readonly List<IDomainEvent> _uncommittedDomainEvents = new();
 
     public IReadOnlyList<IDomainEvent> AddEventsFromAggregate<T>(T aggregate)
-        where T : IHaveAggregate
+        where T : IAggregateBase
     {
-        var events = aggregate.GetUncommittedDomainEvents();
+        var events = aggregate.DequeueUncommittedDomainEvents();
 
         AddEvents(events);
 
@@ -28,5 +29,19 @@ public class AggregatesDomainEventsStorage : IAggregatesDomainEventsRequestStora
     public IReadOnlyList<IDomainEvent> GetAllUncommittedEvents()
     {
         return _uncommittedDomainEvents;
+    }
+
+    public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
+    {
+        // create a copy because after clearing events we lost our collection
+        var events = new List<IDomainEvent>(GetAllUncommittedEvents());
+        ClearDomainEvents();
+
+        return events.ToImmutableList();
+    }
+
+    public void ClearDomainEvents()
+    {
+        _uncommittedDomainEvents.Clear();
     }
 }

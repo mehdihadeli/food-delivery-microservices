@@ -7,7 +7,7 @@ namespace BuildingBlocks.Abstractions.Persistence.EventStore;
 
 public interface IHaveEventSourcingAggregate
     : IHaveAggregateStateProjection,
-        IHaveAggregate,
+        IAggregateBase,
         IHaveEventSourcedAggregateVersion
 {
     /// <summary>

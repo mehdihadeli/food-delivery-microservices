@@ -2,11 +2,15 @@ using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Validation;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
+using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.GettingCustomerById.v1;
+using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models.Read;
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Options;
 using Tests.Shared.Extensions;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
@@ -15,14 +19,11 @@ using Guid = System.Guid;
 
 namespace FoodDelivery.Services.Customers.EndToEndTests.Customers.Features.GettingCustomerById.v1;
 
-public class GetCustomerByIdTests : CustomerServiceEndToEndTestBase
+public class GetCustomerByIdTests(
+    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
+    ITestOutputHelper outputHelper
+) : CustomerServiceEndToEndTestBase(sharedFixture, outputHelper)
 {
-    public GetCustomerByIdTests(
-        SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-        ITestOutputHelper outputHelper
-    )
-        : base(sharedFixture, outputHelper) { }
-
     [Fact]
     [CategoryTrait(TestCategory.EndToEnd)]
     public async Task can_returns_ok_status_code_using_valid_id_and_auth_credentials()
@@ -54,15 +55,26 @@ public class GetCustomerByIdTests : CustomerServiceEndToEndTestBase
         var response = await SharedFixture.NormalUserHttpClient.GetAsync(route);
 
         // Assert
-        response.Should().Satisfy<GetCustomerByIdResponse>(x => x.Customer.Should().BeEquivalentTo(fakeCustomer));
+        response
+            .Should()
+            .Satisfy<GetCustomerByIdResponse>(x =>
+                x.Customer.Should()
+                    .BeEquivalentTo(
+                        fakeCustomer,
+                        o =>
+                            o.WithMapping(nameof(CustomerReadModel.FullName), nameof(CustomerReadDto.Name))
+                                .ExcludingMissingMembers()
+                    )
+            );
 
+        // https://github.com/adrianiftode/FluentAssertions.Web
         // // OR
         // response
         //     .Should()
         //     .BeAs(
         //         new
         //         {
-        //             Customer = new
+        //             CustomerReadModel = new
         //             {
         //                 Id = fakeCustomer.Id,
         //                 CustomerId = fakeCustomer.CustomerId,
@@ -77,7 +89,7 @@ public class GetCustomerByIdTests : CustomerServiceEndToEndTestBase
         //      .Satisfy(
         //          givenModelStructure: new
         //          {
-        //              Customer = new
+        //              CustomerReadModel = new
         //              {
         //                  Id = default(Guid),
         //                  CustomerId = default(long),
@@ -86,9 +98,9 @@ public class GetCustomerByIdTests : CustomerServiceEndToEndTestBase
         //          },
         //          assertion: model =>
         //          {
-        //              model.Customer.CustomerId.Should().Be(fakeCustomer.CustomerId);
-        //              model.Customer.Id.Should().Be(fakeCustomer.Id);
-        //              model.Customer.IdentityId.Should().Be(fakeCustomer.IdentityId);
+        //              model.CustomerReadModel.CustomerId.Should().Be(fakeCustomer.CustomerId);
+        //              model.CustomerReadModel.Id.Should().Be(fakeCustomer.Id);
+        //              model.CustomerReadModel.IdentityId.Should().Be(fakeCustomer.IdentityId);
         //          }
         //      );
     }
@@ -109,18 +121,18 @@ public class GetCustomerByIdTests : CustomerServiceEndToEndTestBase
             .Should()
             .Satisfy<ProblemDetails>(pr =>
             {
-                pr.Detail.Should().Be($"Customer with id '{notExistsId}' not found.");
-                pr.Title.Should().Be(nameof(CustomerNotFoundException));
-                pr.Type.Should().Be("https://tools.ietf.org/html/rfc7231#section-6.5.4");
+                pr.Detail.Should().Be($"CustomerReadModel with id '{notExistsId}' not found.");
+                pr.Title.Should().Be(nameof(CustomerNotFoundException).Humanize(LetterCasing.Title));
+                pr.Type.Should().Be("https://tools.ietf.org/html/rfc9110#section-15.5.5");
             })
             .And.Be404NotFound();
 
         // // OR
         // response
         //     .Should()
-        //     .HaveError("title", nameof(CustomerNotFoundException))
-        //     .And.HaveError("type", "https://tools.ietf.org/html/rfc7231#section-6.5.4")
-        //     .And.HaveErrorMessage($"Customer with id '{notExistsId}' not found.")
+        //     .HaveError("title", nameof(CustomerNotFoundException).Humanize(LetterCasing.Title))
+        //     .And.HaveError("type", "https://tools.ietf.org/html/rfc9110#section-15.5.5")
+        //     .And.HaveErrorMessage($"CustomerReadModel with id '{notExistsId}' not found.")
         //     .And.Be404NotFound();
     }
 
@@ -142,8 +154,8 @@ public class GetCustomerByIdTests : CustomerServiceEndToEndTestBase
             .Satisfy<ProblemDetails>(pr =>
             {
                 pr.Detail.Should().Be("'Id' must not be empty.");
-                pr.Title.Should().Be(nameof(ValidationException));
-                pr.Type.Should().Be("https://tools.ietf.org/html/rfc7231#section-6.5.1");
+                pr.Title.Should().Be(nameof(ValidationException).Humanize(LetterCasing.Title));
+                pr.Type.Should().Be("https://tools.ietf.org/html/rfc9110#section-15.5.1");
             })
             .And.Be400BadRequest();
 
@@ -154,8 +166,8 @@ public class GetCustomerByIdTests : CustomerServiceEndToEndTestBase
         //         new ProblemDetails
         //         {
         //             Detail = "'Id' must not be empty.",
-        //             Title = nameof(ValidationException),
-        //             Type = "https://somedomain/input-validation-rules-error",
+        //             Title = nameof(ValidationException).Humanize(LetterCasing.Title),
+        //             Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
         //         }
         //     )
         //     .And.Be400BadRequest();

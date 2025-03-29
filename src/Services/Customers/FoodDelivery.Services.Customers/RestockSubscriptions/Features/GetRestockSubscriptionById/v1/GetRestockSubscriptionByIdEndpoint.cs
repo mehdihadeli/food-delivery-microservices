@@ -1,7 +1,6 @@
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,8 +16,8 @@ internal class GetRestockSubscriptionByIdEndpoint
         UnAuthorizedHttpProblemResult
     >
 {
-    public string GroupName => RestockSubscriptionsConfigs.Tag;
-    public string PrefixRoute => RestockSubscriptionsConfigs.RestockSubscriptionsUrl;
+    public string GroupName => RestockSubscriptionsConfigurations.Tag;
+    public string PrefixRoute => RestockSubscriptionsConfigurations.RestockSubscriptionsUrl;
     public double Version => 1.0;
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
@@ -32,10 +31,8 @@ internal class GetRestockSubscriptionByIdEndpoint
             // .Produces<StatusCodeProblemDetails>(StatusCodes.Status404NotFound)
             .WithName(nameof(GetRestockSubscriptionById))
             .WithDisplayName(nameof(GetRestockSubscriptionById).Humanize())
-            .WithSummaryAndDescription(
-                nameof(GetRestockSubscriptionById).Humanize(),
-                nameof(GetRestockSubscriptionById).Humanize()
-            );
+            .WithSummary(nameof(GetRestockSubscriptionById).Humanize())
+            .WithDescription(nameof(GetRestockSubscriptionById).Humanize());
     }
 
     public async Task<

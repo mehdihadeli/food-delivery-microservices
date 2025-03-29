@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using BuildingBlocks.Core.Extensions;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
@@ -20,7 +19,7 @@ public record PhoneNumber
     // in the constructor it should not be read only without set (for bypassing calculate fields)- https://learn.microsoft.com/en-us/ef/core/modeling/constructors#read-only-properties
     public string Value { get; private set; } = default!;
 
-    public static PhoneNumber Of([NotNull] string? value)
+    public static PhoneNumber Of(string value)
     {
         value.NotBeNull();
         value.NotBeInvalidPhoneNumber();

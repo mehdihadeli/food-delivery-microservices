@@ -1,5 +1,5 @@
-using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
-using FoodDelivery.Services.Customers.Shared.Clients.Identity;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity;
 using FoodDelivery.Services.Customers.Shared.Data;
 using NSubstitute;
 using Tests.Shared.XunitCategories;
@@ -17,8 +17,8 @@ public class CustomerServiceUnitTestBase : IAsyncDisposable
     // We don't need to inject `CustomersServiceMockServersFixture` class fixture in the constructor because it initialized by `collection fixture` and its static properties are accessible in the codes
 
     public CustomersDbContext CustomersDbContext { get; } = DbContextFactory.Create();
-    public IIdentityApiClient IdentityApiClient { get; } = Substitute.For<IIdentityApiClient>();
-    public ICatalogApiClient CatalogApiClient { get; } = Substitute.For<ICatalogApiClient>();
+    public IIdentityRestClient IdentityRestClient { get; } = Substitute.For<IIdentityRestClient>();
+    public ICatalogsRestClient IICatalogsClient { get; } = Substitute.For<ICatalogsRestClient>();
 
     public async ValueTask DisposeAsync()
     {

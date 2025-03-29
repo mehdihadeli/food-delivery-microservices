@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Extensions.ServiceCollection;
+using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
 using BuildingBlocks.Core.Web;
 using FoodDelivery.Services.Catalogs.Api;
 using Microsoft.AspNetCore.Hosting;

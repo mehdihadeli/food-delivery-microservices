@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
+using BuildingBlocks.Abstractions.Messages;
 
 namespace BuildingBlocks.Abstractions.Persistence.EventStore;
 
@@ -20,7 +21,7 @@ public interface IEventStore
     /// <param name="maxCount">Number of items to read.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
     /// <returns>Task with events for aggregate.</returns>
-    Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
+    Task<IEnumerable<IStreamEventEnvelopeBase>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         int maxCount = int.MaxValue,
@@ -34,7 +35,7 @@ public interface IEventStore
     /// <param name="fromVersion">All events after this should be returned.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
     /// <returns>Task with events for aggregate.</returns>
-    Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
+    Task<IEnumerable<IStreamEventEnvelopeBase>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         CancellationToken cancellationToken = default
@@ -49,7 +50,7 @@ public interface IEventStore
     /// <returns></returns>
     Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEventEnvelope @event,
+        IStreamEventEnvelopeBase @event,
         CancellationToken cancellationToken = default
     );
 
@@ -63,7 +64,7 @@ public interface IEventStore
     /// <returns></returns>
     Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEventEnvelope @event,
+        IStreamEventEnvelopeBase @event,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     );
@@ -78,7 +79,7 @@ public interface IEventStore
     /// <returns></returns>
     Task<AppendResult> AppendEventsAsync(
         string streamId,
-        IReadOnlyCollection<IStreamEventEnvelope> events,
+        IReadOnlyCollection<IStreamEventEnvelopeBase> events,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     );

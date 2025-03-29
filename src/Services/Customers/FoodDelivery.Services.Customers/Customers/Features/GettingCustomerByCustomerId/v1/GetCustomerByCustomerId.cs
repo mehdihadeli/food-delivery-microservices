@@ -8,7 +8,7 @@ using FoodDelivery.Services.Customers.Shared.Contracts;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomerByCustomerId.v1;
 
-internal record GetCustomerByCustomerId(long CustomerId) : IQuery<GetCustomerByCustomerIdResult>
+public record GetCustomerByCustomerId(long CustomerId) : IQuery<GetCustomerByCustomerIdResult>
 {
     public static GetCustomerByCustomerId Of(long customerId)
     {
@@ -16,7 +16,7 @@ internal record GetCustomerByCustomerId(long CustomerId) : IQuery<GetCustomerByC
     }
 }
 
-internal class GetCustomerByCustomerIdValidator : AbstractValidator<GetCustomerByCustomerId>
+public class GetCustomerByCustomerIdValidator : AbstractValidator<GetCustomerByCustomerId>
 {
     public GetCustomerByCustomerIdValidator()
     {
@@ -26,27 +26,27 @@ internal class GetCustomerByCustomerIdValidator : AbstractValidator<GetCustomerB
 
 // totally we don't need to unit test our handlers according jimmy bogard blogs and videos and we should extract our business to domain or seperated class so we don't need repository pattern for test, but for a sample I use it here
 // https://www.reddit.com/r/dotnet/comments/rxuqrb/testing_mediator_handlers/
-internal class GetCustomerByCustomerIdHandler(ICustomersReadUnitOfWork unitOfWork)
+public class GetCustomerByCustomerIdHandler(ICustomersReadUnitOfWork unitOfWork)
     : IQueryHandler<GetCustomerByCustomerId, GetCustomerByCustomerIdResult>
 {
-    public async Task<GetCustomerByCustomerIdResult> Handle(
+    public async ValueTask<GetCustomerByCustomerIdResult> Handle(
         GetCustomerByCustomerId query,
         CancellationToken cancellationToken
     )
     {
         query.NotBeNull();
-        var customer = await unitOfWork.CustomersRepository.FindOneAsync(
+        var customerReadModel = await unitOfWork.CustomersRepository.FindOneAsync(
             x => x.CustomerId == query.CustomerId,
             cancellationToken: cancellationToken
         );
 
-        if (customer == null)
+        if (customerReadModel == null)
             throw new CustomerNotFoundException(query.CustomerId);
 
-        var customerDto = customer.ToCustomerReadDto();
+        var customerDto = customerReadModel.ToCustomerReadDto();
 
         return new GetCustomerByCustomerIdResult(customerDto);
     }
 }
 
-internal record GetCustomerByCustomerIdResult(CustomerReadDto Customer);
+public record GetCustomerByCustomerIdResult(CustomerReadDto Customer);

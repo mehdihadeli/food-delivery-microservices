@@ -14,7 +14,7 @@ using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredCla
 
 namespace FoodDelivery.Services.Identity.Identity.Features.RefreshingToken.v1;
 
-internal record RefreshToken(string AccessTokenData, string RefreshTokenData) : ICommand<RefreshTokenResult>
+public record RefreshToken(string AccessTokenData, string RefreshTokenData) : ICommand<RefreshTokenResult>
 {
     /// <summary>
     /// RefreshToken with in-line validation.
@@ -28,7 +28,7 @@ internal record RefreshToken(string AccessTokenData, string RefreshTokenData) : 
     }
 }
 
-internal class RefreshTokenValidator : AbstractValidator<RefreshToken>
+public class RefreshTokenValidator : AbstractValidator<RefreshToken>
 {
     public RefreshTokenValidator()
     {
@@ -37,13 +37,13 @@ internal class RefreshTokenValidator : AbstractValidator<RefreshToken>
     }
 }
 
-internal class RefreshTokenHandler(
+public class RefreshTokenHandler(
     IJwtService jwtService,
     UserManager<ApplicationUser> userManager,
     ICommandBus commandBus
 ) : ICommandHandler<RefreshToken, RefreshTokenResult>
 {
-    public async Task<RefreshTokenResult> Handle(RefreshToken command, CancellationToken cancellationToken)
+    public async ValueTask<RefreshTokenResult> Handle(RefreshToken command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
@@ -83,7 +83,7 @@ internal class RefreshTokenHandler(
     }
 }
 
-internal record RefreshTokenResult(
+public record RefreshTokenResult(
     Guid UserId,
     string UserName,
     string FirstName,

@@ -1,8 +1,6 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Web.Extensions;
-using BuildingBlocks.Web.Minimal.Extensions;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -21,13 +19,14 @@ public static class RevokeAccessTokenEndpoint
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             .WithName(nameof(RevokeAccessToken))
             .WithDisplayName(nameof(RevokeAccessToken).Humanize())
-            .WithSummaryAndDescription(nameof(RevokeAccessToken).Humanize(), nameof(RevokeAccessToken).Humanize());
+            .WithSummary(nameof(RevokeAccessToken).Humanize())
+            .WithDescription(nameof(RevokeAccessToken).Humanize());
 
         async Task<Results<NoContent, ValidationProblem>> Handle(
             [AsParameters] RevokeAccessTokenRequestParameters requestParameters
         )
         {
-            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, cancellationToken) = requestParameters;
             var token = string.IsNullOrWhiteSpace(request.AccessToken)
                 ? GetTokenFromHeader(context)
                 : request.AccessToken;
@@ -57,6 +56,5 @@ internal record RevokeAccessTokenRequestParameters(
     [FromBody] RevokeAccessTokenRequest Request,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RevokeAccessTokenRequest>;

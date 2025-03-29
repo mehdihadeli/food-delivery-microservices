@@ -17,7 +17,7 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "uuid-ossp");
@@ -42,11 +42,6 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
                     b.Property<Guid>("IdentityId")
                         .HasColumnType("uuid")
                         .HasColumnName("identity_id");
-
-                    b.Property<long>("OriginalVersion")
-                        .IsConcurrencyToken()
-                        .HasColumnType("bigint")
-                        .HasColumnName("original_version");
 
                     b.HasKey("Id")
                         .HasName("pk_customers");
@@ -85,11 +80,6 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");
-
-                    b.Property<long>("OriginalVersion")
-                        .IsConcurrencyToken()
-                        .HasColumnType("bigint")
-                        .HasColumnName("original_version");
 
                     b.Property<bool>("Processed")
                         .ValueGeneratedOnAdd()

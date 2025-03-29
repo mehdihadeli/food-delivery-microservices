@@ -108,13 +108,8 @@ public class IdentityContext(DbContextOptions<IdentityContext> options)
         });
     }
 
-    public IReadOnlyList<IDomainEvent> GetAllUncommittedEvents()
+    public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
     {
         return new List<IDomainEvent>();
-    }
-
-    public void MarkUncommittedDomainEventAsCommitted()
-    {
-        // Method intentionally left empty.
     }
 }

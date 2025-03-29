@@ -1,28 +1,71 @@
+using Bogus;
 using BuildingBlocks.Abstractions.Persistence;
-using FoodDelivery.Services.Catalogs.Brands;
+using FoodDelivery.Services.Catalogs.Brands.Contracts;
+using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
+using FoodDelivery.Services.Catalogs.Categories;
+using FoodDelivery.Services.Catalogs.Categories.Contracts;
+using FoodDelivery.Services.Catalogs.Products.Models;
+using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
+using FoodDelivery.Services.Catalogs.Suppliers;
+using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 
 namespace FoodDelivery.Services.Catalogs.Products.Data;
 
-public class ProductDataSeeder : IDataSeeder
+public class ProductDataSeeder(ICatalogDbContext dbContext) : IDataSeeder
 {
-    private readonly ICatalogDbContext _dbContext;
-
-    public ProductDataSeeder(ICatalogDbContext dbContext)
+    public async Task SeedAllAsync(CancellationToken cancellationToken)
     {
-        _dbContext = dbContext;
-    }
-
-    public async Task SeedAllAsync()
-    {
-        if (await _dbContext.Products.AnyAsync())
+        if (await dbContext.Products.AnyAsync(cancellationToken: cancellationToken))
             return;
 
-        var products = new ProductFaker().Generate(5);
+        long id = 1;
 
-        await _dbContext.Products.AddRangeAsync(products);
-        await _dbContext.SaveChangesAsync();
+        var supplierChecker = Substitute.For<ISupplierChecker>();
+        supplierChecker.SupplierExists(Arg.Any<SupplierId>()).Returns(true);
+
+        var categoryChecker = Substitute.For<ICategoryChecker>();
+        categoryChecker.CategoryExists(Arg.Any<CategoryId>()).Returns(true);
+
+        var brandChecker = Substitute.For<IBrandChecker>();
+        brandChecker.BrandExists(Arg.Any<BrandId>()).Returns(true);
+
+        var categoryIds = dbContext.Categories.Select(x => x.Id).ToList();
+        var brandIds = dbContext.Brands.Select(x => x.Id).ToList();
+        var supplierIds = dbContext.Suppliers.Select(x => x.Id).ToList();
+
+        // we should not instantiate customer aggregate manually because it is possible we break aggregate invariant in creating a product, and it is better we
+        // create a product with its factory method
+        var productFaker = new Faker<Product>().CustomInstantiator(faker =>
+        {
+            var product = Product.Create(
+                ProductId.Of(id++),
+                Name.Of(faker.Commerce.ProductName()),
+                ProductInformation.Of(faker.Commerce.ProductName(), faker.Commerce.ProductDescription()),
+                Stock.Of(faker.Random.Int(10, 20), 5, 20),
+                faker.PickRandom<ProductStatus>(),
+                faker.PickRandom<ProductType>(),
+                Dimensions.Of(faker.Random.Int(10, 50), faker.Random.Int(10, 50), faker.Random.Int(10, 50)),
+                Size.Of(faker.PickRandom<string>("M", "S", "L")),
+                faker.Random.Enum<ProductColor>(),
+                faker.Commerce.ProductDescription(),
+                Price.Of(faker.PickRandom<decimal>(100, 200, 500)),
+                faker.PickRandom<CategoryId>(categoryIds),
+                faker.PickRandom<SupplierId>(supplierIds),
+                faker.PickRandom<BrandId>(brandIds),
+                categoryChecker,
+                supplierChecker,
+                brandChecker
+            );
+
+            return product;
+        });
+        var products = productFaker.Generate(5);
+
+        await dbContext.Products.AddRangeAsync(products, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public int Order => 4;

@@ -1,5 +1,3 @@
-using AutoMapper;
-
 namespace BuildingBlocks.Abstractions.Core.Paging;
 
 public interface IPageList<T>
@@ -17,8 +15,5 @@ public interface IPageList<T>
     int PageSize { get; init; }
 
     IPageList<TR> MapTo<TR>(Func<T, TR> map)
-        where TR : class;
-
-    public IPageList<TR> MapTo<TR>(IMapper mapper)
         where TR : class;
 }

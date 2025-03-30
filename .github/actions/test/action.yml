@@ -71,6 +71,9 @@ runs:
              dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
           fi
         done
+        
+        echo "📄 Generated test result files:"
+        find . -name "test-results.trx" -type f -print
 
     - name: Run Integration And EndToEnd Tests
       shell: bash

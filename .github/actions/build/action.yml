@@ -15,6 +15,10 @@ inputs:
   project-path:
     description: Path to project to test e.g. Services/Catalog/Catalog.API
     required: true
+  tests-path:
+    description: Path to test project e.g. Services/Catalog/Catalog.UnitTests
+    required: false
+    default: ''
   service-name:
     description: Service name
     required: true
@@ -52,27 +56,36 @@ runs:
     - name: Restore NuGet packages
       shell: bash
       if: success()
-      working-directory: ${{ inputs.project-path }}
       # restore root solution
       run: |
-        echo "📦️ Restoring project in folder: ${{ inputs.project-path }}"
-        find . -name "*.csproj" -exec dotnet restore {} \;
+        echo "📦️ Restoring projects in folder: ${{ inputs.project-path }}"
+        find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet restore {} \;
+        
+        echo "📦️ Restoring test-projects in folder: ${{ inputs.tests-path }}"
+        find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet restore {} \;
 
     - name: Build Service Without Version
       shell: bash
       if: ${{ success() && inputs.application-version == ''}}
-      working-directory: ${{ inputs.project-path }}
       run: |
-        echo "🛠️ Building project in folder: ${{ inputs.project-path }}"
-        find . -name "*.csproj" -exec dotnet build -c Release --no-restore {} \;
+        echo "🛠️ Building projects in folder: ${{ inputs.project-path }}"
+        find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore {} \;
+        
+        echo "🛠️ Building test-projects in folder: ${{ inputs.tests-path }}"
+        find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore {} \;
 
     - name: Build Service With Version
       shell: bash
       if: ${{ success() && inputs.application-version != ''}}
-      working-directory: ${{ inputs.project-path }}
       run: |
-        echo "🛠️ Building project in folder: ${{ inputs.project-path }}"
-        find . -name "*.csproj" -exec dotnet build -c Release --no-restore \
+        echo "🛠️ Building projects in folder: ${{ inputs.project-path }}"
+        find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore \
+          -p:Version=${{ inputs.application-version }} \
+          -p:InformationalVersion=${{ inputs.application-version }} \
+          -p:ApplicationVersion=${{ inputs.application-version }} {} \;
+        
+        echo "🛠️ Building test-projects in folder: ${{ inputs.tests-path }}"
+        find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore \
           -p:Version=${{ inputs.application-version }} \
           -p:InformationalVersion=${{ inputs.application-version }} \
           -p:ApplicationVersion=${{ inputs.application-version }} {} \;

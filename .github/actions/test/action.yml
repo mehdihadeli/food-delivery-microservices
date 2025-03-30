@@ -99,7 +99,6 @@ runs:
     - name: Test Results
       uses: phoenix-actions/test-reporting@v15
       id: test-report
-      working-directory: ${{ inputs.tests-path }}
       if: always()
       with:
         name: ${{ inputs.service-name }} Test Reports
@@ -117,7 +116,6 @@ runs:
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
-      working-directory: ${{ inputs.tests-path }}
       if: always()
       with:
         files: |

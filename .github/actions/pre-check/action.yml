@@ -36,76 +36,76 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
 
-    - name: Job Info
-      if: success()
-      shell: bash
-      run: |
-        echo "pre-check is successful."
-        echo workspace is: ${{ github.workspace }}
-        echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
-        echo "is push event? ${{ github.event_name == 'push' }}"
-        echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
-        echo "pull_request.head.ref is: ${{ github.event.pull_request.head.ref }}"
-        echo "github.ref_name is: ${{ github.ref_name }}"
-        echo "github.ref is: ${{ github.ref }}"
-        echo "github.head_ref is: ${{ github.head_ref }}"
-        echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
-    
-    # https://www.codewrecks.com/post/github/choose-environment-from-branch/
-    # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch
-    # https://hungvu.tech/advanced-github-actions-conditional-workflow
-    - name: Set Environment For Branch
-      if: success()
-      shell: bash
-      id: environment-name-step
-      run: |
-        if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo "environment-name=production" >> "$GITHUB_OUTPUT"
-        elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-            echo "environment-name=develop" >> "$GITHUB_OUTPUT"
-        elif [[ $GITHUB_REF == 'refs/heads/preview' ]]; then
-            echo "environment-name=staging" >> "$GITHUB_OUTPUT"
-        elif [[ $GITHUB_REF == 'refs/heads/beta' ]]; then
-            echo "environment-name=staging" >> "$GITHUB_OUTPUT"
-        else
-            echo "environment-name=develop" >> "$GITHUB_OUTPUT"
-        fi
-        
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ inputs.dotnet-version }}
-    
-    # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
-    - name: Restore .NET Tools
-      shell: bash
-      run: dotnet tool restore
-    
-    - name: Run Format Task
-      if: success()
-      shell: bash
-      id: format
-      run: |
-        echo "🧹 Checking format in folder: ${{ inputs.project-path }}"
-        dotnet csharpier ${{ inputs.project-path }} --check
-        echo "🧹 Checking format in folder: ${{ inputs.tests-path }}"
-        dotnet csharpier ${{ inputs.tests-path }} --check
-       
-    - name: Run Style Task
-      id: style
-      shell: bash
-      if: success()
-      run: |
-        echo "🎨 Checking style in folder: ${{ inputs.project-path }}"
-        find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet format style {} --verify-no-changes --severity error --verbosity diagnostic \;
-        echo "🎨 Checking style in folder: ${{ inputs.tests-path }}"
-        find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet format style {} --verify-no-changes --severity error --verbosity diagnostic \;
-
-    - name: Run Analyzers Task
-      if: success()
-      shell: bash
-      run: |
-        echo "📂 Running analyzers in folder: ${{ inputs.project-path }}"
-        find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet format analyzers {} --verify-no-changes --severity error --verbosity diagnostic \;
-        echo "📂 Running analyzers in folder: ${{ inputs.tests-path }}"
-        find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet format analyzers {} --verify-no-changes --severity error --verbosity diagnostic \;
+#    - name: Job Info
+#      if: success()
+#      shell: bash
+#      run: |
+#        echo "pre-check is successful."
+#        echo workspace is: ${{ github.workspace }}
+#        echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
+#        echo "is push event? ${{ github.event_name == 'push' }}"
+#        echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
+#        echo "pull_request.head.ref is: ${{ github.event.pull_request.head.ref }}"
+#        echo "github.ref_name is: ${{ github.ref_name }}"
+#        echo "github.ref is: ${{ github.ref }}"
+#        echo "github.head_ref is: ${{ github.head_ref }}"
+#        echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
+#    
+#    # https://www.codewrecks.com/post/github/choose-environment-from-branch/
+#    # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch
+#    # https://hungvu.tech/advanced-github-actions-conditional-workflow
+#    - name: Set Environment For Branch
+#      if: success()
+#      shell: bash
+#      id: environment-name-step
+#      run: |
+#        if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+#            echo "environment-name=production" >> "$GITHUB_OUTPUT"
+#        elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
+#            echo "environment-name=develop" >> "$GITHUB_OUTPUT"
+#        elif [[ $GITHUB_REF == 'refs/heads/preview' ]]; then
+#            echo "environment-name=staging" >> "$GITHUB_OUTPUT"
+#        elif [[ $GITHUB_REF == 'refs/heads/beta' ]]; then
+#            echo "environment-name=staging" >> "$GITHUB_OUTPUT"
+#        else
+#            echo "environment-name=develop" >> "$GITHUB_OUTPUT"
+#        fi
+#        
+#    - name: Setup .NET Core
+#      uses: actions/setup-dotnet@v4
+#      with:
+#        dotnet-version: ${{ inputs.dotnet-version }}
+#    
+#    # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
+#    - name: Restore .NET Tools
+#      shell: bash
+#      run: dotnet tool restore
+#    
+#    - name: Run Format Task
+#      if: success()
+#      shell: bash
+#      id: format
+#      run: |
+#        echo "🧹 Checking format in folder: ${{ inputs.project-path }}"
+#        dotnet csharpier ${{ inputs.project-path }} --check
+#        echo "🧹 Checking format in folder: ${{ inputs.tests-path }}"
+#        dotnet csharpier ${{ inputs.tests-path }} --check
+#       
+#    - name: Run Style Task
+#      id: style
+#      shell: bash
+#      if: success()
+#      run: |
+#        echo "🎨 Checking style in folder: ${{ inputs.project-path }}"
+#        find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet format style {} --verify-no-changes --severity error --verbosity diagnostic \;
+#        echo "🎨 Checking style in folder: ${{ inputs.tests-path }}"
+#        find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet format style {} --verify-no-changes --severity error --verbosity diagnostic \;
+#
+#    - name: Run Analyzers Task
+#      if: success()
+#      shell: bash
+#      run: |
+#        echo "📂 Running analyzers in folder: ${{ inputs.project-path }}"
+#        find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet format analyzers {} --verify-no-changes --severity error --verbosity diagnostic \;
+#        echo "📂 Running analyzers in folder: ${{ inputs.tests-path }}"
+#        find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet format analyzers {} --verify-no-changes --severity error --verbosity diagnostic \;

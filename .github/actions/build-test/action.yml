@@ -17,8 +17,7 @@ inputs:
     required: true
   tests-path:
     description: Path to test project e.g. Services/Catalog/Catalog.UnitTests
-    required: false
-    default: ''
+    required: true
   # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
   coverage-exclude:
     description: Coverage exclude filter
@@ -59,12 +58,13 @@ runs:
       with:
         application-version: ${{ inputs.application-version }}
         project-path: ${{ inputs.project-path }}
+        tests-path: ${{ inputs.tests-path }}
         service-name: ${{ inputs.service-name }}
         dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: Call Composite Action test
       uses: ./.github/actions/test
-      if: ${{ success() && inputs.tests-path != ''}}
+      if: success()
       id: test-step
       with:
         tests-path: ${{ inputs.tests-path }}

@@ -9,9 +9,8 @@ on:
     inputs:
       tests-path:
         description: Tests path
-        required: false
+        required: true
         type: string
-        default: ''
       coverage-exclude:
         description: Coverage exclude filter
         default: "[BuildingBlocks.*]*%2c[FoodDelivery.Services.Shared]*"

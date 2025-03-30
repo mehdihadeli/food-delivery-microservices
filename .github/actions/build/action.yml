@@ -17,8 +17,7 @@ inputs:
     required: true
   tests-path:
     description: Path to test project e.g. Services/Catalog/Catalog.UnitTests
-    required: false
-    default: ''
+    required: true
   service-name:
     description: Service name
     required: true
@@ -68,23 +67,23 @@ runs:
       shell: bash
       if: ${{ success() && inputs.application-version == ''}}
       run: |
-        echo "🛠️ Building projects in folder: ${{ inputs.project-path }}"
+        echo "🧱 Building projects in folder: ${{ inputs.project-path }}"
         find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore {} \;
         
-        echo "🛠️ Building test-projects in folder: ${{ inputs.tests-path }}"
+        echo "🧱 Building test-projects in folder: ${{ inputs.tests-path }}"
         find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore {} \;
 
     - name: Build Service With Version
       shell: bash
       if: ${{ success() && inputs.application-version != ''}}
       run: |
-        echo "🛠️ Building projects in folder: ${{ inputs.project-path }}"
+        echo "🧱 Building projects in folder: ${{ inputs.project-path }}"
         find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore \
           -p:Version=${{ inputs.application-version }} \
           -p:InformationalVersion=${{ inputs.application-version }} \
           -p:ApplicationVersion=${{ inputs.application-version }} {} \;
         
-        echo "🛠️ Building test-projects in folder: ${{ inputs.tests-path }}"
+        echo "🧱 Building test-projects in folder: ${{ inputs.tests-path }}"
         find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore \
           -p:Version=${{ inputs.application-version }} \
           -p:InformationalVersion=${{ inputs.application-version }} \

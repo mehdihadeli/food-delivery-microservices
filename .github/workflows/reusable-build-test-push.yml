@@ -9,8 +9,7 @@ on:
     inputs:
       tests-path:
         description: Tests path
-        required: false
-        default: ''
+        required: true
         type: string
       coverage-exclude:
         description: Coverage exclude filter

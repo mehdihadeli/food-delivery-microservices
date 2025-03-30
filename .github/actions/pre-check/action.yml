@@ -34,7 +34,7 @@ runs:
       if: github.event_name == 'pull_request'
       id: check-pull-request-title-conventional-commits
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.token }}
 
     - name: Job Info
       if: success()

@@ -1,5 +1,8 @@
+using FoodDelivery.Services.Catalogs.Brands;
+using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products;
 using FoodDelivery.Services.Catalogs.Shared.Extensions.WebApplicationBuilderExtensions;
+using FoodDelivery.Services.Catalogs.Suppliers;
 
 namespace FoodDelivery.Services.Catalogs;
 
@@ -14,6 +17,9 @@ public static class CatalogsConfigurations
 
         // Modules
         builder.AddProductsModuleServices();
+        builder.AddBrandsModuleServices();
+        builder.AddCategoriesModuleServices();
+        builder.AddSuppliersModuleServices();
 
         return builder;
     }
@@ -22,6 +28,9 @@ public static class CatalogsConfigurations
     {
         // Modules
         app.UseProductsModule();
+        app.UseBrandsModule();
+        app.UseCategoriesModule();
+        app.UseSuppliersModule();
 
         return app;
     }

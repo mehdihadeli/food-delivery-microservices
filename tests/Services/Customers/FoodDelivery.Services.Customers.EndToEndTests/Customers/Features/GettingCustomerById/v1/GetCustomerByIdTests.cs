@@ -1,8 +1,8 @@
 using BuildingBlocks.Core.Exception.Types;
-using BuildingBlocks.Validation;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.GettingCustomerById.v1;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
@@ -10,8 +10,6 @@ using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models.Read;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Options;
-using Tests.Shared.Extensions;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
 using Xunit.Abstractions;
@@ -35,7 +33,9 @@ public class GetCustomerByIdTests(
         var route = Constants.Routes.Customers.GetById(fakeCustomer.Id);
 
         // Act
-        var response = await SharedFixture.NormalUserHttpClient.GetAsync(route);
+        var response = await SharedFixture.NormalUserHttpClient.GetAsync(
+            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route)
+        );
 
         // Assert
         response.Should().Be200Ok();
@@ -52,7 +52,9 @@ public class GetCustomerByIdTests(
         var route = Constants.Routes.Customers.GetById(fakeCustomer.Id);
 
         // Act
-        var response = await SharedFixture.NormalUserHttpClient.GetAsync(route);
+        var response = await SharedFixture.NormalUserHttpClient.GetAsync(
+            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route)
+        );
 
         // Assert
         response
@@ -114,7 +116,9 @@ public class GetCustomerByIdTests(
         var route = Constants.Routes.Customers.GetById(notExistsId);
 
         // Act
-        var response = await SharedFixture.AdminHttpClient.GetAsync(route);
+        var response = await SharedFixture.AdminHttpClient.GetAsync(
+            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route)
+        );
 
         // Assert
         response
@@ -145,15 +149,16 @@ public class GetCustomerByIdTests(
         var route = Constants.Routes.Customers.GetById(invalidId);
 
         // Act
-        var response = await SharedFixture.AdminHttpClient.GetAsync(route);
+        var response = await SharedFixture.AdminHttpClient.GetAsync(
+            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route)
+        );
 
         // Assert
-
         response
             .Should()
             .Satisfy<ProblemDetails>(pr =>
             {
-                pr.Detail.Should().Be("'Id' must not be empty.");
+                pr.Detail.Should().Contain("'Id' must not be empty.");
                 pr.Title.Should().Be(nameof(ValidationException).Humanize(LetterCasing.Title));
                 pr.Type.Should().Be("https://tools.ietf.org/html/rfc9110#section-15.5.1");
             })

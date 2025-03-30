@@ -1,4 +1,5 @@
 using BuildingBlocks.Abstractions.Web.Problem;
+using BuildingBlocks.Core.Domain.Exceptions;
 using BuildingBlocks.Core.Exception.Types;
 using Microsoft.AspNetCore.Http;
 
@@ -12,13 +13,14 @@ internal sealed class DefaultProblemDetailMapper : IProblemDetailMapper
         {
             ConflictException conflictException => conflictException.StatusCode,
             ValidationException validationException => validationException.StatusCode,
-            ArgumentException _ => StatusCodes.Status400BadRequest,
             BadRequestException badRequestException => badRequestException.StatusCode,
             NotFoundException notFoundException => notFoundException.StatusCode,
             HttpResponseException httpResponseException => httpResponseException.StatusCode,
             HttpRequestException httpRequestException => (int)httpRequestException.StatusCode,
             AppException appException => appException.StatusCode,
-            _ => 0,
+            DomainException domainException => domainException.StatusCode,
+            ArgumentException => StatusCodes.Status400BadRequest,
+            _ => StatusCodes.Status500InternalServerError,
         };
     }
 }

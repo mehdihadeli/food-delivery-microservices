@@ -62,13 +62,13 @@ runs:
       # we should not do 'no-build' here, because our tests not build in build phase (build composite action) and should build here
       run: |
         for file in $(find . -name "*.csproj" -type f); do
-          echo "Testing $file"
+          echo "🧪 Testing project in folder: ${{ inputs.tests-path }}"
           if [ ${{ inputs.no-restore }} == 'true' ]; then
-             echo "run tests in no-restore mode"
-             dotnet test "$file" -c Release --no-restore -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+             echo "  🟡 Mode: no-restore"
+             dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || echo "🔴 Test failed (continuing)"
           else
-             echo "run tests in restore nuget mode"
-             dotnet test "$file" -c Release  -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+             echo "  🟢 Mode: with restore"
+             dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || echo "🔴 Test failed (continuing)"
           fi
         done
 
@@ -81,13 +81,13 @@ runs:
       # we should not do 'no-build' here, because our tests not build in build phase (build composite action) and should build here
       run: |
         for file in $(find . -name "*.csproj" -type f); do
-          echo "Testing $file"
+          echo "🧪 Testing project in folder: ${{ inputs.tests-path }}"
           if [ ${{ inputs.no-restore }} == 'true' ]; then
-              echo "run tests in no-restore mode"
-              dotnet test "$file" -c Release --no-restore -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+              echo "  🟡 Mode: no-restore"
+              dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || echo "🔴 Test failed (continuing)"
           else
-              echo "run tests in restore nuget mode"
-              echo "run tests in restore nuget mode" dotnet test "$file" -c Release -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+              echo "  🟢 Mode: with restore"
+              echo "run tests in restore nuget mode" dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || echo "🔴 Test failed (continuing)"
           fi
         done
 

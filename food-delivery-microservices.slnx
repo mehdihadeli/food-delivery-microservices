@@ -39,9 +39,6 @@
   <Folder Name="/solution-items/.github/actions/app-version/">
     <File Path=".github/actions/app-version/action.yml" />
   </Folder>
-  <Folder Name="/solution-items/.github/actions/back-merge/">
-    <File Path=".github/actions/back-merge/action.yml" />
-  </Folder>
   <Folder Name="/solution-items/.github/actions/build-test/">
     <File Path=".github/actions/build-test/action.yml" />
   </Folder>
@@ -63,8 +60,8 @@
   <Folder Name="/solution-items/.github/actions/drafter-release-note/">
     <File Path=".github/actions/drafter-release-note/action.yml" />
   </Folder>
-  <Folder Name="/solution-items/.github/actions/formatting/">
-    <File Path=".github/actions/formatting/action.yml" />
+  <Folder Name="/solution-items/.github/actions/pre-check/">
+    <File Path=".github\actions\pre-check\action.yml" />
   </Folder>
   <Folder Name="/solution-items/.github/actions/publish-app/">
     <File Path=".github/actions/publish-app/action.yml" />
@@ -194,9 +191,6 @@
   </Folder>
   <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/orders/overlays/prod/">
     <File Path="deployments/k8s/kustomize/food-delivery/orders/overlays/prod/kustomization.yaml" />
-  </Folder>
-  <Folder Name="/solution-items/deployments/tye/">
-    <File Path="deployments/tye/tye.yaml" />
   </Folder>
   <Folder Name="/solution-items/scripts/" />
   <Folder Name="/solution-items/scripts/docker/">

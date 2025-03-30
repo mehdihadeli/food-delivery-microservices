@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Internal.Mongo;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;

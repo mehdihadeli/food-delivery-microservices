@@ -8,7 +8,8 @@ using Polly.Wrap;
 
 namespace BuildingBlocks.Core.Events;
 
-public class InternalEventBus(IMediator mediator, AsyncPolicyWrap policy) : IInternalEventBus
+public class InternalEventBus(IMediator mediator, IMessagePublisher messagePublisher, AsyncPolicyWrap policy)
+    : IInternalEventBus
 {
     private static readonly ConcurrentDictionary<Type, MethodInfo> _publishMethods = new();
 
@@ -35,7 +36,7 @@ public class InternalEventBus(IMediator mediator, AsyncPolicyWrap policy) : IInt
         where T : class, Abstractions.Messages.IMessage
     {
         await policy
-            .ExecuteAsync(async c => await mediator.Publish(messageEnvelope, c).ConfigureAwait(false), ct)
+            .ExecuteAsync(async c => await messagePublisher.Publish(messageEnvelope, c).ConfigureAwait(false), ct)
             .ConfigureAwait(false);
     }
 
@@ -58,7 +59,7 @@ public class InternalEventBus(IMediator mediator, AsyncPolicyWrap policy) : IInt
         where T : class, IDomainEvent
     {
         await policy
-            .ExecuteAsync(async c => await mediator.Publish(streamEvent, c).ConfigureAwait(false), ct)
+            .ExecuteAsync(async c => await messagePublisher.Publish(streamEvent, c).ConfigureAwait(false), ct)
             .ConfigureAwait(false);
     }
 

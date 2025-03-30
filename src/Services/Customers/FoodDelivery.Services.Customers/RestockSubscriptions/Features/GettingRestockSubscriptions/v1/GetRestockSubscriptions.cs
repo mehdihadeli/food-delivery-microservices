@@ -4,8 +4,8 @@ using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
-using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
+using FoodDelivery.Services.Customers.Shared.Contracts;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptions.v1;
 
@@ -53,7 +53,7 @@ public class GetRestockSubscriptionsValidator : AbstractValidator<GetRestockSubs
     }
 }
 
-public class GeRestockSubscriptionsHandler(CustomersReadUnitOfWork customersReadUnitOfWork)
+public class GeRestockSubscriptionsHandler(ICustomersReadUnitOfWork customersReadUnitOfWork)
     : IQueryHandler<GetRestockSubscriptions, GetRestockSubscriptionsResult>
 {
     public async ValueTask<GetRestockSubscriptionsResult> Handle(

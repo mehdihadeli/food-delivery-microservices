@@ -1,7 +1,7 @@
 # Using the base image of the Dockerfile for debugging can be more efficient because you don't need to build the entire application from scratch. Instead, you can reuse the already-built layers and add debugging tools and configurations as needed. This can save time and resources, especially if your application is large or complex.
 # On the other hand, doing a full build for debugging can ensure that the debugging environment is identical to the production environment. This can help catch issues that may not surface in a modified version of the image, and provide a more accurate representation of the production environment. However, this approach can be slower and require more resources.
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 #https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
 #https://swimburger.net/blog/dotnet/how-to-get-aspdotnet-core-server-urls
@@ -21,7 +21,7 @@ ENV ASPNETCORE_ENVIRONMENT docker
 # RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 # USER appuser
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 as build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 as build
 WORKDIR /src
 # path are related to build context, here for us build context is root folder
 # https://docs.docker.com/build/building/context/

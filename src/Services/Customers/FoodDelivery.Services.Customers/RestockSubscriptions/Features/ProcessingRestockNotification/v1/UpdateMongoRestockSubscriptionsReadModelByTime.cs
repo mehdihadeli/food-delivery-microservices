@@ -1,6 +1,6 @@
 using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
-using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
+using FoodDelivery.Services.Customers.Shared.Contracts;
 using Mediator;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
@@ -8,7 +8,7 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.Processi
 public record UpdateMongoRestockSubscriptionsReadModelByTime(DateTime? From, DateTime? To, bool IsDeleted = false)
     : InternalCommand;
 
-internal class UpdateMongoRestockSubscriptionsReadModelByTimeHandler(CustomersReadUnitOfWork unitOfWork)
+internal class UpdateMongoRestockSubscriptionsReadModelByTimeHandler(ICustomersReadUnitOfWork unitOfWork)
     : BuildingBlocks.Abstractions.Commands.ICommandHandler<UpdateMongoRestockSubscriptionsReadModelByTime>
 {
     public async ValueTask<Unit> Handle(

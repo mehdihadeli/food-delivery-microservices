@@ -1,8 +1,8 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
-using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
+using FoodDelivery.Services.Customers.Shared.Contracts;
 using Unit = Mediator.Unit;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
@@ -18,7 +18,7 @@ public record UpdateMongoRestockSubscriptionReadModel(
     bool IsDeleted = false
 ) : InternalCommand;
 
-public class UpdateMongoRestockSubscriptionReadModelHandler(CustomersReadUnitOfWork unitOfWork)
+public class UpdateMongoRestockSubscriptionReadModelHandler(ICustomersReadUnitOfWork unitOfWork)
     : ICommandHandler<UpdateMongoRestockSubscriptionReadModel>
 {
     public async ValueTask<Unit> Handle(

@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Messages.MessagePersistence;
+using BuildingBlocks.Core.Messages;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -11,16 +12,22 @@ public class MessageHandlerConsumerFilter<T>(
     IInternalEventBus internalEventBus,
     ILogger<MessageHandlerConsumerFilter<T>> logger
 ) : IFilter<ConsumeContext<T>>
-    where T : class, IMessageEnvelopeBase
+    where T : class
 {
     public async Task Send(ConsumeContext<T> context, IPipe<ConsumeContext<T>> next)
     {
-        var messageId = context.MessageId;
+        IMessageEnvelopeBase messageEnvelope =
+            context.Message is IMessageEnvelopeBase
+                ? (IMessageEnvelopeBase)context.Message
+                : MessageEnvelopeFactory.From(
+                    context.Message,
+                    context.CorrelationId ?? context.Headers.GetConversationId() ?? Guid.NewGuid()
+                );
 
         // message broker deliver message just to one of consumer based on round-robin algorithm.
         await messagePersistenceService
             .AddReceivedMessageAsync<T>(
-                context.Message,
+                messageEnvelope,
                 async (messageEnvelop) =>
                 {
                     // Call the next filter in the pipeline (which will eventually call the consumer's Consume method)
@@ -33,7 +40,7 @@ public class MessageHandlerConsumerFilter<T>(
             )
             .ConfigureAwait(false);
 
-        logger.LogInformation("Message with ID {MessageId} processed and marked as delivered.", messageId);
+        logger.LogInformation("Message with ID {MessageId} processed and marked as delivered.", context.MessageId);
     }
 
     public void Probe(ProbeContext context) { }

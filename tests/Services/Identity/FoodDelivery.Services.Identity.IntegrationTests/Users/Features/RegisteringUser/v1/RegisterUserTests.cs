@@ -6,6 +6,7 @@ using FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
 using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Tests.Shared.Fixtures;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Identity.IntegrationTests.Users.Features.RegisteringUser.v1;

@@ -1,7 +1,7 @@
 
 #https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 as builder
+FROM mcr.microsoft.com/dotnet/sdk:9.0 as builder
 
 WORKDIR /src
 

@@ -2,13 +2,8 @@ using BuildingBlocks.Core.Exception.Types;
 
 namespace FoodDelivery.Services.Customers.Customers.Exceptions.Domain;
 
-public class InvalidNationalityException : BadRequestException
+public class InvalidNationalityException(string nationality)
+    : BadRequestException($"Nationality: '{nationality}' is invalid.")
 {
-    public string Nationality { get; }
-
-    public InvalidNationalityException(string nationality)
-        : base($"Nationality: '{nationality}' is invalid.")
-    {
-        Nationality = nationality;
-    }
+    public string Nationality { get; } = nationality;
 }

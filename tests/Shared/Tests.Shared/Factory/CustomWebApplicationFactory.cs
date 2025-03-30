@@ -1,3 +1,4 @@
+using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Security.Jwt;
 using Meziantou.Extensions.Logging.InMemory;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -183,6 +183,14 @@ public class CustomWebApplicationFactory<TEntryPoint>(Action<IWebHostBuilder>? w
                     },
                     scheme: FakeJwtBearerDefaults.AuthenticationScheme
                 );
+
+            var referencingAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            services.Scan(scan =>
+                scan.FromAssemblies(referencingAssemblies)
+                    .AddClasses(classes => classes.AssignableTo<ITestDataSeeder>())
+                    .AsImplementedInterfaces()
+                    .WithScopedLifetime()
+            );
 
             _testConfigureServices?.Invoke(services);
         });

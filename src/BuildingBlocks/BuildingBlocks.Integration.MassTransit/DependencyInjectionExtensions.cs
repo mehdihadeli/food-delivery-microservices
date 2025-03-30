@@ -86,7 +86,7 @@ public static class DependencyInjectionExtensions
                     cfg.Publish<IMessageEnvelopeBase>(p => p.Exclude = true);
 
                     cfg.UseConsumeFilter(typeof(HeadersPropagationFilter<>), context);
-                    // cfg.UseConsumeFilter(typeof(MessageHandlerConsumerFilter<>), context);
+                    cfg.UseConsumeFilter(typeof(MessageHandlerConsumerFilter<>), context);
 
                     if (masstransitOptions.AutoConfigEndpoints)
                     {

@@ -2,13 +2,8 @@ using BuildingBlocks.Core.Exception.Types;
 
 namespace FoodDelivery.Services.Customers.Customers.Exceptions.Domain;
 
-public class UnsupportedNationalityException : BadRequestException
+public class UnsupportedNationalityException(string nationality)
+    : BadRequestException($"Nationality: '{nationality}' is unsupported.")
 {
-    public string Nationality { get; }
-
-    public UnsupportedNationalityException(string nationality)
-        : base($"Nationality: '{nationality}' is unsupported.")
-    {
-        Nationality = nationality;
-    }
+    public string Nationality { get; } = nationality;
 }

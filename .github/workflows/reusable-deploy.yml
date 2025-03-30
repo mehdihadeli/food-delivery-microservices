@@ -82,7 +82,7 @@ jobs:
     # By default checkout@v3, will check branch on ref/SHA that triggered in starting workflow, so if inner a job in the workflow we change HEAD of repository by changing code, subsequent jobs don't get these commits and they get ref/SHA that triggered in starting workflow
     # we can't create a `composite-action` for `checkout` because for finding composite-action locally with relative path, repository should be `checkout` first
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
         # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags

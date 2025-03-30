@@ -3,6 +3,7 @@ using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 

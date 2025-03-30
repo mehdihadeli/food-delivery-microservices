@@ -28,6 +28,10 @@ on:
         description: Project path
         required: true
         type: string
+      dotnet-version:
+        description: .Net Version
+        required: true
+        type: string
       service-name:
         description: Service name
         type: string
@@ -50,6 +54,26 @@ on:
         default: '["main", "develop", "beta", "preview", "devops/ci"]'
 
 jobs:
+  pre-checks:
+    name: Pre-Checks
+    runs-on: ubuntu-latest
+    # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
+    # https://github.com/actions/runner/issues/491#issuecomment-850884422
+    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
+    # we should not filter on head commit message types like 'chore', 'docs' because it is possible it our latest SHA commit in integration branches like develop and main be these types and it will skips whole of our trigger
+    if: |
+      github.actor != 'dependabot[bot]'
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Call Composite Action pre-check
+        uses: ./.github/actions/pre-check
+        id: pre-check-step
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+          project-path: ${{ inputs.project-path }}
+          tests-path: ${{ inputs.tests-path }}
+          
   build-test-push:
     # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
@@ -109,7 +133,7 @@ jobs:
       # By default checkout@v3, will check branch on ref/SHA that triggered in starting workflow, so if inner a job in the workflow we change HEAD of repository by changing code, subsequent jobs don't get these commits and they get ref/SHA that triggered in starting workflow
       # we can't create a `composite-action` for `checkout` because for finding composite-action locally with relative path, repository should be `checkout` first
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
           # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
@@ -122,12 +146,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
         shell: bash
-
-      - name: Call Composite Action formatting
-        if: success()
-        uses: ./.github/actions/formatting
-        with:
-          formatting-tool: csharpier
 
       - name: Call Composite Action app-version
         uses: ./.github/actions/app-version
@@ -155,6 +173,7 @@ jobs:
           reports-path: ${{ github.workspace }}/**/*.cobertura.xml
           reports-output-path: ${{ github.workspace }}/output/test-results
           service-name: ${{ inputs.service-name }}
+          dotnet-version: ${{ inputs.dotnet-version }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Call Composite Action publish

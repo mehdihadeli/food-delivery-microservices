@@ -51,13 +51,6 @@ public static class DependencyInjectionExtensions
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
         );
-
-        services.Scan(scan =>
-            scan.FromAssemblies(assemblies)
-                .AddClasses(classes => classes.AssignableTo<ITestDataSeeder>())
-                .AsImplementedInterfaces()
-                .WithScopedLifetime()
-        );
     }
 
     private static void AddDataMigrationSchemas(this IServiceCollection services, IEnumerable<Assembly> assemblies)

@@ -2,6 +2,7 @@ using FoodDelivery.Services.Identity.Api;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Tests.Shared.Fixtures;
 using Tests.Shared.TestBase;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Identity.IntegrationTests;

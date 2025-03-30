@@ -44,5 +44,6 @@
     <PackageVersion Include="Meziantou.Extensions.SeilogLogging.InMemory" Version="1.2.1" />
     <PackageVersion Include="Microsoft.Kiota.Bundle" Version="1.16.1" />
     <PackageVersion Include="Hypothesist" Version="3.0.91" />
+    <PackageVersion Include="Meziantou.Extensions.Logging.InMemory" Version="1.2.3" />
   </ItemGroup>
 </Project>

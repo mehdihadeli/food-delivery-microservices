@@ -1,6 +1,7 @@
 using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
+using FoodDelivery.Services.Customers.Shared.Contracts;
 using Mediator;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
@@ -19,7 +20,7 @@ public record CreateMongoRestockSubscriptionReadModels(
     public bool IsDeleted { get; init; }
 }
 
-internal class CreateRestockSubscriptionReadModelHandler(CustomersReadUnitOfWork unitOfWork)
+internal class CreateRestockSubscriptionReadModelHandler(ICustomersReadUnitOfWork unitOfWork)
     : BuildingBlocks.Abstractions.Commands.ICommandHandler<CreateMongoRestockSubscriptionReadModels>
 {
     public async ValueTask<Unit> Handle(

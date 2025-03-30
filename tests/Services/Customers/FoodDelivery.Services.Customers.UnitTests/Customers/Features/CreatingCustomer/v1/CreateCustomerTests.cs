@@ -1,5 +1,6 @@
 using BuildingBlocks.Core.Exception.Types;
 using FluentAssertions;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;

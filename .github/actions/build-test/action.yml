@@ -39,6 +39,9 @@ inputs:
   service-name:
     description: Service name
     required: true
+  dotnet-version:
+    description: .Net Version
+    required: true
   # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
   token:
     description: A Github PAT
@@ -57,6 +60,7 @@ runs:
         application-version: ${{ inputs.application-version }}
         project-path: ${{ inputs.project-path }}
         service-name: ${{ inputs.service-name }}
+        dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: Call Composite Action test
       uses: ./.github/actions/test

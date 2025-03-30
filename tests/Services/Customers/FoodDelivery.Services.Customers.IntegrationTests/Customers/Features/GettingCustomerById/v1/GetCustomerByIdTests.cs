@@ -1,5 +1,6 @@
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.GettingCustomerById.v1;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;

@@ -46,6 +46,7 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageVersion Include="EFCore.NamingConventions" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="9.0.3" />
+    <PackageVersion Include="Microsoft.NET.Build.Containers" Version="9.0.202" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="AspNetCore.HealthChecks.Network" Version="9.0.0" />

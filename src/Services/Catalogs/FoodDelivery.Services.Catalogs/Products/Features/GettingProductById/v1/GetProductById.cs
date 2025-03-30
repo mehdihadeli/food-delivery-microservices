@@ -2,7 +2,6 @@ using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
-using Cassandra.Mapping;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
@@ -38,7 +37,7 @@ public class GetProductByIdValidator : AbstractValidator<GetProductById>
     }
 }
 
-public class GetProductByIdHandler(ICatalogDbContext catalogDbContext, IMapper mapper)
+public class GetProductByIdHandler(ICatalogDbContext catalogDbContext)
     : IQueryHandler<GetProductById, GetProductByIdResult>
 {
     public async ValueTask<GetProductByIdResult> Handle(GetProductById query, CancellationToken cancellationToken)

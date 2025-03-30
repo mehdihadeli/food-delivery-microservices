@@ -1,3 +1,5 @@
+using Xunit;
+
 namespace FoodDelivery.Services.Catalogs.LoadTests;
 
 public class UnitTest1

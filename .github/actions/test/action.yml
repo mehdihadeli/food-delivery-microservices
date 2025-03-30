@@ -90,6 +90,9 @@ runs:
               echo "run tests in restore nuget mode" dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
           fi
         done
+            
+        echo "📄 Generated test result files:"
+        find . -name "test-results.trx" -type f -print
 
     # GitHub Api call permissions problem here
     # https://github.com/dorny/test-reporter/issues/168

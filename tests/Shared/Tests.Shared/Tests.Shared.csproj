@@ -42,7 +42,6 @@
     <PackageReference Include="xunit" />
     <!-- https://xunit.net/docs/nuget-packages#xunit.runner.visualstudio-->
     <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="Microsoft.VisualStudio.TestPlatform" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
   </ItemGroup>
 

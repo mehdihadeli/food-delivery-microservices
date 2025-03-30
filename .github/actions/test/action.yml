@@ -62,13 +62,13 @@ runs:
       # we should not do 'no-build' here, because our tests not build in build phase (build composite action) and should build here
       run: |
         for file in $(find . -name "*.csproj" -type f); do
-          echo "🧪 Testing project in folder: ${{ inputs.tests-path }}"
+          echo "🧪 Testing project $file in folder: ${{ inputs.tests-path }}"
           if [ ${{ inputs.no-restore }} == 'true' ]; then
              echo "  🟡 Mode: no-restore"
-             dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || echo "🔴 Test failed (continuing)"
+             dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
           else
              echo "  🟢 Mode: with restore"
-             dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || echo "🔴 Test failed (continuing)"
+             dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
           fi
         done
 
@@ -81,13 +81,13 @@ runs:
       # we should not do 'no-build' here, because our tests not build in build phase (build composite action) and should build here
       run: |
         for file in $(find . -name "*.csproj" -type f); do
-          echo "🧪 Testing project in folder: ${{ inputs.tests-path }}"
+          echo "🧪 Testing project $file in folder: ${{ inputs.tests-path }}"
           if [ ${{ inputs.no-restore }} == 'true' ]; then
               echo "  🟡 Mode: no-restore"
-              dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || echo "🔴 Test failed (continuing)"
+              dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
           else
               echo "  🟢 Mode: with restore"
-              echo "run tests in restore nuget mode" dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || echo "🔴 Test failed (continuing)"
+              echo "run tests in restore nuget mode" dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
           fi
         done
 
@@ -97,8 +97,9 @@ runs:
     # https://github.com/dorny/test-reporter/issues/67
     # https://github.com/phoenix-actions/test-reporting/pull/21
     - name: Test Results
-      uses: phoenix-actions/test-reporting@v10
+      uses: phoenix-actions/test-reporting@v15
       id: test-report
+      working-directory: ${{ inputs.tests-path }}
       if: always()
       with:
         name: ${{ inputs.service-name }} Test Reports
@@ -116,6 +117,7 @@ runs:
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
+      working-directory: ${{ inputs.tests-path }}
       if: always()
       with:
         files: |

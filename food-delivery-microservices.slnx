@@ -76,8 +76,6 @@
     <File Path=".github/actions/test/action.yml" />
   </Folder>
   <Folder Name="/solution-items/.github/workflows/">
-    <File Path=".github/workflows/app-version.yml" />
-    <File Path=".github/workflows/back-merge.yml" />
     <File Path=".github/workflows/catalogs.yml" />
     <File Path=".github/workflows/conventional-commits.yml" />
     <File Path=".github/workflows/customers.yml" />

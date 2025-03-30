@@ -76,6 +76,11 @@ runs:
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
     
+    # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
+    - name: Restore .NET Tools
+      shell: bash
+      run: dotnet tool restore
+    
     - name: Run Format Task
       if: success()
       shell: bash

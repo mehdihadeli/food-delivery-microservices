@@ -55,8 +55,9 @@ on:
 
 jobs:
   pre-checks:
-    name: Pre-Checks
     runs-on: ubuntu-latest
+    continue-on-error: false
+      
     # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
     # https://github.com/actions/runner/issues/491#issuecomment-850884422
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
@@ -73,11 +74,15 @@ jobs:
           dotnet-version: ${{ inputs.dotnet-version }}
           project-path: ${{ inputs.project-path }}
           tests-path: ${{ inputs.tests-path }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           
   build-test-push:
     # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
     runs-on: ubuntu-latest
+    needs: [pre-checks]
+    #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
+    continue-on-error: false
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
@@ -91,9 +96,6 @@ jobs:
       pull-requests: write # app-version pull request
       contents: write # for pushing in dry-run mode
       checks: write # for test-reporter
-
-    #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
-    continue-on-error: false
 
     steps:
 

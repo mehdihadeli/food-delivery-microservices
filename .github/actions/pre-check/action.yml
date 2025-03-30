@@ -18,7 +18,11 @@ inputs:
   tests-path:
     description: Path to test project e.g. Services/Catalog/Catalog.UnitTests
     required: true
-    
+  # https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github
+  token:
+    description: A Github PAT
+    required: true
+      
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
 runs:
   using: "composite"
@@ -34,6 +38,7 @@ runs:
 
     - name: Job Info
       if: success()
+      shell: bash
       run: |
         echo "pre-check is successful."
         echo workspace is: ${{ github.workspace }}
@@ -51,6 +56,7 @@ runs:
     # https://hungvu.tech/advanced-github-actions-conditional-workflow
     - name: Set Environment For Branch
       if: success()
+      shell: bash
       id: environment-name-step
       run: |
         if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
@@ -65,11 +71,6 @@ runs:
             echo "environment-name=develop" >> "$GITHUB_OUTPUT"
         fi
         
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: "18"
-
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
       with:
@@ -77,6 +78,7 @@ runs:
     
     - name: Run Format Task
       if: success()
+      shell: bash
       id: format
       run: |
         echo "🧹 Checking format in folder: ${{ inputs.project-path }}"
@@ -86,6 +88,7 @@ runs:
        
     - name: Run Style Task
       id: style
+      shell: bash
       if: success()
       run: |
         echo "🎨 Checking style in folder: ${{ inputs.project-path }}"
@@ -95,6 +98,7 @@ runs:
 
     - name: Run Analyzers Task
       if: success()
+      shell: bash
       run: |
         echo "📂 Running analyzers in folder: ${{ inputs.project-path }}"
         find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet format analyzers {} --verify-no-changes --severity error --verbosity diagnostic \;

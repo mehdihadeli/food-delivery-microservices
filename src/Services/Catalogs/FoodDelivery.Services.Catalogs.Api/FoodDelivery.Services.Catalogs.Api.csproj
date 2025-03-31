@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Build.Containers" />
-  </ItemGroup>
-
-  <ItemGroup>
     <InternalsVisibleTo Include="FoodDelivery.Services.Catalogs.IntegrationTests" />
   </ItemGroup>
 

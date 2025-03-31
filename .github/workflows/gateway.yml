@@ -11,7 +11,6 @@ on:
       - main
       - preview
       - beta
-      - devops/ci
       - fix/*
       - feat/*
       - test/*
@@ -182,6 +181,7 @@ jobs:
       # https://docs.github.com/en/actions/learn-github-actions/variables
       # https://stackoverflow.com/questions/73305126/passing-env-variable-inputs-to-a-reusable-workflow
       project-path: ${{ vars.GATEWAY_SERVICE_PROJECT_PATH }} # src/ApiGateway/FoodDelivery.ApiGateway
+      tests-path: ''
       service-name: ${{ vars.GATEWAY_SERVICE_NAME }} # gateway-service
       docker-file-path: ${{ vars.GATEWAY_SERVICE_DOCKER_FILE_PATH }} # src/ApiGateway/Dockerfile
       registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io

@@ -19,10 +19,10 @@ inputs:
   # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
   unit-test-filter:
     description: Unit tests filter
-    default: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~FoodDelivery.Services)"
+    default: "(Category=Unit)"
   integration-test-filter:
     description: Integration tests filter
-    default: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~FoodDelivery.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
+    default: "(Category=Integration)|(Category=EndToEnd)"
   reports-path:
     description: Test report path
     required: true
@@ -61,7 +61,7 @@ runs:
       # https://octopus.com/blog/githubactions-running-unit-tests
       run: |
         for file in $(find . -name "*.csproj" -type f); do
-          echo "🧪 Testing project $file in folder: ${{ inputs.tests-path }}"
+          echo "🧪 Running Unit Test project $file, in folder: ${{ inputs.tests-path }}"
           if [ ${{ inputs.no-restore }} == 'true' ]; then
              echo "  🟡 Mode: no-restore"
              dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
@@ -79,13 +79,13 @@ runs:
       # https://octopus.com/blog/githubactions-running-unit-tests
       run: |
         for file in $(find . -name "*.csproj" -type f); do
-          echo "🧪 Testing project $file in folder: ${{ inputs.tests-path }}"
+          echo "🧪 Running Integration Or End-To-End Test project $file, in folder: ${{ inputs.tests-path }}"
           if [ ${{ inputs.no-restore }} == 'true' ]; then
               echo "  🟡 Mode: no-restore"
               dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
           else
               echo "  🟢 Mode: with restore"
-              echo "run tests in restore nuget mode" dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+              dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
           fi
         done
 

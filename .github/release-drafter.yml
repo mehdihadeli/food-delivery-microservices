@@ -73,66 +73,61 @@ categories:
 # Using regex for defining rules - https://regexr.com/
 # https://stackoverflow.com/questions/58899999/regexp-to-match-conventional-commit-syntax
 # Note: because of escaping logic inside of release drafter our regex should be escaped correctly and drafter wil un-escape it internally
-# - Escaped regex: When writing a regular expression as a string in code, special characters like (, ), and : need to be escaped with a backslash (\) because these characters have special meanings in regex. 
+# - Escaped regex: When writing a regular expression as a string in code, special characters like (, ), and : need to be escaped with a backslash (\) because these characters have special meanings in regex.
 # - Unescaped regex: If you use a raw regex literal (i.e., surrounded by slashes /.../), the regex engine interprets it directly, and you don’t need to double-escape the special characters.
 autolabeler:
 - label: 'chore'
-    branch:
-    - '/^(chore)(\([a-z ]+\))?\/.+/'
-    title:
-    - '/^(chore)(\([a-z ]+\))?: .+/'
+  branch:
+  - '/^(chore)(\([a-z ]+\))?\/.+/'
+  title:
+  - '/^(chore)(\([a-z ]+\))?: .+/'
 - label: 'enhancement'
-    branch:
-    - '/^(refactor)(\([a-z ]+\))?\/.+/'
-    title:
-    - '/^(refactor)(\([a-z ]+\))?: .+/'
+  branch:
+  - '/^(refactor)(\([a-z ]+\))?\/.+/'
+  title:
+  - '/^(refactor)(\([a-z ]+\))?: .+/'
 - label: 'documentation'
-    branch:
-    - '/^(docs)(\([a-z ]+\))?\/.+/'
-    title:
-    - '/^(docs)(\([a-z ]+\))?: .+/'
+  branch:
+  - '/^(docs)(\([a-z ]+\))?\/.+/'
+  title:
+  - '/^(docs)(\([a-z ]+\))?: .+/'
 - label: 'ci-cd'
-    branch:
-    - '/^(ci)(\([a-z ]+\))?\/.+/'
-    title:
-    - '/^(ci)(\([a-z ]+\))?: .+/'
-- label: 'devops'
-    branch:
-    - '/^(ci)(\([a-z ]+\))?\/.+/'
-    title:
-    - '/^(ci)(\([a-z ]+\))?: .+/'
+  branch:
+  - '/^(ci)(\([a-z ]+\))?\/.+/'
+  title:
+  - '/^(ci)(\([a-z ]+\))?: .+/'
 - label: 'test'
-    branch:
-    - '/^(test)(\([a-z ]+\))?\/.+/'
-    title:
-    - '/^(test)(\([a-z ]+\))?: .+/'
+  branch:
+  - '/^(test)(\([a-z ]+\))?\/.+/'
+  title:
+  - '/^(test)(\([a-z ]+\))?: .+/'
 - label: 'bug'
-    branch:
-    - '/^(fix)(\([a-z ]+\))?\/.+/'
-    title:
-    - '/^(fix)(\([a-z ]+\))?: .+/'
+  branch:
+  - '/^(fix)(\([a-z ]+\))?\/.+/'
+  title:
+  - '/^(fix)(\([a-z ]+\))?: .+/'
 - label: 'style'
-    branch:
-    - '/^(style)(\([a-z ]+\))?\/.+/'
-    title:
-    - '/^(style)(\([a-z ]+\))?: .+/'
+  branch:
+  - '/^(style)(\([a-z ]+\))?\/.+/'
+  title:
+  - '/^(style)(\([a-z ]+\))?: .+/'
 - label: 'feature'
-    branch:
-    - '/^(feat)(\([a-z ]+\))?\/.+/'
-    title:
-    - '/^(feat)(\([a-z ]+\))?: .+/'
+  branch:
+  - '/^(feat)(\([a-z ]+\))?\/.+/'
+  title:
+  - '/^(feat)(\([a-z ]+\))?: .+/'
 - label: 'minor'
   branch:
-    - '/^(feat)(\([a-z ]+\))?\/.+/'
+  - '/^(feat)(\([a-z ]+\))?\/.+/'
   title:
-    - '/^(feat)(\([a-z ]+\))?: .+/'
+  - '/^(feat)(\([a-z ]+\))?: .+/'
 - label: 'patch'
   branch:
-    - '/^(fix)(\([a-z ]+\))?\/.+/'
-    - '/^(ci)(\([a-z ]+\))?\/.+/'
+  - '/^(fix)(\([a-z ]+\))?\/.+/'
+  - '/^(ci)(\([a-z ]+\))?\/.+/'
   title:
-    - '/^(fix)(\([a-z ]+\))?: .+/'
-    - '/^(ci)(\([a-z ]+\))?: .+/'
+  - '/^(fix)(\([a-z ]+\))?: .+/'
+  - '/^(ci)(\([a-z ]+\))?: .+/'
 
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.

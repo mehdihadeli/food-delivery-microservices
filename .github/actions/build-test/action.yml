@@ -25,10 +25,10 @@ inputs:
   # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
   unit-test-filter:
     description: Unit tests filter
-    default: "(Category=Unit&FullyQualifiedName~UnitTests&FullyQualifiedName~FoodDelivery.Services)"
+    default: "(Category=Unit)"
   integration-test-filter:
     description: Integration tests filter
-    default: "(Category=Integration&FullyQualifiedName~IntegrationTests&FullyQualifiedName~FoodDelivery.Services)|(Category=EndToEnd&FullyQualifiedName~EndToEndTests)"
+    default: "(Category=Integration)|(Category=EndToEnd)"
   reports-path:
     description: Test report path
     required: true

@@ -7,7 +7,6 @@ on:
   # Runs your workflow when you push a commit or tag.
   push:
     branches:
-      - develop
       - main
       - preview
       - beta

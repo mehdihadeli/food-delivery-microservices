@@ -40,7 +40,7 @@ on:
         required: false
       acr-password:
         required: false
-      ci_github_token:
+      ci-github-token:
         required: true
       ghcr-token:
         required: false
@@ -52,6 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: false
     environment: ${{ inputs.environment }}
+    name: Build-Push Image to GHCR ${{ inputs.environment }}
     permissions:
       packages: write
       contents: read
@@ -110,6 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: false
     environment: ${{ inputs.environment }}
+    name: Build-Push Image to ACR ${{ inputs.environment }}
     if: ${{ inputs.environment == 'production' }}
     permissions:
       packages: write

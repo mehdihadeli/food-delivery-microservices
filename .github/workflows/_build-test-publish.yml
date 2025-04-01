@@ -48,7 +48,7 @@ on:
         required: true
         type: string
     secrets:
-      ci_github_token:
+      ci-github-token:
         required: true
 
 jobs:
@@ -59,6 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
     continue-on-error: false
+    name: Build-Test-Publish to ${{ inputs.environment }}
 
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
@@ -78,7 +79,7 @@ jobs:
           # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
           fetch-depth: 0
           repository: ${{ github.repository }}
-          token: ${{ secrets.ci_github_token }}
+          token: ${{ secrets.ci-github-token }}
           # set ref to 'github.ref' works correctly with both pull_requests event and push event and this is default behavior checkout action when we don't use ref attribute
           ref: ${{ github.ref }}
       - run: |
@@ -201,7 +202,7 @@ jobs:
         with:
           name: ${{ inputs.service-name }} Test Reports
           reporter: dotnet-trx
-          token: ${{ secrets.ci_github_token }}
+          token: ${{ secrets.ci-github-token }}
           # only-summary: 'true'
           output-to: "step-summary"
           path: "**/test-results.trx"
@@ -220,7 +221,7 @@ jobs:
             **/test-results.trx
           comment_mode: off
           ignore_runs: true
-          github_token: ${{ secrets.ci_github_token }}
+          github_token: ${{ secrets.ci-github-token }}
           # https://github.com/EnricoMi/publish-unit-test-result-action#configuration
           # Configures the state of the created test result check run. With "test failures" it fails if any test fails or test errors occur
           fail_on: "test failures"
@@ -307,7 +308,7 @@ jobs:
         if: success()
         uses: coverallsapp/github-action@master
         with:
-          github-token: ${{ secrets.ci_github_token }}
+          github-token: ${{ secrets.ci-github-token }}
           path-to-lcov: "output/test-results/lcov.info"
 
       - name: Dotnet Publish
@@ -356,3 +357,4 @@ jobs:
           name: ${{ inputs.service-name}}_publish_artifacts
           path: |
             ${{ github.workspace }}/output/${{inputs.service-name}}.zip
+          retention-days: 1 # This will automatically delete the artifact after 1 day

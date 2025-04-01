@@ -76,19 +76,32 @@ concurrency:
 
 # https://docs.github.com/en/actions/using-workflows/about-workflows
 jobs:
+  call-detect-environment:
+    uses: ./.github/workflows/_detect-environment.yml
+    with:
+      publish-production: ${{ github.event.inputs.publish-production || false }}
+
+  call-semantic-version:
+    uses: ./.github/workflows/_semantic-version.yml
+    needs: [call-detect-environment]
+    with:
+      environment: ${{ needs.detect-environment.outputs.environment }}
+    secrets:
+      ci-github-token: ${{ secrets.GITHUB_TOKEN }}
+
   call-pre-checks:
     uses: ./.github/workflows/_pre-checks.yml
+    needs: [call-detect-environment, call-semantic-version]
     with:
       tests-path: ${{ vars.CATALOGS_SERVICE_TESTS_PATH }} # tests/Services/Catalogs
       project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs/FoodDelivery.Services.Catalogs.Api
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
-      publish-production: ${{ github.event.inputs.publish-production || false }}
     secrets:
-      ci_github_token: ${{ secrets.GITHUB_TOKEN }}
+      ci-github-token: ${{ secrets.GITHUB_TOKEN }}
 
   ### CI
   call-build-test-publish:
-    needs: [call-pre-checks]
+    needs: [call-pre-checks, call-semantic-version, call-detect-environment]
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
@@ -107,7 +120,7 @@ jobs:
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
     secrets:
-      ci_github_token: ${{ secrets.GITHUB_TOKEN }}
+      ci-github-token: ${{ secrets.GITHUB_TOKEN }}
     with:
       # https://docs.github.com/en/actions/security-guides/encrypted-secrets
       # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
@@ -118,25 +131,31 @@ jobs:
       service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
       no-restore: true
-      version: ${{ needs.call-pre-checks.outputs.version-with-suffix }}
-      environment: ${{ needs.call-pre-checks.outputs.environment }}
+      version: ${{ needs.call-semantic-version.outputs.version-with-suffix }}
+      environment: ${{ needs.call-detect-environment.outputs.environment }}
 
   call-docker-build-push:
-    needs: [call-pre-checks, call-build-test-publish]
+    needs:
+      [
+        call-pre-checks,
+        call-semantic-version,
+        call-detect-environment,
+        call-build-test-publish,
+      ]
     permissions:
       packages: write
       contents: read
     if: success()
     uses: ./.github/workflows/_docker-build-push.yml
     with:
-      environment: ${{ needs.call-pre-checks.outputs.environment }}
-      version: ${{ needs.call-pre-checks.outputs.version-with-suffix }}
+      environment: ${{ needs.call-detect-environment.outputs.environment }}
+      version: ${{ needs.call-semantic-version.outputs.version-with-suffix }}
       service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
       docker-file-path: ${{ vars.CATALOGS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Catalogs/Dockerfile
       build-context: "."
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
     secrets:
-      ci_github_token: ${{ secrets.GITHUB_TOKEN }}
+      ci-github-token: ${{ secrets.GITHUB_TOKEN }}
       acr-registry-url: ${{ secrets.ACR_REGISTRY_URL }}
       acr-username: ${{ secrets.ACR_USERNAME }}
       acr-password: ${{ secrets.ACR_PASSWORD }}
@@ -162,27 +181,27 @@ jobs:
   #   with:
   #     publish-production: ${{ github.event.inputs.publish-production || false }}
 
-  # # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
-  # # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
-  # # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
-  # # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
-  # # https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
-  # # https://www.codewrecks.com/post/github/choose-environment-from-branch/
-  # # https://colinsalmcorner.com/musings-on-reusable-workflows/
-  # # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
-  # # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
-  # call-deploy:
-  #   needs: [call-release]
+  # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
+  # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+  # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
+  # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
+  # https://limeii.github.io/2022/11/deploy-on-multiple-environment-with-github-actions/
+  # https://www.codewrecks.com/post/github/choose-environment-from-branch/
+  # https://colinsalmcorner.com/musings-on-reusable-workflows/
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+  # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
+  call-deploy:
+    needs: [call-pre-checks, call-detect-environment, call-docker-build-push]
 
-  #   # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
-  #   # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-  #   uses: ./.github/workflows/reusable-deploy.yml
-  #   # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
-  #   # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
-  #   # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
-  #   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
-  #   secrets: inherit
-  #   with:
-  #     release-version: ${{ needs.call-release.outputs.release-version }}
-  #     service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
-  #     publish-production: ${{ inputs.publish-production }}
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
+    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
+    uses: ./.github/workflows/_deploy.yml
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
+    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
+    with:
+      service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
+      environment: ${{ needs.call-detect-environment.outputs.environment }}
+    secrets:
+      ci-github-token: ${{ secrets.GITHUB_TOKEN }}

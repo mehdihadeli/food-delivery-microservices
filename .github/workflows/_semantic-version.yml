@@ -7,7 +7,6 @@ on:
         description: "Deployment environment (development/staging/production)"
         required: true
         type: string
-        default: "development"
     outputs:
       next-version:
         description: "The next semantic version (without v prefix)"
@@ -16,7 +15,7 @@ on:
         description: "Version with environment suffix"
         value: ${{ jobs.version-calculation.outputs.version-with-suffix }}
     secrets:
-      ci_github_token:
+      ci-github-token:
         required: true
 
 jobs:
@@ -62,7 +61,7 @@ jobs:
           echo "next-version=${VERSION#v}" >> $GITHUB_OUTPUT
           echo "full-version=${VERSION#v}${{ steps.version-suffix.outputs.suffix }}" >> $GITHUB_OUTPUT
         env:
-          GITHUB_TOKEN: ${{ secrets.ci_github_token }}
+          GITHUB_TOKEN: ${{ secrets.ci-github-token }}
 
       - name: Extract version
         id: extract-version

@@ -94,7 +94,7 @@ jobs:
     needs: [call-detect-environment, call-semantic-version]
     with:
       tests-path: ${{ vars.CATALOGS_SERVICE_TESTS_PATH }} # tests/Services/Catalogs
-      project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs/FoodDelivery.Services.Catalogs.Api
+      project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
     secrets:
       ci-github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -127,7 +127,7 @@ jobs:
       # https://docs.github.com/en/actions/learn-github-actions/variables
       # https://stackoverflow.com/questions/73305126/passing-env-variable-inputs-to-a-reusable-workflow
       tests-path: ${{ vars.CATALOGS_SERVICE_TESTS_PATH }} # tests/Services/Catalogs
-      project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs/FoodDelivery.Services.Catalogs.Api
+      project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs
       service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
       no-restore: true

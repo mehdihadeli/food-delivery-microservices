@@ -138,6 +138,7 @@ jobs:
       service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
       docker-file-path: ${{ vars.CATALOGS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Catalogs/Dockerfile
       build-context: "."
+      dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
       push-to-ghcr: true
       push-to-acr: ${{ needs.call-pre-checks.outputs.environment == 'production' || needs.call-pre-checks.outputs.environment == 'staging' }}
     secrets:

@@ -73,7 +73,8 @@ jobs:
         shell: bash
         run: |
           echo "pre-check is successful."
-          echo workspace is: ${{ github.workspace }}
+          echo workspace is: ${{ needs.detect-environment.outputs.environment }}
+          echo environment is: ${{ github.workspace }}
           echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
           echo "is push event? ${{ github.event_name == 'push' }}"
           echo "is pull request event? ${{ github.event_name == 'pull_request' }}"

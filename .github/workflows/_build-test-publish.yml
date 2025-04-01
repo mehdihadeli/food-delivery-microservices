@@ -55,7 +55,7 @@ jobs:
     secrets:
       ci_github_token: ${{ secrets.ci_github_token }}
 
-  build-test-push:
+  build-test:
     environment: ${{ inputs.environment }}
     # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
@@ -314,13 +314,49 @@ jobs:
           github-token: ${{ secrets.ci_github_token }}
           path-to-lcov: "output/test-results/lcov.info"
 
-      # - name: Call Composite Action publish
-      #   uses: ./.github/actions/publish-app
-      #   if: success()
-      #   id: publish-step
-      #   with:
-      #     application-version: ${{ steps.app-version-step.outputs.application-version }}
-      #     service-name: ${{ inputs.service-name }}
-      #     project-path: ${{ inputs.project-path }}
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     no-restore: true
+      - name: Dotnet Publish
+        shell: bash
+        if: |
+          success() &&
+          (github.event_name != 'pull_request' && contains(fromJson('["main", "preview"]'), github.ref_name) && (github.event_name == 'push'))
+        working-directory: ${{ inputs.project-path }}
+        # version specified in build phase with passing version in the build arguments, here we just publish it with no-build
+        run: |
+          if [ ${{ inputs.no-restore }} = true ]; then
+            dotnet publish -c Release --no-restore --no-build -o ${{ github.workspace }}/output/${{inputs.service-name}}
+          else
+            dotnet publish -c Release --no-build -o ${{ github.workspace }}/output/${{inputs.service-name}}
+          fi
+
+        # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
+        # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
+        # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
+        # note: we should zip inner (publish-services) folder and for doing this we use  `cd output` first then zip
+        # `publish-services/*` folder, otherwise with zip `output/publish-services` it zip output folder and inner `publish-services`folder together
+      - name: Zip publish-services Artifacts
+        if: |
+          success() &&
+          (github.event_name != 'pull_request' && contains(fromJson('["main", "preview"]'), github.ref_name) && (github.event_name == 'push'))
+        shell: bash
+        working-directory: ${{ github.workspace }}/output
+        run: |
+          zip -r ${{inputs.service-name}}.zip ${{inputs.service-name}}/*
+
+        # https://github.com/actions/runner/issues/946#issuecomment-900193569
+        # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
+      - name: Ls Output Files
+        if: |
+          success() &&
+          (github.event_name != 'pull_request' && contains(fromJson('["main", "preview"]'), github.ref_name) && (github.event_name == 'push'))
+        shell: bash
+        run: ls -R ${{ github.workspace }}/output
+
+      - name: Upload Publish Services Artifacts For Deployment Jobs
+        uses: actions/upload-artifact@v4
+        if: |
+          success() &&
+          (github.event_name != 'pull_request' && contains(fromJson('["main", "preview"]'), github.ref_name) && (github.event_name == 'push'))
+        with:
+          name: ${{ inputs.service-name}}_publish_artifacts
+          path: |
+            ${{ github.workspace }}/output/${{inputs.service-name}}.zip

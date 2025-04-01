@@ -69,14 +69,6 @@ on:
 #       type: environment
 #       required: true
 
-# https://docs.github.com/en/actions/learn-github-actions/variables#defining-environment-variables-for-a-single-workflow
-# https://docs.github.com/en/actions/using-workflows/reusing-workflows#limitations
-# https://docs.github.com/en/actions/learn-github-actions/variables
-# Any environment variables set in an env context defined at the workflow level in the caller workflow are not propagated to the called workflow
-env:
-  IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
-  BRANCH_NAME: ${{ github.ref_name }}
-
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
@@ -95,7 +87,8 @@ jobs:
       ci_github_token: ${{ secrets.GITHUB_TOKEN }}
 
   ### CI
-  call-build-test-push:
+  call-build-test-publish:
+    needs: [call-pre-checks]
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
@@ -103,9 +96,7 @@ jobs:
     ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
     ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
     permissions:
-      packages: write # for publishing packages
-      pull-requests: write # app-version pull request
-      contents: write # for publishing in dry-run mode
+      contents: read # for publishing in dry-run mode
       checks: write # for test-reporter
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
@@ -130,7 +121,7 @@ jobs:
       environment: ${{ needs.call-pre-checks.outputs.environment }}
 
   call-docker-build-push:
-    needs: [call-pre-checks]
+    needs: [call-pre-checks, call-build-test-publish]
     permissions:
       packages: write
       contents: read
@@ -155,7 +146,7 @@ jobs:
   # # typically release notes are published as part of the Continuous Deployment (CD) process, after the software has been built, tested, and deployed to production.
   # # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
   # call-release:
-  #   needs: [call-build-test-push]
+  #   needs: [call-docker-build-push]
 
   #   # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
   #   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions

@@ -91,9 +91,10 @@ jobs:
         with:
           images: ${{ env.GHCR_REGISTRY }}/${{ github.repository_owner }}/${{ inputs.service-name }}
           tags: |
-            type=raw,value=${{ needs.calculate-version.outputs.version-with-suffix }}
+            type=raw,value=${{ needs.calculate-version.outputs.version-with-suffix || 'latest' }}
+            type=raw,value=latest${{ needs.calculate-version.outputs.version-suffix || '' }}
           labels: |
-            org.opencontainers.image.version=${{ needs.calculate-version.outputs.next-version }}
+            org.opencontainers.image.version=${{ needs.calculate-version.outputs.next-version || 'unversioned' }}
             org.opencontainers.image.environment=${{ inputs.environment }}
 
       - name: Build and push to GHCR
@@ -101,7 +102,7 @@ jobs:
         with:
           context: ${{ inputs.build-context }}
           file: ${{ inputs.docker-file-path }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' && contains(fromJson('["main", "preview"]'), github.ref_name) }}
           tags: ${{ steps.ghcr-meta.outputs.tags }}
           labels: ${{ steps.ghcr-meta.outputs.labels }}
           cache-from: type=gha,scope=${{ github.ref }}
@@ -110,8 +111,13 @@ jobs:
 
       - name: Output GHCR image info
         run: |
-          echo "Successfully built and pushed to GHCR:"
-          echo "${{ steps.ghcr-meta.outputs.tags }}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Docker image successfully built (PR mode - not pushed)"
+            echo "${{ steps.ghcr-meta.outputs.tags }}"
+          else
+            echo "Docker image successfully built and pushed to GHCR:"
+            echo "${{ steps.ghcr-meta.outputs.tags }}"
+          fi
 
   build-push-acr:
     if: inputs.push-to-acr
@@ -145,9 +151,10 @@ jobs:
         with:
           images: ${{ secrets.acr-registry-url }}/${{ inputs.service-name }}
           tags: |
-            type=raw,value=${{ needs.calculate-version.outputs.version-with-suffix }}
+            type=raw,value=${{ needs.calculate-version.outputs.version-with-suffix || 'latest' }}
+            type=raw,value=latest${{ needs.calculate-version.outputs.version-suffix || '' }}
           labels: |
-            org.opencontainers.image.version=${{ needs.calculate-version.outputs.next-version }}
+            org.opencontainers.image.version=${{ needs.calculate-version.outputs.next-version || 'unversioned' }}
             org.opencontainers.image.environment=${{ inputs.environment }}
 
       - name: Build and push to ACR
@@ -155,7 +162,7 @@ jobs:
         with:
           context: ${{ inputs.build-context }}
           file: ${{ inputs.docker-file-path }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' && contains(fromJson('["main", "preview"]'), github.ref_name) }}
           tags: ${{ steps.acr-meta.outputs.tags }}
           labels: ${{ steps.acr-meta.outputs.labels }}
           cache-from: type=gha,scope=${{ github.ref }}
@@ -164,5 +171,10 @@ jobs:
 
       - name: Output ACR image info
         run: |
-          echo "Successfully built and pushed to ACR:"
-          echo "${{ steps.acr-meta.outputs.tags }}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Docker image successfully built (PR mode - not pushed)"
+            echo "${{ steps.acr-meta.outputs.tags }}"
+          else
+            echo "Docker image successfully built and pushed to ACR:"
+            echo "${{ steps.acr-meta.outputs.tags }}"
+          fi

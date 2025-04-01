@@ -92,7 +92,7 @@ jobs:
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
       publish-production: ${{ github.event.inputs.publish-production || false }}
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+      ci_github_token: ${{ secrets.GITHUB_TOKEN }}
 
   ### CI
   call-build-test-push:
@@ -116,7 +116,7 @@ jobs:
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+      ci_github_token: ${{ secrets.GITHUB_TOKEN }}
     with:
       # https://docs.github.com/en/actions/security-guides/encrypted-secrets
       # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
@@ -142,7 +142,7 @@ jobs:
       push-to-ghcr: true
       push-to-acr: ${{ needs.call-pre-checks.outputs.environment == 'production' || needs.call-pre-checks.outputs.environment == 'staging' }}
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+      ci_github_token: ${{ secrets.GITHUB_TOKEN }}
       acr_registry_url: ${{ secrets.ACR_REGISTRY_URL }}
       acr_username: ${{ secrets.ACR_USERNAME }}
       acr_password: ${{ secrets.ACR_PASSWORD }}

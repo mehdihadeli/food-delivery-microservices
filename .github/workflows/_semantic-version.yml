@@ -16,7 +16,7 @@ on:
         description: "Version with environment suffix"
         value: ${{ jobs.version-calculation.outputs.version-with-suffix }}
     secrets:
-      github_token:
+      ci_github_token:
         required: true
 
 jobs:
@@ -62,7 +62,7 @@ jobs:
           echo "next-version=${VERSION#v}" >> $GITHUB_OUTPUT
           echo "full-version=${VERSION#v}${{ steps.version-suffix.outputs.suffix }}" >> $GITHUB_OUTPUT
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          GITHUB_TOKEN: ${{ secrets.ci_github_token }}
 
       - name: Extract version
         id: extract-version

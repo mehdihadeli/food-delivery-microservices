@@ -1,7 +1,7 @@
-npm run fix-analyzers
-npm run fix-style
-npm run fix-csharpier-format
+# npm run fix-analyzers
+# npm run fix-style
+# npm run fix-csharpier-format
 
-npm run format 
-npm run style 
-npm run analyzers
+# npm run format
+# npm run style
+# npm run analyzers

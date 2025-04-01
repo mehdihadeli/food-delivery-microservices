@@ -44,7 +44,7 @@ on:
         required: false
       acr-password:
         required: false
-      github_token:
+      ci_github_token:
         required: true
       ghcr-token:
         required: false
@@ -57,7 +57,7 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
     secrets:
-      github_token: ${{ secrets.github_token }}
+      ci_github_token: ${{ secrets.ci_github_token }}
 
   build-push-ghcr:
     if: inputs.push-to-ghcr

@@ -131,6 +131,9 @@ jobs:
 
   call-docker-build-push:
     needs: [call-pre-checks]
+    permissions:
+      packages: write
+      contents: read
     if: success()
     uses: ./.github/workflows/_docker-build-push.yml
     with:

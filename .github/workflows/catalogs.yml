@@ -143,10 +143,10 @@ jobs:
       push-to-acr: ${{ needs.call-pre-checks.outputs.environment == 'production' || needs.call-pre-checks.outputs.environment == 'staging' }}
     secrets:
       ci_github_token: ${{ secrets.GITHUB_TOKEN }}
-      acr_registry_url: ${{ secrets.ACR_REGISTRY_URL }}
-      acr_username: ${{ secrets.ACR_USERNAME }}
-      acr_password: ${{ secrets.ACR_PASSWORD }}
-      ghcr_token: ${{ secrets.GITHUB_TOKEN }}
+      acr-registry-url: ${{ secrets.ACR_REGISTRY_URL }}
+      acr-username: ${{ secrets.ACR_USERNAME }}
+      acr-password: ${{ secrets.ACR_PASSWORD }}
+      ghcr-token: ${{ secrets.GITHUB_TOKEN }}
 
   # ### CD
   # # typically release notes are published as part of the Continuous Deployment (CD) process, after the software has been built, tested, and deployed to production.

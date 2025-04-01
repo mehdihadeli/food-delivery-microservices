@@ -85,7 +85,7 @@ jobs:
     uses: ./.github/workflows/_semantic-version.yml
     needs: [call-detect-environment]
     with:
-      environment: ${{ needs.detect-environment.outputs.environment }}
+      environment: ${{ needs.call-detect-environment.outputs.environment }}
     secrets:
       ci-github-token: ${{ secrets.GITHUB_TOKEN }}
 

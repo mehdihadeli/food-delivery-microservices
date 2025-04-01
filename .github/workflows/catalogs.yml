@@ -118,6 +118,7 @@ jobs:
       service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
       no-restore: true
+      version: ${{ needs.call-pre-checks.outputs.version-with-suffix }}
       environment: ${{ needs.call-pre-checks.outputs.environment }}
 
   call-docker-build-push:
@@ -129,12 +130,11 @@ jobs:
     uses: ./.github/workflows/_docker-build-push.yml
     with:
       environment: ${{ needs.call-pre-checks.outputs.environment }}
+      version: ${{ needs.call-pre-checks.outputs.version-with-suffix }}
       service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
       docker-file-path: ${{ vars.CATALOGS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Catalogs/Dockerfile
       build-context: "."
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
-      push-to-ghcr: true
-      push-to-acr: ${{ needs.call-pre-checks.outputs.environment == 'production' || needs.call-pre-checks.outputs.environment == 'staging' }}
     secrets:
       ci_github_token: ${{ secrets.GITHUB_TOKEN }}
       acr-registry-url: ${{ secrets.ACR_REGISTRY_URL }}

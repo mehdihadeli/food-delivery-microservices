@@ -11,14 +11,10 @@ on:
         description: "Environment"
         type: string
         required: true
-      push-to-acr:
-        description: "Push to Azure Container Registry?"
-        type: boolean
-        default: false
-      push-to-ghcr:
-        description: "Push to GitHub Container Registry?"
-        type: boolean
-        default: true
+      version:
+        description: Version
+        required: true
+        type: string
       dotnet-version:
         description: .Net Version
         required: true
@@ -52,17 +48,8 @@ env:
   GHCR_REGISTRY: "ghcr.io"
 
 jobs:
-  calculate-version:
-    uses: ./.github/workflows/_semantic-version.yml
-    with:
-      environment: ${{ inputs.environment }}
-    secrets:
-      ci_github_token: ${{ secrets.ci_github_token }}
-
   build-push-ghcr:
-    if: inputs.push-to-ghcr
     runs-on: ubuntu-latest
-    needs: calculate-version
     continue-on-error: false
     environment: ${{ inputs.environment }}
     permissions:
@@ -91,10 +78,10 @@ jobs:
         with:
           images: ${{ env.GHCR_REGISTRY }}/${{ github.repository_owner }}/${{ inputs.service-name }}
           tags: |
-            type=raw,value=${{ needs.calculate-version.outputs.version-with-suffix || 'latest' }}
-            type=raw,value=latest${{ needs.calculate-version.outputs.version-suffix || '' }}
+            type=raw,value=${{ inputs.version || 'latest' }}
+            type=raw,value=latest${{ inputs.version || '' }}
           labels: |
-            org.opencontainers.image.version=${{ needs.calculate-version.outputs.next-version || 'unversioned' }}
+            org.opencontainers.image.version=${{ inputs.version || 'unversioned' }}
             org.opencontainers.image.environment=${{ inputs.environment }}
 
       - name: Build and push to GHCR
@@ -120,11 +107,10 @@ jobs:
           fi
 
   build-push-acr:
-    if: inputs.push-to-acr
     runs-on: ubuntu-latest
-    needs: calculate-version
     continue-on-error: false
     environment: ${{ inputs.environment }}
+    if: ${{ inputs.environment == 'production' }}
     permissions:
       packages: write
       contents: read
@@ -151,10 +137,10 @@ jobs:
         with:
           images: ${{ secrets.acr-registry-url }}/${{ inputs.service-name }}
           tags: |
-            type=raw,value=${{ needs.calculate-version.outputs.version-with-suffix || 'latest' }}
-            type=raw,value=latest${{ needs.calculate-version.outputs.version-suffix || '' }}
+            type=raw,value=${{ inputs.version || 'latest' }}
+            type=raw,value=latest${{ inputs.version || '' }}
           labels: |
-            org.opencontainers.image.version=${{ needs.calculate-version.outputs.next-version || 'unversioned' }}
+            org.opencontainers.image.version=${{ inputs.version || 'unversioned' }}
             org.opencontainers.image.environment=${{ inputs.environment }}
 
       - name: Build and push to ACR

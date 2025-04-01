@@ -1,0 +1,256 @@
+name: Build-Test-Publish Workflow
+
+on:
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputsinput_idtype
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_call
+  # https://docs.github.com/en/actions/using-workflows/reusing-workflows
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment
+        required: true
+        type: string
+      no-restore:
+        required: true
+        type: boolean
+        default: true
+      service-name:
+        description: Service name
+        type: string
+        required: true
+      tests-path:
+        description: Tests path
+        required: true
+        type: string
+      coverage-exclude:
+        description: Coverage exclude filter
+        default: "[BuildingBlocks.*]*%2c[FoodDelivery.Services.Shared]*"
+        type: string
+      unit-test-filter:
+        description: Unit tests filter
+        default: "(Category=Unit)"
+        type: string
+      integration-test-filter:
+        description: Integration tests filter
+        default: "(Category=Integration)|(Category=EndToEnd)"
+        type: string
+      project-path:
+        description: Project path
+        required: true
+        type: string
+      dotnet-version:
+        description: .Net Version
+        required: true
+        type: string
+    secrets:
+      github_token:
+        required: true
+
+jobs:
+  calculate-version:
+    uses: ./.github/workflows/_semantic-version.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      github_token: ${{ secrets.github_token }}
+
+  build-test-push:
+    environment: ${{ inputs.environment }}
+    # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
+    # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
+    runs-on: ubuntu-latest
+    #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
+    continue-on-error: false
+    needs: [calculate-version]
+
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
+    ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
+    # The GITHUB_TOKEN permissions passed from the caller workflow can be only downgraded in called workflow
+    permissions:
+      checks: write # for test-reporter
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
+          fetch-depth: 0
+          repository: ${{ github.repository }}
+          token: ${{ secrets.github_token }}
+          # set ref to 'github.ref' works correctly with both pull_requests event and push event and this is default behavior checkout action when we don't use ref attribute
+          ref: ${{ github.ref }}
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+        shell: bash
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
+      # https://devblogs.microsoft.com/dotnet/dotnet-loves-github-actions/
+      # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net#caching-dependencies
+      - name: Cache NuGet Packages
+        uses: actions/cache@v4
+        if: success()
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-dotnet-nuget
+
+        # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
+      - name: Restore .NET Tools
+        shell: bash
+        run: dotnet tool restore
+
+        # Note: `Ubuntu` file and folder names are case-sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
+        # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476
+      - name: Restore NuGet packages
+        shell: bash
+        if: success()
+        # restore root solution
+        run: |
+          echo "📦️ Restoring projects in folder: ${{ inputs.project-path }}"
+          find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet restore {} \;
+
+          echo "📦️ Restoring test-projects in folder: ${{ inputs.tests-path }}"
+          find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet restore {} \;
+
+      - name: Build Service Without Version
+        shell: bash
+        if: ${{ success() && needs.calculate-version.outputs.version-with-suffix == ''}}
+        run: |
+          echo "🧱 Building projects in folder: ${{ inputs.project-path }}"
+          find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore {} \;
+
+          echo "🧱 Building test-projects in folder: ${{ inputs.tests-path }}"
+          find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore {} \;
+
+      - name: Build Service With Version
+        shell: bash
+        if: ${{ success() && needs.calculate-version.outputs.version-with-suffix != ''}}
+        run: |
+          echo "🧱 Building projects in folder: ${{ inputs.project-path }}"
+          find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore \
+            -p:Version=${{ needs.calculate-version.outputs.version-with-suffix }} \
+            -p:InformationalVersion=${{ needs.calculate-version.outputs.version-with-suffix }} \
+            -p:ApplicationVersion=${{ needs.calculate-version.outputs.version-with-suffix }} {} \;
+
+          echo "🧱 Building test-projects in folder: ${{ inputs.tests-path }}"
+          find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore \
+            -p:Version=${{ needs.calculate-version.outputs.version-with-suffix }} \
+            -p:InformationalVersion=${{ needs.calculate-version.outputs.version-with-suffix }} \
+            -p:ApplicationVersion=${{ needs.calculate-version.outputs.version-with-suffix }} {} \;
+
+      # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
+      # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+      # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
+      # https://josef.codes/dotnet-core-filter-out-specific-test-projects-when-running-dotnet-test/
+      # https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
+      # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+      # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md
+      # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
+      - name: Run Unit Tests
+        shell: bash
+        id: unit-test-step
+        working-directory: ${{ inputs.tests-path }}
+        # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
+        # https://octopus.com/blog/githubactions-running-unit-tests
+        run: |
+          for file in $(find . -name "*.csproj" -type f); do
+            echo "🧪 Running Unit Test project $file, in folder: ${{ inputs.tests-path }}"
+            if [ ${{ inputs.no-restore }} == 'true' ]; then
+              echo "  🟡 Mode: no-restore"
+              dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+            else
+              echo "  🟢 Mode: with restore"
+              dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+            fi
+          done
+
+      - name: Run Integration And EndToEnd Tests
+        shell: bash
+        id: integration-test-step
+        working-directory: ${{ inputs.tests-path }}
+        # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
+        # https://octopus.com/blog/githubactions-running-unit-tests
+        run: |
+          for file in $(find . -name "*.csproj" -type f); do
+            echo "🧪 Running Integration Or End-To-End Test project $file, in folder: ${{ inputs.tests-path }}"
+            if [ ${{ inputs.no-restore }} == 'true' ]; then
+                echo "  🟡 Mode: no-restore"
+                dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+            else
+                echo "  🟢 Mode: with restore"
+                dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+            fi
+          done
+
+      # GitHub Api call permissions problem here
+      # https://github.com/dorny/test-reporter/issues/168
+      # https://octopus.com/blog/githubactions-running-unit-tests
+      # https://github.com/dorny/test-reporter/issues/67
+      # https://github.com/phoenix-actions/test-reporting/pull/21
+      - name: Test Results
+        uses: phoenix-actions/test-reporting@v15
+        id: test-report
+        if: always()
+        with:
+          name: ${{ inputs.service-name }} Test Reports
+          reporter: dotnet-trx
+          token: ${{ secrets.github_token }}
+          # only-summary: 'true'
+          output-to: "step-summary"
+          path: "**/test-results.trx"
+          # Set action as failed if test report contains any failed test
+          fail-on-error: true
+          ## https://github.com/dorny/test-reporter#recommended-setup-for-public-repositories
+          ## https://github.com/dorny/test-reporter/blob/0d9714ddc7ff86918ec725a527a3a069419d301a/src/utils/github-utils.ts#L44
+          ## artifact name to download trx test result if it is in seperated workflow with github rest call, if it is not in another workflow skip this
+          # artifact: "'
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            **/test-results.trx
+          comment_mode: off
+          ignore_runs: true
+          github_token: ${{ secrets.github_token }}
+          # https://github.com/EnricoMi/publish-unit-test-result-action#configuration
+          # Configures the state of the created test result check run. With "test failures" it fails if any test fails or test errors occur
+          fail_on: "test failures"
+          action_fail: true
+
+      - name: Call Composite Action test-coverage
+        uses: ./.github/actions/test-coverage
+        # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
+        if: success()
+        id: test-coverage-step
+        with:
+          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
+          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+          reports-path: ${{ github.workspace }}/**/*.cobertura.xml
+          reports-output-path: ${{ github.workspace }}/output/test-results
+          service-name: ${{ inputs.service-name }}
+          token: ${{ secrets.github_token }}
+
+      # - name: Call Composite Action publish
+      #   uses: ./.github/actions/publish-app
+      #   if: success()
+      #   id: publish-step
+      #   with:
+      #     application-version: ${{ steps.app-version-step.outputs.application-version }}
+      #     service-name: ${{ inputs.service-name }}
+      #     project-path: ${{ inputs.project-path }}
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     no-restore: true

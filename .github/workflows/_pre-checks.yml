@@ -1,0 +1,123 @@
+name: Pre Checks
+on:
+  workflow_call:
+    inputs:
+      tests-path:
+        description: Tests path
+        required: true
+        type: string
+      project-path:
+        description: Project path
+        required: true
+        type: string
+      dotnet-version:
+        description: .Net Version
+        required: true
+        type: string
+      publish-production:
+        description: "Whether to publish to production (workflow_dispatch only)"
+        type: boolean
+        required: false
+        default: false
+    outputs:
+      environment:
+        description: "The detected environment (production/staging/develop)"
+        value: ${{ jobs.detect-environment.outputs.environment }}
+      image-suffix:
+        description: "The image suffix to use (empty/staging/dev)"
+        value: ${{ jobs.detect-environment.outputs.image-suffix }}
+    secrets:
+      github_token:
+        required: true
+
+jobs:
+  detect-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.detect.outputs.environment }}
+      image-suffix: ${{ steps.detect.outputs.image-suffix }}
+    steps:
+      - name: Detect environment
+        id: detect
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.publish-production }}" == "true" ]]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+            echo "image-suffix=" >> $GITHUB_OUTPUT
+          elif [[ "${{ startsWith(github.ref, 'refs/tags/') }}" == "true" ]]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+            echo "image-suffix=staging" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "environment=develop" >> $GITHUB_OUTPUT
+            echo "image-suffix=dev" >> $GITHUB_OUTPUT
+          else
+            echo "environment=develop" >> $GITHUB_OUTPUT
+            echo "image-suffix=dev" >> $GITHUB_OUTPUT
+          fi
+
+  pre-checks:
+    runs-on: ubuntu-latest
+    needs: [detect-environment]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Conventional Commits Check
+        uses: amannn/action-semantic-pull-request@v5
+        # Only run on pull request events
+        if: github.event_name == 'pull_request'
+        id: check-pull-request-title-conventional-commits
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Job Info
+        if: success()
+        shell: bash
+        run: |
+          echo "pre-check is successful."
+          echo workspace is: ${{ github.workspace }}
+          echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
+          echo "is push event? ${{ github.event_name == 'push' }}"
+          echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
+          echo "pull_request.head.ref is: ${{ github.event.pull_request.head.ref }}"
+          echo "github.ref_name is: ${{ github.ref_name }}"
+          echo "github.ref is: ${{ github.ref }}"
+          echo "github.head_ref is: ${{ github.head_ref }}"
+          echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
+      - name: Restore .NET Tools
+        shell: bash
+        run: dotnet tool restore
+
+      - name: Run Format Task
+        if: success()
+        shell: bash
+        id: format
+        run: |
+          echo "🧹 Checking format in folder: ${{ inputs.project-path }}"
+          dotnet csharpier ${{ inputs.project-path }} --check
+          echo "🧹 Checking format in folder: ${{ inputs.tests-path }}"
+          dotnet csharpier ${{ inputs.tests-path }} --check
+
+      - name: Run Style Task
+        id: style
+        shell: bash
+        if: success()
+        run: |
+          echo "🎨 Checking style in folder: ${{ inputs.project-path }}"
+          find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet format style {} --verify-no-changes --severity error --verbosity diagnostic \;
+          echo "🎨 Checking style in folder: ${{ inputs.tests-path }}"
+          find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet format style {} --verify-no-changes --severity error --verbosity diagnostic \;
+
+      - name: Run Analyzers Task
+        if: success()
+        shell: bash
+        run: |
+          echo "📂 Running analyzers in folder: ${{ inputs.project-path }}"
+          find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet format analyzers {} --verify-no-changes --severity error --verbosity diagnostic \;
+          echo "📂 Running analyzers in folder: ${{ inputs.tests-path }}"
+          find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet format analyzers {} --verify-no-changes --severity error --verbosity diagnostic \;

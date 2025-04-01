@@ -1,0 +1,168 @@
+name: Docker Build-Push Workflow
+
+on:
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputsinput_idtype
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_call
+  # https://docs.github.com/en/actions/using-workflows/reusing-workflows
+  workflow_call:
+    inputs:
+      environment:
+        description: "Environment"
+        type: string
+        required: true
+      push-to-acr:
+        description: "Push to Azure Container Registry?"
+        type: boolean
+        default: false
+      push-to-ghcr:
+        description: "Push to GitHub Container Registry?"
+        type: boolean
+        default: true
+      dotnet-version:
+        description: .Net Version
+        required: true
+        type: string
+      service-name:
+        description: Service name
+        type: string
+        required: true
+      build-context:
+        description: "Build context path"
+        required: false
+        type: string
+        default: "."
+      docker-file-path:
+        description: Docker file path
+        type: string
+        required: true
+    secrets:
+      acr-registry-url:
+        required: false
+        description: "Azure CR URL (e.g., myacr.azurecr.io)"
+      acr-username:
+        required: false
+      acr-password:
+        required: false
+      github_token:
+        required: true
+      ghcr-token:
+        required: false
+env:
+  GHCR_REGISTRY: "ghcr.io"
+
+jobs:
+  calculate-version:
+    uses: ./.github/workflows/_semantic-version.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      github_token: ${{ secrets.github_token }}
+
+  build-push-ghcr:
+    if: inputs.push-to-ghcr
+    runs-on: ubuntu-latest
+    needs: calculate-version
+    continue-on-error: false
+    environment: ${{ inputs.environment }}
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GHCR_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.ghcr-token }}
+
+      - name: Create metadata for GHCR
+        id: ghcr-meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.GHCR_REGISTRY }}/${{ github.repository_owner }}/${{ inputs.service-name }}
+          tags: |
+            type=raw,value=${{ needs.calculate-version.outputs.version-with-suffix }}
+          labels: |
+            org.opencontainers.image.version=${{ needs.calculate-version.outputs.next-version }}
+            org.opencontainers.image.environment=${{ inputs.environment }}
+
+      - name: Build and push to GHCR
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ inputs.build-context }}
+          file: ${{ inputs.docker-file-path }}
+          push: true
+          tags: ${{ steps.ghcr-meta.outputs.tags }}
+          labels: ${{ steps.ghcr-meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ github.ref }}
+          cache-to: type=gha,mode=max,scope=${{ github.ref }}
+          provenance: ${{ inputs.environment == 'production' }}
+
+      - name: Output GHCR image info
+        run: |
+          echo "Successfully built and pushed to GHCR:"
+          echo "${{ steps.ghcr-meta.outputs.tags }}"
+
+  build-push-acr:
+    if: inputs.push-to-acr
+    runs-on: ubuntu-latest
+    needs: calculate-version
+    continue-on-error: false
+    environment: ${{ inputs.environment }}
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to ACR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.acr-registry-url }}
+          username: ${{ secrets.acr-username }}
+          password: ${{ secrets.acr-password }}
+
+      - name: Create metadata for ACR
+        id: acr-meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.acr-registry-url }}/${{ inputs.service-name }}
+          tags: |
+            type=raw,value=${{ needs.calculate-version.outputs.version-with-suffix }}
+          labels: |
+            org.opencontainers.image.version=${{ needs.calculate-version.outputs.next-version }}
+            org.opencontainers.image.environment=${{ inputs.environment }}
+
+      - name: Build and push to ACR
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ inputs.build-context }}
+          file: ${{ inputs.docker-file-path }}
+          push: true
+          tags: ${{ steps.acr-meta.outputs.tags }}
+          labels: ${{ steps.acr-meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ github.ref }}
+          cache-to: type=gha,mode=max,scope=${{ github.ref }}
+          provenance: ${{ inputs.environment == 'production' }}
+
+      - name: Output ACR image info
+        run: |
+          echo "Successfully built and pushed to ACR:"
+          echo "${{ steps.acr-meta.outputs.tags }}"

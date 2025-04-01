@@ -36,11 +36,11 @@ public sealed class FakeCustomer : Faker<Customer>
                 Address.Of(
                     f.Address.Country(),
                     f.Address.City(),
-                    f.Address.FullAddress(),
+                    "detail address sample",
                     PostalCode.Of(f.Address.ZipCode())
                 ),
                 BirthDate.Of(DateTime.Now.AddYears(-20)),
-                Nationality.Of("IR")
+                Nationality.Of("US")
             );
         });
     }

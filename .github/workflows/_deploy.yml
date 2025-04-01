@@ -1,0 +1,68 @@
+name: Reusable Deployment Workflow
+
+on:
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_call
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputsinput_idtype
+  # https://docs.github.com/en/actions/using-workflows/reusing-workflows
+  workflow_call:
+    inputs:
+      environment-name:
+        type: string
+        description: Environment to deploy to
+        required: true
+      release-version:
+        type: string
+        description: Version
+        required: true
+      service-name:
+        type: string
+        description: Service name
+        required: true
+      publish-production:
+        description: "Publish to production environment"
+        type: boolean
+        default: false
+jobs:
+  detect-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.detect.outputs.environment }}
+      image-suffix: ${{ steps.detect.outputs.image-suffix }}
+    steps:
+      - name: Detect environment
+        id: detect
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.publish-production }}" == "true" ]]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+            echo "image-suffix=" >> $GITHUB_OUTPUT
+          elif [[ "${{ startsWith(github.ref, 'refs/tags/') }}" == "true" ]]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+            echo "image-suffix=staging" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "environment=develop" >> $GITHUB_OUTPUT
+            echo "image-suffix=dev" >> $GITHUB_OUTPUT
+          else
+            echo "environment=develop" >> $GITHUB_OUTPUT
+            echo "image-suffix=dev" >> $GITHUB_OUTPUT
+          fi
+
+  deploy:
+    if: |
+      success() &&
+      (github.event_name != 'pull_request' && contains(fromJson('["main", "preview"]'), github.ref_name) && inputs.publish-production == true)
+
+    needs: [detect-environment]
+    name: Deploy to ${{ inputs.environment-name }} Environment
+    runs-on: ubuntu-latest
+    #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
+    continue-on-error: false
+
+    steps:
+      - name: Call Composite Action deploy-azure
+        uses: ./.github/actions/deploy-azure
+        id: deploy-azure-step
+        with:
+          service-name: ${{ inputs.service-name }}
+          azure-creds: "1"
+          token: ${{ secrets.GITHUB_TOKEN }}

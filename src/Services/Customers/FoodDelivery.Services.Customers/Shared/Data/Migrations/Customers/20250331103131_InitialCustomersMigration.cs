@@ -30,12 +30,16 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
                         maxLength: 50,
                         nullable: true
                     ),
-                    address_city = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: true),
-                    address_detail = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    address_city = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    address_detail = table.Column<string>(
+                        type: "character varying(250)",
+                        maxLength: 250,
+                        nullable: true
+                    ),
                     address_postal_code = table.Column<string>(type: "text", nullable: true),
                     nationality = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: true),
                     birth_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    phone_number = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
+                    phone_number = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: false),
                     created = table.Column<DateTime>(
                         type: "timestamp with time zone",
                         nullable: false,

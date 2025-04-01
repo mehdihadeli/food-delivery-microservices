@@ -16,9 +16,9 @@ inputs:
   service-name:
     description: Service name
     required: true
-  supported-branches:
-    description: Supported Branches to generate version
-    default: '["main", "develop", "beta", "preview", "devops/ci"]'
+  environment:
+    description: Environment
+    required: true
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputsoutput_idvalue
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputs-for-composite-actions
@@ -33,106 +33,92 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: 'lts/*'
+  - name: Setup Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version: 'lts/*'
 
-    - name: Check Inputs
-      shell: bash
-      if: ${{ !contains(fromJson(inputs.supported-branches), github.ref_name) }}
-      run: |
-            echo "branch ${{ github.ref_name }} is not valid for generating version, action cancelled..."
-            exit 1
+  # https://github.com/semantic-release/semantic-release/discussions/2674
+  # https://medium.com/@michael.wolfenden/simplified-versioning-and-publishing-for-net-libraries-a28e5e740fa6
+  # https://github.com/semantic-release/semantic-release/issues/753
+  # https://github.com/semantic-release/semantic-release/issues/1647
+  # https://semantic-release.gitbook.io/semantic-release/usage/plugins
+  # https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun
+  # https://github.com/semantic-release/semantic-release/issues/2704
+  # https://github.com/semantic-release/semantic-release/issues/2703
+  - name: Semantic Release Version
+    id: semantic-version
+    if: ${{ success() }}
+    shell: bash
+    env:
+      GITHUB_TOKEN: ${{ inputs.token }}
+      GIT_AUTHOR_NAME: github-actions[bot]
+      GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
+      GIT_COMMITTER_NAME: github-actions[bot]
+      GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
+    # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
+    # using dry-run here for preventing publish release note and just calculate version
+    run: |
+      echo "running semantic-release in dry-run mode"
+      npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p  @semantic-release/changelog -p @semantic-release/exec  semantic-release  --dry-run
 
-    # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
-    - name: Set branch name as env variable
-      shell: bash
-      run: |
-        if [ ${{ github.event_name }} = 'workflow_run' ]; then
-           echo "BRANCH=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
-        else
-           echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
-        fi
+  # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
+  - name: Semantic Release Versions Outputs
+    shell: bash
+    if: success()
+    run: |
+      echo ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
+      echo ${{ steps.semantic-version.outputs.semantic_nextRelease_channel }}
+      echo ${{ steps.semantic-version.outputs.semantic_nextRelease_gitTag }}
+      echo ${{ steps.semantic-version.outputs.semantic_lastRelease_version }}
+      echo ${{ steps.semantic-version.outputs.semantic_lastRelease_channel }}
+      echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
 
-    # https://github.com/semantic-release/semantic-release/discussions/2674
-    # https://medium.com/@michael.wolfenden/simplified-versioning-and-publishing-for-net-libraries-a28e5e740fa6
-    # https://github.com/semantic-release/semantic-release/issues/753
-    # https://github.com/semantic-release/semantic-release/issues/1647
-    # https://semantic-release.gitbook.io/semantic-release/usage/plugins
-    # https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun
-    # https://github.com/semantic-release/semantic-release/issues/2704
+  - name: Set Application Version
+    id: app-version-step
+    shell: bash
+    if: success()
+    # https://gist.github.com/rponte/fdc0724dd984088606b0
+    # https://linuxhint.com/bash_if_else_examples/
     # https://github.com/semantic-release/semantic-release/issues/2703
-    - name: Semantic Release Version
-      id: semantic-version
-      if: ${{ success() }}
-      shell: bash
-      env:
-        GITHUB_TOKEN:  ${{ inputs.token }}
-        GIT_AUTHOR_NAME: github-actions[bot]
-        GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
-        GIT_COMMITTER_NAME: github-actions[bot]
-        GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
-      # because of using none default (conventionalcommits) `preset` for `semantic-release`, we should add dependency `conventional-changelog-conventionalcommits`
-      # using dry-run here for preventing publish release note and just calculate version
-      run: |
-        echo "running semantic-release in dry-run mode"
-        npx  -p conventional-changelog-conventionalcommits -p @semantic-release/git -p  @semantic-release/changelog -p @semantic-release/exec -p @saithodev/semantic-release-backmerge  semantic-release  --dry-run
+    # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
+    # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
+    # environment variable available to any 'subsequent steps' (not in the current step that is set) in a workflow job by defining or updating the environment variable and writing this to the GITHUB_ENV environment file
+    run: |
+      # Get base version from semantic-release
+      BASE_VERSION="${{ steps.semantic-version.outputs.semantic_nextRelease_version }}"
 
-      # https://stackoverflow.com/questions/69043259/how-can-i-cancel-a-github-actions-workflow-if-the-commit-has-no-tag
-    - name: Semantic Release Versions Outputs
-      shell: bash
-      if: success()
-      run: |
-          echo ${{ steps.semantic-version.outputs.semantic_nextRelease_version }}
-          echo ${{ steps.semantic-version.outputs.semantic_nextRelease_channel }}
-          echo ${{ steps.semantic-version.outputs.semantic_nextRelease_gitTag }}
-          echo ${{ steps.semantic-version.outputs.semantic_lastRelease_version }}
-          echo ${{ steps.semantic-version.outputs.semantic_lastRelease_channel }}
-          echo ${{ steps.semantic-version.outputs.semantic_lastRelease_gitTag }}
+      # If no version from semantic-release, use default
+      if [ -z "$BASE_VERSION" ]; then
+        BASE_VERSION="1.0.0"
+      fi
 
-    - name: Set Application Version
-      id: app-version-step
-      shell: bash
-      if: success()
-      # https://gist.github.com/rponte/fdc0724dd984088606b0
-      # https://linuxhint.com/bash_if_else_examples/
-      # https://github.com/semantic-release/semantic-release/issues/2703
-      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
-      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
-      # environment variable available to any 'subsequent steps' (not in the current step that is set) in a workflow job by defining or updating the environment variable and writing this to the GITHUB_ENV environment file
-      run: |
-        if [ -z "${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" ]; then
-            if [ "${{ github.ref_name }}" = "develop" ]; then
-               LATEST_TAG=$(git describe --abbrev=0 --tags --match "*dev*" | sed 's/^v//')
-            elif [ "${{ github.ref_name }}" = "beta" ]; then
-               LATEST_TAG=$(git describe --abbrev=0 --tags --match "*beta*" | sed 's/^v//')
-            elif [ "${{ github.ref_name }}" = "preview" ]; then
-               LATEST_TAG=$(git describe --abbrev=0 --tags --match "*preview*" | sed 's/^v//')
-            else
-               LATEST_TAG=$(git describe --abbrev=0 --tags --exclude "*dev*" --exclude "*beta*" --exclude "*preview*" --exclude "*ops*" | sed 's/^v//')
-            fi
-            echo "latest tag for ${{ github.ref_name }} branch is: $LATEST_TAG"
-            echo "APP_VERSION=$LATEST_TAG" >> "$GITHUB_ENV"
-            echo "app-version=$LATEST_TAG" >> "$GITHUB_OUTPUT"
-            echo "app version is: $LATEST_TAG"
-        else
-            echo "APP_VERSION=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_ENV"
-            echo "app-version=${{ steps.semantic-version.outputs.semantic_nextRelease_version }}" >> "$GITHUB_OUTPUT"
-            echo "app version is: $LATEST_TAG"
-        fi
+      # Initialize suffix variable
+      VERSION_SUFFIX=""
 
-      # we could create a temporary personal token for push app version in a commit directly with this plugin: https://github.com/peter-murray/workflow-application-token-action
+      # Add environment-based suffix if not production
+      if [ "${{ inputs.environment }}" == "develop" ]; then
+        VERSION_SUFFIX="-dev"
+      elif [ "${{ inputs.environment }}" == "staging" ]; then
+        VERSION_SUFFIX="-staging"
+      fi
 
-      # Save version in the artifacts to use in CD process
-    - name: Save Version Name
-      if: success()
-      shell: bash
-      run: echo "$APP_VERSION" > version_name.txt
+      # Combine version components
+      FULL_VERSION="${BASE_VERSION}${VERSION_SUFFIX}"
 
-    - name: Upload Version Artifact
-      if: success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ inputs.service-name}}_version_artifacts
-        path: version_name.txt
+      echo "Final version: $FULL_VERSION"
+      echo "APP_VERSION=$FULL_VERSION" >> "$GITHUB_ENV"
+      echo "app-version=$FULL_VERSION" >> "$GITHUB_OUTPUT"
+
+  # Save version in the artifacts to use in CD process
+  - name: Save Version Name
+    if: success()
+    shell: bash
+    run: echo "${{ env.version }}" > version_name.txt
+
+  - name: Upload Version Artifact
+    if: success()
+    uses: actions/upload-artifact@v4
+    with:
+      name: ${{ inputs.service-name}}_version_artifacts
+      path: version_name.txt

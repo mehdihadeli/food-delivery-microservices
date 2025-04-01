@@ -29,9 +29,7 @@
     <File Path=".devcontainer/scripts/update.sh" />
   </Folder>
   <Folder Name="/solution-items/.github/">
-    <File Path=".github/dependabot.yml" />
     <File Path=".github/multi-labeler.yml" />
-    <File Path=".github/pull_request_template.md" />
     <File Path=".github/release-drafter.yml" />
     <File Path=".github/release.yml" />
   </Folder>
@@ -77,9 +75,7 @@
   </Folder>
   <Folder Name="/solution-items/.github/workflows/">
     <File Path=".github/workflows/catalogs.yml" />
-    <File Path=".github/workflows/conventional-commits.yml" />
     <File Path=".github/workflows/customers.yml" />
-    <File Path=".github/workflows/first-interaction.yml" />
     <File Path=".github/workflows/gateway.yml" />
     <File Path=".github/workflows/identity.yml" />
     <File Path=".github/workflows/labeler.yml" />

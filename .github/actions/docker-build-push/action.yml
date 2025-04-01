@@ -9,92 +9,87 @@ description: "Docker Build and Push"
 # Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables.(so they are just string)
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
 inputs:
+  build-context:
+    description: 'Build context path (defaults to Dockerfile directory)'
+    required: false
+    type: string
   application-version:
     description: Application version
     required: true
   docker-file-path:
     description: Docker file path
     required: true
-  registry:
-    description: Docker registry to push
-    default: "ghcr.io"
+  registry-type:
+    description: 'Type of registry (acr or ghcr)'
+    required: true
+    type: string
   registry-endpoint:
     description: Image registry repo e.g. username/food-delivery-microservices
     required: true
-  registry-username:
-    description: Registry username
-    required: true
-  registry-password:
-    description: Registry password
-    required: true
   service-name:
     description: Service name
+    required: true
+secrets:
+  registry-username:
+    required: true
+  registry-password:
     required: true
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
 runs:
   using: "composite"
   steps:
-    - name: Info
-      shell: bash
-      run: |
-        echo actor is: "${{ github.actor }}"
-        echo registry is: "${{ inputs.registry }}"
-        echo docker-file-path is: "${{ inputs.docker-file-path }}"
-        echo service-name is: "${{ inputs.service-name }}"
-        echo application-version is: "${{ inputs.application-version }}"
+  - name: Info
+    shell: bash
+    run: |
+      echo actor is: "${{ github.actor }}"
+      echo registry is: "${{ inputs.registry }}"
+      echo docker-file-path is: "${{ inputs.docker-file-path }}"
+      echo service-name is: "${{ inputs.service-name }}"
+      echo application-version is: "${{ inputs.application-version }}"
 
-    - name: Check Inputs
-      shell: bash
-      run: |
-        if [ -z ${{ inputs.application-version }} ]
-           then echo "application-version is empty, action cancelled..."
-                exit 1
-        fi
+  - name: Check Inputs
+    shell: bash
+    run: |
+      if [ -z ${{ inputs.application-version }} ]
+         then echo "application-version is empty, action cancelled..."
+              exit 1
+      fi
 
-    - name: Set branch name as env variable
-      shell: bash
-      run: |
-        if [ ${{ github.event_name }} = 'workflow_run' ]; then
-           echo "BRANCH=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
-        else
-           echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
-        fi
+  - name: Set branch name as env variable
+    shell: bash
+    run: |
+      if [ ${{ github.event_name }} = 'workflow_run' ]; then
+         echo "BRANCH=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
+      else
+         echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+      fi
 
-    # https://docs.docker.com/engine/reference/commandline/build/
-    # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
-    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-    # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
-    - name: docker build
-      shell: bash
-      if: success()
-      run: |
-        docker build . --tag  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}  -f "${{ inputs.docker-file-path }}"
+  # https://docs.docker.com/engine/reference/commandline/build/
+  # https://dev.to/willvelida/pushing-container-images-to-github-container-registry-with-github-actions-1m6b
+  # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+  # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+  - name: docker build
+    shell: bash
+    if: success()
+    run: |
+      docker build . --tag  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}  -f "${{ inputs.docker-file-path }}"
 
-    - name: "Login to GitHub Container Registry"
-      uses: docker/login-action@v1
-      if: success()
-      with:
-        registry: ${{ inputs.registry }}
-        username: ${{ inputs.registry-username }}
-        password: ${{ inputs.registry-password }}
+  - name: Login to the Container Registry
+    uses: docker/login-action@v3
+    if: |
+      success() &&
+      (github.event_name != 'pull_request' && contains(fromJson('["main"]'), github.ref_name) && (github.event_name == 'push'))
+    with:
+      registry: ${{ inputs.registry }}
+      username: ${{ inputs.registry-username }}
+      password: ${{ inputs.registry-password }}
 
-      # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
-    - name: docker publish
-      shell: bash
-      if: success()
-      run: |
-        docker push  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}
-
-      # Save image name in the artifacts to use in CD process for deploying image
-    - name: Save image name
-      if: success()
-      shell: bash
-      run: echo "${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}" > image_name.txt
-
-    - name: Upload artifact
-      if: success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ inputs.service-name}}_image_artifacts
-        path: image_name.txt
+  # https://github.com/opencontainers/.github/blob/master/docs/docs/introduction/digests.md
+  - name: Docker Image Publish
+    shell: bash
+    if: |
+      success() &&
+      (github.event_name != 'pull_request' && contains(fromJson('["main"]'), github.ref_name) && (github.event_name == 'push'))
+    run: |
+      docker push  ${{ inputs.registry }}/${{ inputs.registry-endpoint }}/${{ inputs.service-name }}:${{ inputs.application-version }}

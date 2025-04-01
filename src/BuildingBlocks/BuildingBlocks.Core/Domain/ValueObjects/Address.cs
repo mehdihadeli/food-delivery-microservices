@@ -47,7 +47,7 @@ public record PostalCode
     public string Value { get; init; } = default!;
 
     // validations should be placed here instead of constructor
-    public static PostalCode Of(string? postalCode) => new() { Value = postalCode.NotBeNullOrWhiteSpace() };
+    public static PostalCode Of(string postalCode) => new() { Value = postalCode.NotBeNullOrWhiteSpace() };
 
-    public static implicit operator string(PostalCode? postalCode) => postalCode?.Value ?? string.Empty;
+    public static implicit operator string(PostalCode postalCode) => postalCode.Value;
 }

@@ -57,6 +57,13 @@
         "kiota"
       ],
       "rollForward": false
+    },
+    "minver-cli": {
+      "version": "6.0.0",
+      "commands": [
+        "minver"
+      ],
+      "rollForward": false
     }
   }
 }

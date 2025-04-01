@@ -50,4 +50,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Shared\Data\Migrations\Customers\" />
+  </ItemGroup>
+
 </Project>

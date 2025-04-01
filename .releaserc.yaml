@@ -7,28 +7,10 @@
 # https://github.com/semantic-release/semantic-release/issues/1231#issuecomment-1063671157
 # The branches on which releases should happen.
 branches:
-   - main
-   - '+([0-9])?(.{+([0-9]),x}).x'
-   - name: develop
-     prerelease: dev
-     channel:  dev
-     # Just for test, should remove next
-   - name: devops/ci
-     prerelease: ops
-     channel: ops
-   - name: beta
-     prerelease: beta
-     channel:  beta
-   - name: preview
-     prerelease: preview
-     channel:  preview
-   - name: 'release/*'
-     prerelease: 'rc'
-     channel: 'next'
-   - name: 'hotfix/*'
-     prerelease: 'fix'
-     channel: 'hotfix'
-
+- main
+- name: preview
+  prerelease: preview
+  channel: preview
 ci: true
 debug: true
 dryRun: false
@@ -46,183 +28,162 @@ preset: 'conventionalcommits'
 # https://github.com/semantic-release/semantic-release/discussions/2522
 plugins:
 
-      # https://github.com/semantic-release/commit-analyzer#configuration
-      # https://github.com/semantic-release/commit-analyzer/blob/master/lib/default-release-rules.js
-      # https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit-message-header
-      # https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
-      # just type that their release type is not `release: false` will trigger release and create change log, but if other release type trigger a release maybe types with `release: false` and presetConfig:type `hidden: false` will show in the release note
+# https://github.com/semantic-release/commit-analyzer#configuration
+# https://github.com/semantic-release/commit-analyzer/blob/master/lib/default-release-rules.js
+# https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit-message-header
+# https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
+# just type that their release type is not `release: false` will trigger release and create change log, but if other release type trigger a release maybe types with `release: false` and presetConfig:type `hidden: false` will show in the release note
 
-  - - "@semantic-release/commit-analyzer"
-      # Determine the type of release by analyzing commits with conventional-changelog
-    - releaseRules:
-        - breaking: true
-          release: major
-        - type: build     # Changes that affect the build system or external dependencies
-                          # (example scopes: gulp, broccoli, npm)
-          release: patch
-        - type: chore     # Other changes that don't modify src or test files
-          release: false
-        - type: ci        # Changes to our CI configuration files and scripts
-          release: patch
-        - type: docs      # Documentation only changes
-          release: false
-        - type: feat      # A new feature
-          release: minor
-        - type: fix       # A bug fix
-          release: patch
-        - type: perf      # A code change that improves performance
-          release: patch
-        - type: refactor  # A code change that neither fixes a bug nor adds a feature
-          release: patch
-        - type: revert    # Reverts a previous commit
-          release: patch
-        - type: style     # Changes that do not affect the meaning of the code
-                          # (white-space, formatting, missing semi-colons, etc)
-          release: false
-        - type: test      # Adding missing tests or correcting existing tests
-          release: false
-        - scope: 'no-release'
-          release: false
-      # preset: conventionalcommits
+- - "@semantic-release/commit-analyzer" # Determine the type of release by analyzing commits with conventional-changelog
+  - releaseRules:
+    - breaking: true
+      release: major
+    - type: build
+        # Changes that affect the build system or external dependencies
+        # (example scopes: gulp, broccoli, npm)
+      release: patch
+    - type: chore # Other changes that don't modify src or test files
+      release: false
+    - type: ci # Changes to our CI configuration files and scripts
+      release: patch
+    - type: docs # Documentation only changes
+      release: false
+    - type: feat # A new feature
+      release: minor
+    - type: fix # A bug fix
+      release: patch
+    - type: perf # A code change that improves performance
+      release: patch
+    - type: refactor # A code change that neither fixes a bug nor adds a feature
+      release: patch
+    - type: revert # Reverts a previous commit
+      release: patch
+    - type: style
+        # Changes that do not affect the meaning of the code
+        # (white-space, formatting, missing semi-colons, etc)
+      release: false
+    - type: test # Adding missing tests or correcting existing tests
+      release: false
+    - scope: 'no-release'
+      release: false
+    # preset: conventionalcommits
 
-      # https://github.com/semantic-release/release-notes-generator
-  - - "@semantic-release/release-notes-generator"
-      # https://github.com/semantic-release/release-notes-generator#options
-      # https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-writer#options
-      ## https://github.com/conventional-changelog/conventional-changelog/blob/8076d4666c2a3ea728b95bf1e4e78d4c7189b1dc/packages/conventional-changelog-conventionalcommits/writer-opts.js **
-      # we can also config release note `template` with `hbr`. `presetConfig` will send for additional configs to presets and writer
-    - writerOpts:
-      groupBy: 'type'
-      commitGroupsSort: 'title'
-      commitsSort: 'header'
-      linkCompare: true
-      linkReferences: true
-      # https://github.com/semantic-release/release-notes-generator#options
-      # https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#conventionalcommitsparseroptions
-      parserOpts:
-        # detect JIRA issues in merge commits
-        issuePrefixes: ['DEV-']
-        mergePattern: "^Merge branch '(.*)' into (.*)$"
-        mergeCorrespondence: ['branch_src', 'branch_dst']
-      # https://github.com/semantic-release/release-notes-generator#options
-      # https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
-      # https://github.com/conventional-changelog/conventional-changelog-config-spec/blob/master/versions/2.0.0/README.md#types
-      # https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#type
-      # https://github.com/conventional-changelog/commitlint/tree/master/@commitlint/config-conventional#type-enum
-      # https://www.conventionalcommits.org/en/v1.0.0/#summary
-      # https://keepachangelog.com/en/1.0.0/
-      presetConfig:
-        types:  # this only works with 'conventionalcommits' preset
-        - type: 'build'
-          section: '🏗️ Build System'
-          hidden: false
-        - type: 'ci'
-          section: '👷 CI/CD'
-          hidden: false
-        - type: 'docs'
-          section: '📄 Documentation'
-          hidden: true
-        - type: 'feat'
-          section: '✨ Features'
-          hidden: false
-        - type: 'chore'
-          section: '🔧 Miscellaneous'
-          hidden: true
-        - type: 'fix'
-          section: '🐛 Bug Fixes'
-          hidden: false
-        - type: 'perf'
-          section: '⚡️ Performance Improvements'
-        - type: 'refactor'
-          section: '♻️ Enhancement'
-          hidden: false
-        - type: 'change'
-          section: '♻️ Enhancement'
-          hidden: false
-        - type: 'revert'
-          section: '⏪️ Reverts'
-        - type: 'style'
-          section: '🎨 Styles & Formatting'
-          hidden: true
-        - type: 'test'
-          section: '🧪 Tests'
-          hidden: false
+    # https://github.com/semantic-release/release-notes-generator
+- - "@semantic-release/release-notes-generator"
+    # https://github.com/semantic-release/release-notes-generator#options
+    # https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-writer#options
+    ## https://github.com/conventional-changelog/conventional-changelog/blob/8076d4666c2a3ea728b95bf1e4e78d4c7189b1dc/packages/conventional-changelog-conventionalcommits/writer-opts.js **
+    # we can also config release note `template` with `hbr`. `presetConfig` will send for additional configs to presets and writer
+  - writerOpts:
+    groupBy: 'type'
+    commitGroupsSort: 'title'
+    commitsSort: 'header'
+    linkCompare: true
+    linkReferences: true
+    # https://github.com/semantic-release/release-notes-generator#options
+    # https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#conventionalcommitsparseroptions
+    parserOpts:
+      # detect JIRA issues in merge commits
+      issuePrefixes: [ 'DEV-' ]
+      mergePattern: "^Merge branch '(.*)' into (.*)$"
+      mergeCorrespondence: [ 'branch_src', 'branch_dst' ]
+    # https://github.com/semantic-release/release-notes-generator#options
+    # https://gist.github.com/ujlbu4/15a305f2e53cb487c39c9484e660903a
+    # https://github.com/conventional-changelog/conventional-changelog-config-spec/blob/master/versions/2.0.0/README.md#types
+    # https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#type
+    # https://github.com/conventional-changelog/commitlint/tree/master/@commitlint/config-conventional#type-enum
+    # https://www.conventionalcommits.org/en/v1.0.0/#summary
+    # https://keepachangelog.com/en/1.0.0/
+    presetConfig:
+      types:
+      # this only works with 'conventionalcommits' preset
+      - type: 'build'
+        section: '🏗️ Build System'
+        hidden: false
+      - type: 'ci'
+        section: '👷 CI/CD'
+        hidden: false
+      - type: 'docs'
+        section: '📄 Documentation'
+        hidden: true
+      - type: 'feat'
+        section: '✨ Features'
+        hidden: false
+      - type: 'chore'
+        section: '🔧 Miscellaneous'
+        hidden: true
+      - type: 'fix'
+        section: '🐛 Bug Fixes'
+        hidden: false
+      - type: 'perf'
+        section: '⚡️ Performance Improvements'
+      - type: 'refactor'
+        section: '♻️ Enhancement'
+        hidden: false
+      - type: 'change'
+        section: '♻️ Enhancement'
+        hidden: false
+      - type: 'revert'
+        section: '⏪️ Reverts'
+      - type: 'style'
+        section: '🎨 Styles & Formatting'
+        hidden: true
+      - type: 'test'
+        section: '🧪 Tests'
+        hidden: false
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
+      # https://stackoverflow.com/questions/72343466/while-using-github-actions-im-facing-permission-denied-error
+      # https://medium.com/@gpanga/automating-releases-of-net-sdks-using-semantic-release-e3df46013876
+      # https://github.com/semantic-release/semantic-release/issues/753
+      # https://github.com/semantic-release/semantic-release/issues/1647
+      # https://semantic-release.gitbook.io/semantic-release/usage/plugins
+      # https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun
+      # https://github.com/semantic-release/semantic-release/blob/master/docs/usage/plugins.md#plugins-declaration-and-execution-order
+      # https://github.com/semantic-release/exec/issues/110#issuecomment-1361262137
+      # https://stackoverflow.com/questions/3790454/how-do-i-break-a-string-in-yaml-over-multiple-lines
+      # https://github.com/semantic-release/exec#configuration
+      # verifyReleaseCmd event works also on dry-run mode (just for reading version instead of publishing)
+- - '@semantic-release/exec'
+  - verifyReleaseCmd: |
+      echo "verifyReleaseCmd"
+      echo "job name is: $GITHUB_JOB"
+      ./set-output-next-version.sh ${nextRelease.version} ${nextRelease.channel} ${nextRelease.gitHead} ${nextRelease.gitTag}
+      ./set-output-last-version.sh ${lastRelease.version} ${lastRelease.channel} ${lastRelease.gitHead} ${lastRelease.gitTag}
 
-        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
-        # https://stackoverflow.com/questions/72343466/while-using-github-actions-im-facing-permission-denied-error
-        # https://medium.com/@gpanga/automating-releases-of-net-sdks-using-semantic-release-e3df46013876
-        # https://github.com/semantic-release/semantic-release/issues/753
-        # https://github.com/semantic-release/semantic-release/issues/1647
-        # https://semantic-release.gitbook.io/semantic-release/usage/plugins
-        # https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun
-        # https://github.com/semantic-release/semantic-release/blob/master/docs/usage/plugins.md#plugins-declaration-and-execution-order
-        # https://github.com/semantic-release/exec/issues/110#issuecomment-1361262137
-        # https://stackoverflow.com/questions/3790454/how-do-i-break-a-string-in-yaml-over-multiple-lines
-        # https://github.com/semantic-release/exec#configuration
-        # verifyReleaseCmd event works also on dry-run mode (just for reading version instead of publishing)
-  - - '@semantic-release/exec'
-    -  verifyReleaseCmd: |
-         echo "verifyReleaseCmd"
-         echo "job name is: $GITHUB_JOB"
-         ./set-output-next-version.sh ${nextRelease.version} ${nextRelease.channel} ${nextRelease.gitHead} ${nextRelease.gitTag}
-         ./set-output-last-version.sh ${lastRelease.version} ${lastRelease.channel} ${lastRelease.gitHead} ${lastRelease.gitTag}
-
-       publishCmd: |
-         echo "publishCmd"
-       # https://codewithhugo.com/fix-git-failed-to-push-updates-were-rejected/
-       # https://github.com/saitho/semantic-release-backmerge/issues/43
-       # https://github.com/saitho/semantic-release-backmerge/issues/42
-       # with back-merging in a hook if we have problem in the merge whole semantic-release action will fail and further actions don't execute it is better move it in seperated action
-       successCmd: |
-          echo "successCmd"
-       #./back-merge.sh
-       prepareCmd: |
-         echo "prepareCmd"
-       failCmd: |
-         echo "failCmd"
-
-#       # needs a PAT with write without pull request
-#       # https://github.com/semantic-release/changelog
-#       # Set of semantic-release plugins for creating or updating a changelog file.
-#  - -  '@semantic-release/changelog'
-#    - changelogFile: CHANGELOG.md
-#      changelogTitle: '# Semantic Versioning Changelog'
-#
-      # https://github.com/semantic-release/git
-  - - '@semantic-release/git'
-
-      # https://github.com/semantic-release/github
-  - - '@semantic-release/github'
-    - assets:
-        - path: release/**
-#        - path: artifacts/catalogs-service_test_artifacts/test-results.zip
-#          label: catalogs-service_test_artifacts.zip
-#        - path: artifacts/identity-service_test_artifacts/test-results.zip
-#          label: identity-service_test_artifacts.zip
-#        - path: artifacts/customers-service_test_artifacts/test-results.zip
-#          label: customers-service_test_artifacts.zip
-#        - path: artifacts/orders-service_test_artifacts/test-results.zip
-#          label: orders-service_test_artifacts.zip
-        # The comment to add to each issue and pull request resolved by the release. Set to false to disable commenting on issues and pull requests
-      successComment: false
-      # The content of the issue created when a release fails. Set to false to disable opening an issue when a release fails
-      failComment: false
-
-#      # https://github.com/saitho/semantic-release-backmerge#branches
-#      # https://github.com/saitho/semantic-release-backmerge#mergemode
-#      # https://github.com/saitho/semantic-release-backmerge/issues/43
-#      # https://github.com/saitho/semantic-release-backmerge/issues/42
-#      # backmerge easy and automated sync of tags between main and dev.
-#  - - '@saithodev/semantic-release-backmerge'
-#    - branches:
-#       - from: main
-#         to: dev
-#       backmergeStrategy: merge
-#       mergeMode: ours
-#       clearWorkspace: false
-#       # https://github.com/saitho/semantic-release-backmerge/blob/5e9b60ccb23a2018d9c0699ea10a01e588c53f73/src/perform-backmerge.ts#L30
-#       plugins:
-#         - - '@semantic-release/exec'
-#           - successCmd: |
-#              echo "successCmd"
-
+    publishCmd: |
+      echo "publishCmd"
+    # https://codewithhugo.com/fix-git-failed-to-push-updates-were-rejected/
+    # https://github.com/saitho/semantic-release-backmerge/issues/43
+    # https://github.com/saitho/semantic-release-backmerge/issues/42
+    # with back-merging in a hook if we have problem in the merge whole semantic-release action will fail and further actions don't execute it is better move it in seperated action
+    successCmd: |
+      echo "successCmd"
+    #./back-merge.sh
+    prepareCmd: |
+      echo "prepareCmd"
+    failCmd: |
+      echo "failCmd"
+  #       # needs a PAT with write without pull request
+  #       # https://github.com/semantic-release/changelog
+  #       # Set of semantic-release plugins for creating or updating a changelog file.
+  #  - -  '@semantic-release/changelog'
+  #    - changelogFile: CHANGELOG.md
+  #      changelogTitle: '# Semantic Versioning Changelog'
+  #
+  # https://github.com/semantic-release/git
+- - '@semantic-release/git' # https://github.com/semantic-release/github
+- - '@semantic-release/github'
+  - assets:
+    - path: release/**
+    #        - path: artifacts/catalogs-service_test_artifacts/test-results.zip
+    #          label: catalogs-service_test_artifacts.zip
+    #        - path: artifacts/identity-service_test_artifacts/test-results.zip
+    #          label: identity-service_test_artifacts.zip
+    #        - path: artifacts/customers-service_test_artifacts/test-results.zip
+    #          label: customers-service_test_artifacts.zip
+    #        - path: artifacts/orders-service_test_artifacts/test-results.zip
+    #          label: orders-service_test_artifacts.zip
+    # The comment to add to each issue and pull request resolved by the release. Set to false to disable commenting on issues and pull requests
+    successComment: false
+    # The content of the issue created when a release fails. Set to false to disable opening an issue when a release fails
+    failComment: false

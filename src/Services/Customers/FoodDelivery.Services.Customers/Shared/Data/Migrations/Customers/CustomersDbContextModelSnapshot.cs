@@ -57,7 +57,7 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
                     b.ToTable("customers", "customer");
                 });
 
-            modelBuilder.Entity("FoodDelivery.Services.Customers.RestockSubscriptions.Models.Write.RestockSubscription", b =>
+            modelBuilder.Entity("FoodDelivery.Services.Customers.RestockSubscriptions.Models.RestockSubscription", b =>
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint")
@@ -114,8 +114,8 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
 
                             b1.Property<string>("City")
                                 .IsRequired()
-                                .HasMaxLength(25)
-                                .HasColumnType("character varying(25)")
+                                .HasMaxLength(50)
+                                .HasColumnType("character varying(50)")
                                 .HasColumnName("address_city");
 
                             b1.Property<string>("Country")
@@ -126,8 +126,8 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
 
                             b1.Property<string>("Detail")
                                 .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("character varying(50)")
+                                .HasMaxLength(250)
+                                .HasColumnType("character varying(250)")
                                 .HasColumnName("address_detail");
 
                             b1.Property<string>("PostalCode")
@@ -170,8 +170,8 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasMaxLength(15)
-                                .HasColumnType("character varying(15)")
+                                .HasMaxLength(25)
+                                .HasColumnType("character varying(25)")
                                 .HasColumnName("phone_number");
 
                             b1.HasKey("CustomerId");
@@ -274,7 +274,7 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FoodDelivery.Services.Customers.RestockSubscriptions.Models.Write.RestockSubscription", b =>
+            modelBuilder.Entity("FoodDelivery.Services.Customers.RestockSubscriptions.Models.RestockSubscription", b =>
                 {
                     b.HasOne("FoodDelivery.Services.Customers.Customers.Models.Customer", null)
                         .WithMany()

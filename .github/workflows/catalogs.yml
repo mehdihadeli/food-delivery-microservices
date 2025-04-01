@@ -125,7 +125,6 @@ jobs:
       tests-path: ${{ vars.CATALOGS_SERVICE_TESTS_PATH }} # tests/Services/Catalogs
       project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs/FoodDelivery.Services.Catalogs.Api
       service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
-      docker-file-path: ${{ vars.CATALOGS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Catalogs/Dockerfile
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
       publish-production: ${{ github.event.inputs.publish-production || false }}
       environment: ${{ needs.call-pre-checks.outputs.environment }}

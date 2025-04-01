@@ -126,6 +126,7 @@ jobs:
       project-path: ${{ vars.CATALOGS_SERVICE_PROJECT_PATH }} # src/Services/Catalogs/FoodDelivery.Services.Catalogs.Api
       service-name: ${{ vars.CATALOGS_SERVICE_NAME }} # catalogs-service
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
+      no-restore: true
       publish-production: ${{ github.event.inputs.publish-production || false }}
       environment: ${{ needs.call-pre-checks.outputs.environment }}
 

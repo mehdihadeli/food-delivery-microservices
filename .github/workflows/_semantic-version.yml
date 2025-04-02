@@ -100,3 +100,14 @@ jobs:
           echo "short-sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
           echo "branch-name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
           echo "image-version=$IMAGE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Print Semantic Version Versions
+        run: |
+          echo "Semantic Version Information:"
+          echo "SemVer: ${{ steps.extract-version.outputs.sem-ver }}"
+          echo "Major.Minor.Patch: ${{ steps.extract-version.outputs.major-minor-patch }}"
+          echo "Assembly SemVer: ${{ steps.extract-version.outputs.assembly-sem-ver }}"
+          echo "Informational Version: ${{ steps.extract-version.outputs.informational-version }}"
+          echo "Short SHA: ${{ steps.extract-version.outputs.short-sha }}"
+          echo "Branch Name: ${{ steps.extract-version.outputs.branch-name }}"
+          echo "Image Version: ${{ steps.extract-version.outputs.image-version }}"

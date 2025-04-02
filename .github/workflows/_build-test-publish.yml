@@ -79,7 +79,6 @@ jobs:
           # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
           fetch-depth: 0
           repository: ${{ github.repository }}
-          token: ${{ secrets.ci-github-token }}
           # set ref to 'github.ref' works correctly with both pull_requests event and push event and this is default behavior checkout action when we don't use ref attribute
           ref: ${{ github.ref }}
 

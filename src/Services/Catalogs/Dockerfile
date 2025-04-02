@@ -67,7 +67,11 @@ COPY ./src/Services/Shared/FoodDelivery.Services.Shared/FoodDelivery.Services.Sh
 # https://pythonspeed.com/articles/docker-cache-pip-downloads/
 # When we have a chnage in a layer that layer and all subsequent layer will rebuild again
 # when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `FoodDelivery.Services.Catalogs.Api.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache
-RUN dotnet restore ./Services/Catalogs/FoodDelivery.Services.Catalogs.Api/FoodDelivery.Services.Catalogs.Api.csproj
+
+#- When we run `dotnet restore -p:SkipVersion=true`, MSBuild evaluates the <PackageReference> condition and physically excludes `GitVersion.MsBuild` from the restored packages. The targets file (GitVersion.MsBuild.targets) is never downloaded to your obj/ folder.
+#- If we skip -p:SkipVersion=true during restore, the package gets restored normally.
+#- Even if we pass -p:SkipVersion=true later, the targets file still exists in your obj/ folder and tries to execute.
+RUN dotnet restore ./Services/Catalogs/FoodDelivery.Services.Catalogs.Api/FoodDelivery.Services.Catalogs.Api.csproj -p:SkipVersion=true
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
@@ -77,7 +81,7 @@ COPY ./src/Services/Shared/  ./Services/Shared/
 
 WORKDIR /src/Services/Catalogs/FoodDelivery.Services.Catalogs.Api/
 
-RUN dotnet build -c Release --no-restore -p:SkipVersion=true
+RUN dotnet build -c Release --no-restore 
 
 FROM build AS publish
 # Publish project to output folder and no build and restore, as we did it already

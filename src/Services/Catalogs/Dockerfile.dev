@@ -67,7 +67,7 @@ COPY ./src/Services/Shared/FoodDelivery.Services.Shared/FoodDelivery.Services.Sh
 # When we have a chnage in a layer that layer and all subsequent layer will rebuild again
 # when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `FoodDelivery.Services.Catalogs.Api.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache
 RUN --mount=type=cache,id=catalogs_nuget,target=/root/.nuget/packages \
-  dotnet restore ./Services/Catalogs/FoodDelivery.Services.Catalogs.Api/FoodDelivery.Services.Catalogs.Api.csproj
+  dotnet restore ./Services/Catalogs/FoodDelivery.Services.Catalogs.Api/FoodDelivery.Services.Catalogs.Api.csproj -p:SkipVersion=true
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
@@ -78,7 +78,7 @@ COPY ./src/Services/Shared/  ./Services/Shared/
 WORKDIR /src/Services/Catalogs/FoodDelivery.Services.Catalogs.Api/
 
 RUN --mount=type=cache,id=catalogs_nuget,target=/root/.nuget/packages\
-  dotnet build -c Release --no-restore -p:SkipVersion=true
+  dotnet build -c Release --no-restore 
 
 FROM build AS publish
 # Publish project to output folder and no build and restore, as we did it already

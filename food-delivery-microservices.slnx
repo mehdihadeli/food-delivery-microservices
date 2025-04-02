@@ -5,7 +5,6 @@
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
-    <File Path=".releaserc.yaml" />
     <File Path="global.json" />
     <File Path="LICENSE" />
     <File Path="nuget.config" />
@@ -33,47 +32,7 @@
     <File Path=".github/release-drafter.yml" />
     <File Path=".github/release.yml" />
   </Folder>
-  <Folder Name="/solution-items/.github/actions/" />
-  <Folder Name="/solution-items/.github/actions/app-version/">
-    <File Path=".github/actions/app-version/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/build-test/">
-    <File Path=".github/actions/build-test/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/build/">
-    <File Path=".github/actions/build/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/deploy-azure-image/">
-    <File Path=".github/actions/deploy-azure-image/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/deploy-azure/">
-    <File Path=".github/actions/deploy-azure/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/docker-build-push/">
-    <File Path=".github/actions/docker-build-push/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/docker-build/">
-    <File Path=".github/actions/docker-build/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/drafter-release-note/">
-    <File Path=".github/actions/drafter-release-note/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/pre-check/">
-    <File Path=".github\actions\pre-check\action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/publish-app/">
-    <File Path=".github/actions/publish-app/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/semantic-release-note/">
-    <File Path=".github/actions/semantic-release-note/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/test-coverage/">
-    <File Path=".github/actions/test-coverage/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/actions/test/">
-    <File Path=".github/actions/test/action.yml" />
-  </Folder>
-  <Folder Name="/solution-items/.github/workflows/">
+   <Folder Name="/solution-items/.github/workflows/">
     <File Path=".github/workflows/catalogs.yml" />
     <File Path=".github/workflows/customers.yml" />
     <File Path=".github/workflows/gateway.yml" />
@@ -84,7 +43,6 @@
     <File Path=".github\workflows\_detect-environment.yml" />
     <File Path=".github\workflows\_docker-build-push.yml" />
     <File Path=".github\workflows\_pre-checks.yml" />
-    <File Path=".github\workflows\_release.yml" />
     <File Path=".github\workflows\_semantic-version.yml" />
   </Folder>
   <Folder Name="/solution-items/.husky/">

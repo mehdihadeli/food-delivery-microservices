@@ -50,7 +50,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
           fetch-depth: 0 # Required for Git history analysis
+          repository: ${{ github.repository }}
+          # set ref to 'github.ref' works correctly with both pull_requests event and push event and this is default behavior checkout action when we don't use ref attribute
+          ref: ${{ github.ref }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -58,7 +63,8 @@ jobs:
           dotnet-version: ${{ inputs.dotnet-version }}
 
       - name: Install GitVersion
-        run: dotnet tool restore
+        shell: bash
+        run: dotnet tool install --global GitVersion.Tool
 
       - name: Determine Image Version Suffix
         id: version-suffix

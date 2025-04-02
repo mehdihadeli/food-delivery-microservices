@@ -46,4 +46,7 @@
     <PackageVersion Include="Hypothesist" Version="3.0.91" />
     <PackageVersion Include="Meziantou.Extensions.Logging.InMemory" Version="1.2.3" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="GitVersion.MsBuild" Version="6.2.0"/>
+  </ItemGroup>
 </Project>

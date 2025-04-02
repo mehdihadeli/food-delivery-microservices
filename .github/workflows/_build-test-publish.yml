@@ -13,7 +13,7 @@ on:
         type: string
       version:
         description: Version
-        required: true
+        required: false
         type: string
       no-restore:
         required: true
@@ -123,6 +123,7 @@ jobs:
       - name: Build Service Without Version
         shell: bash
         if: ${{ success() && inputs.version == ''}}
+        # version will assign using `gitversion` and `msbuild` based on ` GitVersion.MsBuild` package.
         run: |
           echo "🧱 Building projects in folder: ${{ inputs.project-path }}"
           find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore {} \;

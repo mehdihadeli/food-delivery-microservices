@@ -158,4 +158,8 @@
     <PackageVersion Include="Ben.Demystifier" Version="0.4.1" />
     <PackageVersion Include="DistributedLock.Redis" Version="1.0.3" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <PackageVersion Include="GitVersion.MsBuild" Version="6.2.0"/>
+  </ItemGroup>
 </Project>

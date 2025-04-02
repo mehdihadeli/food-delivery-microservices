@@ -86,8 +86,7 @@ jobs:
     needs: [call-detect-environment]
     with:
       environment: ${{ needs.call-detect-environment.outputs.environment }}
-    secrets:
-      ci-github-token: ${{ secrets.GITHUB_TOKEN }}
+      dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
 
   call-pre-checks:
     uses: ./.github/workflows/_pre-checks.yml
@@ -131,7 +130,7 @@ jobs:
       service-name: ${{ vars.GATEWAY_SERVICE_NAME }} # gateway-service
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
       no-restore: true
-      version: ${{ needs.call-semantic-version.outputs.version-with-suffix }}
+      # we don't set version or we pass `call-semantic-version.outputs.sem-ver`, version will assign using `gitversion` and `msbuild` based on ` GitVersion.MsBuild` package.
       environment: ${{ needs.call-detect-environment.outputs.environment }}
 
   call-docker-build-push:
@@ -149,7 +148,7 @@ jobs:
     uses: ./.github/workflows/_docker-build-push.yml
     with:
       environment: ${{ needs.call-detect-environment.outputs.environment }}
-      version: ${{ needs.call-semantic-version.outputs.version-with-suffix }}
+      version: ${{ needs.call-semantic-version.outputs.image-version }}
       service-name: ${{ vars.GATEWAY_SERVICE_NAME }} # gateway-service
       docker-file-path: ${{ vars.GATEWAY_SERVICE_DOCKER_FILE_PATH }} # src/ApiGateway/Dockerfile
       build-context: "."
@@ -161,26 +160,7 @@ jobs:
       acr-password: ${{ secrets.ACR_PASSWORD }}
       ghcr-token: ${{ secrets.GITHUB_TOKEN }}
 
-  # ### CD
-  # # typically release notes are published as part of the Continuous Deployment (CD) process, after the software has been built, tested, and deployed to production.
-  # # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
-  # call-release:
-  #   needs: [call-docker-build-push]
-
-  #   # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-  #   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
-  #   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
-  #   # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-  #   ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
-  #   ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
-  #   permissions:
-  #     contents: write # to be able to publish a GitHub release and tags
-
-  #   uses: ./.github/workflows/reusable-release.yml
-  #   secrets: inherit
-  #   with:
-  #     publish-production: ${{ github.event.inputs.publish-production || false }}
-
+  #### CD
   # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
   # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
   # https://www.trywilco.com/post/wilco-ci-cd-github-heroku

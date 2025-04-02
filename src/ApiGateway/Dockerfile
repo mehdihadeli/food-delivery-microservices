@@ -25,7 +25,7 @@ COPY ./src/Packages.props ./
 # with any changes in csproj files all downstream layer will rebuil, so dotnet restore will execute again
 COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
 COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
-COPY ./src/BuildingBlocks/BuildingBlocks.Logging/BuildingBlocks.Logging.csproj ./BuildingBlocks/BuildingBlocks.Logging/
+COPY ./src/BuildingBlocks/BuildingBlocks.Observability/BuildingBlocks.Observability.csproj ./BuildingBlocks/BuildingBlocks.Observability/
 
 # https://docs.docker.com/build/cache/#order-your-layers
 # with any changes in csproj files all downstream layer will rebuil, so dotnet restore will execute again

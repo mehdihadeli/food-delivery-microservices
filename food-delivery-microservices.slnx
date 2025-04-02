@@ -79,10 +79,13 @@
     <File Path=".github/workflows/gateway.yml" />
     <File Path=".github/workflows/identity.yml" />
     <File Path=".github/workflows/labeler.yml" />
-    <File Path=".github/workflows/reusable-build-test-push.yml" />
-    <File Path=".github/workflows/reusable-build-test.yml" />
-    <File Path=".github/workflows/reusable-deploy.yml" />
-    <File Path=".github/workflows/reusable-release.yml" />
+    <File Path=".github\workflows\_build-test-publish.yml" />
+    <File Path=".github\workflows\_deploy.yml" />
+    <File Path=".github\workflows\_detect-environment.yml" />
+    <File Path=".github\workflows\_docker-build-push.yml" />
+    <File Path=".github\workflows\_pre-checks.yml" />
+    <File Path=".github\workflows\_release.yml" />
+    <File Path=".github\workflows\_semantic-version.yml" />
   </Folder>
   <Folder Name="/solution-items/.husky/">
     <File Path=".husky/commit-msg" />

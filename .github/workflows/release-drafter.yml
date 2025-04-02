@@ -1,0 +1,26 @@
+# https://johanneskonings.dev/github/2021/02/28/github_automatic_releases_and-changelog/
+# https://tiagomichaelsousa.dev/articles/stop-writing-your-changelogs-manually
+name: Release Drafter
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  update-release-draft:
+    name: Release drafter
+    runs-on: ubuntu-latest
+
+    permissions:
+      # write permission is required to create a github release
+      contents: write
+    steps:
+      - name: Update Release Draft
+        uses: release-drafter/release-drafter@v6
+        id: semantic
+        with:
+          config-name: release-drafter.yml
+          disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

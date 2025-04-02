@@ -7,12 +7,8 @@ on:
   # Runs your workflow when you push a commit or tag.
   push:
     branches:
+      # Only main branch pushes
       - main
-      - fix/*
-      - build/*
-      - test/*
-      - ci/*
-      - feat/*
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-affects-specific-files
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
     paths:
@@ -21,6 +17,7 @@ on:
       - tests/Services/Catalogs/**
   pull_request:
     branches:
+      # Only PRs targeting main
       - main
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-affects-specific-files
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore

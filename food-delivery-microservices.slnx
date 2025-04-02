@@ -32,7 +32,7 @@
     <File Path=".github/release-drafter.yml" />
     <File Path=".github/release.yml" />
   </Folder>
-   <Folder Name="/solution-items/.github/workflows/">
+  <Folder Name="/solution-items/.github/workflows/">
     <File Path=".github/workflows/catalogs.yml" />
     <File Path=".github/workflows/customers.yml" />
     <File Path=".github/workflows/gateway.yml" />
@@ -177,6 +177,9 @@
   </Folder>
   <Folder Name="/src/ApiGateway/">
     <Project Path="src/ApiGateway/FoodDelivery.ApiGateway/FoodDelivery.ApiGateway.csproj" />
+    <File Path="src\ApiGateway\Dockerfile" />
+    <File Path="src\ApiGateway\Dockerfile.dev" />
+    <File Path="src\ApiGateway\watch.Dockerfile" />
   </Folder>
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj" />

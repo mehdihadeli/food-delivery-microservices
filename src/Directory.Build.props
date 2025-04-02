@@ -75,7 +75,7 @@
     <PackageReference Include="ErrorProne.NET.CoreAnalyzers" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="GitVersion.MsBuild" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'">
+    <PackageReference Include="GitVersion.MsBuild" PrivateAssets="all" Condition="'$(SkipVersion)' != 'true' AND $(MSBuildProjectExtension) == '.csproj'">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>

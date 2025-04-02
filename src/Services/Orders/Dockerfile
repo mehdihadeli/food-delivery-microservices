@@ -76,7 +76,7 @@ COPY ./src/Services/Shared/  ./Services/Shared/
 
 WORKDIR /src/Services/Orders/FoodDelivery.Services.Orders.Api/
 
-RUN dotnet build -c Release --no-restore
+RUN dotnet build -c Release --no-restore -p:SkipVersion=true
 
 FROM build AS publish
 # Publish project to output folder and no build and restore, as we did it already

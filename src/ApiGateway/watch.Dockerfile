@@ -25,4 +25,4 @@ WORKDIR /src/ApiGateway/FoodDelivery.ApiGateway/
 #https://swimburger.net/blog/dotnet/how-to-get-aspdotnet-core-server-urls
 #https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
 
-RUN dotnet watch run  FoodDelivery.ApiGateway.csproj --launch-profile ApiGateway.LiveRecompilation
+RUN dotnet watch run  FoodDelivery.ApiGateway.csproj --launch-profile ApiGateway.LiveRecompilation -p:SkipVersion=true

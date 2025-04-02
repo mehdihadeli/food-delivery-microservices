@@ -46,5 +46,5 @@ WORKDIR /src/Services/Orders/FoodDelivery.Services.Orders.Api/
 # If set to "1" or "true", dotnet watch uses a polling file watcher instead of CoreFx's FileSystemWatcher. Used when watching files on network shares or Docker mounted volumes.
 ENV DOTNET_USE_POLLING_FILE_WATCHER 1
 
-RUN dotnet watch run  FoodDelivery.Services.Orders.Api.csproj --launch-profile Orders.Api.LiveRecompilation
+RUN dotnet watch run  FoodDelivery.Services.Orders.Api.csproj --launch-profile Orders.Api.LiveRecompilation -p:SkipVersion=true
 

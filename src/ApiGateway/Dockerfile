@@ -40,7 +40,7 @@ COPY ./src/ApiGateway/FoodDelivery.ApiGateway/FoodDelivery.ApiGateway.csproj ./A
 # https://pythonspeed.com/articles/docker-cache-pip-downloads/
 # When we have a chnage in a layer that layer and all subsequent layer will rebuild again
 # when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `FoodDelivery.ApiGateway.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache
-RUN dotnet restore ./ApiGateway/FoodDelivery.ApiGateway/FoodDelivery.ApiGateway.csproj
+RUN dotnet restore ./ApiGateway/FoodDelivery.ApiGateway/FoodDelivery.ApiGateway.csproj -p:SkipVersion=true
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
@@ -48,7 +48,7 @@ COPY ./src/ApiGateway/FoodDelivery.ApiGateway/  ./ApiGateway/FoodDelivery.ApiGat
 
 WORKDIR /src/ApiGateway/FoodDelivery.ApiGateway/
 
-RUN dotnet build -c Release --no-restore -p:SkipVersion=true
+RUN dotnet build -c Release --no-restore 
 
 FROM build AS publish
 # Publish project to output folder and no build and restore, as we did it already

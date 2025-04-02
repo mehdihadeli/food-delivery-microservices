@@ -89,7 +89,7 @@ jobs:
     uses: ./.github/workflows/_pre-checks.yml
     needs: [call-detect-environment, call-semantic-version]
     with:
-      tests-path: ""
+      tests-path: ${{ vars.GATEWAY_SERVICE_TESTS_PATH }} # src/ApiGateway
       project-path: ${{ vars.GATEWAY_SERVICE_PROJECT_PATH }} # src/ApiGateway
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
     secrets:
@@ -122,7 +122,7 @@ jobs:
       # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
       # https://docs.github.com/en/actions/learn-github-actions/variables
       # https://stackoverflow.com/questions/73305126/passing-env-variable-inputs-to-a-reusable-workflow
-      tests-path: ""
+      tests-path: ${{ vars.GATEWAY_SERVICE_TESTS_PATH }} # tests/ApiGateway
       project-path: ${{ vars.GATEWAY_SERVICE_PROJECT_PATH }} # src/ApiGateway
       service-name: ${{ vars.GATEWAY_SERVICE_NAME }} # gateway-service
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*

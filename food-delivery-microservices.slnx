@@ -284,6 +284,10 @@
     <File Path="tests/Directory.Build.props" />
     <File Path="tests/Directory.Packages.props" />
   </Folder>
+  <Folder Name="/tests/ApiGateway/">
+    <Project Path="tests\ApiGateway\FoodDelivery.ApiGateway.TestShared\FoodDelivery.ApiGateway.TestShared.csproj" Type="Classic C#" />
+    <Project Path="tests\ApiGateway\FoodDelivery.ApiGateway.UnitTests\FoodDelivery.ApiGateway.UnitTests.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/tests/BuildingBlocks/" />
   <Folder Name="/tests/BuildingBlocks/MassTransit/">
     <Project Path="tests/BuildingBlocks/MassTransit/BuildingBlocks.Integration.MassTransit.IntegrationTests/BuildingBlocks.Integration.MassTransit.IntegrationTests.csproj" />

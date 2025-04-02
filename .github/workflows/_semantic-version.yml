@@ -58,7 +58,7 @@ jobs:
           dotnet-version: ${{ inputs.dotnet-version }}
 
       - name: Install GitVersion
-        run: dotnet tool install
+        run: dotnet tool restore
 
       - name: Determine Image Version Suffix
         id: version-suffix

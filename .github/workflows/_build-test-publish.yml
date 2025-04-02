@@ -82,10 +82,6 @@ jobs:
           token: ${{ secrets.ci-github-token }}
           # set ref to 'github.ref' works correctly with both pull_requests event and push event and this is default behavior checkout action when we don't use ref attribute
           ref: ${{ github.ref }}
-      - run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-        shell: bash
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4

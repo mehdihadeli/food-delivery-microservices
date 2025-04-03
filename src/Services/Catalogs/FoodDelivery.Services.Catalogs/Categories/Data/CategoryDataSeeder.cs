@@ -1,34 +1,41 @@
-using AutoBogus;
+using Bogus;
+using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Persistence;
+using FoodDelivery.Services.Catalogs.Categories.ValueObjects;
+using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Catalogs.Categories.Data;
 
-public class CategoryDataSeeder : IDataSeeder
+public class CategoryDataSeeder(ICatalogDbContext dbContext) : IDataSeeder
 {
-    private readonly ICatalogDbContext _dbContext;
-
-    public CategoryDataSeeder(ICatalogDbContext dbContext)
+    public async Task SeedAllAsync(CancellationToken cancellationToken)
     {
-        _dbContext = dbContext;
-    }
-
-    public async Task SeedAllAsync()
-    {
-        if (await _dbContext.Categories.AnyAsync())
+        if (await dbContext.Categories.AnyAsync(cancellationToken: cancellationToken))
             return;
 
-        // https://jackhiston.com/2017/10/1/how-to-create-bogus-data-in-c/
-        // https://khalidabuhakmeh.com/seed-entity-framework-core-with-bogus
-        // https://github.com/bchavez/Bogus#bogus-api-support
-        // https://github.com/bchavez/Bogus/blob/master/Examples/EFCoreSeedDb/Program.cs#L74
+        var categoryId = 1;
+        var imageId = 1;
+        var categoryFaker = new Faker<Category>().CustomInstantiator(f =>
+        {
+            var generatedCid = CategoryId.Of(categoryId++);
+            var generatedImageId = EntityId.Of(imageId++);
 
-        // faker works with normal syntax because category has a default constructor
-        var categories = new CategoryFaker().Generate(5);
+            var category = Category.Create(
+                generatedCid,
+                CategoryName.Of(f.Commerce.Categories(1).First()),
+                CategoryCode.Of(f.Random.Number(1000, 5000).ToString()),
+                new CategoryImage(generatedImageId, f.Internet.Url(), f.Random.Bool(), generatedCid),
+                Description.Of(f.Commerce.ProductDescription())
+            );
 
-        await _dbContext.Categories.AddRangeAsync(categories);
-        await _dbContext.SaveChangesAsync();
+            return category;
+        });
+        var categories = categoryFaker.Generate(5);
+
+        await dbContext.Categories.AddRangeAsync(categories, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public int Order => 1;

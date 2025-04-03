@@ -1,5 +1,5 @@
 using AutoBogus;
-using FoodDelivery.Services.Customers.Shared.Clients.Catalogs.Dtos;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
 
 namespace FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Dtos;
 

@@ -1,7 +1,7 @@
-using AutoMapper;
 using FoodDelivery.Services.Catalogs.Shared.Data;
 using FoodDelivery.Services.Customers.UnitTests;
 using Tests.Shared.XunitCategories;
+using Xunit;
 
 namespace FoodDelivery.Services.Catalogs.UnitTests.Common;
 
@@ -14,14 +14,7 @@ public class QueryTestCollection : ICollectionFixture<CatalogsServiceUnitTestBas
 [CategoryTrait(TestCategory.Unit)]
 public class CatalogsServiceUnitTestBase : IAsyncDisposable
 {
-    public CatalogsServiceUnitTestBase()
-    {
-        Mapper = MapperFactory.Create();
-        CatalogDbContext = DbContextFactory.Create();
-    }
-
-    public IMapper Mapper { get; }
-    public CatalogDbContext CatalogDbContext { get; }
+    public CatalogDbContext CatalogDbContext { get; } = DbContextFactory.Create();
 
     public async ValueTask DisposeAsync()
     {

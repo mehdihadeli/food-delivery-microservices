@@ -1,5 +1,4 @@
 using BuildingBlocks.Core.Extensions;
-using FoodDelivery.Services.Catalogs.Products.Exceptions.Domain;
 using FoodDelivery.Services.Catalogs.Suppliers;
 
 namespace FoodDelivery.Services.Catalogs.Products.ValueObjects;
@@ -13,7 +12,7 @@ public record SupplierInformation
     public Name Name { get; private set; } = default!;
     public SupplierId Id { get; private set; } = default!;
 
-    public static SupplierInformation Of(SupplierId? id, Name? name)
+    public static SupplierInformation Of(SupplierId id, Name name)
     {
         // validations should be placed here instead of constructor
         id.NotBeNull();

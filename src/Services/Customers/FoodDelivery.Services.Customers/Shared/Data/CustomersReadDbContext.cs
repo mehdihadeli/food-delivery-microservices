@@ -8,13 +8,13 @@ namespace FoodDelivery.Services.Customers.Shared.Data;
 
 public class CustomersReadDbContext : MongoDbContext
 {
-    public CustomersReadDbContext(IOptions<MongoOptions> options)
-        : base(options.Value)
+    public CustomersReadDbContext(IMongoClient mongoClient, IOptions<MongoOptions> options)
+        : base(mongoClient, options)
     {
-        RestockSubscriptions = GetCollection<RestockSubscription>();
-        Customers = GetCollection<Customer>();
+        RestockSubscriptions = GetCollection<RestockSubscriptionReadModel>();
+        Customers = GetCollection<CustomerReadModel>();
     }
 
-    public IMongoCollection<RestockSubscription> RestockSubscriptions { get; }
-    public IMongoCollection<Customer> Customers { get; }
+    public IMongoCollection<RestockSubscriptionReadModel> RestockSubscriptions { get; }
+    public IMongoCollection<CustomerReadModel> Customers { get; }
 }

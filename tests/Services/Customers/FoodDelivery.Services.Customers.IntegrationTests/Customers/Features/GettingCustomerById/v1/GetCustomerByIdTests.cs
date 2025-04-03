@@ -1,10 +1,11 @@
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.GettingCustomerById.v1;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models.Read;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
 using Xunit.Abstractions;
@@ -21,15 +22,15 @@ public class GetCustomerByIdTests(
     internal async Task can_returns_valid_read_customer_model()
     {
         // Arrange
-        Customer fakeCustomer = new FakeCustomerReadModel().Generate();
-        await SharedFixture.InsertMongoDbContextAsync(fakeCustomer);
+        CustomerReadModel fakeCustomerReadModel = new FakeCustomerReadModel().Generate();
+        await SharedFixture.InsertMongoDbContextAsync(fakeCustomerReadModel);
 
         // Act
-        var query = new GetCustomerById(fakeCustomer.Id);
-        var customer = (await SharedFixture.SendAsync(query)).Customer;
+        var query = new GetCustomerById(fakeCustomerReadModel.Id);
+        var customer = (await SharedFixture.QueryAsync(query)).Customer;
 
         // Assert
-        customer.Should().BeEquivalentTo(fakeCustomer, options => options.ExcludingMissingMembers());
+        customer.Should().BeEquivalentTo(fakeCustomerReadModel, options => options.ExcludingMissingMembers());
     }
 
     [Fact]
@@ -38,7 +39,7 @@ public class GetCustomerByIdTests(
     {
         // Act
         var query = new GetCustomerById(Guid.NewGuid());
-        Func<Task> act = async () => _ = await SharedFixture.SendAsync(query);
+        Func<Task> act = async () => _ = await SharedFixture.QueryAsync(query);
 
         // Assert
         //https://fluentassertions.com/exceptions/

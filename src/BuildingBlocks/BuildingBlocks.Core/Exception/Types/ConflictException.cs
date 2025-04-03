@@ -1,4 +1,3 @@
-using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Core.Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 

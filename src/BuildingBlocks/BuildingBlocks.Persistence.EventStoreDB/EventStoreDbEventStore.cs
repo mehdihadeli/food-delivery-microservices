@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 using BuildingBlocks.Persistence.EventStoreDB.Extensions;
 using EventStore.Client;
@@ -23,7 +24,7 @@ public class EventStoreDbEventStore(EventStoreClient grpcClient) : IEventStore
         return state == ReadState.Ok;
     }
 
-    public async Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
+    public async Task<IEnumerable<IStreamEventEnvelopeBase>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         int maxCount = int.MaxValue,
@@ -43,7 +44,7 @@ public class EventStoreDbEventStore(EventStoreClient grpcClient) : IEventStore
         return resolvedEvents.ToStreamEvents();
     }
 
-    public Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
+    public Task<IEnumerable<IStreamEventEnvelopeBase>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         CancellationToken cancellationToken = default
@@ -54,13 +55,13 @@ public class EventStoreDbEventStore(EventStoreClient grpcClient) : IEventStore
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEventEnvelope @event,
+        IStreamEventEnvelopeBase @event,
         CancellationToken cancellationToken = default
     )
     {
         return AppendEventsAsync(
             streamId,
-            new List<IStreamEventEnvelope> { @event }.ToImmutableList(),
+            new List<IStreamEventEnvelopeBase> { @event }.ToImmutableList(),
             ExpectedStreamVersion.NoStream,
             cancellationToken
         );
@@ -68,14 +69,14 @@ public class EventStoreDbEventStore(EventStoreClient grpcClient) : IEventStore
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEventEnvelope @event,
+        IStreamEventEnvelopeBase @event,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )
     {
         return AppendEventsAsync(
             streamId,
-            new List<IStreamEventEnvelope> { @event }.ToImmutableList(),
+            new List<IStreamEventEnvelopeBase> { @event }.ToImmutableList(),
             expectedRevision,
             cancellationToken
         );
@@ -83,7 +84,7 @@ public class EventStoreDbEventStore(EventStoreClient grpcClient) : IEventStore
 
     public async Task<AppendResult> AppendEventsAsync(
         string streamId,
-        IReadOnlyCollection<IStreamEventEnvelope> events,
+        IReadOnlyCollection<IStreamEventEnvelopeBase> events,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )

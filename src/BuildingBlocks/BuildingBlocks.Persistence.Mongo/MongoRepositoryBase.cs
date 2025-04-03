@@ -1,8 +1,6 @@
 using System.Linq.Expressions;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
+using Ardalis.Specification;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
 using MongoDB.Driver;
@@ -12,7 +10,7 @@ using Sieve.Services;
 namespace BuildingBlocks.Persistence.Mongo;
 
 public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity, TId>
-    where TEntity : class, IHaveIdentity<TId>
+    where TEntity : class, Abstractions.Domain.IEntity<TId>
     where TDbContext : MongoDbContext
 {
     private readonly ISieveProcessor _sieveProcessor;
@@ -54,6 +52,11 @@ public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity
         return await DbSet.Find(predicate).ToListAsync(cancellationToken: cancellationToken)!;
     }
 
+    public Task<bool> AnyAsync(ISpecification<TEntity> specification, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<bool> AnyAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default
@@ -64,69 +67,97 @@ public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity
         return count > 0;
     }
 
+    public IQueryable<TResult> ProjectBy<TResult, TSortKey>(
+        Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
+        Expression<Func<TEntity, bool>>? predicate = null
+    )
+        where TResult : class
+    {
+        var query = DbSet.AsQueryable().Project(projectionFunc, sortExpression, predicate);
+
+        return query;
+    }
+
     public async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await DbSet.AsQueryable().ToListAsync(cancellationToken);
     }
 
-    public IAsyncEnumerable<TResult> ProjectBy<TResult, TSortKey>(
-        IConfigurationProvider configuration,
-        Expression<Func<TEntity, bool>>? predicate = null,
-        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
+    public Task<IReadOnlyList<TEntity>> GetAllAsync(
+        ISpecification<TEntity> specification,
         CancellationToken cancellationToken = default
     )
     {
-        IMongoQueryable<TEntity> query = DbSet.AsQueryable();
-        if (predicate is not null)
-        {
-            query = query.Where(predicate);
-        }
+        throw new NotImplementedException();
+    }
 
-        if (sortExpression is not null)
-        {
-            query = query.OrderByDescending(sortExpression);
-        }
+    public Task<IReadOnlyList<TResult>> GetAllAsync<TResult>(
+        ISpecification<TEntity, TResult> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        throw new NotImplementedException();
+    }
 
-        return query.ProjectTo<TResult>(configuration).ToAsyncEnumerable();
+    public Task<TEntity?> FirstOrDefaultAsync(
+        ISpecification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<TResult?> FirstOrDefaultAsync<TResult>(
+        ISpecification<TEntity, TResult> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<TEntity?> SingleOrDefaultAsync(
+        ISingleResultSpecification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<TResult?> SingleOrDefaultAsync<TResult>(
+        ISingleResultSpecification<TEntity, TResult> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<int> CountAsync(ISpecification<TEntity> specification, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return DbSet.AsQueryable().CountAsync(cancellationToken: cancellationToken);
     }
 
     public async Task<IPageList<TEntity>> GetByPageFilter<TSortKey>(
         IPageRequest pageRequest,
-        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default
     )
     {
         return await DbSet
             .AsQueryable()
-            .ApplyPagingAsync(pageRequest, _sieveProcessor, predicate, sortExpression, cancellationToken);
+            .ApplyPagingAsync(pageRequest, _sieveProcessor, sortExpression, predicate, cancellationToken);
     }
 
-    public async Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
-        IPageRequest pageRequest,
-        IConfigurationProvider configuration,
-        Expression<Func<TEntity, TSortKey>> sortExpression,
-        Expression<Func<TEntity, bool>>? predicate = null,
-        CancellationToken cancellationToken = default
-    )
-        where TResult : class
-    {
-        return await DbSet
-            .AsQueryable()
-            .ApplyPagingAsync<TEntity, TResult, TSortKey>(
-                pageRequest,
-                _sieveProcessor,
-                configuration,
-                predicate,
-                sortExpression,
-                cancellationToken
-            );
-    }
-
-    public async Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
+    public async Task<IPageList<TResult>> GetByPageFilter<TSortKey, TResult>(
         IPageRequest pageRequest,
         Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
-        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default
     )
@@ -134,12 +165,12 @@ public class MongoRepositoryBase<TDbContext, TEntity, TId> : IRepository<TEntity
     {
         return await DbSet
             .AsQueryable()
-            .ApplyPagingAsync<TEntity, TResult, TSortKey>(
+            .ApplyPagingAsync(
                 pageRequest,
                 _sieveProcessor,
                 projectionFunc,
-                predicate,
                 sortExpression,
+                predicate,
                 cancellationToken
             );
     }

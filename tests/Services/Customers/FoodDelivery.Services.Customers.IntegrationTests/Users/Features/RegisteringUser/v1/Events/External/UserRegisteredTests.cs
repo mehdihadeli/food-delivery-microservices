@@ -1,10 +1,10 @@
 using FoodDelivery.Services.Customers.Api;
-using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Read.Mongo;
+using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Internal.Mongo;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Events;
 using FoodDelivery.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
-using FoodDelivery.Services.Shared.Customers.Customers.Events.V1.Integration;
-using FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
+using FoodDelivery.Services.Shared.Customers.Customers.Events.Integration.v1;
+using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -37,7 +37,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, CancellationToken);
 
         // Assert
-        await SharedFixture.WaitForConsuming<UserRegisteredV1>();
+        await SharedFixture.ShouldConsuming<UserRegisteredV1>();
     }
 
     // [Fact]
@@ -62,7 +62,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await SharedFixture.WaitForConsuming<UserRegisteredV1, UserRegisteredConsumer>();
+        await SharedFixture.ShouldConsuming<UserRegisteredV1, UserRegisteredConsumer>();
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         {
             var existsCustomer = await SharedFixture.ExecuteEfDbContextAsync(async ctx =>
             {
-                var res = await ctx.Customers.AnyAsync(x => x.Email.Value == _userRegistered.Email);
+                var res = ctx.Customers.Any(x => x.Email.Value == _userRegistered.Email);
 
                 return res;
             });
@@ -94,7 +94,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldProcessedPersistInternalCommand<CreateCustomerRead>();
+        await SharedFixture.ShouldProcessingInternalCommand<CreateCustomerRead>();
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         {
             var existsCustomer = await SharedFixture.ExecuteMongoDbContextAsync(async ctx =>
             {
-                var res = await ctx.Customers.AsQueryable().AnyAsync(x => x.Email == _userRegistered.Email);
+                var res = ctx.Customers.AsQueryable().Any(x => x.Email == _userRegistered.Email);
 
                 return res;
             });
@@ -126,7 +126,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldProcessedOutboxPersistMessage<CustomerCreatedV1>();
+        await SharedFixture.ShouldProcessingOutboxMessage<CustomerCreatedV1>();
     }
 
     [Fact]
@@ -137,6 +137,6 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await SharedFixture.WaitForPublishing<CustomerCreatedV1>();
+        await SharedFixture.ShouldPublishing<CustomerCreatedV1>();
     }
 }

@@ -15,15 +15,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
-    <PackageReference Include="Microsoft.Extensions.DiagnosticAdapter" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
-    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" />
     <PackageReference Include="Open.ChannelExtensions" />
     <PackageReference Include="System.Net.Http.Json" />
@@ -31,37 +22,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry.Api" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoBogus" />
     <PackageReference Include="Bogus" />
-    <PackageReference Include="McMaster.NETCore.Plugins" />
     <PackageReference Include="DotNetEnv" />
     <PackageReference Include="IdGen" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Scrutor" />
-    <PackageReference Include="Serilog" />
-    <PackageReference Include="Spectre.Console" />
-    <PackageReference Include="SqlStreamStore" />
     <PackageReference Include="System.Reactive.Linq" />
-    <PackageReference Include="System.Interactive.Async" />
     <PackageReference Include="System.Reactive" />
-    <PackageReference Include="Humanizer" />
     <PackageReference Include="Humanizer.Core" />
-    <PackageReference Include="EntityFrameworkCore.Projectables" />
-    <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" />
     <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="System.Linq.Async.Queryable" />
     <PackageReference Include="Sieve" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Nito.AsyncEx" />
-    <PackageReference Include="Nito.AsyncEx.Context" />
-    <PackageReference Include="Nito.AsyncEx.Tasks" />
+    <PackageReference Include="MessagePack" />
+    <PackageReference Include="MemoryPack" />
+    <PackageReference Include=" DistributedLock.Redis" />
+    <PackageReference Include="Riok.Mapperly" />
     <PackageReference Include="FluentValidation.AspNetCore" />
+    <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.AspNetCore.HeaderPropagation" />
   </ItemGroup>
 
 </Project>

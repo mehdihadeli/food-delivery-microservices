@@ -1,6 +1,7 @@
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Types.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
+using FoodDelivery.Services.Shared.Identity.Users;
 
 namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.v1;
 

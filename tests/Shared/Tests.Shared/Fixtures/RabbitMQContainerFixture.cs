@@ -1,5 +1,6 @@
 using BuildingBlocks.Core.Extensions;
 using EasyNetQ.Management.Client;
+using EasyNetQ.Management.Client.Model;
 using Testcontainers.RabbitMq;
 using Tests.Shared.Helpers;
 using Xunit.Sdk;
@@ -49,17 +50,17 @@ public class RabbitMQContainerFixture : IAsyncLifetime
         // https://www.planetgeek.ch/2015/08/16/cleaning-up-queues-and-exchanges-on-rabbitmq/
         // https://www.planetgeek.ch/2015/08/31/cleanup-code-for-cleaning-up-queues-and-exchanges-on-rabbitmq/
 
+
         // here I used rabbitmq http apis (Management Plugin) but also we can also use RabbitMQ client library and channel.ExchangeDelete(), channel.QueueDelete(), official client
         // is not complete for administrative works for example it doesn't have GetAllQueues, GetAllExchanges
-        var managementClient = new ManagementClient(
-            $"http://{Container.Hostname}",
-            RabbitMqContainerOptions.UserName,
-            RabbitMqContainerOptions.Password,
-            ApiPort
+        using var managementClient = new ManagementClient(
+            endpoint: new Uri($"http://{Container.Hostname}:{ApiPort}"),
+            username: RabbitMqContainerOptions.UserName,
+            password: RabbitMqContainerOptions.Password
         );
 
         //Creating new exchange after each publish doesn't support by masstransit and it just creates exchanges in init phase but works for queues
-        var queues = await managementClient.GetQueuesAsync(cancellationToken);
+        var queues = await managementClient.GetQueuesAsync(StatsCriteria.QueueTotalsOnly, cancellationToken);
         foreach (var queue in queues)
         {
             await managementClient.PurgeAsync(queue, cancellationToken);
@@ -73,11 +74,10 @@ public class RabbitMQContainerFixture : IAsyncLifetime
 
         // here I used rabbitmq http apis (Management Plugin) but also we can also use RabbitMQ client library and channel.ExchangeDelete(), channel.QueueDelete(), official client
         // is not complete for administrative works for example it doesn't have GetAllQueues, GetAllExchanges
-        var managementClient = new ManagementClient(
-            $"http://{Container.Hostname}",
-            RabbitMqContainerOptions.UserName,
-            RabbitMqContainerOptions.Password,
-            apiPort
+        using var managementClient = new ManagementClient(
+            endpoint: new Uri($"http://{Container.Hostname}:{ApiPort}"),
+            username: RabbitMqContainerOptions.UserName,
+            password: RabbitMqContainerOptions.Password
         );
 
         var bd = await managementClient.GetBindingsAsync(cancellationToken);
@@ -88,10 +88,10 @@ public class RabbitMQContainerFixture : IAsyncLifetime
             await managementClient.DeleteBindingAsync(binding, cancellationToken);
         }
 
-        var queues = await managementClient.GetQueuesAsync(cancellationToken);
+        var queues = await managementClient.GetQueuesAsync(StatsCriteria.QueueTotalsOnly, cancellationToken);
         foreach (var queue in queues)
         {
-            await managementClient.DeleteQueueAsync(queue, cancellationToken);
+            await managementClient.DeleteQueueAsync(queue, DeleteQueueCriteria.IfUnused, cancellationToken);
         }
 
         //Creating new exchange after each publish doesn't support by masstransit and it just creates exchanges in init phase but works for queues
@@ -101,7 +101,7 @@ public class RabbitMQContainerFixture : IAsyncLifetime
 
         foreach (var exchange in exchanges)
         {
-            await managementClient.DeleteExchangeAsync(exchange, cancellationToken);
+            await managementClient.DeleteExchangeAsync(exchange, DeleteExchangeCriteria.IfUnused, cancellationToken);
         }
     }
 

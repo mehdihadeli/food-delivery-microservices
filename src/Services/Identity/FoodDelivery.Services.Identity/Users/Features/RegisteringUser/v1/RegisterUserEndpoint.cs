@@ -1,7 +1,5 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
 using Humanizer;
@@ -20,7 +18,8 @@ public static class RegisterUserEndpoint
             // .Produces<RegisterUserResponse>(StatusCodes.Status201Created)
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             .WithName(nameof(RegisterUser))
-            .WithSummaryAndDescription(nameof(RegisterUser).Humanize(), nameof(RegisterUser).Humanize())
+            .WithSummary(nameof(RegisterUser).Humanize())
+            .WithDescription(nameof(RegisterUser).Humanize())
             .WithDisplayName(nameof(RegisterUser).Humanize())
             .MapToApiVersion(1.0);
 
@@ -28,9 +27,9 @@ public static class RegisterUserEndpoint
             [AsParameters] RegisterUserRequestParameters requestParameters
         )
         {
-            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, cancellationToken) = requestParameters;
 
-            var command = mapper.Map<RegisterUser>(request);
+            var command = request.ToRegisterUser();
 
             var result = await commandBus.SendAsync(command, cancellationToken);
 
@@ -51,7 +50,6 @@ internal record RegisterUserRequestParameters(
     [FromBody] RegisterUserRequest Request,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RegisterUserRequest>;
 
@@ -66,7 +64,7 @@ internal record RegisterUserRequest(
     string? ConfirmPassword
 )
 {
-    public List<string> Roles { get; init; } = new List<string> { IdentityConstants.Role.User };
+    public List<string> Roles { get; init; } = [IdentityConstants.Role.User];
 }
 
 internal record RegisterUserResponse(IdentityUserDto? UserIdentity);

@@ -1,33 +1,25 @@
 using System.Collections.Immutable;
 using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Events.Internal;
-using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Abstractions.Messages;
+using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Core.Events.Extensions;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Messages;
 
 namespace BuildingBlocks.Core.Events;
 
 public class DomainEventPublisher(
     IMessagePersistenceService messagePersistenceService,
     IDomainNotificationEventPublisher domainNotificationEventPublisher,
-    IDomainEventsAccessor domainEventsAccessor,
     IInternalEventBus internalEventBus,
     IMessageMetadataAccessor messageMetadataAccessor,
     IServiceProvider serviceProvider
 ) : IDomainEventPublisher
 {
-    public Task PublishAsync(IDomainEvent domainEvent, CancellationToken cancellationToken = default)
+    public async Task PublishAsync<T>(T domainEvent, CancellationToken cancellationToken = default)
+        where T : class, IDomainEvent
     {
-        return PublishAsync([domainEvent,], cancellationToken);
-    }
-
-    public async Task PublishAsync(IDomainEvent[] domainEvents, CancellationToken cancellationToken = default)
-    {
-        domainEvents.NotBeNull();
-
-        if (domainEvents.Length == 0)
-            return;
+        domainEvent.NotBeNull();
 
         // https://github.com/dotnet-architecture/eShopOnContainers/issues/700#issuecomment-461807560
         // https://github.com/dotnet-architecture/eShopOnContainers/blob/e05a87658128106fef4e628ccb830bc89325d9da/src/Services/Ordering/Ordering.Infrastructure/OrderingContext.cs#L65
@@ -35,74 +27,86 @@ public class DomainEventPublisher(
         // http://www.kamilgrzybek.com/design/handling-domain-events-missing-part/
         // https://www.ledjonbehluli.com/posts/domain_to_integration_event/
 
-        // Dispatch our domain events before commit
-        var eventsToDispatch = domainEvents.ToList();
-
-        if (eventsToDispatch.Count == 0)
-        {
-            eventsToDispatch = [.. domainEventsAccessor.UnCommittedDomainEvents,];
-        }
-
         // Dispatch events to internal broker
-        await internalEventBus.Publish(eventsToDispatch, cancellationToken);
+        await internalEventBus.Publish(domainEvent, cancellationToken).ConfigureAwait(false);
 
         // Save wrapped integration and notification events to outbox for further processing after commit
-        var wrappedNotificationEvents = eventsToDispatch.GetWrappedDomainNotificationEvents().ToArray();
-        await domainNotificationEventPublisher.PublishAsync(wrappedNotificationEvents.ToArray(), cancellationToken);
+        var wrappedNotificationEvent = domainEvent.GetWrappedDomainNotificationEvent();
+        if (wrappedNotificationEvent != null)
+        {
+            await domainNotificationEventPublisher
+                .PublishAsync(wrappedNotificationEvent, cancellationToken)
+                .ConfigureAwait(false);
+        }
 
-        var wrappedIntegrationEvents = eventsToDispatch.GetWrappedIntegrationEvents().ToArray();
-        foreach (var wrappedIntegrationEvent in wrappedIntegrationEvents)
+        var wrappedIntegrationEvent = domainEvent.GetWrappedIntegrationEvent();
+        if (wrappedIntegrationEvent != null)
         {
             var correlationId = messageMetadataAccessor.GetCorrelationId();
-            var cautionId = messageMetadataAccessor.GetCautionId();
-            var eventEnvelope = EventEnvelope.From(wrappedIntegrationEvent, correlationId, cautionId);
-            await messagePersistenceService.AddPublishMessageAsync(eventEnvelope, cancellationToken);
+            var cautionId = wrappedIntegrationEvent.MessageId;
+            var eventEnvelope = MessageEnvelopeFactory.From(wrappedIntegrationEvent, correlationId, cautionId);
+            await messagePersistenceService
+                .AddPublishMessageAsync(eventEnvelope, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         var eventMappers = serviceProvider.GetServices<IEventMapper>().ToImmutableList();
 
-        // Save event mapper events into outbox for further processing after commit
-        var integrationEvents = GetIntegrationEvents(serviceProvider, eventMappers, eventsToDispatch);
+        var integrationEvents = GetIntegrationEvents(serviceProvider, eventMappers, domainEvent);
         if (!integrationEvents.IsEmpty)
         {
             foreach (var integrationEvent in integrationEvents)
             {
                 var correlationId = messageMetadataAccessor.GetCorrelationId();
-                var cautionId = messageMetadataAccessor.GetCautionId();
-                var eventEnvelope = EventEnvelope.From(integrationEvent, correlationId, cautionId);
-                await messagePersistenceService.AddPublishMessageAsync(eventEnvelope, cancellationToken);
+                var cautionId = integrationEvent.MessageId;
+                var eventEnvelope = MessageEnvelopeFactory.From(integrationEvent, correlationId, cautionId);
+                // Save event mapper events into outbox for further processing after commit
+                await messagePersistenceService
+                    .AddPublishMessageAsync(eventEnvelope, cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
 
-        var notificationEvents = GetNotificationEvents(serviceProvider, eventMappers, eventsToDispatch);
-
+        var notificationEvents = GetNotificationEvents(serviceProvider, eventMappers, domainEvent);
         if (!notificationEvents.IsEmpty)
         {
             foreach (var notification in notificationEvents)
             {
-                await messagePersistenceService.AddNotificationAsync(notification, cancellationToken);
+                await messagePersistenceService
+                    .AddNotificationAsync(notification, cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
     }
 
-    private static ImmutableList<IDomainNotificationEvent> GetNotificationEvents(
+    public async Task PublishAsync<T>(IEnumerable<T> domainEvents, CancellationToken cancellationToken = default)
+        where T : class, IDomainEvent
+    {
+        foreach (var domainEvent in domainEvents)
+        {
+            await PublishAsync(domainEvent, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private static ImmutableList<IDomainNotificationEvent<IDomainEvent>> GetNotificationEvents(
         IServiceProvider serviceProvider,
         IReadOnlyList<IEventMapper> eventMappers,
-        IReadOnlyList<IDomainEvent> eventsToDispatch
+        IDomainEvent domainEvent
     )
     {
-        var notificationEventMappers = serviceProvider.GetServices<IIDomainNotificationEventMapper>().ToImmutableList();
+        var notificationEventMappers = serviceProvider.GetServices<IDomainNotificationEventMapper>().ToImmutableList();
 
-        List<IDomainNotificationEvent> notificationEvents = new List<IDomainNotificationEvent>();
+        List<IDomainNotificationEvent<IDomainEvent>> notificationEvents =
+            new List<IDomainNotificationEvent<IDomainEvent>>();
 
         if (eventMappers.Any())
         {
             foreach (var eventMapper in eventMappers)
             {
-                var items = eventMapper.MapToDomainNotificationEvents(eventsToDispatch)?.ToList();
-                if (items is not null && items.Count != 0)
+                var item = eventMapper.MapToDomainNotificationEvent(domainEvent);
+                if (item is not null)
                 {
-                    notificationEvents.AddRange(items.Where(x => x is not null)!);
+                    notificationEvents.Add(item);
                 }
             }
         }
@@ -110,10 +114,10 @@ public class DomainEventPublisher(
         {
             foreach (var notificationEventMapper in notificationEventMappers)
             {
-                var items = notificationEventMapper.MapToDomainNotificationEvents(eventsToDispatch)?.ToList();
-                if (items is not null && items.Count != 0)
+                var item = notificationEventMapper.MapToDomainNotificationEvent(domainEvent);
+                if (item is not null)
                 {
-                    notificationEvents.AddRange(items.Where(x => x is not null)!);
+                    notificationEvents.Add(item);
                 }
             }
         }
@@ -124,21 +128,20 @@ public class DomainEventPublisher(
     private static ImmutableList<IIntegrationEvent> GetIntegrationEvents(
         IServiceProvider serviceProvider,
         IReadOnlyList<IEventMapper> eventMappers,
-        IReadOnlyList<IDomainEvent> eventsToDispatch
+        IDomainEvent domainEvent
     )
     {
         var integrationEventMappers = serviceProvider.GetServices<IIntegrationEventMapper>().ToImmutableList();
-
         List<IIntegrationEvent> integrationEvents = new List<IIntegrationEvent>();
 
         if (eventMappers.Any())
         {
             foreach (var eventMapper in eventMappers)
             {
-                var items = eventMapper.MapToIntegrationEvents(eventsToDispatch)?.ToList();
-                if (items is not null && items.Count != 0)
+                var item = eventMapper.MapToIntegrationEvent(domainEvent);
+                if (item is not null)
                 {
-                    integrationEvents.AddRange(items.Where(x => x is not null)!);
+                    integrationEvents.Add(item);
                 }
             }
         }
@@ -146,10 +149,10 @@ public class DomainEventPublisher(
         {
             foreach (var integrationEventMapper in integrationEventMappers)
             {
-                var items = integrationEventMapper.MapToIntegrationEvents(eventsToDispatch)?.ToList();
-                if (items is not null && items.Count != 0)
+                var item = integrationEventMapper.MapToIntegrationEvent(domainEvent);
+                if (item is not null)
                 {
-                    integrationEvents.AddRange(items.Where(x => x is not null)!);
+                    integrationEvents.Add(item);
                 }
             }
         }

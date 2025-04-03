@@ -1,8 +1,7 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using Cassandra.Mapping;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -23,13 +22,14 @@ public static class VerifyEmailEndpoint
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             .WithName(nameof(VerifyEmail))
             .WithDisplayName(nameof(VerifyEmail).Humanize())
-            .WithSummaryAndDescription(nameof(VerifyEmail).Humanize(), nameof(VerifyEmail).Humanize());
+            .WithSummary(nameof(VerifyEmail).Humanize())
+            .WithDescription(nameof(VerifyEmail).Humanize());
 
         async Task<Results<NoContent, ConflictHttpProblemResult, InternalHttpProblemResult, ValidationProblem>> Handle(
             [AsParameters] VerifyEmailRequestParameters requestParameters
         )
         {
-            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, cancellationToken) = requestParameters;
 
             var command = VerifyEmail.Of(request.Email, request.Code);
 
@@ -48,6 +48,5 @@ internal record VerifyEmailRequestParameters(
     [FromBody] VerifyEmailRequest Request,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<VerifyEmailRequest>;

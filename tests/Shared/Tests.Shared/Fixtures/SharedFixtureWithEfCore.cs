@@ -1,6 +1,6 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Queries;
-using MediatR;
+using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Sdk;

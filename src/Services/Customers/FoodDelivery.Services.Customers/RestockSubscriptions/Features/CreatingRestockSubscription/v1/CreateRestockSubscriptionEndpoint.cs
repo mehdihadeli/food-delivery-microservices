@@ -1,7 +1,6 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,8 +16,8 @@ internal class CreateRestockSubscriptionEndpoint
         ValidationProblem
     >
 {
-    public string GroupName => RestockSubscriptionsConfigs.Tag;
-    public string PrefixRoute => RestockSubscriptionsConfigs.RestockSubscriptionsUrl;
+    public string GroupName => RestockSubscriptionsConfigurations.Tag;
+    public string PrefixRoute => RestockSubscriptionsConfigurations.RestockSubscriptionsUrl;
     public double Version => 1.0;
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
@@ -30,10 +29,8 @@ internal class CreateRestockSubscriptionEndpoint
             // .ProducesValidationProblem()
             // .ProducesProblem(StatusCodes.Status401Unauthorized)
             .WithName(nameof(CreateRestockSubscription))
-            .WithSummaryAndDescription(
-                nameof(CreateRestockSubscription).Humanize(),
-                nameof(CreateRestockSubscription).Humanize()
-            )
+            .WithSummary(nameof(CreateRestockSubscription).Humanize())
+            .WithDescription(nameof(CreateRestockSubscription).Humanize())
             .WithDisplayName(nameof(GetCustomers).Humanize());
     }
 

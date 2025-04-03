@@ -1,12 +1,13 @@
 using System.Linq.Expressions;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
-using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Read.Mongo;
+using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Internal.Mongo;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
-using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models.Read;
 using FoodDelivery.Services.Customers.UnitTests.Common;
 using NSubstitute;
 using Tests.Shared.XunitCategories;
@@ -22,7 +23,7 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
         _customersReadUnitOfWork = Substitute.For<ICustomersReadUnitOfWork>();
         var customersReadRepository = Substitute.For<ICustomerReadRepository>();
         _customersReadUnitOfWork.CustomersRepository.Returns(customersReadRepository);
-        _customersReadUnitOfWork.CommitAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        _customersReadUnitOfWork.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
     }
 
     // totally we don't need to unit test our handlers according jimmy bogard blogs and videos and we should extract our business to domain or seperated class so we don't need repository pattern for test, but for a sample I use it here
@@ -38,11 +39,11 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
             existCustomer.CustomerId,
             existCustomer.IdentityId
         ).Generate();
-        var updateCustomer = fakeUpdateCustomerReadCommand.ToCustomer();
+        var updateCustomer = fakeUpdateCustomerReadCommand.ToCustomerReadModel();
 
         _customersReadUnitOfWork
             .CustomersRepository.FindOneAsync(
-                Arg.Is<Expression<Func<Customer, bool>>>(exp => exp.Compile()(existCustomer) == true),
+                Arg.Is<Expression<Func<CustomerReadModel, bool>>>(exp => exp.Compile()(existCustomer) == true),
                 Arg.Any<CancellationToken>()
             )
             .Returns(existCustomer);
@@ -59,11 +60,11 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
         await _customersReadUnitOfWork
             .CustomersRepository.Received(1)
             .UpdateAsync(Arg.Is(updateCustomer), Arg.Any<CancellationToken>());
-        await _customersReadUnitOfWork.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+        await _customersReadUnitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
         await _customersReadUnitOfWork
             .CustomersRepository.Received(1)
             .FindOneAsync(
-                Arg.Is<Expression<Func<Customer, bool>>>(exp => exp.Compile()(existCustomer) == true),
+                Arg.Is<Expression<Func<CustomerReadModel, bool>>>(exp => exp.Compile()(existCustomer) == true),
                 Arg.Any<CancellationToken>()
             );
         existCustomer.Id.Should().Be(fakeUpdateCustomerReadCommand.Id);
@@ -78,8 +79,11 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
         var fakeUpdateCustomerReadCommand = new FakeUpdateCustomerRead(Guid.NewGuid(), 230, Guid.NewGuid()).Generate();
 
         _customersReadUnitOfWork
-            .CustomersRepository.FindOneAsync(Arg.Any<Expression<Func<Customer, bool>>>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<Customer?>(null));
+            .CustomersRepository.FindOneAsync(
+                Arg.Any<Expression<Func<CustomerReadModel, bool>>>(),
+                Arg.Any<CancellationToken>()
+            )
+            .Returns(Task.FromResult<CustomerReadModel?>(null));
 
         var handler = new UpdateCustomerReadHandler(_customersReadUnitOfWork);
 
@@ -92,6 +96,6 @@ public class UpdateCustomerTests : CustomerServiceUnitTestBase
 
         await _customersReadUnitOfWork
             .CustomersRepository.Received(1)
-            .FindOneAsync(Arg.Any<Expression<Func<Customer, bool>>>(), Arg.Any<CancellationToken>());
+            .FindOneAsync(Arg.Any<Expression<Func<CustomerReadModel, bool>>>(), Arg.Any<CancellationToken>());
     }
 }

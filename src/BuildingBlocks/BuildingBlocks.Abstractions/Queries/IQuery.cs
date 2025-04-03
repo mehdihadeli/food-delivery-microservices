@@ -1,10 +1,13 @@
-using MediatR;
+using Mediator;
 
 namespace BuildingBlocks.Abstractions.Queries;
 
-public interface IQuery<out T> : IRequest<T>
-    where T : notnull { }
+public interface IQueryBase;
 
-// https://jimmybogard.com/mediatr-10-0-released/
-public interface IStreamQuery<out T> : IStreamRequest<T>
-    where T : notnull { }
+public interface IStreamQueryBase;
+
+public interface IQuery<out TResponse> : IQueryBase, IRequest<TResponse>
+    where TResponse : notnull;
+
+public interface IStreamQuery<out T> : IStreamQueryBase, IStreamRequest<T>
+    where T : notnull;

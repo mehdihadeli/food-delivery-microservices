@@ -84,7 +84,7 @@ public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
 
         builder.Property(x => x.CategoryId);
 
-        builder.HasOne(x => x.Category).WithMany().HasForeignKey(x => x.CategoryId);
+        builder.HasOne(x => x.Category).WithMany().HasForeignKey(product => product.CategoryId);
 
         builder.Property(x => x.BrandId);
 

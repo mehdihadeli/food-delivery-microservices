@@ -1,7 +1,5 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Persistence.EfCore;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,8 +19,8 @@ public static class UserManagerExtensions
     public static async Task<IPageList<TResult>> FindAllUsersByPageAsync<TResult>(
         this UserManager<ApplicationUser> userManager,
         IPageRequest request,
-        IMapper mapper,
         ISieveProcessor sieveProcessor,
+        Func<IQueryable<ApplicationUser>, IQueryable<TResult>> projectionFunc,
         CancellationToken cancellationToken
     )
         where TResult : class
@@ -32,10 +30,11 @@ public static class UserManagerExtensions
         return await userManager
             .Users.OrderByDescending(x => x.CreatedAt)
             .AsNoTracking()
-            .ApplyPagingAsync<ApplicationUser, TResult>(
+            .ApplyPagingAsync(
                 request,
                 sieveProcessor,
-                mapper.ConfigurationProvider,
+                projectionFunc,
+                x => x.UserName,
                 cancellationToken: cancellationToken
             );
     }

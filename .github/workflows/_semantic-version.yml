@@ -1,0 +1,113 @@
+name: Calculate Semantic Version
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Deployment environment (development/staging/production)"
+        required: true
+        type: string
+      dotnet-version:
+        description: .Net Version
+        required: true
+        type: string
+    outputs:
+      sem-ver:
+        description: "Full semantic version"
+        value: ${{ jobs.version.outputs.sem-ver }}
+      major-minor-patch:
+        description: "Major.Minor.Patch version"
+        value: ${{ jobs.version.outputs.major-minor-patch }}
+      assembly-sem-ver:
+        description: "Assembly semantic version"
+        value: ${{ jobs.version.outputs.assembly-sem-ver }}
+      informational-version:
+        description: "Informational version"
+        value: ${{ jobs.version.outputs.informational-version }}
+      short-sha:
+        description: "Short Git SHA"
+        value: ${{ jobs.version.outputs.short-sha }}
+      branch-name:
+        description: "Git branch name"
+        value: ${{ jobs.version.outputs.branch-name }}
+      image-version:
+        description: "Docker image version with suffix"
+        value: ${{ jobs.version.outputs.image-version }}
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      sem-ver: ${{ steps.extract-version.outputs.sem-ver }}
+      major-minor-patch: ${{ steps.extract-version.outputs.major-minor-patch }}
+      assembly-sem-ver: ${{ steps.extract-version.outputs.assembly-sem-ver }}
+      informational-version: ${{ steps.extract-version.outputs.informational-version }}
+      short-sha: ${{ steps.extract-version.outputs.short-sha }}
+      branch-name: ${{ steps.extract-version.outputs.branch-name }}
+      image-version: ${{ steps.extract-version.outputs.image-version }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
+          fetch-depth: 0 # Required for Git history analysis
+          repository: ${{ github.repository }}
+          # set ref to 'github.ref' works correctly with both pull_requests event and push event and this is default behavior checkout action when we don't use ref attribute
+          ref: ${{ github.ref }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - name: Install GitVersion
+        shell: bash
+        run: dotnet tool install --global GitVersion.Tool
+
+      - name: Determine Image Version Suffix
+        id: version-suffix
+        run: |
+          case "${{ inputs.environment }}" in
+            "production") suffix="" ;;
+            "staging") suffix="-staging" ;;
+            *) suffix="-dev" ;;
+          esac
+          echo "suffix=$suffix" >> "$GITHUB_OUTPUT"
+
+      - name: Run GitVersion and Extract Versions
+        id: extract-version
+        run: |
+          VERSION_JSON=$(dotnet-gitversion)
+
+          # Extract values from JSON output
+          SEM_VER=$(echo "$VERSION_JSON" | jq -r '.SemVer')
+          MAJOR_MINOR_PATCH=$(echo "$VERSION_JSON" | jq -r '.MajorMinorPatch')
+          ASSEMBLY_SEM_VER=$(echo "$VERSION_JSON" | jq -r '.AssemblySemVer')
+          INFO_VERSION=$(echo "$VERSION_JSON" | jq -r '.InformationalVersion')
+          SHORT_SHA=$(echo "$VERSION_JSON" | jq -r '.ShortSha')
+          BRANCH_NAME=$(echo "$VERSION_JSON" | jq -r '.BranchName')
+
+          # Concatenate image version with suffix
+          IMAGE_VERSION="${SEM_VER}${{ steps.version-suffix.outputs.suffix }}"
+
+          # Output values for use in other workflows
+          echo "sem-ver=$SEM_VER" >> "$GITHUB_OUTPUT"
+          echo "major-minor-patch=$MAJOR_MINOR_PATCH" >> "$GITHUB_OUTPUT"
+          echo "assembly-sem-ver=$ASSEMBLY_SEM_VER" >> "$GITHUB_OUTPUT"
+          echo "informational-version=$INFO_VERSION" >> "$GITHUB_OUTPUT"
+          echo "short-sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          echo "branch-name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+          echo "image-version=$IMAGE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Print Semantic Version Versions
+        run: |
+          echo "Semantic Version Information:"
+          echo "SemVer: ${{ steps.extract-version.outputs.sem-ver }}"
+          echo "Major.Minor.Patch: ${{ steps.extract-version.outputs.major-minor-patch }}"
+          echo "Assembly SemVer: ${{ steps.extract-version.outputs.assembly-sem-ver }}"
+          echo "Informational Version: ${{ steps.extract-version.outputs.informational-version }}"
+          echo "Short SHA: ${{ steps.extract-version.outputs.short-sha }}"
+          echo "Branch Name: ${{ steps.extract-version.outputs.branch-name }}"
+          echo "Image Version: ${{ steps.extract-version.outputs.image-version }}"

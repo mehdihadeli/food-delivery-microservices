@@ -1,12 +1,11 @@
 namespace BuildingBlocks.Abstractions.Commands;
 
-public interface ICommandBus
+public interface ICommandBus : IAsyncCommandBus
 {
     Task<TResult> SendAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
-        where TResult : class;
+        where TResult : notnull;
 
-    Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
-        where TCommand : ICommand;
+    Task SendAsync(ICommand command, CancellationToken cancellationToken = default);
 
     Task ScheduleAsync(IInternalCommand internalCommandCommand, CancellationToken cancellationToken = default);
     Task ScheduleAsync(IInternalCommand[] internalCommandCommands, CancellationToken cancellationToken = default);

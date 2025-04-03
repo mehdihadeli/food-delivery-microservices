@@ -1,5 +1,3 @@
-using BuildingBlocks.Core.Exception.Types;
-
 namespace BuildingBlocks.Core.Web.Extensions;
 
 public static class HttpResponseMessageExtensions
@@ -18,6 +16,6 @@ public static class HttpResponseMessageExtensions
 
         var content = await response.Content.ReadAsStringAsync();
 
-        throw new HttpResponseException(content, (int)response.StatusCode);
+        throw new HttpRequestException(message: content, inner: null, statusCode: response.StatusCode);
     }
 }

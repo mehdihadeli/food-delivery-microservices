@@ -1,6 +1,5 @@
-using BuildingBlocks.Abstractions.Events;
-using FoodDelivery.Services.Orders.Customers.Features.CreatingCustomer.V1.Events.External;
-using FoodDelivery.Services.Shared.Customers.Customers.Events.V1.Integration;
+using FoodDelivery.Services.Orders.Customers.Features.CreatingCustomer.v1.Events.External;
+using FoodDelivery.Services.Shared.Customers.Customers.Events.Integration.v1;
 using Humanizer;
 using MassTransit;
 using RabbitMQ.Client;
@@ -35,7 +34,7 @@ internal static class MassTransitExtensions
                 // https://spring.io/blog/2011/04/01/routing-topologies-for-performance-and-scalability-with-rabbitmq
                 // masstransit uses `wire-tapping` pattern for defining exchanges. Primary exchange will send the message to intermediary fanout exchange
                 // setup primary exchange and its type
-                re.Bind<IEventEnvelope<CustomerCreatedV1>>(e =>
+                re.Bind<CustomerCreatedV1>(e =>
                 {
                     e.RoutingKey = nameof(CustomerCreatedV1).Underscore();
                     e.ExchangeType = ExchangeType.Direct;

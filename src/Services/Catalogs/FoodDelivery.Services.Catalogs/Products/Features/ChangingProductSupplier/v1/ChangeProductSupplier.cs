@@ -2,14 +2,17 @@ using BuildingBlocks.Abstractions.Commands;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductSupplier.v1;
 
-internal record ChangeProductSupplier : ITxCommand<ChangeProductSupplierResult>;
+public record ChangeProductSupplier : ITxCommand<ChangeProductSupplierResult>;
 
-internal record ChangeProductSupplierResult;
+public record ChangeProductSupplierResult;
 
-internal class ChangeProductSupplierCommandHandler : ICommandHandler<ChangeProductSupplier, ChangeProductSupplierResult>
+public class ChangeProductSupplierCommandHandler : ICommandHandler<ChangeProductSupplier, ChangeProductSupplierResult>
 {
-    public Task<ChangeProductSupplierResult> Handle(ChangeProductSupplier request, CancellationToken cancellationToken)
+    public ValueTask<ChangeProductSupplierResult> Handle(
+        ChangeProductSupplier request,
+        CancellationToken cancellationToken
+    )
     {
-        return Task.FromResult<ChangeProductSupplierResult>(null!);
+        return ValueTask.FromResult<ChangeProductSupplierResult>(null!);
     }
 }

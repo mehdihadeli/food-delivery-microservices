@@ -1,5 +1,5 @@
 using System.Reflection;
-using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace BuildingBlocks.Messaging.Persistence.Postgres.MessagePersistence;
@@ -11,7 +11,7 @@ public class MessagePersistenceDbContext : DbContext
     /// </summary>
     public const string DefaultSchema = "messaging";
 
-    public DbSet<StoreMessage> StoreMessages => Set<StoreMessage>();
+    public DbSet<PersistMessage> PersistMessages => Set<PersistMessage>();
 
     public MessagePersistenceDbContext(DbContextOptions<MessagePersistenceDbContext> options)
         : base(options)

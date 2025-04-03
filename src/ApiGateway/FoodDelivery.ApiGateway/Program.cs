@@ -1,22 +1,11 @@
-using System.IdentityModel.Tokens.Jwt;
-using BuildingBlocks.Logging;
+using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.HeaderPropagation.Extensions;
+using BuildingBlocks.Observability.Extensions;
 using MassTransit;
-using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.Spectre;
 using Yarp.ReverseProxy.Transforms;
-using MessageHeaders = BuildingBlocks.Core.Messaging.MessageHeaders;
-
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-    .Enrich.FromLogContext()
-    .WriteTo.Spectre("{Timestamp:HH:mm:ss} [{Level:u4}] {Message:lj}{NewLine}{Exception}", LogEventLevel.Information)
-    .CreateLogger();
+using static BuildingBlocks.Core.Messages.MessageHeaders;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseSerilog();
-
-JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 // https://docs.duendesoftware.com/identityserver/v5/bff/apis/remote/
 // https://microsoft.github.io/reverse-proxy/articles/index.html
@@ -32,26 +21,30 @@ builder
         transforms.AddRequestTransform(transform =>
         {
             // add correlation-id in the initial life cycle of the request
-            transform.ProxyRequest.Headers.Add(MessageHeaders.CorrelationId, NewId.NextGuid().ToString());
+            transform.ProxyRequest.Headers.Add(CorrelationId, NewId.NextGuid().ToString());
 
             return ValueTask.CompletedTask;
         });
     });
 
+builder.AddCore();
+builder.AddCustomObservability();
+
+builder.Services.AddHeaderPropagation(options =>
+{
+    options.Headers.Add(CorrelationId);
+    options.Headers.Add(CausationId);
+});
+
 var app = builder.Build();
 
-// request logging just log in information level and above as default
-app.UseSerilogRequestLogging(opts =>
-{
-    opts.EnrichDiagnosticContext = LogEnricher.EnrichFromRequest;
-    opts.GetLevel = LogEnricher.GetLogLevel;
-});
+app.UseHeaderPropagation();
 
 app.MapGet(
     "/",
     async (HttpContext context) =>
     {
-        await context.Response.WriteAsync("FoodDelivery Api Gateway");
+        await context.Response.WriteAsync("Api Gateway.");
     }
 );
 

@@ -1,12 +1,13 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Commands;
 using BuildingBlocks.Core.Extensions;
-using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
+using FoodDelivery.Services.Customers.Shared.Contracts;
+using Unit = Mediator.Unit;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 
-internal record UpdateMongoRestockSubscriptionReadModel(
+public record UpdateMongoRestockSubscriptionReadModel(
     long RestockSubscriptionId,
     long CustomerId,
     string Email,
@@ -17,10 +18,13 @@ internal record UpdateMongoRestockSubscriptionReadModel(
     bool IsDeleted = false
 ) : InternalCommand;
 
-internal class UpdateMongoRestockSubscriptionReadModelHandler(CustomersReadUnitOfWork unitOfWork)
+public class UpdateMongoRestockSubscriptionReadModelHandler(ICustomersReadUnitOfWork unitOfWork)
     : ICommandHandler<UpdateMongoRestockSubscriptionReadModel>
 {
-    public async Task Handle(UpdateMongoRestockSubscriptionReadModel command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(
+        UpdateMongoRestockSubscriptionReadModel command,
+        CancellationToken cancellationToken
+    )
     {
         command.NotBeNull();
 
@@ -42,10 +46,12 @@ internal class UpdateMongoRestockSubscriptionReadModelHandler(CustomersReadUnitO
             ProductId = command.ProductId,
             Email = command.Email,
             ProcessedTime = command.ProcessedTime,
-            IsDeleted = command.IsDeleted
+            IsDeleted = command.IsDeleted,
         };
 
         await unitOfWork.RestockSubscriptionsRepository.UpdateAsync(existingSubscription, cancellationToken);
-        await unitOfWork.CommitAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Unit.Value;
     }
 }

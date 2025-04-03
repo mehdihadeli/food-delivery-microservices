@@ -47,17 +47,14 @@ public class PostgresContainerFixture : IAsyncLifetime
         {
             await using var connection = new NpgsqlConnection(Container.GetConnectionString());
             await connection.OpenAsync(cancellationToken);
-            // after new nugget version respawn than 6 according this https://github.com/jbogard/Respawn/pull/115 pull request we don't need this check and should remove
-            await CheckForExistingDatabase(connection);
 
             var checkpoint = await Respawner.CreateAsync(
                 connection,
                 new RespawnerOptions { DbAdapter = DbAdapter.Postgres }
             );
-            //TODO: should update to latest version after release a new version
+
             // https://github.com/jbogard/Respawn/issues/108
             // https://github.com/jbogard/Respawn/pull/115 - fixed
-            // waiting for new nuget version of respawn, current is 6.
             await checkpoint.ResetAsync(connection)!;
         }
         catch (Exception e)
@@ -71,31 +68,6 @@ public class PostgresContainerFixture : IAsyncLifetime
         await Container.StopAsync();
         await Container.DisposeAsync(); //important for the event to cleanup to be fired!
         _messageSink.OnMessage(new DiagnosticMessage("Postgres fixture stopped."));
-    }
-
-    private async Task CheckForExistingDatabase(NpgsqlConnection connection)
-    {
-        var existsDb = await connection.ExecuteScalarAsync<bool>(
-            "SELECT 1 FROM  pg_catalog.pg_database WHERE datname= @dbname",
-            param: new { dbname = PostgresContainerOptions.DatabaseName }
-        );
-        if (existsDb == false)
-        {
-            await connection.ExecuteAsync(
-                "CREATE DATABASE @DBName",
-                param: new { DBName = PostgresContainerOptions.DatabaseName }
-            );
-        }
-
-        // //https://github.com/jbogard/Respawn/issues/108
-        // var existsFoo = await connection.ExecuteScalarAsync<bool>(
-        //     "SELECT EXISTS (SELECT FROM information_schema.tables WHERE  table_schema = 'foo' AND table_name = 'public')"
-        // );
-        // if (existsFoo == false)
-        // {
-        //     await connection.ExecuteAsync(
-        //         "create table \"foo\" (value int)");
-        // }
     }
 }
 

@@ -1,0 +1,323 @@
+<Solution>
+  <Folder Name="/solution-items/">
+    <File Path=".csharpierrc.yaml" />
+    <File Path=".dockerignore" />
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="global.json" />
+    <File Path="LICENSE" />
+    <File Path="nuget.config" />
+    <File Path="package.json" />
+    <File Path="pm2.json" />
+    <File Path="pm2.yaml" />
+    <File Path="readme.md" />
+    <File Path="stylecop.json" />
+  </Folder>
+  <Folder Name="/solution-items/.config/">
+    <File Path=".config/dotnet-tools.json" />
+  </Folder>
+  <Folder Name="/solution-items/.devcontainer/">
+    <File Path=".devcontainer/devcontainer.json" />
+    <File Path=".devcontainer/docker-compose.yaml" />
+    <File Path=".devcontainer/Dockerfile" />
+  </Folder>
+  <Folder Name="/solution-items/.devcontainer/scripts/">
+    <File Path=".devcontainer/scripts/post-create.sh" />
+    <File Path=".devcontainer/scripts/setup-fonts.sh" />
+    <File Path=".devcontainer/scripts/update.sh" />
+  </Folder>
+  <Folder Name="/solution-items/.github/">
+    <File Path=".github/multi-labeler.yml" />
+    <File Path=".github/release-drafter.yml" />
+    <File Path=".github/release.yml" />
+  </Folder>
+  <Folder Name="/solution-items/.github/workflows/">
+    <File Path=".github/workflows/catalogs.yml" />
+    <File Path=".github/workflows/customers.yml" />
+    <File Path=".github/workflows/gateway.yml" />
+    <File Path=".github/workflows/identity.yml" />
+    <File Path=".github/workflows/labeler.yml" />
+    <File Path=".github\workflows\_build-test-publish.yml" />
+    <File Path=".github\workflows\_deploy.yml" />
+    <File Path=".github\workflows\_detect-environment.yml" />
+    <File Path=".github\workflows\_docker-build-push.yml" />
+    <File Path=".github\workflows\_pre-checks.yml" />
+    <File Path=".github\workflows\_semantic-version.yml" />
+  </Folder>
+  <Folder Name="/solution-items/.husky/">
+    <File Path=".husky/commit-msg" />
+    <File Path=".husky/pre-commit" />
+  </Folder>
+  <Folder Name="/solution-items/.vscode/">
+    <File Path=".vscode/launch.json" />
+    <File Path=".vscode/settings.json" />
+    <File Path=".vscode/tasks.json" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/" />
+  <Folder Name="/solution-items/deployments/docker-compose/">
+    <File Path="deployments/docker-compose/.env.catalogs.sample" />
+    <File Path="deployments/docker-compose/.env.cutomers.sample" />
+    <File Path="deployments/docker-compose/.env.dev.sample" />
+    <File Path="deployments/docker-compose/.env.identity.sample" />
+    <File Path="deployments/docker-compose/.env.prod" />
+    <File Path="deployments/docker-compose/.env.prod.sample" />
+    <File Path="deployments/docker-compose/.env.sample" />
+    <File Path="deployments/docker-compose/docker-compose.infrastructure.yaml" />
+    <File Path="deployments/docker-compose/docker-compose.override.yaml" />
+    <File Path="deployments/docker-compose/docker-compose.services-win.yaml" />
+    <File Path="deployments/docker-compose/docker-compose.services.debug-win.yaml" />
+    <File Path="deployments/docker-compose/docker-compose.services.debug.yaml" />
+    <File Path="deployments/docker-compose/docker-compose.services.dev-win.yaml" />
+    <File Path="deployments/docker-compose/docker-compose.services.dev.yaml" />
+    <File Path="deployments/docker-compose/docker-compose.services.prod.yaml" />
+    <File Path="deployments/docker-compose/docker-compose.services.yaml" />
+    <File Path="deployments/docker-compose/docker-compose.yaml" />
+    <File Path="deployments/docker-compose/docker.txt" />
+    <File Path="deployments/docker-compose/otel-collector-config.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/docker-compose/monitoring/">
+    <File Path="deployments/docker-compose/monitoring/prometheus.yml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/" />
+  <Folder Name="/solution-items/deployments/k8s/kubernetes/">
+    <File Path="deployments/k8s/kubernetes/.env.prod" />
+    <File Path="deployments/k8s/kubernetes/catalogs.yaml" />
+    <File Path="deployments/k8s/kubernetes/customers.yaml" />
+    <File Path="deployments/k8s/kubernetes/identity.yaml" />
+    <File Path="deployments/k8s/kubernetes/infrastructure.yaml" />
+    <File Path="deployments/k8s/kubernetes/kubectl" />
+    <File Path="deployments/k8s/kubernetes/namespaces.yaml" />
+    <File Path="deployments/k8s/kubernetes/orders.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/">
+    <File Path="deployments/k8s/kustomize/readme.md" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/" />
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/base/">
+    <File Path="deployments/k8s/kustomize/food-delivery/base/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/catalogs/" />
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/catalogs/base/">
+    <File Path="deployments/k8s/kustomize/food-delivery/catalogs/base/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/catalogs/overlays/" />
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/catalogs/overlays/dev/">
+    <File Path="deployments/k8s/kustomize/food-delivery/catalogs/overlays/dev/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/catalogs/overlays/prod/">
+    <File Path="deployments/k8s/kustomize/food-delivery/catalogs/overlays/prod/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/customers/" />
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/customers/base/">
+    <File Path="deployments/k8s/kustomize/food-delivery/customers/base/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/customers/overlays/">
+    <File Path="deployments/k8s/kustomize/food-delivery/customers/overlays/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/customers/overlays/dev/">
+    <File Path="deployments/k8s/kustomize/food-delivery/customers/overlays/dev/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/customers/overlays/prod/">
+    <File Path="deployments/k8s/kustomize/food-delivery/customers/overlays/prod/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/identity/" />
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/identity/base/">
+    <File Path="deployments/k8s/kustomize/food-delivery/identity/base/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/identity/overlays/">
+    <File Path="deployments/k8s/kustomize/food-delivery/identity/overlays/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/identity/overlays/dev/">
+    <File Path="deployments/k8s/kustomize/food-delivery/identity/overlays/dev/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/identity/overlays/prod/">
+    <File Path="deployments/k8s/kustomize/food-delivery/identity/overlays/prod/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/orders/" />
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/orders/base/">
+    <File Path="deployments/k8s/kustomize/food-delivery/orders/base/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/orders/overlays/">
+    <File Path="deployments/k8s/kustomize/food-delivery/orders/overlays/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/orders/overlays/dev/">
+    <File Path="deployments/k8s/kustomize/food-delivery/orders/overlays/dev/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/k8s/kustomize/food-delivery/orders/overlays/prod/">
+    <File Path="deployments/k8s/kustomize/food-delivery/orders/overlays/prod/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/scripts/" />
+  <Folder Name="/solution-items/scripts/docker/">
+    <File Path="scripts/docker/base-run.sh" />
+    <File Path="scripts/docker/debug-run.sh" />
+    <File Path="scripts/docker/dev-run.sh" />
+    <File Path="scripts/docker/prod-run.sh" />
+  </Folder>
+  <Folder Name="/solution-items/_httpclients/">
+    <File Path="_httpclients/http-client.env.json" />
+  </Folder>
+  <Folder Name="/solution-items/_httpclients/catalogs/">
+    <File Path="_httpclients/catalogs/catalogs.rest" />
+  </Folder>
+  <Folder Name="/solution-items/_httpclients/customers/">
+    <File Path="_httpclients/customers/customers.rest" />
+  </Folder>
+  <Folder Name="/solution-items/_httpclients/identity/">
+    <File Path="_httpclients/identity/identity.rest" />
+  </Folder>
+  <Folder Name="/solution-items/_httpclients/orders/" />
+  <Folder Name="/solution-items/_httpclients/rabbitmq/">
+    <File Path="_httpclients/rabbitmq/rabbitmq.rest" />
+  </Folder>
+  <Folder Name="/src/">
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/Directory.Build.targets" />
+    <File Path="src/Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/src/ApiGateway/">
+    <Project Path="src/ApiGateway/FoodDelivery.ApiGateway/FoodDelivery.ApiGateway.csproj" />
+    <File Path="src\ApiGateway\Dockerfile" />
+    <File Path="src\ApiGateway\Dockerfile.dev" />
+    <File Path="src\ApiGateway\watch.Dockerfile" />
+  </Folder>
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Caching/BuildingBlocks.Caching.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Email/BuildingBlocks.Email.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.HealthCheck/BuildingBlocks.HealthCheck.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Integration.MassTransit/BuildingBlocks.Integration.MassTransit.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/BuildingBlocks.Messaging.Persistence.Postgres.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Observability/BuildingBlocks.Observability.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.OpenApi/BuildingBlocks.OpenApi.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.EventStoreDB/BuildingBlocks.Persistence.EventStoreDB.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.Marten/BuildingBlocks.Persistence.Marten.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.Mongo/BuildingBlocks.Persistence.Mongo.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Resiliency/BuildingBlocks.Resiliency.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Security/BuildingBlocks.Security.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Serialization/BuildingBlocks.Serialization.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.SerilogLogging/BuildingBlocks.SerilogLogging.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj" />
+    <File Path="src\BuildingBlocks\Directory.Build.props" />
+  </Folder>
+  <Folder Name="/src/Services/" />
+  <Folder Name="/src/Services/Billing/">
+    <Project Path="src/Services/Billing/FoodDelivery.Services.Billing.Api/FoodDelivery.Services.Billing.Api.csproj" />
+    <Project Path="src/Services/Billing/FoodDelivery.Services.Billing/FoodDelivery.Services.Billing.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Carts/">
+    <Project Path="src/Services/Carts/FoodDelivery.Services.Carts.Api/FoodDelivery.Services.Carts.Api.csproj" />
+    <Project Path="src/Services/Carts/FoodDelivery.Services.Carts/FoodDelivery.Services.Carts.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Catalogs/">
+    <Project Path="src/Services/Catalogs/FoodDelivery.Services.Catalogs.Api/FoodDelivery.Services.Catalogs.Api.csproj" />
+    <Project Path="src/Services/Catalogs/FoodDelivery.Services.Catalogs/FoodDelivery.Services.Catalogs.csproj" />
+    <File Path="src/Services/Catalogs/Directory.Build.props" />
+    <File Path="src/Services/Catalogs/Dockerfile" />
+    <File Path="src/Services/Catalogs/Dockerfile.dev" />
+    <File Path="src/Services/Catalogs/Dockerfile.watch" />
+  </Folder>
+  <Folder Name="/src/Services/Checkouts/">
+    <Project Path="src/Services/Checkouts/FoodDelivery.Services.Checkouts.Api/FoodDelivery.Services.Checkouts.Api.csproj" />
+    <Project Path="src/Services/Checkouts/FoodDelivery.Services.Checkouts/FoodDelivery.Services.Checkouts.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Customers/">
+    <Project Path="src/Services/Customers/FoodDelivery.Services.Customers.Api/FoodDelivery.Services.Customers.Api.csproj" />
+    <Project Path="src/Services/Customers/FoodDelivery.Services.Customers/FoodDelivery.Services.Customers.csproj" />
+    <File Path="src/Services/Customers/Directory.Build.props" />
+    <File Path="src/Services/Customers/Dockerfile" />
+    <File Path="src/Services/Customers/Dockerfile.dev" />
+    <File Path="src/Services/Customers/Dockerfile.watch" />
+  </Folder>
+  <Folder Name="/src/Services/GroceryStores/">
+    <Project Path="src/Services/GroceryStores/FoodDelivery.Services.GroceryStores.Api/FoodDelivery.Services.GroceryStores.Api.csproj" />
+    <Project Path="src/Services/GroceryStores/FoodDelivery.Services.GroceryStores/FoodDelivery.Services.GroceryStores.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Identity/">
+    <Project Path="src/Services/Identity/FoodDelivery.Services.Identity.Api/FoodDelivery.Services.Identity.Api.csproj" />
+    <Project Path="src/Services/Identity/FoodDelivery.Services.Identity/FoodDelivery.Services.Identity.csproj" />
+    <File Path="src/Services/Identity/Directory.Build.props" />
+    <File Path="src/Services/Identity/Dockerfile" />
+    <File Path="src/Services/Identity/nuget.config" />
+    <File Path="src/Services/Identity/readme.md" />
+    <File Path="src\Services\Identity\Dockerfile.dev" />
+    <File Path="src\Services\Identity\Dockerfile.watch" />
+  </Folder>
+  <Folder Name="/src/Services/Orders/">
+    <Project Path="src/Services/Orders/FoodDelivery.Services.Orders.Api/FoodDelivery.Services.Orders.Api.csproj" />
+    <Project Path="src/Services/Orders/FoodDelivery.Services.Orders/FoodDelivery.Services.Orders.csproj" />
+    <File Path="src/Services/Orders/Directory.Build.props" />
+    <File Path="src/Services/Orders/Dockerfile" />
+    <File Path="src\Services\Orders\Dockerfile.dev" />
+    <File Path="src\Services\Orders\Dockerfile.watch" />
+  </Folder>
+  <Folder Name="/src/Services/Pricing/">
+    <Project Path="src/Services/Pricing/FoodDelivery.Services.Pricing.Api/FoodDelivery.Services.Pricing.Api.csproj" />
+    <Project Path="src/Services/Pricing/FoodDelivery.Services.Pricing/FoodDelivery.Services.Pricing.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Recommendations/">
+    <Project Path="src/Services/Recommendations/FoodDelivery.Services.Recommendations.Api/FoodDelivery.Services.Recommendations.Api.csproj" />
+    <Project Path="src/Services/Recommendations/FoodDelivery.Services.Recommendations/FoodDelivery.Services.Recommendations.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Restaurants/">
+    <Project Path="src/Services/Restaurants/FoodDelivery.Services.Restaurants.Api/FoodDelivery.Services.Restaurants.Api.csproj" />
+    <Project Path="src/Services/Restaurants/FoodDelivery.Services.Restaurants/FoodDelivery.Services.Restaurants.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Reviews/">
+    <Project Path="src/Services/Reviews/FoodDelivery.Services.Reviews.Api/FoodDelivery.Services.Reviews.Api.csproj" />
+    <Project Path="src/Services/Reviews/FoodDelivery.Services.Reviews/FoodDelivery.Services.Reviews.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Search/">
+    <Project Path="src/Services/Search/FoodDelivery.Services.Search.Api/FoodDelivery.Services.Search.Api.csproj" />
+    <Project Path="src/Services/Search/FoodDelivery.Services.Search/FoodDelivery.Services.Search.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Shared/">
+    <Project Path="src/Services/Shared/FoodDelivery.Services.Shared/FoodDelivery.Services.Shared.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Shippings/">
+    <Project Path="src/Services/Shippings/FoodDelivery.Services.Shippings.Api/FoodDelivery.Services.Shippings.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <File Path="tests/Directory.Build.props" />
+    <File Path="tests/Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/tests/ApiGateway/">
+    <Project Path="tests\ApiGateway\FoodDelivery.ApiGateway.TestShared\FoodDelivery.ApiGateway.TestShared.csproj" Type="Classic C#" />
+    <Project Path="tests\ApiGateway\FoodDelivery.ApiGateway.UnitTests\FoodDelivery.ApiGateway.UnitTests.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/tests/BuildingBlocks/" />
+  <Folder Name="/tests/BuildingBlocks/MassTransit/">
+    <Project Path="tests/BuildingBlocks/MassTransit/BuildingBlocks.Integration.MassTransit.IntegrationTests/BuildingBlocks.Integration.MassTransit.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/Services/" />
+  <Folder Name="/tests/Services/Catalogs/">
+    <Project Path="tests/Services/Catalogs/FoodDelivery.Services.Catalogs.DependencyTests/FoodDelivery.Services.Catalogs.DependencyTests.csproj" />
+    <Project Path="tests/Services/Catalogs/FoodDelivery.Services.Catalogs.EndToEndTests/FoodDelivery.Services.Catalogs.EndToEndTests.csproj" />
+    <Project Path="tests/Services/Catalogs/FoodDelivery.Services.Catalogs.IntegrationTests/FoodDelivery.Services.Catalogs.IntegrationTests.csproj" />
+    <Project Path="tests/Services/Catalogs/FoodDelivery.Services.Catalogs.LoadTests/FoodDelivery.Services.Catalogs.LoadTests.csproj" />
+    <Project Path="tests/Services/Catalogs/FoodDelivery.Services.Catalogs.TestShared/FoodDelivery.Services.Catalogs.TestShared.csproj" />
+    <Project Path="tests/Services/Catalogs/FoodDelivery.Services.Catalogs.UnitTests/FoodDelivery.Services.Catalogs.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/Services/Customers/">
+    <Project Path="tests/Services/Customers/FoodDelivery.Services.Customers.DependencyTests/FoodDelivery.Services.Customers.DependencyTests.csproj" />
+    <Project Path="tests/Services/Customers/FoodDelivery.Services.Customers.EndToEndTests/FoodDelivery.Services.Customers.EndToEndTests.csproj" />
+    <Project Path="tests/Services/Customers/FoodDelivery.Services.Customers.IntegrationTests/FoodDelivery.Services.Customers.IntegrationTests.csproj" />
+    <Project Path="tests/Services/Customers/FoodDelivery.Services.Customers.LoadTests/FoodDelivery.Services.Customers.LoadTests.csproj" />
+    <Project Path="tests/Services/Customers/FoodDelivery.Services.Customers.TestShared/FoodDelivery.Services.Customers.TestShared.csproj" />
+    <Project Path="tests/Services/Customers/FoodDelivery.Services.Customers.UnitTests/FoodDelivery.Services.Customers.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/Services/Identity/">
+    <Project Path="tests/Services/Identity/FoodDelivery.Services.Identity.DependencyTests/FoodDelivery.Services.Identity.DependencyTests.csproj" />
+    <Project Path="tests/Services/Identity/FoodDelivery.Services.Identity.EndToEndTests/FoodDelivery.Services.Identity.EndToEndTests.csproj" />
+    <Project Path="tests/Services/Identity/FoodDelivery.Services.Identity.IntegrationTests/FoodDelivery.Services.Identity.IntegrationTests.csproj" />
+    <Project Path="tests/Services/Identity/FoodDelivery.Services.Identity.TestShared/FoodDelivery.Services.Identity.TestShared.csproj" />
+    <Project Path="tests/Services/Identity/FoodDelivery.Services.Identity.UnitTests/FoodDelivery.Services.Identity.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/Services/Orders/" />
+  <Folder Name="/tests/Shared/">
+    <Project Path="tests/Shared/Tests.Shared/Tests.Shared.csproj" />
+  </Folder>
+</Solution>

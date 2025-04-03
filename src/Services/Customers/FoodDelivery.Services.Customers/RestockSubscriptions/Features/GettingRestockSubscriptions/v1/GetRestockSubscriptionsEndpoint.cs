@@ -2,8 +2,7 @@ using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Paging;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -18,8 +17,8 @@ internal class GetRestockSubscriptionsEndpoint
         UnAuthorizedHttpProblemResult
     >
 {
-    public string GroupName => RestockSubscriptionsConfigs.Tag;
-    public string PrefixRoute => RestockSubscriptionsConfigs.RestockSubscriptionsUrl;
+    public string GroupName => RestockSubscriptionsConfigurations.Tag;
+    public string PrefixRoute => RestockSubscriptionsConfigurations.RestockSubscriptionsUrl;
     public double Version => 1.0;
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
@@ -30,10 +29,8 @@ internal class GetRestockSubscriptionsEndpoint
             .MapGet("/", HandleAsync)
             .RequireAuthorization()
             .WithName(nameof(GetRestockSubscriptions))
-            .WithSummaryAndDescription(
-                nameof(GetRestockSubscriptions).Humanize(),
-                nameof(GetRestockSubscriptions).Humanize()
-            )
+            .WithDescription(nameof(GetRestockSubscriptions).Humanize())
+            .WithSummary(nameof(GetRestockSubscriptions).Humanize())
             .WithDisplayName(nameof(GetRestockSubscriptions).Humanize());
 
         // .Produces<GetCustomersResponse>("Customers fetched successfully.", StatusCodes.Status200OK)
@@ -45,23 +42,20 @@ internal class GetRestockSubscriptionsEndpoint
         Results<Ok<GetRestockSubscriptionsResponse>, ValidationProblem, UnAuthorizedHttpProblemResult>
     > HandleAsync([AsParameters] GetRestockSubscriptionsRequestParameters requestParameters)
     {
-        var (pageNumber, pageSize, filters, sortOrder, emails, from, to, context, queryProcessor, cancellationToken) =
-            requestParameters;
-
-        var result = await queryProcessor.SendAsync(
+        var result = await requestParameters.QueryBus.SendAsync(
             GetRestockSubscriptions.Of(
                 new PageRequest
                 {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
-                    Filters = filters,
-                    SortOrder = sortOrder
+                    PageNumber = requestParameters.PageNumber,
+                    PageSize = requestParameters.PageSize,
+                    Filters = requestParameters.Filters,
+                    SortOrder = requestParameters.SortOrder,
                 },
-                emails,
-                from,
-                to
+                [requestParameters.Email],
+                requestParameters.From,
+                requestParameters.To
             ),
-            cancellationToken
+            requestParameters.CancellationToken
         );
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
@@ -74,15 +68,15 @@ public record GetRestockSubscriptionsResponse(IPageList<RestockSubscriptionDto> 
 
 // https://blog.codingmilitia.com/2022/01/03/getting-complex-type-as-simple-type-query-string-aspnet-core-api-controller/
 // https://benfoster.io/blog/minimal-apis-custom-model-binding-aspnet-6/
-public record GetRestockSubscriptionsRequestParameters(
-    int PageNumber,
-    int PageSize,
-    string? Filters,
-    string? SortOrder,
-    [FromBody] IList<string> Emails,
-    DateTime? From,
-    DateTime? To,
+internal record GetRestockSubscriptionsRequestParameters(
+    string Email,
     HttpContext HttpContext,
     IQueryBus QueryBus,
-    CancellationToken CancellationToken
+    CancellationToken CancellationToken,
+    int PageSize = 10,
+    int PageNumber = 1,
+    string? Filters = null,
+    string? SortOrder = null,
+    DateTime? From = null,
+    DateTime? To = null
 ) : IHttpQuery, IPageRequest;

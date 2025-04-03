@@ -1,5 +1,5 @@
 using FluentAssertions;
-using FoodDelivery.Services.Customers.TestShared.Fakes.RestockSubscriptions.Entities;
+using FoodDelivery.Services.Customers.TestShared.Fakes.RestockSubscriptions.Models;
 using FoodDelivery.Services.Customers.TestShared.Fakes.RestockSubscriptions.ValueObjects;
 using Tests.Shared.XunitCategories;
 

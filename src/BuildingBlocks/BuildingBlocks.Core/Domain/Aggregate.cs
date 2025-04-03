@@ -11,15 +11,11 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
     [NonSerialized]
     private readonly ConcurrentQueue<IDomainEvent> _uncommittedDomainEvents = new();
 
-    private const long NewAggregateVersion = 0;
-
-    public long OriginalVersion { get; private set; } = NewAggregateVersion;
-
     /// <summary>
     /// Add the <paramref name="domainEvent"/> to the aggregate pending changes event.
     /// </summary>
     /// <param name="domainEvent">The domain event.</param>
-    protected void AddDomainEvents(IDomainEvent domainEvent)
+    public void AddDomainEvents(IDomainEvent domainEvent)
     {
         if (!_uncommittedDomainEvents.Any(x => Equals(x.EventId, domainEvent.EventId)))
         {
@@ -37,19 +33,16 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
         return _uncommittedDomainEvents.ToImmutableList();
     }
 
-    public void ClearDomainEvents()
-    {
-        _uncommittedDomainEvents.Clear();
-    }
-
     public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
     {
-        var events = _uncommittedDomainEvents.ToImmutableList();
-        MarkUncommittedDomainEventAsCommitted();
-        return events;
+        // create a copy because after clearing events we lost our collection
+        var events = new List<IDomainEvent>(GetUncommittedDomainEvents());
+        ClearDomainEvents();
+
+        return events.ToImmutableList();
     }
 
-    public void MarkUncommittedDomainEventAsCommitted()
+    public void ClearDomainEvents()
     {
         _uncommittedDomainEvents.Clear();
     }
@@ -59,7 +52,7 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
         var isBroken = rule.IsBroken();
         if (isBroken)
         {
-            throw new DomainException(rule.GetType(), rule.Message, rule.Status);
+            throw new BusinessRuleValidationException(rule);
         }
     }
 
@@ -75,6 +68,6 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
 }
 
 public abstract class Aggregate<TIdentity, TId> : Aggregate<TIdentity>
-    where TIdentity : Identity<TId> { }
+    where TIdentity : Identity<TId>;
 
-public abstract class Aggregate : Aggregate<AggregateId, long>, IAggregate { }
+public abstract class Aggregate : Aggregate<AggregateId, long>, IAggregate;

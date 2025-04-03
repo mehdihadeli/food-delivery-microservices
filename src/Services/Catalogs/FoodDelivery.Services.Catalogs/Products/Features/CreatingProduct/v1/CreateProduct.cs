@@ -1,8 +1,6 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Domain;
-using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
+using FluentValidation;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
@@ -10,7 +8,6 @@ using FoodDelivery.Services.Catalogs.Categories.Contracts;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
-using FoodDelivery.Services.Catalogs.Shared.Extensions;
 using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +20,7 @@ namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1;
 // https://enterprisecraftsmanship.com/posts/functional-c-primitive-obsession/
 
 // prevent duplicate validation with using value-objects in command and domain model
-internal record CreateProduct(
+public record CreateProduct(
     Name Name,
     Price Price,
     Stock Stock,
@@ -37,131 +34,41 @@ internal record CreateProduct(
     BrandId BrandId,
     string? Description = null,
     IEnumerable<CreateProductImageRequest>? Images = null
-) : ITxCreateCommand<CreateProductResult>
+) : ITxCommand<CreateProductResult>
 {
-    public long Id { get; } = SnowFlakIdGenerator.NewId();
+    public ProductId Id { get; } = ProductId.Of(SnowFlakIdGenerator.NewId());
+}
 
-    /// <summary>
-    /// Create product with in-line validation.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="price"></param>
-    /// <param name="stock"></param>
-    /// <param name="restockThreshold"></param>
-    /// <param name="maxStockThreshold"></param>
-    /// <param name="status"></param>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    /// <param name="depth"></param>
-    /// <param name="size"></param>
-    /// <param name="color"></param>
-    /// <param name="productType"></param>
-    /// <param name="categoryId"></param>
-    /// <param name="supplierId"></param>
-    /// <param name="brandId"></param>
-    /// <param name="description"></param>
-    /// <param name="images"></param>
-    /// <returns></returns>
-    public static CreateProduct Of(
-        string? name,
-        decimal price,
-        int stock,
-        int restockThreshold,
-        int maxStockThreshold,
-        ProductStatus status,
-        int width,
-        int height,
-        int depth,
-        string? size,
-        ProductColor color,
-        ProductType productType,
-        long categoryId,
-        long supplierId,
-        long brandId,
-        string? description = null,
-        IEnumerable<CreateProductImageRequest>? images = null
-    )
+public class CreateProductValidation : AbstractValidator<CreateProduct>
+{
+    public CreateProductValidation()
     {
-        // Or we can use FluentValidation like `new CreateProductValidator()!.ValidateAndThrow(value);` for validating input here
-        return new CreateProduct(
-            Name.Of(name),
-            Price.Of(price),
-            Stock.Of(stock, restockThreshold, maxStockThreshold),
-            status.NotBeInvalid(),
-            productType,
-            Dimensions.Of(width, height, depth),
-            Size.Of(size),
-            color.NotBeInvalid(),
-            CategoryId.Of(categoryId),
-            SupplierId.Of(supplierId),
-            BrandId.Of(brandId),
-            description,
-            images
-        );
+        RuleFor(x => x.Id).NotNull();
+        RuleFor(x => x.Name).NotNull();
+        RuleFor(x => x.Price).NotNull();
+        RuleFor(x => x.Stock).NotNull();
+        RuleFor(x => x.Dimensions).NotNull();
+        RuleFor(x => x.Size).NotNull();
+        RuleFor(x => x.Color).NotNull();
+        RuleFor(x => x.CategoryId).NotNull();
+        RuleFor(x => x.SupplierId).NotNull();
+        RuleFor(x => x.BrandId).NotNull();
     }
 }
 
-internal class CreateProductHandler(
+public class CreateProductHandler(
     ICatalogDbContext catalogDbContext,
-    IMapper mapper,
     ICategoryChecker categoryChecker,
     IBrandChecker brandChecker,
     ISupplierChecker supplierChecker,
     ILogger<CreateProductHandler> logger
 ) : ICommandHandler<CreateProduct, CreateProductResult>
 {
-    public async Task<CreateProductResult> Handle(CreateProduct command, CancellationToken cancellationToken)
+    public async ValueTask<CreateProductResult> Handle(CreateProduct command, CancellationToken cancellationToken)
     {
-        command.NotBeNull();
-
-        var (
-            name,
-            price,
-            stock,
-            status,
-            type,
-            dimensions,
-            size,
-            color,
-            categoryId,
-            supplierId,
-            brandId,
-            description,
-            imageItems
-        ) = command;
-
-        var images = imageItems
-            ?.Select(x => new ProductImage(
-                EntityId.Of(SnowFlakIdGenerator.NewId()),
-                x.ImageUrl,
-                x.IsMain,
-                ProductId.Of(command.Id)
-            ))
-            .ToList();
+        var product = command.ToProduct(categoryChecker, brandChecker, supplierChecker);
 
         // await _domainEventDispatcher.DispatchAsync(cancellationToken, new Events.Domain.CreatingProduct());
-
-        // orchestration on multiple aggregate and entities in application service or handlers
-        var product = Product.Create(
-            ProductId.Of(command.Id),
-            name,
-            null,
-            stock,
-            status,
-            type,
-            dimensions,
-            size,
-            color,
-            description,
-            price,
-            categoryId,
-            supplierId,
-            brandId,
-            async cid => await catalogDbContext.CategoryExistsAsync(cid!, cancellationToken: cancellationToken),
-            supplierChecker,
-            brandChecker,
-            images
-        );
 
         await catalogDbContext.Products.AddAsync(product, cancellationToken: cancellationToken);
         await catalogDbContext.SaveChangesAsync(cancellationToken);
@@ -178,4 +85,4 @@ internal class CreateProductHandler(
     }
 }
 
-internal record CreateProductResult(long Id);
+public record CreateProductResult(long Id);

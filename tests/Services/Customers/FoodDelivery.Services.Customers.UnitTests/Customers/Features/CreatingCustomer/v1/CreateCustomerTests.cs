@@ -1,12 +1,13 @@
 using BuildingBlocks.Core.Exception.Types;
 using FluentAssertions;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Clients;
-using FoodDelivery.Services.Customers.Shared.Clients.Identity;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Commands;
-using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Dtos;
 using FoodDelivery.Services.Customers.UnitTests.Common;
 using Microsoft.AspNetCore.Http;
@@ -26,21 +27,21 @@ namespace FoodDelivery.Services.Customers.UnitTests.Customers.Features.CreatingC
 public class CreateCustomerTests : CustomerServiceUnitTestBase
 {
     private readonly ILogger<CreateCustomerHandler> _logger = new NullLogger<CreateCustomerHandler>();
-    private readonly IIdentityApiClient _identityApiClient = Substitute.For<IIdentityApiClient>();
+    private readonly IIdentityRestClient _identityRestClient = Substitute.For<IIdentityRestClient>();
 
     [CategoryTrait(TestCategory.Unit)]
     [Fact]
     public async Task can_create_customer_with_valid_inputs()
     {
         // Arrange
-        // we can mock `IdentityApiClient` with `nsubstitute` or we can use `wiremock` server and its endpoint setup for getting response(that is in base CustomerServiceUnitTestBase class)
+        // we can mock `IIdentityRestClientBase` with `nsubstitute` or we can use `wiremock` server and its endpoint setup for getting response(that is in base CustomerServiceUnitTestBase class)
 
-        // 1) using mocker server approach in unit test for getting response from `IdentityApiClient`, and using `base` class `IdentityApiClient` property for using mock server
+        // 1) using mocker server approach in unit test for getting response from `IIdentityRestClientBase`, and using `base` class `IIdentityRestClientBase` property for using mock server
         // var fakeIdentityUser = CustomersServiceMockServersFixture.IdentityServiceMock
         //     .SetupGetUserByEmail()
         //     .Response.UserIdentity;
 
-        // 2) mocking `IdentityApiClient` for unit test
+        // 2) mocking `IIdentityRestClientBase` for unit test
         var fakeIdentityUser = new FakeUserIdentityDto().Generate();
 
         var user = fakeIdentityUser.ToUserIdentity();
@@ -48,12 +49,12 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
         //https://nsubstitute.github.io/help/return-for-args/
         //https://nsubstitute.github.io/help/set-return-value/
         //https://nsubstitute.github.io/help/argument-matchers/
-        _identityApiClient
+        _identityRestClient
             .GetUserByEmailAsync(Arg.Is<string>(x => x == fakeIdentityUser!.Email), Arg.Any<CancellationToken>())
             .Returns(user);
 
         var command = new FakeCreateCustomer(fakeIdentityUser!.Email).Generate();
-        var handler = new CreateCustomerHandler(_identityApiClient, CustomersDbContext, _logger);
+        var handler = new CreateCustomerHandler(_identityRestClient, CustomersDbContext, _logger);
 
         // Act
         var createdCustomerResponse = await handler.Handle(command, CancellationToken.None);
@@ -70,7 +71,7 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
     {
         // Arrange
         var command = new CreateCustomer("test@test.com");
-        var handler = new CreateCustomerHandler(IdentityApiClient, CustomersDbContext, _logger);
+        var handler = new CreateCustomerHandler(IdentityRestClient, CustomersDbContext, _logger);
 
         //Act
         Func<Task> act = async () =>
@@ -91,7 +92,7 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
     public async Task must_throw_argument_exception_with_null_command()
     {
         // Arrange
-        var handler = new CreateCustomerHandler(IdentityApiClient, CustomersDbContext, _logger);
+        var handler = new CreateCustomerHandler(IdentityRestClient, CustomersDbContext, _logger);
 
         //Act
         Func<Task> act = async () =>
@@ -113,7 +114,7 @@ public class CreateCustomerTests : CustomerServiceUnitTestBase
         await CustomersDbContext.SaveChangesAsync();
 
         var command = new CreateCustomer(existCustomer.Email);
-        var handler = new CreateCustomerHandler(IdentityApiClient, CustomersDbContext, _logger);
+        var handler = new CreateCustomerHandler(IdentityRestClient, CustomersDbContext, _logger);
 
         //Act
         Func<Task> act = async () =>

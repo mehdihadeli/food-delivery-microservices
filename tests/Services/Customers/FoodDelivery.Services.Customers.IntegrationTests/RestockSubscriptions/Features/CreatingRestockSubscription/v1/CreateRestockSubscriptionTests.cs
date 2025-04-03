@@ -2,7 +2,7 @@ using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models;
 using Microsoft.EntityFrameworkCore;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
@@ -31,7 +31,7 @@ public class CreateRestockSubscriptionTests(
         );
 
         // Act
-        var createdCustomerSubscriptionResponse = await SharedFixture.SendAsync(command);
+        var createdCustomerSubscriptionResponse = await SharedFixture.CommandAsync(command);
 
         // Assert
         createdCustomerSubscriptionResponse.RestockSubscriptionId.Should().BeGreaterThan(0);

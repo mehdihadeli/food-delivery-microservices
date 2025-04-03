@@ -2,8 +2,7 @@ using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Paging;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -18,8 +17,8 @@ internal class GetCustomersEndpoint
         UnAuthorizedHttpProblemResult
     >
 {
-    public string GroupName => CustomersConfigs.Tag;
-    public string PrefixRoute => CustomersConfigs.CustomersPrefixUri;
+    public string GroupName => CustomersConfigurations.Tag;
+    public string PrefixRoute => CustomersConfigurations.CustomersPrefixUri;
     public double Version => 1.0;
 
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
@@ -28,9 +27,10 @@ internal class GetCustomersEndpoint
         //         GetProductsResult>("/")
         return builder
             .MapGet("/", HandleAsync)
-            .RequireAuthorization()
+            .AllowAnonymous()
             .WithName(nameof(GetCustomers))
-            .WithSummaryAndDescription(nameof(GetCustomers).Humanize(), nameof(GetCustomers).Humanize())
+            .WithSummary(nameof(GetCustomers).Humanize())
+            .WithDescription(nameof(GetCustomers).Humanize())
             .WithDisplayName(nameof(GetCustomers).Humanize());
 
         // .Produces<GetCustomersResponse>("Customers fetched successfully.", StatusCodes.Status200OK)
@@ -50,7 +50,7 @@ internal class GetCustomersEndpoint
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 Filters = filters,
-                SortOrder = sortOrder
+                SortOrder = sortOrder,
             }
         );
 

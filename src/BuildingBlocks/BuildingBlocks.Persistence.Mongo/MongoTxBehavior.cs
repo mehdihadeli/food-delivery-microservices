@@ -1,7 +1,7 @@
 using System.Text.Json;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Persistence.Mongo;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.Logging;
 
 namespace BuildingBlocks.Persistence.Mongo;
@@ -25,30 +25,30 @@ public class MongoTxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<TResponse> Handle(
-        TRequest request,
-        RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken
+    public async ValueTask<TResponse> Handle(
+        TRequest message,
+        CancellationToken cancellationToken,
+        MessageHandlerDelegate<TRequest, TResponse> next
     )
     {
-        if (request is not ITxRequest)
+        if (message is not ITxRequest)
         {
-            return await next();
+            return await next(message, cancellationToken);
         }
 
         _logger.LogInformation(
-            "{Prefix} Handled command {MediatRRequest}",
+            "{Prefix} Handled command {TRequest}",
             nameof(MongoTxBehavior<TRequest, TResponse>),
             typeof(TRequest).FullName
         );
         _logger.LogDebug(
-            "{Prefix} Handled command {MediatRRequest} with content {RequestContent}",
+            "{Prefix} Handled command {TRequest} with content {RequestContent}",
             nameof(MongoTxBehavior<TRequest, TResponse>),
             typeof(TRequest).FullName,
-            JsonSerializer.Serialize(request)
+            JsonSerializer.Serialize(message)
         );
         _logger.LogInformation(
-            "{Prefix} Open the transaction for {MediatRRequest}",
+            "{Prefix} Open the transaction for {TRequest}",
             nameof(MongoTxBehavior<TRequest, TResponse>),
             typeof(TRequest).FullName
         );
@@ -58,9 +58,9 @@ public class MongoTxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
             // Achieving atomicity
             await _dbContext.BeginTransactionAsync(cancellationToken);
 
-            var response = await next();
+            var response = await next(message, cancellationToken);
             _logger.LogInformation(
-                "{Prefix} Executed the {MediatRRequest} request",
+                "{Prefix} Executed the {TRequest} request",
                 nameof(MongoTxBehavior<TRequest, TResponse>),
                 typeof(TRequest).FullName
             );
@@ -69,7 +69,7 @@ public class MongoTxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
             return response;
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             await _dbContext.RollbackTransaction(cancellationToken);
             throw;

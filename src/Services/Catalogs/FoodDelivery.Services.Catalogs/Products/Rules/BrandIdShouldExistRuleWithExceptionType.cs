@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
@@ -7,25 +6,17 @@ using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.Products.Rules;
 
-public class BrandIdShouldExistRuleWithExceptionType : IBusinessRuleWithExceptionType<BrandNotFoundException>
+public class BrandIdShouldExistRuleWithExceptionType(IBrandChecker brandChecker, BrandId id)
+    : IBusinessRuleWithExceptionType<BrandNotFoundException>
 {
-    private readonly IBrandChecker? _brandChecker;
-    private readonly BrandId? _id;
-
-    public BrandIdShouldExistRuleWithExceptionType([NotNull] IBrandChecker? brandChecker, [NotNull] BrandId? id)
-    {
-        _brandChecker = brandChecker;
-        _id = id;
-    }
-
     public bool IsBroken()
     {
-        _brandChecker.NotBeNull();
-        _id.NotBeNull();
-        var exists = _brandChecker.BrandExists(_id);
+        brandChecker.NotBeNull();
+        id.NotBeNull();
+        var exists = brandChecker.BrandExists(id);
 
         return !exists;
     }
 
-    public BrandNotFoundException Exception => new(GetType(), _id!);
+    public BrandNotFoundException Exception => new(GetType(), id!);
 }

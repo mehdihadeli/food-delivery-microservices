@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 
 namespace BuildingBlocks.Abstractions.Caching;
 
@@ -9,8 +9,8 @@ public interface IInvalidateCacheRequest<in TRequest, TResponse>
     IEnumerable<string> CacheKeys(TRequest request);
 }
 
-public interface IInvalidateCacheRequest<in TRequest>
-    where TRequest : IRequest;
+public interface IInvalidateCacheRequest<in TRequest> : IInvalidateCacheRequest<TRequest, Unit>
+    where TRequest : IRequest<Unit>;
 
 public interface IStreamInvalidateCacheRequest<in TRequest, TResponse>
     where TRequest : IStreamRequest<TResponse>

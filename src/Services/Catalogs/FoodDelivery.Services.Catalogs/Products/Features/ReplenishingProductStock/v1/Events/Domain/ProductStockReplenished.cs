@@ -11,7 +11,7 @@ namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductSt
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our commands and events, just primitive types
-internal record ProductStockReplenished(
+public record ProductStockReplenished(
     long ProductId,
     int AvailableStock,
     int RestockThreshold,
@@ -54,10 +54,10 @@ internal record ProductStockReplenished(
     }
 }
 
-internal class ProductStockReplenishedHandler : IDomainEventHandler<ProductStockReplenished>
+public class ProductStockReplenishedHandler : IDomainEventHandler<ProductStockReplenished>
 {
-    public Task Handle(ProductStockReplenished notification, CancellationToken cancellationToken)
+    public ValueTask Handle(ProductStockReplenished notification, CancellationToken cancellationToken)
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

@@ -5,11 +5,13 @@ using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Models;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
-using FoodDelivery.Services.Customers.Shared.Clients.Identity;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity;
 using FoodDelivery.Services.Customers.Shared.Data;
+using Microsoft.AspNetCore.HeaderPropagation;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 
@@ -20,7 +22,7 @@ namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our commands and events, just primitive types
-internal record CreateCustomer(string Email) : ITxCreateCommand<CreateCustomerResult>
+public record CreateCustomer(string Email) : ITxCommand<CreateCustomerResult>
 {
     public long Id { get; } = SnowFlakIdGenerator.NewId();
 
@@ -35,7 +37,7 @@ internal record CreateCustomer(string Email) : ITxCreateCommand<CreateCustomerRe
     }
 }
 
-internal class CreateCustomerValidator : AbstractValidator<CreateCustomer>
+public class CreateCustomerValidator : AbstractValidator<CreateCustomer>
 {
     public CreateCustomerValidator()
     {
@@ -43,22 +45,22 @@ internal class CreateCustomerValidator : AbstractValidator<CreateCustomer>
     }
 }
 
-internal class CreateCustomerHandler(
-    IIdentityApiClient identityApiClient,
+public class CreateCustomerHandler(
+    IIdentityRestClient identityRestClient,
     CustomersDbContext customersDbContext,
     ILogger<CreateCustomerHandler> logger
 ) : ICommandHandler<CreateCustomer, CreateCustomerResult>
 {
-    public async Task<CreateCustomerResult> Handle(CreateCustomer command, CancellationToken cancellationToken)
+    public async ValueTask<CreateCustomerResult> Handle(CreateCustomer command, CancellationToken cancellationToken)
     {
         logger.LogInformation("Creating customer");
 
         command.NotBeNull();
 
         if (customersDbContext.Customers.Any(x => x.Email.Value == command.Email))
-            throw new CustomerAlreadyExistsException($"Customer with email '{command.Email}' already exists.");
+            throw new CustomerAlreadyExistsException($"CustomerReadModel with email '{command.Email}' already exists.");
 
-        var identityUser = await identityApiClient.GetUserByEmailAsync(command.Email, cancellationToken);
+        var identityUser = await identityRestClient.GetUserByEmailAsync(command.Email, cancellationToken);
         if (identityUser is null)
             throw new NotFoundAppException($"user with email {command.Email} not found.");
 
@@ -80,4 +82,4 @@ internal class CreateCustomerHandler(
     }
 }
 
-internal record CreateCustomerResult(long CustomerId, Guid IdentityUserId);
+public record CreateCustomerResult(long CustomerId, Guid IdentityUserId);

@@ -1,5 +1,5 @@
 using Bogus;
-using FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
+using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 
 namespace FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Events;
 

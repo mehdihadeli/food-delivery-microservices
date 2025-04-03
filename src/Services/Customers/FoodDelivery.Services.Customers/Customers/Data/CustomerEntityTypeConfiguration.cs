@@ -45,7 +45,7 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
                 a.Property(p => p.Value)
                     .HasColumnName(nameof(Customer.PhoneNumber).Underscore())
                     .IsRequired()
-                    .HasMaxLength(EfConstants.Lenght.Tiny);
+                    .HasMaxLength(EfConstants.Lenght.Short);
 
                 // supporting index on owned types:
                 // https://github.com/dotnet/efcore/issues/11336
@@ -60,9 +60,9 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
             m => m.Address,
             a =>
             {
-                a.Property(p => p.City).HasMaxLength(EfConstants.Lenght.Short);
+                a.Property(p => p.City).HasMaxLength(EfConstants.Lenght.Medium);
                 a.Property(p => p.Country).HasMaxLength(EfConstants.Lenght.Medium);
-                a.Property(p => p.Detail).HasMaxLength(EfConstants.Lenght.Medium);
+                a.Property(p => p.Detail).HasMaxLength(EfConstants.Lenght.Long);
                 a.Property(p => p.PostalCode)
                     .HasConversion(s => s.Value, v => new PostalCode { Value = v })
                     .IsRequired(false);

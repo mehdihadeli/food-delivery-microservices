@@ -7,62 +7,24 @@ on:
   # Runs your workflow when you push a commit or tag.
   push:
     branches:
-      - develop
+      # Only main branch pushes
       - main
-      - preview
-      - beta
-      - devops/ci
-      - fix/*
-      - feat/*
-      - test/*
-      - build/*
-      - ci/*
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-affects-specific-files
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
     paths:
       - src/Services/Customers/**
       - src/BuildingBlocks/**
       - tests/Services/Customers/**
-      - .github/actions/**
-      - .github/workflows/back-merge.yml
-      - .github/workflows/conventional-commits.yml
-      - .github/workflows/customers.yml
-      - .github/workflows/reusable-build-test.yml
-      - .github/workflows/reusable-build-test-push.yml
-      - .github/workflows/reusable-release.yml
-      - .github/workflows/reusable-deploy.yml
-      - src/Directory.Build.props
-      - src/Directory.Packages.props
-      - src/Packages.props
-      - tests/Directory.Packages.props
-      - tests/Directory.Build.props
-      - .releaserc.yaml
   pull_request:
     branches:
-      - develop
+      # Only PRs targeting main
       - main
-      - preview
-      - beta
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-affects-specific-files
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
     paths:
       - src/Services/Customers/**
       - src/BuildingBlocks/**
       - tests/Services/Customers/**
-      - .github/actions/**
-      - .github/workflows/back-merge.yml
-      - .github/workflows/conventional-commits.yml
-      - .github/workflows/customers.yml
-      - .github/workflows/reusable-build-test.yml
-      - .github/workflows/reusable-build-test-push.yml
-      - .github/workflows/reusable-release.yml
-      - .github/workflows/reusable-deploy.yml
-      - src/Directory.Build.props
-      - src/Directory.Packages.props
-      - src/Packages.props
-      - tests/Directory.Packages.props
-      - tests/Directory.Build.props
-      - .releaserc.yaml
 
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
@@ -75,23 +37,23 @@ on:
   workflow_dispatch:
     inputs:
       logLevel:
-        description: 'Log level'
+        description: "Log level"
         required: true
-        default: 'info'
+        default: "info"
         type: choice
         options:
           - info
           - warning
           - debug
-      should-publish:
+      publish-production:
         required: true
-        default: true
-        description: "Should publish docker and publish artifacts?"
+        default: false
+        description: "Publish docker image and artifacts to production"
         type: boolean
-      should-publish-release-note:
+      publish-production-release-note:
         required: true
-        default: true
-        description: "Should publish a release note?"
+        default: false
+        description: "Publish a release note"
         type: boolean
       should-deploy:
         required: true
@@ -104,14 +66,6 @@ on:
 #       type: environment
 #       required: true
 
-# https://docs.github.com/en/actions/learn-github-actions/variables#defining-environment-variables-for-a-single-workflow
-# https://docs.github.com/en/actions/using-workflows/reusing-workflows#limitations
-# https://docs.github.com/en/actions/learn-github-actions/variables
-# Any environment variables set in an env context defined at the workflow level in the caller workflow are not propagated to the called workflow
-env:
-  IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
-  BRANCH_NAME: ${{ github.ref_name }}
-
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
@@ -119,255 +73,91 @@ concurrency:
 
 # https://docs.github.com/en/actions/using-workflows/about-workflows
 jobs:
+  call-detect-environment:
+    uses: ./.github/workflows/_detect-environment.yml
+    with:
+      publish-production: ${{ github.event.inputs.publish-production || false }}
 
-  pre-check:
-    runs-on: ubuntu-latest
+  call-semantic-version:
+    uses: ./.github/workflows/_semantic-version.yml
+    needs: [call-detect-environment]
+    with:
+      environment: ${{ needs.call-detect-environment.outputs.environment }}
+      dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
 
-    # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
-    # Job outputs containing expressions are evaluated on the runner at the end of each job
-    outputs:
-      environment-name: ${{ steps.environment-name-step.outputs.environment-name }}
-
-    # https://itnext.io/automate-your-integration-tests-and-semantic-releases-with-github-actions-43875ad83092
-    # https://github.com/actions/runner/issues/491#issuecomment-850884422
-    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
-    # we should not filter on head commit message types like 'chore', 'docs' because it is possible it our latest SHA commit in integration branches like develop and main be these types and it will skips whole of our trigger
-    if: |
-       github.actor != 'dependabot[bot]'
-
-    steps:
-      - name: Conventional Commits Checks
-        uses: webiny/action-conventional-commits@v1.1.0
-
-      - name: Job Info
-        if: success()
-        run: |
-          echo "pre-check is successful."
-          echo workspace is: ${{ github.workspace }}
-          echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
-          echo "is push event? ${{ github.event_name == 'push' }}"
-          echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
-          echo "pull_request.head.ref is: ${{ github.event.pull_request.head.ref }}"
-          echo "github.ref_name is: ${{ github.ref_name }}"
-          echo "github.ref is: ${{ github.ref }}"
-          echo "github.head_ref is: ${{ github.head_ref }}"
-          echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
-
-      # https://www.codewrecks.com/post/github/choose-environment-from-branch/
-      # https://stackoverflow.com/questions/63117454/how-to-set-workflow-env-variables-depending-on-branch
-      # https://hungvu.tech/advanced-github-actions-conditional-workflow
-      - name: Set Environment For Branch
-        if: success()
-        id: environment-name-step
-        run: |
-          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-              echo "environment-name=production" >> "$GITHUB_OUTPUT"
-          elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-              echo "environment-name=develop" >> "$GITHUB_OUTPUT"
-          elif [[ $GITHUB_REF == 'refs/heads/preview' ]]; then
-              echo "environment-name=staging" >> "$GITHUB_OUTPUT"
-          elif [[ $GITHUB_REF == 'refs/heads/beta' ]]; then
-              echo "environment-name=staging" >> "$GITHUB_OUTPUT"
-          else
-              echo "environment-name=develop" >> "$GITHUB_OUTPUT"
-          fi
+  call-pre-checks:
+    uses: ./.github/workflows/_pre-checks.yml
+    needs: [call-detect-environment, call-semantic-version]
+    with:
+      tests-path: ${{ vars.CUSTOMERS_SERVICE_TESTS_PATH }} # tests/Services/Customers
+      project-path: ${{ vars.CUSTOMERS_SERVICE_PROJECT_PATH }} # src/Services/Customers
+      dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
+    secrets:
+      ci-github-token: ${{ secrets.GITHUB_TOKEN }}
 
   ### CI
-  call-build-test:
-    needs: pre-check
-
+  call-build-test-publish:
+    needs: [call-pre-checks, call-semantic-version, call-detect-environment]
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
+    ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
     permissions:
+      contents: read # for publishing in dry-run mode
       checks: write # for test-reporter
+
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
+    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
+    uses: ./.github/workflows/_build-test-publish.yml
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
+    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
+    secrets:
+      ci-github-token: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      # https://docs.github.com/en/actions/security-guides/encrypted-secrets
+      # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
+      # https://docs.github.com/en/actions/learn-github-actions/variables
+      # https://stackoverflow.com/questions/73305126/passing-env-variable-inputs-to-a-reusable-workflow
+      tests-path: ${{ vars.CUSTOMERS_SERVICE_TESTS_PATH }} # tests/Services/Customers
+      project-path: ${{ vars.CUSTOMERS_SERVICE_PROJECT_PATH }} # src/Services/Customers
+      service-name: ${{ vars.CUSTOMERS_SERVICE_NAME }} # customers-service
+      dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
+      no-restore: true
+      # we don't set version or we pass `call-semantic-version.outputs.sem-ver`, version will assign using `gitversion` and `msbuild` based on ` GitVersion.MsBuild` package.
+      environment: ${{ needs.call-detect-environment.outputs.environment }}
+
+  call-docker-build-push:
+    needs:
+      [
+        call-pre-checks,
+        call-semantic-version,
+        call-detect-environment,
+        call-build-test-publish,
+      ]
+    permissions:
+      packages: write
       contents: read
-
-    # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
-    # we should not filter on head commit message like 'build', 'test' because it is possible beside of this job, it triggers also 'call-build-test-push' job when we commit on main branches (just filter on branches)
-    if: |
-      !(contains(github.event.head_commit.message, '[skip ci]')) &&
-      (github.event_name == 'pull_request' || !contains(fromJson('["develop", "main", "beta", "preview"]'), github.ref_name) || (github.event_name == 'workflow_dispatch' && github.event.inputs.should-publish == 'false'))
-
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
-    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-    uses: ./.github/workflows/reusable-build-test.yml
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
-    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
-    secrets: inherit # pass all secrets
+    if: success()
+    uses: ./.github/workflows/_docker-build-push.yml
     with:
-      # https://docs.github.com/en/actions/security-guides/encrypted-secrets
-      # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
-      # https://docs.github.com/en/actions/learn-github-actions/variables
-      # https://stackoverflow.com/questions/73305126/passing-env-variable-inputs-to-a-reusable-workflow
-      tests-path: ${{ vars.CUSTOMERS_SERVICE_TESTS_PATH }} # tests/Services/Customers
-      project-path: ${{ vars.CUSTOMERS_SERVICE_PROJECT_PATH }} # src/Services/Customers/FoodDelivery.Services.Customers.Api
+      environment: ${{ needs.call-detect-environment.outputs.environment }}
+      version: ${{ needs.call-semantic-version.outputs.image-version }}
       service-name: ${{ vars.CUSTOMERS_SERVICE_NAME }} # customers-service
       docker-file-path: ${{ vars.CUSTOMERS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Customers/Dockerfile
+      build-context: "."
+      dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
+    secrets:
+      ci-github-token: ${{ secrets.GITHUB_TOKEN }}
+      acr-registry-url: ${{ secrets.ACR_REGISTRY_URL }}
+      acr-username: ${{ secrets.ACR_USERNAME }}
+      acr-password: ${{ secrets.ACR_PASSWORD }}
+      ghcr-token: ${{ secrets.GITHUB_TOKEN }}
 
-  call-build-test-push:
-    needs: pre-check
-
-    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
-    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-    ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
-    ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
-    permissions:
-      packages: write # for publishing packages
-      pull-requests: write # app-version pull request
-      contents: write # for publishing in dry-run mode
-      checks: write # for test-reporter
-
-    # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
-    # input boolean type should compare with 'true' or 'false' string
-    # our main branches always should trigger push and CD workflow, because if we filter them based on head message, it is possible last commit exclude entire push from triggering
-    if: |
-      success() &&
-      (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish == 'true')))
-
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
-    # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-    uses: ./.github/workflows/reusable-build-test-push.yml
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
-    # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
-    secrets: inherit # pass all secrets
-    with:
-      # https://docs.github.com/en/actions/security-guides/encrypted-secrets
-      # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
-      # https://docs.github.com/en/actions/learn-github-actions/variables
-      # https://stackoverflow.com/questions/73305126/passing-env-variable-inputs-to-a-reusable-workflow
-      tests-path: ${{ vars.CUSTOMERS_SERVICE_TESTS_PATH }} # tests/Services/Customers
-      project-path: ${{ vars.CUSTOMERS_SERVICE_PROJECT_PATH }} # src/Services/Customers/FoodDelivery.Services.Customers.Api
-      service-name: ${{ vars.CUSTOMERS_SERVICE_NAME }} # customers-service
-      docker-file-path: ${{ vars.CUSTOMERS_SERVICE_DOCKER_FILE_PATH }} # src/Services/Customers/Dockerfile
-      registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
-      registry-endpoint: ${{ github.repository }}
-
-  ### CD
-  # runs only for cd part when we have a push
-  workflow-info:
-    runs-on: ubuntu-latest
-    needs: [pre-check, call-build-test-push]
-
-    # https://github.com/actions/runner/issues/491#issuecomment-850884422
-    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
-    # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
-    # our main branches always should trigger push and CD workflow, because if we filter them based on head message, it is possible last commit exclude entire push from triggering
-    if: |
-      success() &&
-      (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note == 'true')))
-
-    steps:
-      - name: create output dir
-        run: mkdir -p "output"
-
-      # https://github.com/actions/download-artifact#download-all-artifacts
-      # download artifacts in same workflow (artifacts for before job 'call-build-test-push')
-      - name: Download All Artifacts For Push and workflow_dispatch
-        if: (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
-        uses: actions/download-artifact@v3
-        with:
-          path: artifacts
-
-      # https://github.com/dawidd6/action-download-artifact
-      # for artifacts form another workflows we should get that artifact with github Rest call and download-artifact@v3 doesn't work
-      - name: Download All Artifacts For workflow_run
-        if: (github.event_name == 'workflow_run')
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          # check the workflow run to whether it has an artifact then will get the last available artifact from the previous workflow
-          check_artifacts: true
-          workflow_conclusion: success
-          # previous success workflow in workflow_run after complete
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          ## uploaded artifact name, will download all artifacts if not specified
-          # name: artifact_name
-          path: artifacts
-
-      - name: dir
-        if: success()
-        run: ls -R "${{ github.workspace }}/artifacts"
-
-      - name: Get CD Status
-        if: success()
-        id: cd-status-step
-        run: |
-          CD_STATUS_FILE="artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_cd_status_artifacts/cd_status.txt"
-          if [ -f $CD_STATUS_FILE ]; then
-             CD_STATUS=$(cat $CD_STATUS_FILE)
-             echo "cd-status=$CD_STATUS" >> "$GITHUB_OUTPUT"
-             if [ $CD_STATUS != 'true' ]; then
-                echo "CD status is false, so CD will be skipped"
-                exit 1
-             fi
-             echo "cd-status is true, CD will be executed"
-          else
-             echo "Error: CD_STATUS_FILE not found."
-             exit 1
-          fi
-
-      - name: Get CI Application Version
-        if: success()
-        id: application-version-step
-        run: |
-          VERSION_FILE="artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_version_artifacts/version_name.txt"
-          if [ -f $VERSION_FILE ]; then
-             VERSION=$(cat $VERSION_FILE)
-             echo "application-version=$VERSION" >> "$GITHUB_OUTPUT"
-          else
-             echo "Error: VERSION_FILE not found."
-          fi
-
-      - name: Get CI Image Name
-        if: success()
-        id: image-name-step
-        run: |
-          IMAGE_NAME_FILE="artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_image_artifacts/image_name.txt"
-          if [ -f $IMAGE_NAME_FILE ]; then
-             IMAGE_NAME=$(cat $IMAGE_NAME_FILE)
-             echo "image-name=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
-          else
-             echo "Error: IMAGE_NAME_FILE not found."
-          fi
-
-      # https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
-      - name: unzip artifacts
-        if: success()
-        run: |
-          unzip "artifacts/${{ vars.CUSTOMERS_SERVICE_NAME }}_test_artifacts/test-results.zip" -d "output"
-
-      - name: Ls Output Files
-        if: success()
-        run: ls -R ${{ github.workspace }}/output
-
-  # typically release notes are published as part of the Continuous Deployment (CD) process, after the software has been built, tested, and deployed to production.
-  # It's best practice to publish release notes before deploying an app to the cloud. This allows users to be informed about what changes have been made and what to expect in the latest version.
-  call-release:
-    needs: [ pre-check, workflow-info ]
-
-    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
-    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
-    ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
-    ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
-    permissions:
-      contents: write # to be able to publish a GitHub release and tags
-
-    # https://github.com/actions/runner/issues/491#issuecomment-850884422
-    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
-    # our main branches always should trigger push and CD workflow, because if we filter them based on head message, it is possible last commit exclude entire push from triggering
-    if: |
-      success() &&
-      (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-publish-release-note == 'true')))
-
-    uses: ./.github/workflows/reusable-release.yml
-    secrets: inherit
-
+  #### CD
   # https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
   # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
   # https://www.trywilco.com/post/wilco-ci-cd-github-heroku
@@ -378,27 +168,17 @@ jobs:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
   # we could use workflow_run and `completed` event that triggered by CI workflow here, This event will only trigger a workflow run if the workflow file is on the default branch.
   call-deploy:
-    needs: [pre-check, call-release]
-
-    # https://github.com/actions/runner/issues/491#issuecomment-850884422
-    # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
-    # our main branches always should trigger push and CD workflow, because if we filter them based on head message, it is possible last commit exclude entire push from triggering
-    if: |
-      success() &&
-      (github.event_name != 'pull_request' && contains(fromJson('["develop", "main", "beta", "preview", "devops/ci"]'), github.ref_name) && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.should-deploy == 'true')))
+    needs: [call-pre-checks, call-detect-environment, call-docker-build-push]
 
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#calling-a-reusable-workflow
     # https://github.blog/2021-11-29-github-actions-reusable-workflows-is-generally-available/
-    uses: ./.github/workflows/reusable-deploy.yml
+    uses: ./.github/workflows/_deploy.yml
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
     # https://github.blog/changelog/2022-05-03-github-actions-simplify-using-secrets-with-reusable-workflows/
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-secrets-to-nested-workflows
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idsecretsinherit
-    secrets: inherit
     with:
-      environment-name: ${{ needs.pre-check.outputs.environment-name }}
-      release-version: ${{ needs.call-release.outputs.release-version }}
-      registry: ${{ vars.DOCKER_REGISTRY }} # ghcr.io
-      registry-endpoint: ${{ github.repository }}
-      service-name: ${{ vars.CUSTOMERS_SERVICE_NAME }} # customer-service
-
+      service-name: ${{ vars.CUSTOMERS_SERVICE_NAME }} # customers-service
+      environment: ${{ needs.call-detect-environment.outputs.environment }}
+    secrets:
+      ci-github-token: ${{ secrets.GITHUB_TOKEN }}

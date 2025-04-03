@@ -121,14 +121,14 @@ public static class ReflectionUtilities
                 .Compile();
         }
 
-        var lambdaArgument = new List<ParameterExpression> { instanceArgument, };
+        var lambdaArgument = new List<ParameterExpression> { instanceArgument };
 
         var type = methodInfo.DeclaringType;
         var instanceVariable = Expression.Variable(type);
-        var blockVariables = new List<ParameterExpression> { instanceVariable, };
+        var blockVariables = new List<ParameterExpression> { instanceVariable };
         var blockExpressions = new List<Expression>
         {
-            Expression.Assign(instanceVariable, Expression.ConvertChecked(instanceArgument, type))
+            Expression.Assign(instanceVariable, Expression.ConvertChecked(instanceArgument, type)),
         };
         var callArguments = new List<ParameterExpression>();
 
@@ -197,68 +197,5 @@ public static class ReflectionUtilities
             .Distinct();
 
         return assemblies.ToList().AsReadOnly();
-    }
-
-    /// <summary>
-    /// Get All referenced assemblies of root assembly(EntryAssembly if not provide) and loading them explicitly because assemblies will load lazily based on their dependent assembly code use in dependency graph (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet).
-    /// Ref: https://stackoverflow.com/a/10253634/581476, https://www.davidguida.net/how-to-find-all-application-assemblies, https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/.
-    /// </summary>
-    /// <param name="rootAssembly"></param>
-    /// <returns></returns>
-    public static IReadOnlyList<Assembly> GetReferencedAssemblies(Assembly? rootAssembly)
-    {
-        var visited = new HashSet<string>();
-        var queue = new Queue<Assembly?>();
-        var listResult = new List<Assembly>();
-
-        var root = rootAssembly ?? Assembly.GetEntryAssembly();
-        queue.Enqueue(root);
-
-        while (queue.Any())
-        {
-            var asm = queue.Dequeue();
-
-            if (asm == null)
-                break;
-
-            listResult.Add(asm);
-
-            foreach (var reference in asm.GetReferencedAssemblies())
-            {
-                if (!visited.Contains(reference.FullName))
-                {
-                    // `Load` will add assembly into the `application domain` of the caller. loading assemblies explicitly to AppDomain, because assemblies are loaded lazily
-                    // https://learn.microsoft.com/en-us/dotnet/api/system.reflection.assembly.load
-                    queue.Enqueue(Assembly.Load(reference));
-                    visited.Add(reference.FullName);
-                }
-            }
-        }
-
-        return listResult.Distinct().ToList().AsReadOnly();
-    }
-
-    /// <summary>
-    /// Get All referenced assemblies of root assembly type and loading them explicitly because assemblies will load lazily based on their dependent assembly code use in dependency graph (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet).
-    /// Ref: https://stackoverflow.com/a/10253634/581476, https://www.davidguida.net/how-to-find-all-application-assemblies, https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/.
-    /// </summary>
-    /// <returns></returns>
-    public static IReadOnlyList<Assembly> GetReferencedAssembliesFromRootType<T>()
-        where T : Type
-    {
-        var root = typeof(T).Assembly;
-        return GetReferencedAssemblies(root);
-    }
-
-    /// <summary>
-    /// Get All referenced assemblies of root assembly type and loading them explicitly because assemblies will load lazily based on their dependent assembly code use in dependency graph (it is possible to get ReflectionTypeLoadException, because some dependent type assembly are lazy and not loaded yet).
-    /// Ref: https://stackoverflow.com/a/10253634/581476, https://www.davidguida.net/how-to-find-all-application-assemblies, https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/.
-    /// </summary>
-    /// <param name="rootType"></param>
-    /// <returns></returns>
-    public static IReadOnlyList<Assembly> GetReferencedAssembliesFromRootType(Type rootType)
-    {
-        var root = rootType.Assembly;
-        return GetReferencedAssemblies(root);
     }
 }

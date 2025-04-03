@@ -1,0 +1,356 @@
+name: Build-Test-Publish Workflow
+
+on:
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputsinput_idtype
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_call
+  # https://docs.github.com/en/actions/using-workflows/reusing-workflows
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment
+        required: true
+        type: string
+      version:
+        description: Version
+        required: false
+        type: string
+      no-restore:
+        required: true
+        type: boolean
+        default: true
+      service-name:
+        description: Service name
+        type: string
+        required: true
+      tests-path:
+        description: Tests path
+        required: true
+        type: string
+      coverage-exclude:
+        description: Coverage exclude filter
+        default: "[BuildingBlocks.*]*%2c[FoodDelivery.Services.Shared]*"
+        type: string
+      unit-test-filter:
+        description: Unit tests filter
+        default: "(Category=Unit)"
+        type: string
+      integration-test-filter:
+        description: Integration tests filter
+        default: "(Category=Integration)|(Category=EndToEnd)"
+        type: string
+      project-path:
+        description: Project path
+        required: true
+        type: string
+      dotnet-version:
+        description: .Net Version
+        required: true
+        type: string
+    secrets:
+      ci-github-token:
+        required: true
+
+jobs:
+  build-test-publish:
+    environment: ${{ inputs.environment }}
+    # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
+    # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
+    runs-on: ubuntu-latest
+    #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
+    continue-on-error: false
+    name: Build-Test-Publish to ${{ inputs.environment }}
+
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idpermissions
+    # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio
+    ## https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
+    ## https://docs.github.com/en/actions/using-workflows/reusing-workflows
+    # The GITHUB_TOKEN permissions passed from the caller workflow can be only downgraded in called workflow
+    permissions:
+      checks: write # for test-reporter
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          # https://github.com/actions/checkout#fetch-all-history-for-all-tags-and-branches
+          # Only a single commit is fetched by default, for the ref/SHA that triggered the workflow. Set fetch-depth: 0 to fetch all history for all branches and tags
+          fetch-depth: 0
+          repository: ${{ github.repository }}
+          # set ref to 'github.ref' works correctly with both pull_requests event and push event and this is default behavior checkout action when we don't use ref attribute
+          ref: ${{ github.ref }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
+      # https://devblogs.microsoft.com/dotnet/dotnet-loves-github-actions/
+      # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net#caching-dependencies
+      - name: Cache NuGet Packages
+        uses: actions/cache@v4
+        if: success()
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-dotnet-nuget
+
+        # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
+      - name: Restore .NET Tools
+        shell: bash
+        run: dotnet tool restore
+
+        # Note: `Ubuntu` file and folder names are case-sensitive, be aware about naming them in solution references. because `Windows` file and folder names as case-insensitive.
+        # prevent windows case-insensitive for our project with: git config core.ignorecase false; - https://stackoverflow.com/a/27139487/581476
+      - name: Restore NuGet packages
+        shell: bash
+        if: success()
+        # restore root solution
+        run: |
+          echo "📦️ Restoring projects in folder: ${{ inputs.project-path }}"
+          find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet restore {} \;
+
+          echo "📦️ Restoring test-projects in folder: ${{ inputs.tests-path }}"
+          find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet restore {} \;
+
+      - name: Build Service Without Version
+        shell: bash
+        if: ${{ success() && inputs.version == ''}}
+        # version will assign using `gitversion` and `msbuild` based on ` GitVersion.MsBuild` package.
+        run: |
+          echo "🧱 Building projects in folder: ${{ inputs.project-path }}"
+          find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore {} \;
+
+          echo "🧱 Building test-projects in folder: ${{ inputs.tests-path }}"
+          find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore {} \;
+
+      - name: Build Service With Version
+        shell: bash
+        if: ${{ success() && inputs.version != ''}}
+        run: |
+          echo "🧱 Building projects in folder: ${{ inputs.project-path }}"
+          find ${{ inputs.project-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore \
+            -p:Version=${{ inputs.version }} \
+            -p:InformationalVersion=${{ inputs.version }} \
+            -p:ApplicationVersion=${{ inputs.version }} {} \;
+
+          echo "🧱 Building test-projects in folder: ${{ inputs.tests-path }}"
+          find ${{ inputs.tests-path }} -name "*.csproj" -exec dotnet build -c Release --no-restore \
+            -p:Version=${{ inputs.version }} \
+            -p:InformationalVersion=${{ inputs.version }} \
+            -p:ApplicationVersion=${{ inputs.version }} {} \;
+
+      # see here https://samlearnsazure.blog/2021/01/05/code-coverage-in-github-with-net-core/
+      # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+      # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
+      # https://josef.codes/dotnet-core-filter-out-specific-test-projects-when-running-dotnet-test/
+      # https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
+      # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
+      # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md
+      # https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#filters
+      - name: Run Unit Tests
+        shell: bash
+        id: unit-test-step
+        working-directory: ${{ inputs.tests-path }}
+        # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
+        # https://octopus.com/blog/githubactions-running-unit-tests
+        run: |
+          for file in $(find . -name "*.csproj" -type f); do
+            echo "🧪 Running Unit Test project $file, in folder: ${{ inputs.tests-path }}"
+            if [ ${{ inputs.no-restore }} == 'true' ]; then
+              echo "  🟡 Mode: no-restore"
+              dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+            else
+              echo "  🟢 Mode: with restore"
+              dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+            fi
+          done
+
+      - name: Run Integration And EndToEnd Tests
+        shell: bash
+        id: integration-test-step
+        working-directory: ${{ inputs.tests-path }}
+        # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
+        # https://octopus.com/blog/githubactions-running-unit-tests
+        run: |
+          for file in $(find . -name "*.csproj" -type f); do
+            echo "🧪 Running Integration Or End-To-End Test project $file, in folder: ${{ inputs.tests-path }}"
+            if [ ${{ inputs.no-restore }} == 'true' ]; then
+                echo "  🟡 Mode: no-restore"
+                dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+            else
+                echo "  🟢 Mode: with restore"
+                dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+            fi
+          done
+
+      # GitHub Api call permissions problem here
+      # https://github.com/dorny/test-reporter/issues/168
+      # https://octopus.com/blog/githubactions-running-unit-tests
+      # https://github.com/dorny/test-reporter/issues/67
+      # https://github.com/phoenix-actions/test-reporting/pull/21
+      - name: Test Results
+        uses: phoenix-actions/test-reporting@v15
+        id: test-report
+        if: always()
+        with:
+          name: ${{ inputs.service-name }} Test Reports
+          reporter: dotnet-trx
+          token: ${{ secrets.ci-github-token }}
+          # only-summary: 'true'
+          output-to: "step-summary"
+          path: "**/test-results.trx"
+          # Set action as failed if test report contains any failed test
+          fail-on-error: true
+          ## https://github.com/dorny/test-reporter#recommended-setup-for-public-repositories
+          ## https://github.com/dorny/test-reporter/blob/0d9714ddc7ff86918ec725a527a3a069419d301a/src/utils/github-utils.ts#L44
+          ## artifact name to download trx test result if it is in seperated workflow with github rest call, if it is not in another workflow skip this
+          # artifact: "'
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            **/test-results.trx
+          comment_mode: off
+          ignore_runs: true
+          github_token: ${{ secrets.ci-github-token }}
+          # https://github.com/EnricoMi/publish-unit-test-result-action#configuration
+          # Configures the state of the created test result check run. With "test failures" it fails if any test fails or test errors occur
+          fail_on: "test failures"
+          action_fail: true
+
+      # https://github.com/danielpalme/ReportGenerator
+      # https://github.com/danielpalme/ReportGenerator-GitHub-Action
+      # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+      # https://dotnetthoughts.net/generating-code-coverage-reports-in-dotnet-core/
+      # https://docs.github.com/en/actions/learn-github-actions/expressions
+      # https://stackoverflow.com/questions/57850553/github-actions-check-steps-status
+      # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#steps-context
+      - name: Generate Report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.15
+        id: generate-report
+        with:
+          reports: ${{ github.workspace }}/**/*.cobertura.xml
+          targetdir: ${{ github.workspace }}/output/test-results
+          reporttypes: "Cobertura;lcov;MarkdownSummaryGithub;Html;"
+
+        # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
+        # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
+        # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
+        # note: we should zip inner (test-results) folder and for doing this we use  cd output first then zip
+        # test-results/* folder, otherwise with zip output/test-result it zip output folder and inner test-results folder together
+      - name: Zip test-results Artifacts
+        if: success()
+        shell: bash
+        id: test-results-zip
+        run: |
+          cd output
+          zip -r test-results.zip test-results/*
+
+        # https://github.com/actions/runner/issues/946#issuecomment-900193569
+        # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
+      - name: Ls Output Files
+        shell: bash
+        if: success()
+        run: ls -R
+        working-directory: ${{ github.workspace }}/output
+
+        # https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
+        # https://github.blog/changelog/2020-10-08-github-actions-ability-to-change-retention-days-for-artifacts-and-logs/
+        # https://github.com/actions/upload-artifact#upload-an-entire-directory
+      - name: Upload Test And Coverage Results Artifacts
+        uses: actions/upload-artifact@v4
+        if: steps.test-results-zip.outcome == 'success'
+        with:
+          name: ${{ inputs.service-name}}_test_artifacts
+          retention-days: 5
+          path: |
+            output/test-results.zip
+
+        # https://josh-ops.com/posts/github-code-coverage/
+      - name: Code Coverage Summary Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: success()
+        with:
+          filename: output/test-results/Cobertura.xml
+          badge: true
+          hide_complexity: true
+          indicators: true
+          format: "markdown"
+          output: "both"
+
+      # - name: Add Coverage PR Comment
+      #   uses: marocchino/sticky-pull-request-comment@v2
+      #   if: ${{ success() && github.event_name == 'pull_request' }}
+      #   with:
+      #     recreate: true
+      #     GITHUB_TOKEN: ${{ inputs.token }}
+      #     # get generated summary from `CodeCoverageSummary` step
+      #     path: code-coverage-results.md
+
+      # https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary
+      - name: Write to Job Summary
+        shell: bash
+        if: success()
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+      # merging all coverage in a single coverage file and generating html files for downloading as artifacts
+      - name: Publish coverage report to coveralls.io
+        if: success()
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.ci-github-token }}
+          path-to-lcov: "output/test-results/lcov.info"
+
+      - name: Dotnet Publish
+        shell: bash
+        if: |
+          success() &&
+          (github.event_name != 'pull_request' && contains(fromJson('["main", "preview"]'), github.ref_name) && (github.event_name == 'push'))
+        working-directory: ${{ inputs.project-path }}
+        # version specified in build phase with passing version in the build arguments, here we just publish it with no-build
+        run: |
+          if [ ${{ inputs.no-restore }} = true ]; then
+            dotnet publish -c Release --no-restore --no-build -o ${{ github.workspace }}/output/${{inputs.service-name}}
+          else
+            dotnet publish -c Release --no-build -o ${{ github.workspace }}/output/${{inputs.service-name}}
+          fi
+
+        # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
+        # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
+        # https://stackoverflow.com/questions/68470162/how-to-archive-files-in-artifact-for-github-workflow-actions-in-order-to-fix-thi
+        # note: we should zip inner (publish-services) folder and for doing this we use  `cd output` first then zip
+        # `publish-services/*` folder, otherwise with zip `output/publish-services` it zip output folder and inner `publish-services`folder together
+      - name: Zip publish-services Artifacts
+        if: |
+          success() &&
+          (github.event_name != 'pull_request' && contains(fromJson('["main", "preview"]'), github.ref_name) && (github.event_name == 'push'))
+        shell: bash
+        working-directory: ${{ github.workspace }}/output
+        run: |
+          zip -r ${{inputs.service-name}}.zip ${{inputs.service-name}}/*
+
+        # https://github.com/actions/runner/issues/946#issuecomment-900193569
+        # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
+      - name: Ls Output Files
+        if: |
+          success() &&
+          (github.event_name != 'pull_request' && contains(fromJson('["main", "preview"]'), github.ref_name) && (github.event_name == 'push'))
+        shell: bash
+        run: ls -R ${{ github.workspace }}/output
+
+      - name: Upload Publish Services Artifacts For Deployment Jobs
+        uses: actions/upload-artifact@v4
+        if: |
+          success() &&
+          (github.event_name != 'pull_request' && contains(fromJson('["main", "preview"]'), github.ref_name) && (github.event_name == 'push'))
+        with:
+          name: ${{ inputs.service-name}}_publish_artifacts
+          path: |
+            ${{ github.workspace }}/output/${{inputs.service-name}}.zip
+          retention-days: 1 # This will automatically delete the artifact after 1 day

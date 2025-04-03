@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 using Marten;
 
@@ -7,14 +8,14 @@ namespace BuildingBlocks.Persistence.Marten;
 
 public class MartenEventStore(IDocumentSession documentSession) : IEventStore
 {
-    public Task<bool> StreamExists(string streamId, CancellationToken cancellationToken = default)
+    public async Task<bool> StreamExists(string streamId, CancellationToken cancellationToken = default)
     {
-        var state = documentSession.Events.FetchStreamState(streamId);
+        var state = await documentSession.Events.FetchStreamStateAsync(streamId, cancellationToken);
 
-        return Task.FromResult(state != null);
+        return state != null;
     }
 
-    public async Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
+    public async Task<IEnumerable<IStreamEventEnvelopeBase>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         int maxCount = int.MaxValue,
@@ -24,12 +25,12 @@ public class MartenEventStore(IDocumentSession documentSession) : IEventStore
         var events = await Filter(streamId, fromVersion?.Value, null).ToListAsync(cancellationToken);
 
         // events that we saved are IStreamEvent
-        var streamEvents = events.Select(ev => ev.Data).OfType<IStreamEventEnvelope>().ToImmutableList();
+        var streamEvents = events.Select(ev => ev.Data).OfType<IStreamEventEnvelopeBase>().ToImmutableList();
 
         return streamEvents;
     }
 
-    public Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
+    public Task<IEnumerable<IStreamEventEnvelopeBase>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         CancellationToken cancellationToken = default
@@ -38,23 +39,23 @@ public class MartenEventStore(IDocumentSession documentSession) : IEventStore
         return GetStreamEventsAsync(streamId, fromVersion, int.MaxValue, cancellationToken);
     }
 
-    public Task<AppendResult> AppendEventAsync(
+    public async Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEventEnvelope @event,
+        IStreamEventEnvelopeBase @event,
         CancellationToken cancellationToken = default
     )
     {
         // storing whole stream event with metadata because there is no way to store metadata separately
         var result = documentSession.Events.Append(streamId, @event);
 
-        var nextVersion = documentSession.Events.FetchStream(streamId).Count;
+        var nextVersion = (await documentSession.Events.FetchStreamAsync(streamId, token: cancellationToken)).Count;
 
-        return Task.FromResult(new AppendResult(-1, nextVersion));
+        return new AppendResult(-1, nextVersion);
     }
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEventEnvelope @event,
+        IStreamEventEnvelopeBase @event,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )
@@ -64,7 +65,7 @@ public class MartenEventStore(IDocumentSession documentSession) : IEventStore
 
     public Task<AppendResult> AppendEventsAsync(
         string streamId,
-        IReadOnlyCollection<IStreamEventEnvelope> events,
+        IReadOnlyCollection<IStreamEventEnvelopeBase> events,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )

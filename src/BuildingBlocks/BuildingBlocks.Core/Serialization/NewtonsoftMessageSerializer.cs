@@ -1,38 +1,38 @@
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Abstractions.Serialization;
-using BuildingBlocks.Core.Events;
-using Newtonsoft.Json;
+using BuildingBlocks.Core.Messages;
 
 namespace BuildingBlocks.Core.Serialization;
+
+using BuildingBlocks.Abstractions.Messages;
+using BuildingBlocks.Abstractions.Serialization;
+using Newtonsoft.Json;
 
 public class NewtonsoftMessageSerializer(JsonSerializerSettings settings) : IMessageSerializer
 {
     public string ContentType => "application/json";
 
-    public string Serialize(IEventEnvelope eventEnvelope)
+    public string Serialize(IMessageEnvelopeBase iMessageEnvelope)
     {
-        return JsonConvert.SerializeObject(eventEnvelope, settings);
+        return JsonConvert.SerializeObject(iMessageEnvelope, settings);
     }
 
-    public string Serialize<T>(IEventEnvelope<T> eventEnvelope)
-        where T : IMessage
+    public string Serialize<T>(IMessageEnvelope<T> messageEnvelope)
+        where T : class, IMessage
     {
-        return JsonConvert.SerializeObject(eventEnvelope, settings);
+        return JsonConvert.SerializeObject(messageEnvelope, settings);
     }
 
-    public IEventEnvelope? Deserialize(string eventEnvelope, Type messageType)
+    public IMessageEnvelopeBase? Deserialize(string eventEnvelope, Type? messageType)
     {
-        // Get the generic type definition of EventEnvelope
-        Type eventEnvelopeType = typeof(EventEnvelope<>);
+        // Get the generic type definition of MessageEnvelopeFactory
+        Type eventEnvelopeType = typeof(MessageEnvelope<>);
         Type eventEnvelopGenericType = eventEnvelopeType.MakeGenericType(messageType);
 
-        return JsonConvert.DeserializeObject(eventEnvelope, eventEnvelopGenericType, settings) as IEventEnvelope;
+        return JsonConvert.DeserializeObject(eventEnvelope, eventEnvelopGenericType, settings) as IMessageEnvelopeBase;
     }
 
-    public IEventEnvelope<T>? Deserialize<T>(string eventEnvelope)
-        where T : IMessage
+    public IMessageEnvelope<T>? Deserialize<T>(string eventEnvelope)
+        where T : class, IMessage
     {
-        return JsonConvert.DeserializeObject<EventEnvelope<T>>(eventEnvelope, settings);
+        return JsonConvert.DeserializeObject<MessageEnvelope<T>>(eventEnvelope, settings);
     }
 }

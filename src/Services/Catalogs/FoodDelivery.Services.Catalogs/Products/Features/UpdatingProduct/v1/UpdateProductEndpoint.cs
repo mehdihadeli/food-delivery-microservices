@@ -1,9 +1,12 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using Cassandra.Mapping;
+using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
+using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Models;
+using FoodDelivery.Services.Catalogs.Products.ValueObjects;
+using FoodDelivery.Services.Catalogs.Suppliers;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -17,11 +20,12 @@ public static class UpdateProductEndpoint
         // return endpoints.MapCommandEndpoint<UpdateProductRequest, UpdateProduct>("/");
         return endpoints
             .MapPost("/{id}", Handle)
-            .WithTags(ProductsConfigs.Tag)
+            .WithTags(ProductsConfigurations.Tag)
             .RequireAuthorization()
             .WithName(nameof(UpdateProduct))
             .WithDisplayName(nameof(UpdateProduct).Humanize())
-            .WithSummaryAndDescription(nameof(UpdateProduct).Humanize(), nameof(UpdateProduct).Humanize())
+            .WithSummary(nameof(UpdateProduct).Humanize())
+            .WithDescription(nameof(UpdateProduct).Humanize())
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses?#typedresults-vs-results
             // .Produces("Product updated successfully.", StatusCodes.Status204NoContent)
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
@@ -32,10 +36,23 @@ public static class UpdateProductEndpoint
             [AsParameters] UpdateProductRequestParameters requestParameters
         )
         {
-            var (request, id, context, commandBus, mapper, cancellationToken) = requestParameters;
+            var (request, id, context, commandBus, cancellationToken) = requestParameters;
 
-            var command = mapper.Map<UpdateProduct>(request);
-            command = command with { Id = id };
+            var command = new UpdateProduct(
+                ProductId.Of(id),
+                Name.Of(request.Name),
+                Price.Of(request.Price),
+                Stock.Of(request.Stock, request.RestockThreshold, request.MaxStockThreshold),
+                request.Status,
+                request.ProductType,
+                Dimensions.Of(request.Width, request.Height, request.Depth),
+                Size.Of(request.Size),
+                request.ProductColor,
+                CategoryId.Of(request.CategoryId),
+                SupplierId.Of(request.SupplierId),
+                BrandId.Of(request.BrandId),
+                request.Description
+            );
 
             await commandBus.SendAsync(command, cancellationToken);
 
@@ -53,15 +70,14 @@ internal record UpdateProductRequestParameters(
     [FromRoute] long Id,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<UpdateProductRequest>;
 
 // parameters can be pass as null from the user
 public record UpdateProductRequest(
-    long Id,
-    string? Name,
+    string Name,
     decimal Price,
+    int Stock,
     int RestockThreshold,
     int MaxStockThreshold,
     ProductStatus Status,
@@ -70,7 +86,7 @@ public record UpdateProductRequest(
     int Height,
     int Width,
     int Depth,
-    string? Size,
+    string Size,
     long CategoryId,
     long SupplierId,
     long BrandId,

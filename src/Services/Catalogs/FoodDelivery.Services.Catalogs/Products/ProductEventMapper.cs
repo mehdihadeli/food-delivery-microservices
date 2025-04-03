@@ -1,6 +1,5 @@
 using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Events.Internal;
-using BuildingBlocks.Abstractions.Messaging;
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Domain;
 using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Notification;
@@ -8,7 +7,7 @@ using FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1.E
 using FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1.Events.Domain;
 using FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 using FoodDelivery.Services.Catalogs.Shared.Data;
-using FoodDelivery.Services.Shared.Catalogs.Products.Events.V1.Integration;
+using FoodDelivery.Services.Shared.Catalogs.Products.Events.Integration.v1;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Catalogs.Products;
@@ -77,24 +76,12 @@ public class ProductEventMapper(CatalogDbContext catalogDbContext) : IEventMappe
         }
     }
 
-    public IDomainNotificationEvent? MapToDomainNotificationEvent(IDomainEvent domainEvent)
+    public IDomainNotificationEvent<IDomainEvent>? MapToDomainNotificationEvent(IDomainEvent domainEvent)
     {
         return domainEvent switch
         {
             ProductCreated productCreated => new ProductCreatedNotification(productCreated),
-            _ => null
+            _ => null,
         };
-    }
-
-    public IReadOnlyList<IIntegrationEvent?> MapToIntegrationEvents(IReadOnlyList<IDomainEvent> domainEvents)
-    {
-        return domainEvents.Select(MapToIntegrationEvent).ToList().AsReadOnly();
-    }
-
-    public IReadOnlyList<IDomainNotificationEvent?> MapToDomainNotificationEvents(
-        IReadOnlyList<IDomainEvent> domainEvents
-    )
-    {
-        return domainEvents.Select(MapToDomainNotificationEvent).ToList().AsReadOnly();
     }
 }

@@ -1,48 +1,51 @@
 {
-  "version": 1,
-  "isRoot": true,
-  "tools": {
-    "altcover.global": {
-      "version": "8.8.74",
-      "commands": [
-        "altcover"
-      ],
-      "rollForward": false
-    },
-    "csharpier": {
-      "version": "0.28.2",
-      "commands": [
-        "dotnet-csharpier"
-      ],
-      "rollForward": false
-    },
-    "swashbuckle.aspnetcore.cli": {
-      "version": "6.7.0",
-      "commands": [
-        "swagger"
-      ],
-      "rollForward": false
-    },
-    "microsoft.tye": {
-      "version": "0.11.0-alpha.22111.1",
-      "commands": [
-        "tye"
-      ],
-      "rollForward": false
-    },
-    "dotnet-ef": {
-      "version": "8.0.8",
-      "commands": [
-        "dotnet-ef"
-      ],
-      "rollForward": false
-    },
-    "dotnet-outdated-tool": {
-      "version": "4.6.4",
-      "commands": [
-        "dotnet-outdated"
-      ],
-      "rollForward": false
+    "version": 1,
+    "isRoot": true,
+    "tools": {
+        "altcover.global": {
+            "version": "9.0.1",
+            "commands": ["altcover"],
+            "rollForward": false
+        },
+        "csharpier": {
+            "version": "0.30.6",
+            "commands": ["dotnet-csharpier"],
+            "rollForward": false
+        },
+        "swashbuckle.aspnetcore.cli": {
+            "version": "7.3.1",
+            "commands": ["swagger"],
+            "rollForward": false
+        },
+        "microsoft.tye": {
+            "version": "0.11.0-alpha.22111.1",
+            "commands": ["tye"],
+            "rollForward": false
+        },
+        "dotnet-ef": {
+            "version": "9.0.3",
+            "commands": ["dotnet-ef"],
+            "rollForward": false
+        },
+        "dotnet-outdated-tool": {
+            "version": "4.6.8",
+            "commands": ["dotnet-outdated"],
+            "rollForward": false
+        },
+        "microsoft.dotnet-openapi": {
+            "version": "9.0.3",
+            "commands": ["dotnet-openapi"],
+            "rollForward": false
+        },
+        "microsoft.openapi.kiota": {
+            "version": "1.24.1",
+            "commands": ["kiota"],
+            "rollForward": false
+        },
+        "gitversion.tool": {
+            "version": "6.2.0",
+            "commands": ["dotnet-gitversion"],
+            "rollForward": false
+        }
     }
-  }
 }

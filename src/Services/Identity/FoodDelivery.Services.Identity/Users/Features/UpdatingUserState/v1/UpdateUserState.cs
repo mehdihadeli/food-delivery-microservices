@@ -1,18 +1,18 @@
 using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Core.Events;
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
-using FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.v1.Events.Integration;
-using MassTransit;
+using FoodDelivery.Services.Shared.Identity.Users;
+using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
+using Mediator;
 using Microsoft.AspNetCore.Identity;
 
 namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.v1;
 
-internal record UpdateUserState(Guid UserId, UserState State) : ITxCommand
+public record UpdateUserState(Guid UserId, UserState State) : ITxCommand
 {
     /// <summary>
     /// UpdateUserState with in-line validation.
@@ -26,7 +26,7 @@ internal record UpdateUserState(Guid UserId, UserState State) : ITxCommand
     }
 }
 
-internal class UpdateUserStateValidator : AbstractValidator<UpdateUserState>
+public class UpdateUserStateValidator : AbstractValidator<UpdateUserState>
 {
     public UpdateUserStateValidator()
     {
@@ -35,13 +35,13 @@ internal class UpdateUserStateValidator : AbstractValidator<UpdateUserState>
     }
 }
 
-internal class UpdateUserStateHandler(
+public class UpdateUserStateHandler(
     IExternalEventBus bus,
     UserManager<ApplicationUser> userManager,
     ILogger<UpdateUserStateHandler> logger
-) : ICommandHandler<UpdateUserState>
+) : BuildingBlocks.Abstractions.Commands.ICommandHandler<UpdateUserState>
 {
-    public async Task Handle(UpdateUserState request, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(UpdateUserState request, CancellationToken cancellationToken)
     {
         var identityUser = await userManager.FindByIdAsync(request.UserId.ToString());
         identityUser.NotBeNull(new IdentityUserNotFoundException(request.UserId));
@@ -49,7 +49,7 @@ internal class UpdateUserStateHandler(
         var previousState = identityUser!.UserState;
         if (previousState == request.State)
         {
-            return;
+            return Unit.Value;
         }
 
         if (await userManager.IsInRoleAsync(identityUser, IdentityConstants.Role.Admin))
@@ -61,7 +61,7 @@ internal class UpdateUserStateHandler(
 
         await userManager.UpdateAsync(identityUser);
 
-        var userStateUpdated = UserStateUpdated.Of(
+        var userStateUpdated = UserStateUpdatedV1.Of(
             request.UserId,
             (UserState)(int)previousState,
             (UserState)(int)request.State
@@ -75,5 +75,7 @@ internal class UpdateUserStateHandler(
             previousState,
             identityUser.UserState
         );
+
+        return Unit.Value;
     }
 }

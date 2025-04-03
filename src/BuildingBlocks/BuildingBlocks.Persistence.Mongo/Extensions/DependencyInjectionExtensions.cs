@@ -1,9 +1,11 @@
 using BuildingBlocks.Abstractions.Persistence.Mongo;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
+using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
 
 namespace BuildingBlocks.Persistence.Mongo.Extensions;
 
@@ -13,6 +15,20 @@ public static class DependencyInjectionExtensions
         where TContext : MongoDbContext, IMongoDbContext
     {
         services.AddValidatedOptions<MongoOptions>(nameof(MongoOptions));
+
+        services.AddSingleton<IMongoClient>(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<MongoOptions>>();
+            return new MongoClient(options.Value.ConnectionString);
+        });
+
+        services.AddSingleton<IMongoDatabase>(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<MongoOptions>>();
+            var client = sp.GetRequiredService<IMongoClient>();
+
+            return client.GetDatabase(options.Value.DatabaseName);
+        });
 
         // Note: the serializers registrations and conventions should call just once whole of the application otherwise we get error
 

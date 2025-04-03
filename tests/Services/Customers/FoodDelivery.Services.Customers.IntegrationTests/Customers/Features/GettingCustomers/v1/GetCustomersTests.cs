@@ -2,7 +2,7 @@ using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models.Read;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
 using Xunit.Abstractions;
@@ -24,7 +24,7 @@ public class GetCustomersTests(
 
         // Act
         var query = new GetCustomers();
-        var listResult = (await SharedFixture.SendAsync(query)).Customers;
+        var listResult = (await SharedFixture.QueryAsync(query)).Customers;
 
         // Assert
         listResult.Should().NotBeNull();
@@ -46,8 +46,8 @@ public class GetCustomersTests(
         await SharedFixture.InsertMongoDbContextAsync(fakeCustomers.ToArray());
 
         // Act
-        var query = new GetCustomers() { PageNumber = 1, PageSize = 2 };
-        var listResult = (await SharedFixture.SendAsync(query)).Customers;
+        var query = new GetCustomers { PageNumber = 1, PageSize = 2 };
+        var listResult = (await SharedFixture.QueryAsync(query)).Customers;
 
         // Assert
         listResult.Should().NotBeNull();

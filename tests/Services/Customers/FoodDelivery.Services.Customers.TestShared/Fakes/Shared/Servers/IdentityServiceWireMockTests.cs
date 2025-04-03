@@ -1,8 +1,8 @@
 using System.Net.Http.Json;
 using BuildingBlocks.Core.Web.Extensions;
 using FluentAssertions;
-using FoodDelivery.Services.Customers.Shared.Clients.Identity;
-using FoodDelivery.Services.Customers.Shared.Clients.Identity.Dtos;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Dtos;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Rest;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Events;
 using Tests.Shared.Helpers;
 using Tests.Shared.XunitCategories;
@@ -13,8 +13,10 @@ namespace FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Servers;
 public class IdentityServiceWireMockTests
 {
     private static readonly WireMockServer _wireMockServer = WireMockServer.Start();
-    private readonly IdentityServiceWireMock _identityServiceWireWireMock =
-        new(_wireMockServer, ConfigurationHelper.BindOptions<IdentityApiClientOptions>());
+    private readonly IdentityServiceWireMock _identityServiceWireWireMock = new(
+        _wireMockServer,
+        ConfigurationHelper.BindOptions<IdentityRestClientOptions>()
+    );
 
     [Fact]
     public async Task root_address()
@@ -39,7 +41,7 @@ public class IdentityServiceWireMockTests
         var httpResponse = await client.GetAsync(endpoint);
 
         await httpResponse.EnsureSuccessStatusCodeWithDetailAsync();
-        var data = await httpResponse.Content.ReadFromJsonAsync<GetUserByEmailClientDto>();
+        var data = await httpResponse.Content.ReadFromJsonAsync<GetUserByEmailClientResponseDto>();
         data.Should().NotBeNull();
         data!.UserIdentity.Should().BeEquivalentTo(fakeIdentityUser, options => options.ExcludingMissingMembers());
     }
@@ -56,7 +58,7 @@ public class IdentityServiceWireMockTests
         var res = await client.GetAsync(endpoint);
         res.EnsureSuccessStatusCode();
 
-        var g = await res.Content.ReadFromJsonAsync<GetUserByEmailClientDto>();
+        var g = await res.Content.ReadFromJsonAsync<GetUserByEmailClientResponseDto>();
         g.Should().NotBeNull();
         g!.UserIdentity.Should().BeEquivalentTo(fakeIdentityUser, options => options.ExcludingMissingMembers());
     }

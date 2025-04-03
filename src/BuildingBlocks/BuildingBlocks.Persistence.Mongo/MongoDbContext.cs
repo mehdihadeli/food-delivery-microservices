@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Abstractions.Persistence.Mongo;
 using Humanizer;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace BuildingBlocks.Persistence.Mongo;
@@ -13,13 +14,13 @@ public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
     public IMongoClient MongoClient { get; }
     protected readonly IList<Func<Task>> Commands;
 
-    public MongoDbContext(MongoOptions options)
+    public MongoDbContext(IMongoClient mongoClient, IOptions<MongoOptions> options)
     {
-        MongoClient = new MongoClient(options.ConnectionString);
-        var databaseName = options.DatabaseName;
-        Database = MongoClient.GetDatabase(databaseName);
+        MongoClient = mongoClient;
+        var databaseName = options.Value.DatabaseName;
+        Database = mongoClient.GetDatabase(databaseName);
 
-        // Every command will be stored and it'll be processed at SaveChanges
+        // Every command will be stored, and it'll be processed at SaveChanges
         Commands = new List<Func<Task>>();
     }
 

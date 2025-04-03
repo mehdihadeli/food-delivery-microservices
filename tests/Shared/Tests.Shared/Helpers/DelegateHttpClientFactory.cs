@@ -1,19 +1,12 @@
 namespace Tests.Shared.Helpers;
 
-public class DelegateHttpClientFactory : IHttpClientFactory
+public class DelegateHttpClientFactory(Func<string, Lazy<HttpClient>> httpClientProvider) : IHttpClientFactory
 {
-    private readonly Func<string, Lazy<HttpClient>> _httpClientProvider;
-
-    public DelegateHttpClientFactory(Func<string, Lazy<HttpClient>> httpClientProvider)
-    {
-        _httpClientProvider = httpClientProvider;
-    }
-
     public HttpClient CreateClient(string name)
     {
         if (name == "k8s-cluster-service" || name == "health-checks-webhooks" || name == "health-checks")
             return new HttpClient();
 
-        return _httpClientProvider(name).Value;
+        return httpClientProvider(name).Value;
     }
 }

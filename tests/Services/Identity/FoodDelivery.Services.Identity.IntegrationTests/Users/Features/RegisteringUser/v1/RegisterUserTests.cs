@@ -3,9 +3,10 @@ using FluentAssertions;
 using FoodDelivery.Services.Identity.Api;
 using FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
 using FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
-using FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
+using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Tests.Shared.Fixtures;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Identity.IntegrationTests.Users.Features.RegisteringUser.v1;
@@ -38,7 +39,7 @@ public class RegisterUserTests : IdentityServiceIntegrationTestBase
     public async Task register_new_user_command_should_persist_new_user_in_db()
     {
         // Act
-        var result = await SharedFixture.SendAsync(_registerUser, CancellationToken);
+        var result = await SharedFixture.CommandAsync(_registerUser, CancellationToken);
 
         // Assert
         result.UserIdentity.Should().NotBeNull();
@@ -56,9 +57,9 @@ public class RegisterUserTests : IdentityServiceIntegrationTestBase
     public async Task register_new_user_command_should_publish_message_to_broker()
     {
         // Act
-        await SharedFixture.SendAsync(_registerUser, CancellationToken);
+        await SharedFixture.CommandAsync(_registerUser, CancellationToken);
 
         // Assert
-        await SharedFixture.WaitForPublishing<UserRegisteredV1>();
+        await SharedFixture.ShouldPublishing<UserRegisteredV1>();
     }
 }

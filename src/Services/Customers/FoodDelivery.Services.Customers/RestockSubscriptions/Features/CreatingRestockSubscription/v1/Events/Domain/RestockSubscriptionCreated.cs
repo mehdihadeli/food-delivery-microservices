@@ -2,10 +2,10 @@ using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Events.Internal;
 using BuildingBlocks.Core.Extensions;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FoodDelivery.Services.Customers.Shared.Data.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Events.Domain;
 
@@ -16,7 +16,7 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.Creating
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our commands and events, just primitive types
-internal record RestockSubscriptionCreated(
+public record RestockSubscriptionCreated(
     long Id,
     long ProductId,
     long CustomerId,
@@ -41,7 +41,7 @@ internal record RestockSubscriptionCreated(
         customerId.NotBeNegativeOrZero();
         productName.NotBeNullOrWhiteSpace();
         email.NotBeNullOrWhiteSpace();
-        created.NotBeInvalid();
+        created.NotBeEmpty();
 
         return new RestockSubscriptionCreated(id, productId, customerId, productName, email, created, processed);
     }
@@ -58,16 +58,15 @@ internal record RestockSubscriptionCreated(
             ProductId,
             ProductName,
             Email,
-            Created,
             Processed
         );
     }
 }
 
-internal class RestockSubscriptionCreatedHandler(ICommandBus commandBus, CustomersDbContext customersDbContext)
+public class RestockSubscriptionCreatedHandler(ICommandBus commandBus, CustomersDbContext customersDbContext)
     : IDomainEventHandler<RestockSubscriptionCreated>
 {
-    public async Task Handle(RestockSubscriptionCreated notification, CancellationToken cancellationToken)
+    public async ValueTask Handle(RestockSubscriptionCreated notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
 
@@ -85,6 +84,6 @@ internal class RestockSubscriptionCreatedHandler(ICommandBus commandBus, Custome
 
         // https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing
         // Schedule multiple read sides to execute here
-        await commandBus.ScheduleAsync(new IInternalCommand[] { mongoReadCommand }, cancellationToken);
+        await commandBus.ScheduleAsync([mongoReadCommand], cancellationToken);
     }
 }

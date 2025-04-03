@@ -13,11 +13,11 @@ public record RestockSubscriptionDeleted(long RestockSubscriptionId) : DomainEve
 internal class RestockSubscriptionDeletedHandler(ICommandBus commandBus, CustomersDbContext customersDbContext)
     : IDomainEventHandler<RestockSubscriptionDeleted>
 {
-    public async Task Handle(RestockSubscriptionDeleted notification, CancellationToken cancellationToken)
+    public async ValueTask Handle(RestockSubscriptionDeleted notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
 
-        // var isDeleted = (bool)_customersDbContext.Entry(notification.RestockSubscription)
+        // var isDeleted = (bool)_customersDbContext.Entry(notification.RestockSubscriptionReadModel)
         //     .Property("IsDeleted")
         //     .CurrentValue!;
         var restockSubscription = await customersDbContext

@@ -1,7 +1,6 @@
-using AutoMapper;
-using BuildingBlocks.Abstractions.Core.Paging;
-
 namespace BuildingBlocks.Core.Paging;
+
+using BuildingBlocks.Abstractions.Core.Paging;
 
 public record PageList<T>(IReadOnlyList<T> Items, int PageNumber, int PageSize, int TotalCount) : IPageList<T>
     where T : class
@@ -24,11 +23,5 @@ public record PageList<T>(IReadOnlyList<T> Items, int PageNumber, int PageSize, 
         where TR : class
     {
         return PageList<TR>.Create(Items.Select(map).ToList(), PageNumber, PageSize, TotalCount);
-    }
-
-    public IPageList<TR> MapTo<TR>(IMapper mapper)
-        where TR : class
-    {
-        return PageList<TR>.Create(mapper.Map<IReadOnlyList<TR>>(Items), PageNumber, PageSize, TotalCount);
     }
 }

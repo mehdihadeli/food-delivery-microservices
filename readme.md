@@ -1,4 +1,4 @@
-# 🍔 Food Delivery Microservices
+# Monolith To Cloud-Native Transformation
 
 [![Coverage Status](https://img.shields.io/coverallsCoverage/github.com/mehdihadeli/food-delivery-microservices?style=for-the-badge&logo=coveralls&label=Code%20Coverage&logoColor=white)](https://coveralls.io/github.com/mehdihadeli/food-delivery-microservices)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?logoColor=white&style=for-the-badge)](http://commitizen.github.io/cz-cli/)
@@ -19,65 +19,72 @@
 
 Other versions of this project are available in these repositories, We can choose best fit architecture for our projects based on production needs:
 
-- [https://github.com/mehdihadeli/food-delivery-modular-monolith](https://github.com/mehdihadeli/food-delivery-modular-monolith)
-- [https://github.com/mehdihadeli/go-food-delivery-microservices](https://github.com/mehdihadeli/go-food-delivery-microservices)
+-   [https://github.com/mehdihadeli/food-delivery-modular-monolith](https://github.com/mehdihadeli/food-delivery-modular-monolith)
+-   [https://github.com/mehdihadeli/go-food-delivery-microservices](https://github.com/mehdihadeli/go-food-delivery-microservices)
 
 For your simplest .net core projects, you can use my `vertical-slice-api-template` project template:
 
-- [https://github.com/mehdihadeli/vertical-slice-api-template](https://github.com/mehdihadeli/vertical-slice-api-template)
+-   [https://github.com/mehdihadeli/vertical-slice-api-template](https://github.com/mehdihadeli/vertical-slice-api-template)
 
-# ⭐ Support
+## ⭐ Support
 
 If you like feel free to ⭐ this repository, It helps out :)
 
 Thanks a bunch for supporting me!
 
-# Table of Contents
+## Table of Contents
 
-- [Features](#features)
-- [Plan](#plan)
-- [Setup](#setup)
-  - [Dev Certificate](#dev-certificate)
-  - [Conventional Commit](#conventional-commit)
-  - [Formatting](#formatting)
-  - [Analizers](#analizers)
-- [Technologies - Libraries](#technologies---libraries)
-- [The Domain and Bounded Context - Service Boundary](#the-domain-and-bounded-context---service-boundary)
-- [Application Architecture](#application-architecture)
-- [Application Structure](#application-structure)
-- [Vertical Slice Flow](#vertical-slice-flow)
-- [Prerequisites](#prerequisites)
-- [How to Run](#how-to-run)
-  - [Using PM2](#using-pm2)
-  - [Using Docker-Compose](#using-docker-compose)
-  - [Using Tye](#using-tye)
-  - [Using Kubernetes](#using-kubernetes)
-- [Contribution](#contribution)
-- [Project References](#project-references)
-- [License](#license)
+-   [Monolith To Cloud-Native Transformation](#monolith-to-cloud-native-transformation)
+    -   [⭐ Support](#-support)
+    -   [Table of Contents](#table-of-contents)
+    -   [Features](#features)
+    -   [Plan](#plan)
+    -   [Technologies - Libraries](#technologies---libraries)
+    -   [Setup](#setup)
+        -   [Dev Certificate](#dev-certificate)
+        -   [Conventional Commit](#conventional-commit)
+        -   [Formatting](#formatting)
+        -   [Analizers](#analizers)
+    -   [The Domain And Bounded Context - Service Boundary](#the-domain-and-bounded-context---service-boundary)
+    -   [Application Architecture](#application-architecture)
+    -   [Application Structure](#application-structure)
+        -   [High Level Structure](#high-level-structure)
+    -   [Vertical Slice Flow](#vertical-slice-flow)
+    -   [Prerequisites](#prerequisites)
+    -   [How to Run](#how-to-run)
+        -   [Using PM2](#using-pm2)
+        -   [Using Docker-Compose](#using-docker-compose)
+        -   [Using Tye](#using-tye)
+        -   [Using Kubernetes](#using-kubernetes)
+            -   [Plain Kubernetes](#plain-kubernetes)
+                -   [Prerequisites](#prerequisites-1)
+                -   [Installation](#installation)
+    -   [Contribution](#contribution)
+    -   [Project References](#project-references)
+    -   [License](#license)
 
 ## Features
 
-- ✅ Using `Microservices` and `Vertical Slice Architecture` as a high level architecture
-- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit library
-- ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
-- ✅ Using `Event Sourcing` and `EventStoreDB` in `Audit Based` services like Orders, Payment
-- ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
-- ✅ Using `CQRS Pattern` on top of `MediatR` library and spliting `read models` and `write models`
-- ✅ Uing `Structured logging` with serilog and exporting logs to `Elastic Seacrch` and `Kibana` through [serilog-sinks-elasticsearch](https://github.com/serilog-contrib/serilog-sinks-elasticsearch) sink
-- ✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
-- ✅ Using `Inbox Pattern` for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in reciver side and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/)
-- ✅ Using `UnitTests` and `NSubstitute` for mocking dependencies
-- ✅ Using `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) library for cleanup our test enviroment through docker containers
-- ✅ Using `Minimal APIs` for handling requests
-- ✅ Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
-- ✅ Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
-- ✅ Using docker and `docker-compose` for deployment
-- ✅ Using [Microsoft Tye](https://github.com/dotnet/tye) for deployment
-- ✅ Using [YARP](https://microsoft.github.io/reverse-proxy/) reverse proxy as API Gateway
-- ✅ Using different type of tests like `Unit Tests`, `Integration Tests`, `End-To-End Tests` and [testcontainers](https://microsoft.github.io/reverse-proxy/) for testing in isolation
-- 🚧 Using `Helm`, `Kubernetes` and `Kustomize` for deployment
-- 🚧 Using `OpenTelemetry` for collecting `Metrics` and `Distributed Traces`
+-   ✅ Using `Microservices` and `Vertical Slice Architecture` as a high level architecture
+-   ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit library
+-   ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
+-   ✅ Using `Event Sourcing` and `EventStoreDB` in `Audit Based` services like Orders, Payment
+-   ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
+-   ✅ Using `CQRS Pattern` on top of `MediatR` library and spliting `read models` and `write models`
+-   ✅ Uing `Structured logging` with serilog and exporting logs to `Elastic Seacrch` and `Kibana` through [serilog-sinks-elasticsearch](https://github.com/serilog-contrib/serilog-sinks-elasticsearch) sink
+-   ✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
+-   ✅ Using `Inbox Pattern` for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in reciver side and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/)
+-   ✅ Using `UnitTests` and `NSubstitute` for mocking dependencies
+-   ✅ Using `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) library for cleanup our test enviroment through docker containers
+-   ✅ Using `Minimal APIs` for handling requests
+-   ✅ Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
+-   ✅ Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
+-   ✅ Using docker and `docker-compose` for deployment
+-   ✅ Using [Microsoft Tye](https://github.com/dotnet/tye) for deployment
+-   ✅ Using [YARP](https://microsoft.github.io/reverse-proxy/) reverse proxy as API Gateway
+-   ✅ Using different type of tests like `Unit Tests`, `Integration Tests`, `End-To-End Tests` and [testcontainers](https://microsoft.github.io/reverse-proxy/) for testing in isolation
+-   ✅ Using `OpenTelemetry` for collecting `Metrics` and `Distributed Traces`
+-   🚧 Using `Helm`, `Kubernetes` and `Kustomize` for deployment
 
 ## Plan
 
@@ -88,26 +95,26 @@ Thanks a bunch for supporting me!
 
 ## Technologies - Libraries
 
-- ✔️ **[`.NET 8`](https://dotnet.microsoft.com/download)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core
-- ✔️ **[`MassTransit`](https://github.com/MassTransit/MassTransit)** - Distributed Application Framework for .NET
-- ✔️ **[`StackExchange.Redis`](https://github.com/StackExchange/StackExchange.Redis)** - General purpose redis client
-- ✔️ **[`Npgsql Entity Framework Core Provider`](https://www.npgsql.org/efcore/)** - Npgsql has an Entity Framework (EF) Core provider. It behaves like other EF Core providers (e.g. SQL Server), so the general EF Core docs apply here as well
-- ✔️ **[`EventStore-Client-Dotnet`](https://github.com/EventStore/EventStore-Client-Dotnet)** - Dotnet Client SDK for the Event Store gRPC Client API written in C#
-- ✔️ **[`FluentValidation`](https://github.com/FluentValidation/FluentValidation)** - Popular .NET validation library for building strongly-typed validation rules
-- ✔️ **[`Swagger & Swagger UI`](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)** - Swagger tools for documenting API's built on ASP.NET Core
-- ✔️ **[`Serilog`](https://github.com/serilog/serilog)** - Simple .NET logging with fully-structured events
-- ✔️ **[`Polly`](https://github.com/App-vNext/Polly)** - Polly is a .NET resilience and transient-fault-handling library that allows developers to express policies such as Retry, Circuit Breaker, Timeout, Bulkhead Isolation, and Fallback in a fluent and thread-safe manner
-- ✔️ **[`Scrutor`](https://github.com/khellang/Scrutor)** - Assembly scanning and decoration extensions for Microsoft.Extensions.DependencyInjection
-- ✔️ **[`Opentelemetry-dotnet`](https://github.com/open-telemetry/opentelemetry-dotnet)** - The OpenTelemetry .NET Client
-- ✔️ **[`DuendeSoftware IdentityServer`](https://github.com/DuendeSoftware/IdentityServer)** - The most flexible and standards-compliant OpenID Connect and OAuth 2.x framework for ASP.NET Core
-- ✔️ **[`Newtonsoft.Json`](https://github.com/JamesNK/Newtonsoft.Json)** - Json.NET is a popular high-performance JSON framework for .NET
-- ✔️ **[`Rabbitmq-dotnet-client`](https://github.com/rabbitmq/rabbitmq-dotnet-client)** - RabbitMQ .NET client for .NET Standard 2.0+ and .NET 4.6.1+
-- ✔️ **[`AspNetCore.Diagnostics.HealthChecks`](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks)** - Enterprise HealthChecks for ASP.NET Core Diagnostics Package
-- ✔️ **[`Microsoft.AspNetCore.Authentication.JwtBearer`](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer)** - Handling Jwt Authentication and authorization in .Net Core
-- ✔️ **[`NSubstitute`](https://github.com/nsubstitute/NSubstitute)** - A friendly substitute for .NET mocking libraries.
-- ✔️ **[`StyleCopAnalyzers`](https://github.com/DotNetAnalyzers/StyleCopAnalyzers)** - An implementation of StyleCop rules using the .NET Compiler Platform
-- ✔️ **[`Mapperly`](https://github.com/riok/mapperly)** - A .NET source generator for generating object mappings, No runtime reflection.
-- ✔️ **[`IdGen`](https://github.com/RobThree/IdGen)** - Twitter Snowflake-alike ID generator for .Net
+-   ✔️ **[`.NET 9`](https://dotnet.microsoft.com/download)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core
+-   ✔️ **[`MassTransit`](https://github.com/MassTransit/MassTransit)** - Distributed Application Framework for .NET
+-   ✔️ **[`StackExchange.Redis`](https://github.com/StackExchange/StackExchange.Redis)** - General purpose redis client
+-   ✔️ **[`Npgsql Entity Framework Core Provider`](https://www.npgsql.org/efcore/)** - Npgsql has an Entity Framework (EF) Core provider. It behaves like other EF Core providers (e.g. SQL Server), so the general EF Core docs apply here as well
+-   ✔️ **[`EventStore-Client-Dotnet`](https://github.com/EventStore/EventStore-Client-Dotnet)** - Dotnet Client SDK for the Event Store gRPC Client API written in C#
+-   ✔️ **[`FluentValidation`](https://github.com/FluentValidation/FluentValidation)** - Popular .NET validation library for building strongly-typed validation rules
+-   ✔️ **[`Swagger & Swagger UI`](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)** - Swagger tools for documenting API's built on ASP.NET Core
+-   ✔️ **[`Serilog`](https://github.com/serilog/serilog)** - Simple .NET logging with fully-structured events
+-   ✔️ **[`Polly`](https://github.com/App-vNext/Polly)** - Polly is a .NET resilience and transient-fault-handling library that allows developers to express policies such as Retry, Circuit Breaker, Timeout, Bulkhead Isolation, and Fallback in a fluent and thread-safe manner
+-   ✔️ **[`Scrutor`](https://github.com/khellang/Scrutor)** - Assembly scanning and decoration extensions for Microsoft.Extensions.DependencyInjection
+-   ✔️ **[`Opentelemetry-dotnet`](https://github.com/open-telemetry/opentelemetry-dotnet)** - The OpenTelemetry .NET Client
+-   ✔️ **[`DuendeSoftware IdentityServer`](https://github.com/DuendeSoftware/IdentityServer)** - The most flexible and standards-compliant OpenID Connect and OAuth 2.x framework for ASP.NET Core
+-   ✔️ **[`Newtonsoft.Json`](https://github.com/JamesNK/Newtonsoft.Json)** - Json.NET is a popular high-performance JSON framework for .NET
+-   ✔️ **[`Rabbitmq-dotnet-client`](https://github.com/rabbitmq/rabbitmq-dotnet-client)** - RabbitMQ .NET client for .NET Standard 2.0+ and .NET 4.6.1+
+-   ✔️ **[`AspNetCore.Diagnostics.HealthChecks`](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks)** - Enterprise HealthChecks for ASP.NET Core Diagnostics Package
+-   ✔️ **[`Microsoft.AspNetCore.Authentication.JwtBearer`](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer)** - Handling Jwt Authentication and authorization in .Net Core
+-   ✔️ **[`NSubstitute`](https://github.com/nsubstitute/NSubstitute)** - A friendly substitute for .NET mocking libraries.
+-   ✔️ **[`StyleCopAnalyzers`](https://github.com/DotNetAnalyzers/StyleCopAnalyzers)** - An implementation of StyleCop rules using the .NET Compiler Platform
+-   ✔️ **[`Mapperly`](https://github.com/riok/mapperly)** - A .NET source generator for generating object mappings, No runtime reflection.
+-   ✔️ **[`IdGen`](https://github.com/RobThree/IdGen)** - Twitter Snowflake-alike ID generator for .Net
 
 ## Setup
 
@@ -115,7 +122,7 @@ Thanks a bunch for supporting me!
 
 This application uses `Https` for hosting apis, to setup a valid certificate on your machine, you can create a [Self-Signed Certificate](https://learn.microsoft.com/en-us/aspnet/core/security/docker-https#macos-or-linux), see more about enforce certificate [here](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide) and [here](https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl).
 
-- Setup on windows and [`powershell`](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide#with-dotnet-dev-certs):
+-   Setup on windows and [`powershell`](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide#with-dotnet-dev-certs):
 
 ```powershell
 dotnet dev-certs https --clean
@@ -123,7 +130,7 @@ dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\aspnetapp.pfx -p <CRED
 dotnet dev-certs https --trust
 ```
 
-- Setup in [`linux and wsl`](https://learn.microsoft.com/en-us/aspnet/core/security/docker-https?view=aspnetcore-7.0#macos-or-linux):
+-   Setup in [`linux and wsl`](https://learn.microsoft.com/en-us/aspnet/core/security/docker-https?view=aspnetcore-7.0#macos-or-linux):
 
 ```bash
 dotnet dev-certs https --clean
@@ -153,9 +160,9 @@ npm install husky --save-dev
 
 3. Add `prepare` and `install-dev-cert-bash` commands for installing and activating `husky hooks` and [`dotnet tools`](https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools) in the package.json file:
 
-- Actually [prepare](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts) is a special `life cycle scripts` that runs automatically on `local npm install` without any arguments.
-- The [scripts](https://docs.npmjs.com/cli/v10/using-npm/scripts) property of your package.json file supports a number of built-in scripts and their preset life cycle events as well as arbitrary scripts. These all can be executed by running `npm run-script <stage>` or `npm run <stage>` for short.
-- For working `dotnet tools restore` commands to install and update local packages we should have a valid `nuget.config` file in the root of our project. we can create a `nuget.config` file with using `dotnet new nugetconfig` command.
+-   Actually [prepare](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts) is a special `life cycle scripts` that runs automatically on `local npm install` without any arguments.
+-   The [scripts](https://docs.npmjs.com/cli/v10/using-npm/scripts) property of your package.json file supports a number of built-in scripts and their preset life cycle events as well as arbitrary scripts. These all can be executed by running `npm run-script <stage>` or `npm run <stage>` for short.
+-   For working `dotnet tools restore` commands to install and update local packages we should have a valid `nuget.config` file in the root of our project. we can create a `nuget.config` file with using `dotnet new nugetconfig` command.
 
 ```bash
 npm pkg set scripts.prepare="husky && dotnet tool restore"
@@ -165,10 +172,10 @@ npm pkg set scripts.install-dev-cert-bash="curl -sSL https://aka.ms/getvsdbgsh |
 
 ```json
 {
-  "scripts": {
-    "prepare": "husky && dotnet tool restore",
-    "install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
-  }
+    "scripts": {
+        "prepare": "husky && dotnet tool restore",
+        "install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
+    }
 }
 ```
 
@@ -209,8 +216,9 @@ npm run install-dev-cert-bash
 
 For formatting, I use mix of [belav/csharpier](https://github.com/belav/csharpier) and [dotnet format](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-format).
 
-- You can integrate csharpier with your [prefered IDE](https://csharpier.com/docs/Editors).
-- You can use [your IDE watcher](https://dev.to/tsotsi1/dotnet-c-code-format-on-jetbrain-ide-rider-504i) on save for applying `dotnet format` rules. For Rider it is like this:
+-   You can integrate csharpier with your [prefered IDE](https://csharpier.com/docs/Editors).
+-   You can use [your IDE watcher](https://dev.to/tsotsi1/dotnet-c-code-format-on-jetbrain-ide-rider-504i) on save for applying `dotnet format` rules. For Rider it is like this:
+
 ```bash
 FileType: C#
 Scope: Open Files
@@ -273,10 +281,10 @@ npm run prepare
 
 For roslyn analizers I use serveral analyzers and config the in `.editorconfig` file:
 
-- [StyleCop/StyleCop](https://github.com/StyleCop/StyleCop)
-- [JosefPihrt/Roslynator](https://github.com/JosefPihrt/Roslynator)
-- [meziantou/Meziantou.Analyzer](https://github.com/meziantou/Meziantou.Analyzer)
-- [Microsoft.VisualStudio.Threading.Analyzers](https://www.nuget.org/packages/Microsoft.VisualStudio.Threading.Analyzers)
+-   [StyleCop/StyleCop](https://github.com/StyleCop/StyleCop)
+-   [JosefPihrt/Roslynator](https://github.com/JosefPihrt/Roslynator)
+-   [meziantou/Meziantou.Analyzer](https://github.com/meziantou/Meziantou.Analyzer)
+-   [Microsoft.VisualStudio.Threading.Analyzers](https://www.nuget.org/packages/Microsoft.VisualStudio.Threading.Analyzers)
 
 ## The Domain And Bounded Context - Service Boundary
 
@@ -288,17 +296,17 @@ The bellow architecture shows that there is one public API (API Gateway) which i
 
 ![](./assets/microservices.png)
 
-Microservices are event based which means they can publish and/or subscribe to any events occurring in the setup. By using this approach for communicating between services, each microservice does not need to know about the other services or handle errors occurred in other microservices.
+Microservices are [event based](https://event-driven.io/en/internal_external_events/) which means they can publish and/or subscribe to any events occurring in the setup. By using this approach for communicating between services, each microservice does not need to know about the other services or handle errors occurred in other microservices.
 
-In this architecture we use [CQRS Pattern](https://www.eventecommerce.com/cqrs-pattern) for separating read and write model beside of other [CQRS Advantages](https://youtu.be/dK4Yb6-LxAk?t=1029). Here for now I don't use [Event Sourcing](https://www.eventecommerce.com/blog/event-sourcing-and-cqrs) for simplicity but I will use it in future for syncing read and write side with sending streams and using [Projection Feature](https://event-driven.io/en/how_to_do_events_projections_with_entity_framework/) for some subscribers to syncing their data through sent streams and creating our [Custom Read Models](https://codeopinion.com/projections-in-event-sourcing-build-any-model-you-want/) in subscribers side.
+In this architecture we use [CQRS Pattern](https://www.kurrent.io/cqrs-pattern) for separating read and write model beside of other [CQRS Advantages](https://youtu.be/dK4Yb6-LxAk?t=1029). Here for now I don't use [Event Sourcing](https://www.kurrent.io/blog/event-sourcing-and-cqrs) for simplicity but I will use it in future for syncing read and write side with sending streams and using [Projection Feature](https://event-driven.io/en/projections_and_read_models_in_event_driven_architecture/) for some subscribers to syncing their data through sent streams and creating our [Custom Read Models](https://codeopinion.com/projections-in-event-sourcing-build-any-model-you-want/) in subscribers side.
 
-Here I have a write model that uses a postgres database for handling better `Consistency` and `ACID Transaction` guaranty. beside o this write side I use a read side model that uses MongoDB for better performance of our read side without any joins with suing some nested document in our document also better scalability with some good scaling features of MongoDB.
+Here I have a write model that uses a postgres database for handling better `Consistency` and `ACID Transaction` guaranty. beside o this write side I use a read side model that uses MongoDB for better performance of our read side without any joins with suing some nested document, also better scalability with some good scaling features in MongoDB.
 
 For syncing our read side and write side we have 2 options with using Event Driven Architecture (without using events streams in event sourcing):
 
-- If our `Read Sides` are in `Same Service`, during saving data in write side I save a [Internal Command](https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing) record in my `Command Processor` storage (like something we do in outbox pattern) and after commiting write side, our `command processor manager` reads unsent commands and sends them to their `Command Handlers` in same corresponding service and this handlers could save their read models in our MongoDb database as a read side.
+-   If our `Read Sides` are in `Same Service`, during saving data in write side I save a [Internal Command](https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing) record in my `Command Processor` storage (like something we do in outbox pattern) and after committing write side, our `command processor manager` reads unsent commands and sends them to their `Command Handlers` in same corresponding service and this handlers could save their read models in our MongoDb database as a read side.
 
-- If our `Read Sides` are in `Another Services` we publish an integration event (with saving this message in the outbox) after committing our write side and all of our `Subscribers` could get this event and save it in their read models (MongoDB).
+-   If our `Read Sides` are in `Another Services` we publish an integration event (with saving this message in the outbox) after committing our write side and all of our `Subscribers` could get this event and save it in their read models (MongoDB).
 
 All of this is optional in the application and it is possible to only use what that the service needs. Eg. if the service does not want to Use DDD because of business is very simple and it is mostly `CRUD` we can use `Data Centric` Architecture or If our application is not `Task based` instead of CQRS and separating read side and write side again we can just use a simple `CRUD` based application.
 
@@ -325,10 +333,10 @@ Also we could use gateway for load balancing, authentication and authorization, 
 
 In this project I used [vertical slice architecture](https://jimmybogard.com/vertical-slice-architecture/) or [Restructuring to a Vertical Slice Architecture](https://codeopinion.com/restructuring-to-a-vertical-slice-architecture/) also I used [feature folder structure](http://www.kamilgrzybek.com/design/feature-folders/) in this project.
 
-- We treat each request as a distinct use case or slice, encapsulating and grouping all concerns from front-end to back.
-- When We adding or changing a feature in an application in n-tire architecture, we are typically touching many different "layers" in an application. we are changing the user interface, adding fields to models, modifying validation, and so on. Instead of coupling across a layer, we couple vertically along a slice and each change affects only one slice.
-- We `Minimize coupling` `between slices`, and `maximize coupling` `in a slice`.
-- With this approach, each of our vertical slices can decide for itself how to best fulfill the request. New features only add code, we're not changing shared code and worrying about side effects. For implementing vertical slice architecture using cqrs pattern is a good match.
+-   We treat each request as a distinct use case or slice, encapsulating and grouping all concerns from front-end to back.
+-   When We adding or changing a feature in an application in n-tire architecture, we are typically touching many different "layers" in an application. we are changing the user interface, adding fields to models, modifying validation, and so on. Instead of coupling across a layer, we couple vertically along a slice and each change affects only one slice.
+-   We `Minimize coupling` `between slices`, and `maximize coupling` `in a slice`.
+-   With this approach, each of our vertical slices can decide for itself how to best fulfill the request. New features only add code, we're not changing shared code and worrying about side effects. For implementing vertical slice architecture using cqrs pattern is a good match.
 
 ![](./assets/vertical-slice-architecture.jpg)
 
@@ -336,25 +344,25 @@ In this project I used [vertical slice architecture](https://jimmybogard.com/ver
 
 Also here I used [CQRS](https://www.eventecommerce.com/cqrs-pattern) for decompose my features to very small parts that makes our application:
 
-- maximize performance, scalability and simplicity.
-- adding new feature to this mechanism is very easy without any breaking change in other part of our codes. New features only add code, we're not changing shared code and worrying about side effects.
-- easy to maintain and any changes only affect on one command or query (or a slice) and avoid any breaking changes on other parts
-- it gives us better separation of concerns and cross cutting concern (with help of MediatR behavior pipelines) in our code instead of a big service class for doing a lot of things.
+-   maximize performance, scalability and simplicity.
+-   adding new feature to this mechanism is very easy without any breaking change in other part of our codes. New features only add code, we're not changing shared code and worrying about side effects.
+-   easy to maintain and any changes only affect on one command or query (or a slice) and avoid any breaking changes on other parts
+-   it gives us better separation of concerns and cross cutting concern (with help of MediatR behavior pipelines) in our code instead of a big service class for doing a lot of things.
 
 With using [CQRS](https://event-driven.io/en/cqrs_facts_and_myths_explained/), our code will be more aligned with [SOLID principles](https://en.wikipedia.org/wiki/SOLID), especially with:
 
-- [Single Responsibility](https://en.wikipedia.org/wiki/Single-responsibility_principle) rule - because logic responsible for a given operation is enclosed in its own type.
-- [Open-Closed](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle) rule - because to add new operation you don’t need to edit any of the existing types, instead you need to add a new file with a new type representing that operation.
+-   [Single Responsibility](https://en.wikipedia.org/wiki/Single-responsibility_principle) rule - because logic responsible for a given operation is enclosed in its own type.
+-   [Open-Closed](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle) rule - because to add new operation you don’t need to edit any of the existing types, instead you need to add a new file with a new type representing that operation.
 
 Here instead of some [Technical Splitting](http://www.kamilgrzybek.com/design/feature-folders/) for example a folder or layer for our `services`, `controllers` and `data models` which increase dependencies between our technical splitting and also jump between layers or folders, We cut each business functionality into some vertical slices, and inner each of these slices we have [Technical Folders Structure](http://www.kamilgrzybek.com/design/feature-folders/) specific to that feature (command, handlers, infrastructure, repository, controllers, data models, ...).
 
 Usually, when we work on a given functionality we need some technical things for example:
 
-- API endpoint (Controller)
-- Request Input (Dto)
-- Request Output (Dto)
-- Some class to handle Request, For example Command and Command Handler or Query and Query Handler
-- Data Model
+-   API endpoint (Controller)
+-   Request Input (Dto)
+-   Request Output (Dto)
+-   Some class to handle Request, For example Command and Command Handler or Query and Query Handler
+-   Data Model
 
 Now we could all of these things beside each other and it decrease jumping and dependencies between some layers or folders.
 
@@ -424,7 +432,7 @@ pm2 delete pm2.yaml
 
 ### Using Docker-Compose
 
-- First we should create a [dev-certificate](https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#macos-or-linux) for our docker-compose file with this commands, see more about enforce certificate [here](https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl):
+-   First we should create a [dev-certificate](https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-7.0#macos-or-linux) for our docker-compose file with this commands, see more about enforce certificate [here](https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl):
 
 ```powershell
 dotnet dev-certs https --clean
@@ -434,15 +442,15 @@ dotnet dev-certs https --trust
 
 This local certificate will mapped to our containers in docker-compose file with setting `~/.aspnet/https:/https:ro` volume mount
 
-- Our docker-compose files are based on linux
-- Run the [docker-compose.infrastructure.yaml](./deployments/docker-compose/docker-compose.infrastructure.yaml) file, for running prerequisites infrastructures with `docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d` command.
-- Run the [docker-compose.services.yaml](./deployments/docker-compose/docker-compose.services.yaml) with `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml` for production mode that uses pushed docker images for services or for development mode you can use [docker-compose.services.dev.yaml](./deployments/docker-compose/docker-compose.services.dev.yaml) override docker-compose file with `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.dev.yaml up` command for building `dockerfiles` instead of using images in docker registry. Also for `debugging` purpose of docker-containers in vscode you can use [./deployments/docker-compose/docker-compose.services.debug.yaml](./deployments/docker-compose/docker-compose.services.debug.yaml) override docker-compose file with running `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.debug.yaml up -d`, I defined some [tasks](.vscode/tasks.json) for vscode for executing this command easier. For debugging in vscode we should use [launch.json](.vscode/launch.json).
-- Wait until all dockers got are downloaded and running.
-- You should automatically get:
-  - Postgres running
-  - RabbitMQ running
-  - MongoDB running
-  - Microservies running and accessible
+-   Our docker-compose files are based on linux
+-   Run the [docker-compose.infrastructure.yaml](./deployments/docker-compose/docker-compose.infrastructure.yaml) file, for running prerequisites infrastructures with `docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d` command.
+-   Run the [docker-compose.services.yaml](./deployments/docker-compose/docker-compose.services.yaml) with `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml` for production mode that uses pushed docker images for services or for development mode you can use [docker-compose.services.dev.yaml](./deployments/docker-compose/docker-compose.services.dev.yaml) override docker-compose file with `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.dev.yaml up` command for building `dockerfiles` instead of using images in docker registry. Also for `debugging` purpose of docker-containers in vscode you can use [./deployments/docker-compose/docker-compose.services.debug.yaml](./deployments/docker-compose/docker-compose.services.debug.yaml) override docker-compose file with running `docker-compose -f ./deployments/docker-compose/docker-compose.services.yaml -f ${workspaceFolder}/deployments/docker-compose/docker-compose.services.debug.yaml up -d`, I defined some [tasks](.vscode/tasks.json) for vscode for executing this command easier. For debugging in vscode we should use [launch.json](.vscode/launch.json).
+-   Wait until all dockers got are downloaded and running.
+-   You should automatically get:
+    -   Postgres running
+    -   RabbitMQ running
+    -   MongoDB running
+    -   Microservies running and accessible
 
 Some useful docker commands:
 
@@ -549,7 +557,7 @@ fi
 
 ##### Installation
 
-- For installing `Infrastructure` manifests for kubernetes cluster we run bellow command with [`kubectl script`](./deployments/k8s/kubernetes/kubectl):
+-   For installing `Infrastructure` manifests for kubernetes cluster we run bellow command with [`kubectl script`](./deployments/k8s/kubernetes/kubectl):
 
 ```bash
 ./kubectl apply -f ./deployments/k8s/kubernetes/infrastructure.yaml
@@ -561,16 +569,10 @@ The application is in development status. You are feel free to submit pull reque
 
 ## Project References
 
-- [https://github.com/oskardudycz/EventSourcing.NetCore](https://github.com/oskardudycz/EventSourcing.NetCore)
-- [https://github.com/dotnet-architecture/eShopOnContainers](https://github.com/dotnet-architecture/eShopOnContainers)
-- [https://github.com/jbogard/ContosoUniversityDotNetCore-Pages](https://github.com/jbogard/ContosoUniversityDotNetCore-Pages)
-- [https://github.com/kgrzybek/modular-monolith-with-ddd](https://github.com/kgrzybek/modular-monolith-with-ddd)
-- [https://github.com/thangchung/clean-architecture-dotnet](https://github.com/thangchung/clean-architecture-dotnet)
+-   [https://github.com/oskardudycz/EventSourcing.NetCore](https://github.com/oskardudycz/EventSourcing.NetCore)
+-   [https://github.com/jbogard/ContosoUniversityDotNetCore-Pages](https://github.com/jbogard/ContosoUniversityDotNetCore-Pages)
+-   [https://github.com/kgrzybek/modular-monolith-with-ddd](https://github.com/kgrzybek/modular-monolith-with-ddd)
 
 ## License
 
 The project is under [MIT license](https://github.com/mehdihadeli/food-delivery-microservices-sample/blob/main/LICENSE).
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=mehdihadeli/food-delivery-microservices&type=Date)](https://star-history.com/#mehdihadeli/food-delivery-microservices&Date)

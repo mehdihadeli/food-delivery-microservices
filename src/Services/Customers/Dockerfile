@@ -1,7 +1,7 @@
 # Using the base image of the Dockerfile for debugging can be more efficient because you don't need to build the entire application from scratch. Instead, you can reuse the already-built layers and add debugging tools and configurations as needed. This can save time and resources, especially if your application is large or complex.
 # On the other hand, doing a full build for debugging can ensure that the debugging environment is identical to the production environment. This can help catch issues that may not surface in a modified version of the image, and provide a more accurate representation of the production environment. However, this approach can be slower and require more resources.
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 #https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
 #https://swimburger.net/blog/dotnet/how-to-get-aspdotnet-core-server-urls
@@ -21,13 +21,14 @@ ENV ASPNETCORE_ENVIRONMENT docker
 # RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 # USER appuser
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 as build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 as build
 WORKDIR /src
 
 # path are related to build context, here for us build context is root folder
 # https://docs.docker.com/build/building/context/
 COPY ./.editorconfig ./
 COPY ./nuget.config ./
+COPY ./global.json ./
 
 COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
@@ -39,21 +40,21 @@ COPY ./src/Services/Customers/Directory.Build.props ./Services/Customers/
 # with any changes in csproj files all downstream layer will rebuil, so dotnet restore will execute again
 # TODO: Using wildcard to copy all files in the directory.
 COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
-COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
 COPY ./src/BuildingBlocks/BuildingBlocks.Caching/BuildingBlocks.Caching.csproj ./BuildingBlocks/BuildingBlocks.Caching/
+COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
 COPY ./src/BuildingBlocks/BuildingBlocks.Email/BuildingBlocks.Email.csproj ./BuildingBlocks/BuildingBlocks.Email/
-COPY ./src/BuildingBlocks/BuildingBlocks.Integration.MassTransit/BuildingBlocks.Integration.MassTransit.csproj ./BuildingBlocks/BuildingBlocks.Integration.MassTransit/
-COPY ./src/BuildingBlocks/BuildingBlocks.Logging/BuildingBlocks.Logging.csproj ./BuildingBlocks/BuildingBlocks.Logging/
 COPY ./src/BuildingBlocks/BuildingBlocks.HealthCheck/BuildingBlocks.HealthCheck.csproj ./BuildingBlocks/BuildingBlocks.HealthCheck/
+COPY ./src/BuildingBlocks/BuildingBlocks.Integration.MassTransit/BuildingBlocks.Integration.MassTransit.csproj ./BuildingBlocks/BuildingBlocks.Integration.MassTransit/
+COPY ./src/BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/BuildingBlocks.Messaging.Persistence.Postgres.csproj ./BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/
+COPY ./src/BuildingBlocks/BuildingBlocks.Observability/BuildingBlocks.Observability.csproj ./BuildingBlocks/BuildingBlocks.Observability/
+COPY ./src/BuildingBlocks/BuildingBlocks.OpenApi/BuildingBlocks.OpenApi.csproj ./BuildingBlocks/BuildingBlocks.OpenApi/
 COPY ./src/BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/BuildingBlocks.Persistence.EfCore.Postgres.csproj ./BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/
 COPY ./src/BuildingBlocks/BuildingBlocks.Persistence.Mongo/BuildingBlocks.Persistence.Mongo.csproj ./BuildingBlocks/BuildingBlocks.Persistence.Mongo/
 COPY ./src/BuildingBlocks/BuildingBlocks.Resiliency/BuildingBlocks.Resiliency.csproj ./BuildingBlocks/BuildingBlocks.Resiliency/
 COPY ./src/BuildingBlocks/BuildingBlocks.Security/BuildingBlocks.Security.csproj ./BuildingBlocks/BuildingBlocks.Security/
-COPY ./src/BuildingBlocks/BuildingBlocks.Swagger/BuildingBlocks.Swagger.csproj ./BuildingBlocks/BuildingBlocks.Swagger/
+COPY ./src/BuildingBlocks/BuildingBlocks.SerilogLogging/BuildingBlocks.SerilogLogging.csproj ./BuildingBlocks/BuildingBlocks.SerilogLogging/
 COPY ./src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj ./BuildingBlocks/BuildingBlocks.Validation/
 COPY ./src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj ./BuildingBlocks/BuildingBlocks.Web/
-COPY ./src/BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/BuildingBlocks.Messaging.Persistence.Postgres.csproj ./BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/
-COPY ./src/BuildingBlocks/BuildingBlocks.OpenTelemetry/BuildingBlocks.OpenTelemetry.csproj ./BuildingBlocks/BuildingBlocks.OpenTelemetry/
 
 COPY ./src/Services/Customers/FoodDelivery.Services.Customers/FoodDelivery.Services.Customers.csproj ./Services/Customers/FoodDelivery.Services.Customers/
 COPY ./src/Services/Customers/FoodDelivery.Services.Customers.Api/FoodDelivery.Services.Customers.Api.csproj ./Services/Customers/FoodDelivery.Services.Customers.Api/
@@ -67,7 +68,11 @@ COPY ./src/Services/Shared/FoodDelivery.Services.Shared/FoodDelivery.Services.Sh
 # https://pythonspeed.com/articles/docker-cache-pip-downloads/
 # When we have a chnage in a layer that layer and all subsequent layer will rebuild again
 # when installing packages, we don’t always need to fetch all of our packages from the internet each time. if we have any package update on `FoodDelivery.Services.Customers.Api.csproj` this layer will rebuild but it don't download all packages again, it just download new packages and for exisitng one uses mount cache
-RUN dotnet restore ./Services/Customers/FoodDelivery.Services.Customers.Api/FoodDelivery.Services.Customers.Api.csproj
+
+#- When we run `dotnet restore -p:SkipVersion=true`, MSBuild evaluates the <PackageReference> condition and physically excludes `GitVersion.MsBuild` from the restored packages. The targets file (GitVersion.MsBuild.targets) is never downloaded to your obj/ folder.
+#- If we skip -p:SkipVersion=true during restore, the package gets restored normally.
+#- Even if we pass -p:SkipVersion=true later, the targets file still exists in your obj/ folder and tries to execute.
+RUN dotnet restore ./Services/Customers/FoodDelivery.Services.Customers.Api/FoodDelivery.Services.Customers.Api.csproj -p:SkipVersion=true
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
@@ -77,7 +82,7 @@ COPY ./src/Services/Shared/  ./Services/Shared/
 
 WORKDIR /src/Services/Customers/FoodDelivery.Services.Customers.Api/
 
-RUN dotnet build -c Release --no-restore
+RUN dotnet build -c Release --no-restore 
 
 FROM build AS publish
 # Publish project to output folder and no build and restore, as we did it already

@@ -1,8 +1,8 @@
 using System.Net.Http.Json;
 using BuildingBlocks.Core.Web.Extensions;
 using FluentAssertions;
-using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
-using FoodDelivery.Services.Customers.Shared.Clients.Catalogs.Dtos;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
 using Tests.Shared.Helpers;
 using Tests.Shared.XunitCategories;
 using WireMock.Server;
@@ -12,8 +12,10 @@ namespace FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Servers;
 public class CatalogServiceMockTests
 {
     private static readonly WireMockServer _wireMockServer = WireMockServer.Start();
-    private readonly CatalogsServiceWireMock _catalogsServiceWireMock =
-        new(_wireMockServer, ConfigurationHelper.BindOptions<CatalogsApiClientOptions>());
+    private readonly CatalogsServiceWireMock _catalogsServiceWireMock = new(
+        _wireMockServer,
+        ConfigurationHelper.BindOptions<CatalogsRestClientOptions>()
+    );
 
     [Fact]
     [CategoryTrait(TestCategory.Unit)]

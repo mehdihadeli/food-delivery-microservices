@@ -3,11 +3,12 @@ using BuildingBlocks.Core.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
+using Mediator;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 
-internal record ProcessRestockNotification(long ProductId, int CurrentStock) : ITxCommand
+public record ProcessRestockNotification(long ProductId, int CurrentStock) : ITxCommand
 {
     public static ProcessRestockNotification Of(long productId, int currentStock)
     {
@@ -18,7 +19,7 @@ internal record ProcessRestockNotification(long ProductId, int CurrentStock) : I
     }
 }
 
-internal class ProcessRestockNotificationValidator : AbstractValidator<ProcessRestockNotification>
+public class ProcessRestockNotificationValidator : AbstractValidator<ProcessRestockNotification>
 {
     public ProcessRestockNotificationValidator()
     {
@@ -28,13 +29,13 @@ internal class ProcessRestockNotificationValidator : AbstractValidator<ProcessRe
     }
 }
 
-internal class ProcessRestockNotificationHandler(
+public class ProcessRestockNotificationHandler(
     CustomersDbContext customersDbContext,
     ICommandBus commandBus,
     ILogger<ProcessRestockNotificationHandler> logger
-) : ICommandHandler<ProcessRestockNotification>
+) : BuildingBlocks.Abstractions.Commands.ICommandHandler<ProcessRestockNotification>
 {
-    public async Task Handle(ProcessRestockNotification command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(ProcessRestockNotification command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
@@ -43,7 +44,7 @@ internal class ProcessRestockNotificationHandler(
         );
 
         if (!await subscribedCustomers.AnyAsync(cancellationToken: cancellationToken))
-            return;
+            return Unit.Value;
 
         foreach (var restockSubscription in subscribedCustomers)
         {
@@ -60,5 +61,7 @@ internal class ProcessRestockNotificationHandler(
         await customersDbContext.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation("Marked restock subscriptions as processed");
+
+        return Unit.Value;
     }
 }

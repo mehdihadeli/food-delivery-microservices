@@ -10,7 +10,7 @@ using Sieve.Services;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.v1;
 
-internal record GetCustomers : PageQuery<GetCustomersResult>
+public record GetCustomers : PageQuery<GetCustomersResult>
 {
     public static GetCustomers Of(PageRequest pageRequest)
     {
@@ -22,13 +22,13 @@ internal record GetCustomers : PageQuery<GetCustomersResult>
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 Filters = filters,
-                SortOrder = sortOrder
+                SortOrder = sortOrder,
             }
         );
     }
 }
 
-internal class GetCustomersValidator : AbstractValidator<GetCustomers>
+public class GetCustomersValidator : AbstractValidator<GetCustomers>
 {
     public GetCustomersValidator()
     {
@@ -42,15 +42,15 @@ internal class GetCustomersValidator : AbstractValidator<GetCustomers>
     }
 }
 
-internal class GetCustomersHandler(ICustomersReadUnitOfWork unitOfWork, ISieveProcessor sieveProcessor)
+public class GetCustomersHandler(ICustomersReadUnitOfWork unitOfWork, ISieveProcessor sieveProcessor)
     : IQueryHandler<GetCustomers, GetCustomersResult>
 {
-    public async Task<GetCustomersResult> Handle(GetCustomers request, CancellationToken cancellationToken)
+    public async ValueTask<GetCustomersResult> Handle(GetCustomers request, CancellationToken cancellationToken)
     {
-        var customer = await unitOfWork.CustomersRepository.GetByPageFilter<CustomerReadDto, string>(
+        var customer = await unitOfWork.CustomersRepository.GetByPageFilter(
             request,
-            CustomersModuleMapping.ProjectToCustomerReadDto,
-            sortExpression: x => x.City!,
+            projectionFunc: x => x.ToCustomersReadDto(),
+            sortExpression: x => x.Id,
             cancellationToken: cancellationToken
         );
 
@@ -58,4 +58,4 @@ internal class GetCustomersHandler(ICustomersReadUnitOfWork unitOfWork, ISievePr
     }
 }
 
-internal record GetCustomersResult(IPageList<CustomerReadDto> Customers);
+public record GetCustomersResult(IPageList<CustomerReadDto> Customers);

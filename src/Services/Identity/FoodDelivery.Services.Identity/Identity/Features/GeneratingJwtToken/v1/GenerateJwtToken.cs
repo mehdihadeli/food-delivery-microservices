@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.GeneratingJwtToken.v1;
 
-internal record GenerateJwtToken(ApplicationUser User, string RefreshToken) : ICommand<GenerateJwtTokenResult>
+public record GenerateJwtToken(ApplicationUser User, string RefreshToken) : ICommand<GenerateJwtTokenResult>
 {
     /// <summary>
     /// GenerateJwtToken with in-line validation.
@@ -25,13 +25,13 @@ internal record GenerateJwtToken(ApplicationUser User, string RefreshToken) : IC
     }
 }
 
-internal class GenerateJwtTokenHandler(
+public class GenerateJwtTokenHandler(
     UserManager<ApplicationUser> userManager,
     IJwtService jwtService,
     ILogger<GenerateJwtTokenHandler> logger
 ) : ICommandHandler<GenerateJwtToken, GenerateJwtTokenResult>
 {
-    public async Task<GenerateJwtTokenResult> Handle(GenerateJwtToken request, CancellationToken cancellationToken)
+    public async ValueTask<GenerateJwtTokenResult> Handle(GenerateJwtToken request, CancellationToken cancellationToken)
     {
         request.NotBeNull();
 

@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Core.Queries;
@@ -7,12 +6,11 @@ using Dapper;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.v1;
 
-internal record GetProductsView : PageQuery<GetProductsViewResult>
+public record GetProductsView : PageQuery<GetProductsViewResult>
 {
     public static GetProductsView Of(PageRequest pageRequest)
     {
@@ -24,13 +22,13 @@ internal record GetProductsView : PageQuery<GetProductsViewResult>
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 Filters = filters,
-                SortOrder = sortOrder
+                SortOrder = sortOrder,
             }
         );
     }
 }
 
-internal class GetProductsViewValidator : AbstractValidator<GetProductsView>
+public class GetProductsViewValidator : AbstractValidator<GetProductsView>
 {
     public GetProductsViewValidator()
     {
@@ -44,13 +42,13 @@ internal class GetProductsViewValidator : AbstractValidator<GetProductsView>
     }
 }
 
-internal class GetProductsViewHandler(IDbFacadeResolver facadeResolver, IMapper mapper)
-    : IRequestHandler<GetProductsView, GetProductsViewResult>
+public class GetProductsViewHandler(IDbFacadeResolver facadeResolver)
+    : BuildingBlocks.Abstractions.Queries.IQueryHandler<GetProductsView, GetProductsViewResult>
 {
-    public async Task<GetProductsViewResult> Handle(GetProductsView request, CancellationToken cancellationToken)
+    public async ValueTask<GetProductsViewResult> Handle(GetProductsView query, CancellationToken cancellationToken)
     {
         await using var conn = facadeResolver.Database.GetDbConnection();
-        var (pageNumber, pageSize, filters, sortOrder) = request;
+        var (pageNumber, pageSize, filters, sortOrder) = query;
         await conn.OpenAsync(cancellationToken);
         var results = await conn.QueryAsync<ProductView>(
             @"SELECT product_id ""InternalCommandId"", product_name ""Name"", category_name CategoryName, supplier_name SupplierName, count(*) OVER() AS ItemCount
@@ -58,10 +56,10 @@ internal class GetProductsViewHandler(IDbFacadeResolver facadeResolver, IMapper 
             new { pageSize, pageNumber }
         );
 
-        var productViewDtos = mapper.Map<IEnumerable<ProductViewDto>>(results);
+        var productViewDtos = results.ToProductsViewDto();
 
         return new GetProductsViewResult(productViewDtos);
     }
 }
 
-internal record GetProductsViewResult(IEnumerable<ProductViewDto> Products);
+public record GetProductsViewResult(IEnumerable<ProductViewDto> Products);

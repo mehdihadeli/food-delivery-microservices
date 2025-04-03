@@ -9,7 +9,7 @@ public class IdentityTestSeeder(UserManager<ApplicationUser> userManager, RoleMa
 {
     public int Order => 1;
 
-    public async Task SeedAllAsync()
+    public async Task SeedAllAsync(CancellationToken cancellationToken)
     {
         await SeedRoles();
         await SeedUsers();

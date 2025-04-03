@@ -2,7 +2,6 @@ using System.Dynamic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using WebMotions.Fake.Authentication.JwtBearer;
 
 namespace Tests.Shared.Extensions;

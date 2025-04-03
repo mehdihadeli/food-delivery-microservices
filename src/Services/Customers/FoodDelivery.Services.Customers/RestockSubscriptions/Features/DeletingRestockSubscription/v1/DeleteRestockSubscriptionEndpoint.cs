@@ -1,7 +1,6 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -9,8 +8,8 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.Deleting
 
 internal class DeleteRestockSubscriptionEndpoint : IMinimalEndpoint
 {
-    public string GroupName => RestockSubscriptionsConfigs.Tag;
-    public string PrefixRoute => RestockSubscriptionsConfigs.RestockSubscriptionsUrl;
+    public string GroupName => RestockSubscriptionsConfigurations.Tag;
+    public string PrefixRoute => RestockSubscriptionsConfigurations.RestockSubscriptionsUrl;
     public double Version => 1.0;
 
     public async Task<
@@ -35,10 +34,8 @@ internal class DeleteRestockSubscriptionEndpoint : IMinimalEndpoint
             // .ProducesValidationProblem()
             // .ProducesProblem(StatusCodes.Status401Unauthorized)
             .WithName(nameof(DeleteRestockSubscription))
-            .WithSummaryAndDescription(
-                nameof(DeleteRestockSubscription).Humanize(),
-                nameof(DeleteRestockSubscription).Humanize()
-            )
+            .WithDescription(nameof(DeleteRestockSubscription).Humanize())
+            .WithSummary(nameof(DeleteRestockSubscription).Humanize())
             .WithDisplayName(nameof(DeleteRestockSubscription).Humanize());
     }
 }

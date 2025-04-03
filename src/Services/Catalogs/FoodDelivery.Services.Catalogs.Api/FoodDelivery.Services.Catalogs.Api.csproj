@@ -13,6 +13,7 @@
     <ContainerImageTag>dev</ContainerImageTag>
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:latest</ContainerBaseImage>
   </PropertyGroup>
+  
 <!--  <ItemGroup>-->
 <!--    <ContainerEnvironmentVariable Include="ASPNETCORE_ENVIRONMENT" Value="docker" />-->
 <!--  </ItemGroup>-->
@@ -20,10 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\FoodDelivery.Services.Catalogs\FoodDelivery.Services.Catalogs.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Build.Containers" />
   </ItemGroup>
 
   <ItemGroup>

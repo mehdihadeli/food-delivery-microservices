@@ -1,6 +1,7 @@
 using FluentAssertions;
 using FoodDelivery.Services.Catalogs.Categories.Data;
 using Tests.Shared.XunitCategories;
+using Xunit;
 
 namespace FoodDelivery.Services.Catalogs.TestShared.Fakes.Categories;
 

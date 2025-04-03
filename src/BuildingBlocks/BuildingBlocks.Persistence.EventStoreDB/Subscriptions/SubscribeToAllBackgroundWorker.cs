@@ -1,3 +1,4 @@
+using BuildingBlocks.Abstractions.Core.Diagnostics;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 using BuildingBlocks.Core.Threading;
@@ -8,6 +9,7 @@ using Grpc.Core;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using EventTypeFilter = EventStore.Client.EventTypeFilter;
 
 namespace BuildingBlocks.Persistence.EventStoreDB.Subscriptions;
 
@@ -16,6 +18,7 @@ public class EventStoreDbSubscriptionToAll(
     IOptions<EventStoreDbOptions> eventStoreDbOptions,
     EventStoreClient eventStoreClient,
     IReadProjectionPublisher projectionPublisher,
+    IDiagnosticsProvider diagnosticsProvider,
     IInternalEventBus internalEventBus,
     ISubscriptionCheckpointRepository checkpointRepository,
     ILogger<EventStoreDbSubscriptionToAll> logger
@@ -42,20 +45,21 @@ public class EventStoreDbSubscriptionToAll(
             _eventStoreDbOptions.SubscriptionOptions.SubscriptionId
         );
 
-        var checkpoint = await checkpointRepository.Load(
-            _eventStoreDbOptions.SubscriptionOptions.SubscriptionId,
-            cancellationToken
-        );
+        var checkpoint = await checkpointRepository
+            .Load(_eventStoreDbOptions.SubscriptionOptions.SubscriptionId, cancellationToken)
+            .ConfigureAwait(false);
 
-        await eventStoreClient.SubscribeToAllAsync(
-            checkpoint == null ? FromAll.Start : FromAll.After(new Position(checkpoint.Value, checkpoint.Value)),
-            HandleEvent,
-            _eventStoreDbOptions.SubscriptionOptions.ResolveLinkTos,
-            HandleDrop,
-            new(EventTypeFilter.ExcludeSystemEvents()),
-            default,
-            cancellationToken
-        );
+        await eventStoreClient
+            .SubscribeToAllAsync(
+                checkpoint == null ? FromAll.Start : FromAll.After(new Position(checkpoint.Value, checkpoint.Value)),
+                HandleEvent,
+                _eventStoreDbOptions.SubscriptionOptions.ResolveLinkTos,
+                HandleDrop,
+                new(EventTypeFilter.ExcludeSystemEvents()),
+                default,
+                cancellationToken
+            )
+            .ConfigureAwait(false);
 
         logger.LogInformation(
             "Subscription to all '{SubscriptionId}' started",
@@ -72,7 +76,9 @@ public class EventStoreDbSubscriptionToAll(
         try
         {
             if (IsEventWithEmptyData(resolvedEvent) || IsCheckpointEvent(resolvedEvent))
+            {
                 return;
+            }
 
             var streamEvent = resolvedEvent.ToStreamEvent();
 
@@ -96,15 +102,17 @@ public class EventStoreDbSubscriptionToAll(
             }
 
             // publish event to internal event bus
-            await internalEventBus.Publish(streamEvent, cancellationToken);
+            await internalEventBus.Publish(streamEvent, cancellationToken).ConfigureAwait(false);
 
-            await projectionPublisher.PublishAsync(streamEvent, cancellationToken);
+            await projectionPublisher.PublishAsync(streamEvent, cancellationToken).ConfigureAwait(false);
 
-            await checkpointRepository.Store(
-                _eventStoreDbOptions.SubscriptionOptions.SubscriptionId,
-                resolvedEvent.Event.Position.CommitPosition,
-                cancellationToken
-            );
+            await checkpointRepository
+                .Store(
+                    _eventStoreDbOptions.SubscriptionOptions.SubscriptionId,
+                    resolvedEvent.Event.Position.CommitPosition,
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -195,7 +203,7 @@ public class EventStoreDbSubscriptionToAll(
 
     private bool IsCheckpointEvent(ResolvedEvent resolvedEvent)
     {
-        if (resolvedEvent.Event.EventType != TypeMapper.GetTypeName<CheckpointStored>())
+        if (resolvedEvent.Event.EventType != TypeMapper.AddFullTypeName(typeof(CheckpointStored)))
             return false;
 
         logger.LogInformation("Checkpoint event - ignoring");

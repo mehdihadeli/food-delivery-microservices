@@ -1,4 +1,3 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Core.Paging;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Core.Extensions;
@@ -8,14 +7,13 @@ using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
-using FoodDelivery.Services.Catalogs.Products.Models.Read;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Sieve.Services;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProducts.v1;
 
-internal record GetProducts : PageQuery<GetProductsResult>
+public record GetProducts : PageQuery<GetProductsResult>
 {
     /// <summary>
     /// Get Products with in-line validation.
@@ -32,13 +30,13 @@ internal record GetProducts : PageQuery<GetProductsResult>
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 Filters = filters,
-                SortOrder = sortOrder
+                SortOrder = sortOrder,
             }
         );
     }
 }
 
-internal class GetProductsValidator : AbstractValidator<GetProducts>
+public class GetProductsValidator : AbstractValidator<GetProducts>
 {
     public GetProductsValidator()
     {
@@ -52,25 +50,25 @@ internal class GetProductsValidator : AbstractValidator<GetProducts>
     }
 }
 
-internal class GetProductsHandler(IMapper mapper, ICatalogDbContext catalogDbContext, ISieveProcessor sieveProcessor)
+public class GetProductsHandler(ICatalogDbContext catalogDbContext, ISieveProcessor sieveProcessor)
     : IQueryHandler<GetProducts, GetProductsResult>
 {
-    public async Task<GetProductsResult> Handle(GetProducts request, CancellationToken cancellationToken)
+    public async ValueTask<GetProductsResult> Handle(GetProducts request, CancellationToken cancellationToken)
     {
         var products = await catalogDbContext
             .Products.OrderByDescending(x => x.Created)
             .AsNoTracking()
-            .ApplyPagingAsync<Product, ProductReadModel>(
+            .ApplyPagingAsync<Product, ProductDto, long>(
                 request,
                 sieveProcessor,
-                mapper.ConfigurationProvider,
+                projectionFunc: p => p.ToProductsDto(),
+                sortExpression: x => x.Id,
+                predicate: null,
                 cancellationToken: cancellationToken
             );
 
-        var result = products.MapTo<ProductDto>(mapper);
-
-        return new GetProductsResult(result);
+        return new GetProductsResult(products);
     }
 }
 
-internal record GetProductsResult(IPageList<ProductDto> Products);
+public record GetProductsResult(IPageList<ProductDto> Products);

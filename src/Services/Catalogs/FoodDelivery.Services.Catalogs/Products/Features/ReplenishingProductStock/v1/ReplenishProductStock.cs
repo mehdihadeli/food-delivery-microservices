@@ -6,6 +6,7 @@ using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Extensions;
+using Mediator;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1;
 
@@ -24,7 +25,7 @@ public record ReplenishProductStock(long ProductId, int Quantity) : ITxCommand
     }
 }
 
-internal class ReplenishingProductStockValidator : AbstractValidator<ReplenishProductStock>
+public class ReplenishingProductStockValidator : AbstractValidator<ReplenishProductStock>
 {
     public ReplenishingProductStockValidator()
     {
@@ -33,10 +34,10 @@ internal class ReplenishingProductStockValidator : AbstractValidator<ReplenishPr
     }
 }
 
-internal class ReplenishingProductStockHandler(ICatalogDbContext catalogDbContext)
-    : ICommandHandler<ReplenishProductStock>
+public class ReplenishingProductStockHandler(ICatalogDbContext catalogDbContext)
+    : BuildingBlocks.Abstractions.Commands.ICommandHandler<ReplenishProductStock>
 {
-    public async Task Handle(ReplenishProductStock command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(ReplenishProductStock command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
 
@@ -48,5 +49,7 @@ internal class ReplenishingProductStockHandler(ICatalogDbContext catalogDbContex
 
         product.ReplenishStock(quantity);
         await catalogDbContext.SaveChangesAsync(cancellationToken);
+
+        return Unit.Value;
     }
 }

@@ -1,9 +1,9 @@
-using MediatR;
+using Mediator;
 
 namespace BuildingBlocks.Abstractions.Commands;
 
-public interface ICommandHandler<in TCommand> : IRequestHandler<TCommand>
-    where TCommand : ICommand;
+public interface ICommandHandler<in TCommand> : ICommandHandler<TCommand, Unit>
+    where TCommand : ICommand<Unit>;
 
 public interface ICommandHandler<in TCommand, TResponse> : IRequestHandler<TCommand, TResponse>
     where TCommand : ICommand<TResponse>

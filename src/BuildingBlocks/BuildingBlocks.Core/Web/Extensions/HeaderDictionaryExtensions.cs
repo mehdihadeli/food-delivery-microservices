@@ -46,7 +46,7 @@ public static class HeaderDictionaryExtensions
             {
                 ParameterPick.First => values.FirstOrDefault(),
                 ParameterPick.Last => values.LastOrDefault(),
-                _ => value
+                _ => value,
             };
         }
 
@@ -57,5 +57,5 @@ public static class HeaderDictionaryExtensions
 public enum ParameterPick
 {
     First,
-    Last
+    Last,
 }

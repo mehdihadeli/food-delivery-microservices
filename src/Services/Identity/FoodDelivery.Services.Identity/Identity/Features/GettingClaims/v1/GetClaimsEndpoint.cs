@@ -1,8 +1,6 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -15,9 +13,10 @@ internal static class GetClaimsEndpoint
         return endpoints
             .MapGet("/claims", Handle)
             .RequireAuthorization()
-            .WithTags(IdentityConfigs.Tag)
+            .WithTags(IdentityConfigurations.Tag)
             .WithName(nameof(GetClaims))
-            .WithSummaryAndDescription(nameof(GetClaims).Humanize(), nameof(GetClaims).Humanize())
+            .WithSummary(nameof(GetClaims).Humanize())
+            .WithDescription(nameof(GetClaims).Humanize())
             .WithDisplayName(nameof(GetClaims).Humanize())
             .MapToApiVersion(1.0);
 
@@ -29,7 +28,7 @@ internal static class GetClaimsEndpoint
             [AsParameters] GetClaimsRequestParameters requestParameters
         )
         {
-            var (context, queryProcessor, mapper, cancellationToken) = requestParameters;
+            var (context, queryProcessor, cancellationToken) = requestParameters;
             var result = await queryProcessor.SendAsync(GetClaims.Of(), cancellationToken);
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
@@ -44,7 +43,6 @@ internal static class GetClaimsEndpoint
 internal record GetClaimsRequestParameters(
     HttpContext HttpContext,
     IQueryBus QueryBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;
 

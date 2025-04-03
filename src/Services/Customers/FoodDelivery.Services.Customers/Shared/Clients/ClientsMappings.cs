@@ -1,6 +1,6 @@
 using FoodDelivery.Services.Customers.Products.Models;
-using FoodDelivery.Services.Customers.Shared.Clients.Catalogs.Dtos;
-using FoodDelivery.Services.Customers.Shared.Clients.Identity.Dtos;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Dtos;
 using FoodDelivery.Services.Customers.Users.Model;
 using Riok.Mapperly.Abstractions;
 

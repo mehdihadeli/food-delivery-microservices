@@ -1,24 +1,30 @@
 using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Messaging.PersistMessage;
-using MediatR;
+using BuildingBlocks.Abstractions.Messages;
+using BuildingBlocks.Abstractions.Messages.MessagePersistence;
+using Mediator;
 
 namespace BuildingBlocks.Core.Commands;
 
-public class CommandBus(IMediator mediator, IMessagePersistenceService messagePersistenceService) : ICommandBus
+public class CommandBus(
+    IMediator mediator,
+    IServiceProvider serviceProvider,
+    IMessageMetadataAccessor messageMetadataAccessor
+) : AsyncCommandBus(serviceProvider, messageMetadataAccessor), ICommandBus
 {
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+
     public async Task<TResult> SendAsync<TResult>(
-        ICommand<TResult> command,
+        Abstractions.Commands.ICommand<TResult> command,
         CancellationToken cancellationToken = default
     )
-        where TResult : class
+        where TResult : notnull
     {
-        return await mediator.Send(command, cancellationToken);
+        return await mediator.Send(command, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task SendAsync<TRequest>(TRequest command, CancellationToken cancellationToken = default)
-        where TRequest : ICommand
+    public async Task SendAsync(Abstractions.Commands.ICommand command, CancellationToken cancellationToken = default)
     {
-        await mediator.Send(command, cancellationToken);
+        await mediator.Send(command, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task ScheduleAsync(
@@ -26,7 +32,12 @@ public class CommandBus(IMediator mediator, IMessagePersistenceService messagePe
         CancellationToken cancellationToken = default
     )
     {
-        await messagePersistenceService.AddInternalMessageAsync(internalCommandCommand, cancellationToken);
+        // to prevent cycle dependencies in MessagePersistenceService
+        var messagePersistenceService = _serviceProvider.GetRequiredService<IMessagePersistenceService>();
+
+        await messagePersistenceService
+            .AddInternalMessageAsync(internalCommandCommand, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task ScheduleAsync(
@@ -36,7 +47,7 @@ public class CommandBus(IMediator mediator, IMessagePersistenceService messagePe
     {
         foreach (var internalCommandCommand in internalCommandCommands)
         {
-            await ScheduleAsync(internalCommandCommand, cancellationToken);
+            await ScheduleAsync(internalCommandCommand, cancellationToken).ConfigureAwait(false);
         }
     }
 }

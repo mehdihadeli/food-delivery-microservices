@@ -1,9 +1,12 @@
-using BuildingBlocks.Core.Persistence.Extensions;
+using BuildingBlocks.Abstractions.Persistence;
+using BuildingBlocks.Core.Persistence;
 using BuildingBlocks.Persistence.Mongo;
+using Microsoft.AspNetCore.HeaderPropagation;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Primitives;
 using Tests.Shared.Fixtures;
 
 namespace Tests.Shared.TestBase;
@@ -15,6 +18,7 @@ public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLif
     where TEntryPoint : class
 {
     private IServiceScope? _serviceScope;
+    private TestWorkersRunner _testWorkersRunner = default!;
 
     protected CancellationToken CancellationToken => CancellationTokenSource.Token;
     protected CancellationTokenSource CancellationTokenSource { get; }
@@ -33,27 +37,41 @@ public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLif
         CancellationTokenSource = new(TimeSpan.FromSeconds(Timeout));
         CancellationToken.ThrowIfCancellationRequested();
 
-        SharedFixture.ConfigureTestServices(services =>
-        {
-            services.RegisterDataSeeders([GetType().Assembly]);
-        });
-        SharedFixture.ConfigureTestServices(RegisterTestConfigureServices);
-
-        SharedFixture.ConfigureTestConfigureApp(
+        // we should not build factory service provider with getting ServiceProvider in SharedFixture construction to having capability for override
+        SharedFixture.WithTestConfigureServices(SetupTestConfigureServices);
+        SharedFixture.WithTestConfigureAppConfiguration(
             (context, configurationBuilder) =>
             {
-                RegisterTestAppConfigurations(configurationBuilder, context.Configuration, context.HostingEnvironment);
+                SetupTestConfigureAppConfiguration(context, context.Configuration, context.HostingEnvironment);
             }
         );
+        SharedFixture.WithTestConfiguration(SetupTestConfiguration);
+        SharedFixture.AddOverrideEnvKeyValues(OverrideEnvKeyValues);
+        SharedFixture.AddOverrideInMemoryConfig(OverrideInMemoryConfig);
+
+        // Note: building service provider here
+
+        // - because in IntegrationTest we don't call minimal endpoints and controllers directly our service middlewares doesn't run as a result `app.UseHeaderPropagation()` middleware won't be run which is responsible
+        // for initializing `HeaderPropagationValues.Headers` and therefore in client's message handler `HeaderPropagationMessageHandler` we get an exception.
+        // - won't be worked in async InitializeAsync correctly because of AsyncLocal
+        InitializeHeaderPropagation();
     }
 
     // we use IAsyncLifetime in xunit instead of constructor when we have async operation
-    public virtual async Task InitializeAsync() { }
+    public virtual async Task InitializeAsync()
+    {
+        // for seeding, we should run it for each test separately here. but for migration we can run it just once for all tests in shared fixture
+        var seederManager = SharedFixture.ServiceProvider.GetRequiredService<IDataSeederManager>();
+        // DataSeedWorker is removed from dependency injection in the test so we can't resolve it directly.
+        var seedWorker = new DataSeedWorker(seederManager);
+
+        _testWorkersRunner = new([seedWorker]);
+        await _testWorkersRunner.StartWorkersAsync(CancellationToken.None);
+    }
 
     public virtual async Task DisposeAsync()
     {
         // it is better messages delete first
-        await SharedFixture.CleanupMessaging(CancellationToken);
         await SharedFixture.ResetDatabasesAsync(CancellationToken);
 
         await CancellationTokenSource.CancelAsync();
@@ -61,13 +79,25 @@ public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLif
         Scope.Dispose();
     }
 
-    protected virtual void RegisterTestConfigureServices(IServiceCollection services) { }
+    protected virtual void SetupTestConfigureServices(IServiceCollection services) { }
 
-    protected virtual void RegisterTestAppConfigurations(
-        IConfigurationBuilder builder,
+    protected virtual void SetupTestConfigureAppConfiguration(
+        WebHostBuilderContext webHostBuilderContext,
         IConfiguration configuration,
-        IHostEnvironment environment
+        IWebHostEnvironment hostingEnvironment
     ) { }
+
+    protected virtual void SetupTestConfiguration(IConfiguration configurations) { }
+
+    protected virtual void OverrideEnvKeyValues(IDictionary<string, string> keyValues) { }
+
+    protected virtual void OverrideInMemoryConfig(IDictionary<string, string> keyValues) { }
+
+    private void InitializeHeaderPropagation()
+    {
+        var headerPropagation = SharedFixture.ServiceProvider.GetRequiredService<HeaderPropagationValues>();
+        headerPropagation.Headers ??= new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
+    }
 }
 
 public abstract class IntegrationTestBase<TEntryPoint, TContext>(

@@ -1,11 +1,15 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using Cassandra.Mapping;
+using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
+using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
+using FoodDelivery.Services.Catalogs.Products.ValueObjects;
+using FoodDelivery.Services.Catalogs.Suppliers;
 using Humanizer;
+using Mediator;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1;
@@ -28,11 +32,12 @@ internal static class CreateProductEndpoint
         // https://github.com/dotnet/aspnetcore/issues/45871
         return endpoints
             .MapPost("/", Handle)
-            .WithTags(ProductsConfigs.Tag)
+            .WithTags(ProductsConfigurations.Tag)
             .RequireAuthorization()
             .WithName(nameof(CreateProduct))
             .WithDisplayName(nameof(CreateProduct).Humanize())
-            .WithSummaryAndDescription(nameof(CreateProduct).Humanize(), nameof(CreateProduct).Humanize())
+            .WithSummary(nameof(CreateProduct).Humanize())
+            .WithDescription(nameof(CreateProduct).Humanize())
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses?#typedresults-vs-results
             // .Produces<CreateProductResponse>("Product created successfully.", StatusCodes.Status201Created)
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
@@ -43,9 +48,23 @@ internal static class CreateProductEndpoint
             Results<CreatedAtRoute<CreateProductResponse>, UnAuthorizedHttpProblemResult, ValidationProblem>
         > Handle([AsParameters] CreateProductRequestParameters requestParameters)
         {
-            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, cancellationToken) = requestParameters;
 
-            var command = mapper.Map<CreateProduct>(request);
+            var command = new CreateProduct(
+                Name.Of(request.Name),
+                Price.Of(request.Price),
+                Stock.Of(request.Stock, request.RestockThreshold, request.MaxStockThreshold),
+                request.Status,
+                request.ProductType,
+                Dimensions.Of(request.Width, request.Height, request.Depth),
+                Size.Of(request.Size),
+                request.Color,
+                CategoryId.Of(request.CategoryId),
+                SupplierId.Of(request.SupplierId),
+                BrandId.Of(request.BrandId),
+                request.Description,
+                request.Images
+            );
 
             var result = await commandBus.SendAsync(command, cancellationToken);
 
@@ -66,15 +85,14 @@ internal record CreateProductRequestParameters(
     [FromBody] CreateProductRequest Request,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<CreateProductRequest>;
 
 internal record CreateProductResponse(long Id);
 
 // parameters can be pass as null from the user
-internal record CreateProductRequest(
-    string? Name,
+public record CreateProductRequest(
+    string Name,
     decimal Price,
     int Stock,
     int RestockThreshold,
@@ -82,7 +100,7 @@ internal record CreateProductRequest(
     int Height,
     int Width,
     int Depth,
-    string? Size,
+    string Size,
     long CategoryId,
     long SupplierId,
     long BrandId,
@@ -93,4 +111,4 @@ internal record CreateProductRequest(
     IEnumerable<CreateProductImageRequest>? Images = null
 );
 
-internal record CreateProductImageRequest(string ImageUrl, bool IsMain);
+public record CreateProductImageRequest(string ImageUrl, bool IsMain);

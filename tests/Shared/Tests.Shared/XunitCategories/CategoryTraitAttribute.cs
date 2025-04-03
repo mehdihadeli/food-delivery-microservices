@@ -43,5 +43,5 @@ public enum TestCategory
     Integration,
     EndToEnd,
     LoadTest,
-    SkipCI
+    SkipCI,
 }

@@ -24,7 +24,7 @@ public class EventSourcedAggregateTests
             shoppingCartInitialized,
             productItemAddedToShoppingCart,
             productItemAddedToShoppingCart,
-            shoppingCartConfirmed
+            shoppingCartConfirmed,
         };
 
         // 2. Construct empty Invoice object
@@ -86,7 +86,7 @@ public class EventSourcedAggregateTests
             shoppingCartInitialized,
             productItemAddedToShoppingCart,
             productItemAddedToShoppingCart,
-            shoppingCartConfirmed
+            shoppingCartConfirmed,
         };
 
         // 2. Construct empty Invoice object
@@ -140,7 +140,7 @@ public class EventSourcedAggregateTests
     {
         Pending = 1,
         Confirmed = 2,
-        Cancelled = 4
+        Cancelled = 4,
     }
 
     private class ShoppingCart : EventSourcedAggregate<Guid>

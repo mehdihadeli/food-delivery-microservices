@@ -23,7 +23,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                         maxLength: 256,
                         nullable: true
                     ),
-                    concurrency_stamp = table.Column<string>(type: "text", nullable: true)
+                    concurrency_stamp = table.Column<string>(type: "text", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -66,7 +66,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                     two_factor_enabled = table.Column<bool>(type: "boolean", nullable: false),
                     lockout_end = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     lockout_enabled = table.Column<bool>(type: "boolean", nullable: false),
-                    access_failed_count = table.Column<int>(type: "integer", nullable: false)
+                    access_failed_count = table.Column<int>(type: "integer", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -82,7 +82,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                     email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     code = table.Column<string>(type: "character(6)", fixedLength: true, maxLength: 6, nullable: false),
                     sent_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    used_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    used_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -98,7 +98,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                     email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     code = table.Column<string>(type: "character(6)", fixedLength: true, maxLength: 6, nullable: false),
                     sent_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    used_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    used_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -118,7 +118,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                         ),
                     role_id = table.Column<Guid>(type: "uuid", nullable: false),
                     claim_type = table.Column<string>(type: "text", nullable: true),
-                    claim_value = table.Column<string>(type: "text", nullable: true)
+                    claim_value = table.Column<string>(type: "text", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -142,7 +142,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                     token = table.Column<string>(type: "text", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     expired_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by_ip = table.Column<string>(type: "text", nullable: false)
+                    created_by_ip = table.Column<string>(type: "text", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -169,7 +169,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                         ),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     claim_type = table.Column<string>(type: "text", nullable: true),
-                    claim_value = table.Column<string>(type: "text", nullable: true)
+                    claim_value = table.Column<string>(type: "text", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -191,7 +191,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                     login_provider = table.Column<string>(type: "text", nullable: false),
                     provider_key = table.Column<string>(type: "text", nullable: false),
                     provider_display_name = table.Column<string>(type: "text", nullable: true),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -211,7 +211,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                 columns: table => new
                 {
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    role_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    role_id = table.Column<Guid>(type: "uuid", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -240,7 +240,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     login_provider = table.Column<string>(type: "text", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
-                    value = table.Column<string>(type: "text", nullable: true)
+                    value = table.Column<string>(type: "text", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -250,7 +250,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                         {
                             x.user_id,
                             x.login_provider,
-                            x.name
+                            x.name,
                         }
                     );
                     table.ForeignKey(
@@ -273,7 +273,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     expired_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     created_by_ip = table.Column<string>(type: "text", nullable: false),
-                    revoked_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    revoked_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 },
                 constraints: table =>
                 {

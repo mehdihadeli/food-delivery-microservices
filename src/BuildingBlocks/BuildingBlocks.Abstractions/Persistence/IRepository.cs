@@ -1,12 +1,11 @@
 using System.Linq.Expressions;
-using AutoMapper;
+using Ardalis.Specification;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.Domain;
 
 namespace BuildingBlocks.Abstractions.Persistence;
 
 public interface IReadRepository<TEntity, in TId>
-    where TEntity : class, IHaveIdentity<TId>
+    where TEntity : class, Domain.IEntity<TId>
 {
     Task<TEntity?> FindByIdAsync(TId id, CancellationToken cancellationToken = default);
 
@@ -20,37 +19,62 @@ public interface IReadRepository<TEntity, in TId>
         CancellationToken cancellationToken = default
     );
 
-    Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
-
     Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
 
-    IAsyncEnumerable<TResult> ProjectBy<TResult, TSortKey>(
-        IConfigurationProvider configuration,
-        Expression<Func<TEntity, bool>>? predicate = null,
+    Task<IReadOnlyList<TEntity>> GetAllAsync(
+        ISpecification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyList<TResult>> GetAllAsync<TResult>(
+        ISpecification<TEntity, TResult> specification,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<TEntity?> FirstOrDefaultAsync(
+        ISpecification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<TResult?> FirstOrDefaultAsync<TResult>(
+        ISpecification<TEntity, TResult> specification,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<TEntity?> SingleOrDefaultAsync(
+        ISingleResultSpecification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<TResult?> SingleOrDefaultAsync<TResult>(
+        ISingleResultSpecification<TEntity, TResult> specification,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<int> CountAsync(ISpecification<TEntity> specification, CancellationToken cancellationToken = default);
+
+    Task<int> CountAsync(CancellationToken cancellationToken = default);
+
+    Task<bool> AnyAsync(ISpecification<TEntity> specification, CancellationToken cancellationToken = default);
+    Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+
+    IQueryable<TResult> ProjectBy<TResult, TSortKey>(
+        Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
         Expression<Func<TEntity, TSortKey>>? sortExpression = null,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<IPageList<TEntity>> GetByPageFilter<TSortKey>(
-        IPageRequest pageRequest,
-        Expression<Func<TEntity, TSortKey>> sortExpression,
-        Expression<Func<TEntity, bool>>? predicate = null,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
-        IPageRequest pageRequest,
-        IConfigurationProvider configuration,
-        Expression<Func<TEntity, TSortKey>> sortExpression,
-        Expression<Func<TEntity, bool>>? predicate = null,
-        CancellationToken cancellationToken = default
+        Expression<Func<TEntity, bool>>? predicate = null
     )
         where TResult : class;
 
-    Task<IPageList<TResult>> GetByPageFilter<TResult, TSortKey>(
+    Task<IPageList<TEntity>> GetByPageFilter<TSortKey>(
+        IPageRequest pageRequest,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default
+    );
+    Task<IPageList<TResult>> GetByPageFilter<TSortKey, TResult>(
         IPageRequest pageRequest,
         Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
-        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default
     )
@@ -58,7 +82,7 @@ public interface IReadRepository<TEntity, in TId>
 }
 
 public interface IWriteRepository<TEntity, in TId>
-    where TEntity : class, IHaveIdentity<TId>
+    where TEntity : class, Domain.IEntity<TId>
 {
     Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
     Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
@@ -72,7 +96,7 @@ public interface IRepository<TEntity, in TId>
     : IReadRepository<TEntity, TId>,
         IWriteRepository<TEntity, TId>,
         IDisposable
-    where TEntity : class, IHaveIdentity<TId> { }
+    where TEntity : class, Domain.IEntity<TId>;
 
 public interface IRepository<TEntity> : IRepository<TEntity, long>
-    where TEntity : class, IHaveIdentity<long> { }
+    where TEntity : class, Domain.IEntity<long>;

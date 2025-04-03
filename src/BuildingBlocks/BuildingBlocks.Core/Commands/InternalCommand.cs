@@ -11,6 +11,6 @@ public abstract record InternalCommand : IInternalCommand
 
     public string Type
     {
-        get { return TypeMapper.GetFullTypeName(GetType()); }
+        get { return TypeMapper.AddFullTypeName(GetType()); }
     }
 }

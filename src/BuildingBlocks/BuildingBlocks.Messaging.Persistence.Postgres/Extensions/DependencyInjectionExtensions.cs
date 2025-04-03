@@ -1,11 +1,12 @@
-using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
-using BuildingBlocks.Core.Messaging.MessagePersistence;
+using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
+using BuildingBlocks.Core.Messages.MessagePersistence;
 using BuildingBlocks.Messaging.Persistence.Postgres.MessagePersistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 
@@ -19,24 +20,28 @@ public static class DependencyInjectionExtensions
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-        var options = configuration.BindOptions(configurator);
-
         // add option to the dependency injection
-        services.AddValidationOptions(configurator);
+        services.AddValidationOptions(configurator: configurator);
 
-        services.TryAddScoped<IMessagePersistenceConnectionFactory>(sp => new NpgsqlMessagePersistenceConnectionFactory(
-            options.ConnectionString.NotBeEmptyOrNull()
-        ));
+        services.TryAddScoped<IMessagePersistenceConnectionFactory>(sp =>
+        {
+            var messagePersistenceOptions = sp.GetRequiredService<IOptions<MessagePersistenceOptions>>().Value;
+            return new NpgsqlMessagePersistenceConnectionFactory(
+                messagePersistenceOptions.ConnectionString.NotBeEmptyOrNull()
+            );
+        });
 
         services.AddDbContext<MessagePersistenceDbContext>(
             (sp, opt) =>
             {
+                var messagePersistenceOptions = sp.GetRequiredService<IOptions<MessagePersistenceOptions>>().Value;
                 opt.UseNpgsql(
-                        options.ConnectionString,
+                        messagePersistenceOptions.ConnectionString,
                         sqlOptions =>
                         {
                             sqlOptions.MigrationsAssembly(
-                                options.MigrationAssembly ?? typeof(MessagePersistenceDbContext).Assembly.GetName().Name
+                                messagePersistenceOptions.MigrationAssembly
+                                    ?? typeof(MessagePersistenceDbContext).Assembly.GetName().Name
                             );
                             sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
                         }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Query;
 namespace BuildingBlocks.Abstractions.Persistence.EfCore;
 
 public interface IEfRepository<TEntity, in TId> : IRepository<TEntity, TId>
-    where TEntity : class, IHaveIdentity<TId>
+    where TEntity : class, IEntity<TId>
 {
     IEnumerable<TEntity> GetInclude(Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null);
 

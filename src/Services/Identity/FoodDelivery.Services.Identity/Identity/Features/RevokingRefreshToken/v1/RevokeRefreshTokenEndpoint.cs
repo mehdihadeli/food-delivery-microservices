@@ -1,8 +1,6 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -22,7 +20,8 @@ public static class RevokeRefreshTokenEndpoint
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             .WithName(nameof(RevokeRefreshToken))
             .WithDisplayName(nameof(RevokeRefreshToken).Humanize())
-            .WithSummaryAndDescription(nameof(RevokeRefreshToken).Humanize(), nameof(RevokeRefreshToken).Humanize());
+            .WithSummary(nameof(RevokeRefreshToken).Humanize())
+            .WithDescription(nameof(RevokeRefreshToken).Humanize());
 
         return endpoints;
 
@@ -30,7 +29,7 @@ public static class RevokeRefreshTokenEndpoint
             [AsParameters] RevokeRefreshTokenRequestParameters requestParameters
         )
         {
-            var (request, context, commandBus, mapper, cancellationToken) = requestParameters;
+            var (request, context, commandBus, cancellationToken) = requestParameters;
 
             var command = RevokeRefreshToken.Of(request.RefreshToken);
             await commandBus.SendAsync(command, cancellationToken);
@@ -48,6 +47,5 @@ internal record RevokeRefreshTokenRequestParameters(
     [FromBody] RevokeRefreshTokenRequest Request,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<RevokeRefreshTokenRequest>;

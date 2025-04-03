@@ -1,4 +1,5 @@
 using Tests.Shared.XunitCategories;
+using Xunit;
 
 namespace FoodDelivery.Services.Identity.UnitTests;
 

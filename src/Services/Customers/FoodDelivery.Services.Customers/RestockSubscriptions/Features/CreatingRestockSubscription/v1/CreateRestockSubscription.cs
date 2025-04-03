@@ -4,25 +4,25 @@ using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.IdsGenerator;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
 using FoodDelivery.Services.Customers.Products;
 using FoodDelivery.Services.Customers.Products.Exceptions;
-using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Exceptions;
-using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Write;
+using FoodDelivery.Services.Customers.RestockSubscriptions.Models;
 using FoodDelivery.Services.Customers.RestockSubscriptions.ValueObjects;
-using FoodDelivery.Services.Customers.Shared.Clients.Catalogs;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 
-internal record CreateRestockSubscription(long CustomerId, long ProductId, string Email)
-    : ITxCreateCommand<CreateRestockSubscriptionResult>
+public record CreateRestockSubscription(long CustomerId, long ProductId, string Email)
+    : ITxCommand<CreateRestockSubscriptionResult>
 {
     /// <summary>
-    /// Create a new RestockSubscription with inline validation.
+    /// Create a new RestockSubscriptionReadModel with inline validation.
     /// </summary>
     /// <param name="customerId"></param>
     /// <param name="productId"></param>
@@ -38,7 +38,7 @@ internal record CreateRestockSubscription(long CustomerId, long ProductId, strin
     public long Id { get; } = SnowFlakIdGenerator.NewId();
 }
 
-internal class CreateRestockSubscriptionValidator : AbstractValidator<CreateRestockSubscription>
+public class CreateRestockSubscriptionValidator : AbstractValidator<CreateRestockSubscription>
 {
     public CreateRestockSubscriptionValidator()
     {
@@ -50,13 +50,13 @@ internal class CreateRestockSubscriptionValidator : AbstractValidator<CreateRest
     }
 }
 
-internal class CreateRestockSubscriptionHandler(
+public class CreateRestockSubscriptionHandler(
     CustomersDbContext customersDbContext,
-    ICatalogApiClient catalogApiClient,
+    ICatalogsRestClient catalogsRestClient,
     ILogger<CreateRestockSubscriptionHandler> logger
 ) : ICommandHandler<CreateRestockSubscription, CreateRestockSubscriptionResult>
 {
-    public async Task<CreateRestockSubscriptionResult> Handle(
+    public async ValueTask<CreateRestockSubscriptionResult> Handle(
         CreateRestockSubscription request,
         CancellationToken cancellationToken
     )
@@ -73,7 +73,7 @@ internal class CreateRestockSubscriptionHandler(
             throw new CustomerNotFoundException(request.CustomerId);
         }
 
-        var product = await catalogApiClient.GetProductByIdAsync(request.ProductId, cancellationToken);
+        var product = await catalogsRestClient.GetProductByIdAsync(request.ProductId, cancellationToken);
 
         if (product is null)
         {
@@ -102,7 +102,7 @@ internal class CreateRestockSubscriptionHandler(
         await customersDbContext.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation(
-            "RestockSubscription with id '{@InternalCommandId}' saved successfully",
+            "RestockSubscriptionReadModel with id '{@InternalCommandId}' saved successfully",
             restockSubscription.Id
         );
 

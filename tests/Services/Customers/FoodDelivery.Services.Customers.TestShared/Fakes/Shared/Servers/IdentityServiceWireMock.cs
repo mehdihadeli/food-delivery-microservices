@@ -1,8 +1,13 @@
 using System.Net;
-using FoodDelivery.Services.Customers.Shared.Clients.Identity;
-using FoodDelivery.Services.Customers.Shared.Clients.Identity.Dtos;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Dtos;
+using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Rest;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Dtos;
-using FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
+using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
+using Microsoft.AspNetCore.HeaderPropagation;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
+using Tests.Shared.Fixtures;
+using WireMock.Models;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
@@ -13,21 +18,21 @@ namespace FoodDelivery.Services.Customers.TestShared.Fakes.Shared.Servers;
 //https://github.com/WireMock-Net/WireMock.Net/wiki
 //https://pcholko.com/posts/2021-04-05/wiremock-integration-test/
 //https://www.youtube.com/watch?v=YU3ohofu6UU
-public class IdentityServiceWireMock(WireMockServer wireMockServer, IdentityApiClientOptions identityApiClientOptions)
+public class IdentityServiceWireMock(WireMockServer wireMockServer, IdentityRestClientOptions identityRestClientOptions)
 {
-    private IdentityApiClientOptions IdentityApiClientOptions { get; } = identityApiClientOptions;
+    private IdentityRestClientOptions IdentityRestClientOptions { get; } = identityRestClientOptions;
 
-    public (GetUserByEmailClientDto Response, string Endpoint) SetupGetUserByEmail(string? email = null)
+    public (GetUserByEmailClientResponseDto Response, string Endpoint) SetupGetUserByEmail(string? email = null)
     {
         var fakeIdentityUser = new FakeUserIdentityDto().Generate();
         if (!string.IsNullOrWhiteSpace(email))
             fakeIdentityUser = fakeIdentityUser with { Email = email };
 
-        var response = new GetUserByEmailClientDto(fakeIdentityUser);
+        var response = new GetUserByEmailClientResponseDto(fakeIdentityUser);
 
         //https://github.com/WireMock-Net/WireMock.Net/wiki/Request-Matching
         // we should put / in the beginning of the endpoint
-        var endpointPath = $"/{IdentityApiClientOptions.UsersEndpoint}/by-email/{fakeIdentityUser.Email}";
+        var endpointPath = $"/{IdentityRestClientOptions.GetUserByEmailEndpoint}/{fakeIdentityUser.Email}";
 
         wireMockServer
             .Given(Request.Create().UsingGet().WithPath(endpointPath))
@@ -36,9 +41,11 @@ public class IdentityServiceWireMock(WireMockServer wireMockServer, IdentityApiC
         return (response, endpointPath);
     }
 
-    public (GetUserByEmailClientDto Response, string Endpoint) SetupGetUserByEmail(UserRegisteredV1 userRegisteredV1)
+    public (GetUserByEmailClientResponseDto Response, string Endpoint) SetupGetUserByEmail(
+        UserRegisteredV1 userRegisteredV1
+    )
     {
-        var response = new GetUserByEmailClientDto(
+        var response = new GetUserByEmailClientResponseDto(
             new IdentityUserClientDto(
                 userRegisteredV1.IdentityId,
                 userRegisteredV1.UserName,
@@ -50,7 +57,7 @@ public class IdentityServiceWireMock(WireMockServer wireMockServer, IdentityApiC
         );
 
         //https://github.com/WireMock-Net/WireMock.Net/wiki/Request-Matching
-        var endpointPath = $"/{IdentityApiClientOptions.UsersEndpoint}/by-email/{userRegisteredV1.Email}"; // we should put / in the beginning of the endpoint
+        var endpointPath = $"/{IdentityRestClientOptions.GetUserByEmailEndpoint}/{userRegisteredV1.Email}"; // we should put / in the beginning of the endpoint
 
         wireMockServer
             .Given(Request.Create().UsingGet().WithPath(endpointPath))

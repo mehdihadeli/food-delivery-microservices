@@ -1,3 +1,5 @@
+using Xunit;
+
 namespace FoodDelivery.Services.Customers.UnitTests;
 
 // https://stackoverflow.com/questions/43082094/use-multiple-collectionfixture-on-my-test-class-in-xunit-2-x

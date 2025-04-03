@@ -1,8 +1,6 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -18,10 +16,11 @@ public static class GetUserByEmailEndpoint
         return endpoints
             .MapGet("/by-email/{email}", Handle)
             .AllowAnonymous()
-            .WithTags(UsersConfigs.Tag)
+            .WithTags(UsersConfigurations.Tag)
             .WithName(nameof(GetUserByEmail))
             .WithDisplayName(nameof(GetUserByEmail).Humanize())
-            .WithSummaryAndDescription(nameof(GetUserByEmail).Humanize(), nameof(GetUserByEmail).Humanize())
+            .WithSummary(nameof(GetUserByEmail).Humanize())
+            .WithDescription(nameof(GetUserByEmail).Humanize())
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses?#typedresults-vs-results
             // .Produces<RegisterUserResponse>(StatusCodes.Status200OK)
             // .ProducesProblem(StatusCodes.Status404NotFound)
@@ -32,7 +31,7 @@ public static class GetUserByEmailEndpoint
             [AsParameters] GetUserByEmailRequestParameters requestParameters
         )
         {
-            var (email, _, queryProcessor, mapper, cancellationToken) = requestParameters;
+            var (email, _, queryProcessor, cancellationToken) = requestParameters;
             var result = await queryProcessor.SendAsync(GetUserByEmail.Of(email), cancellationToken);
 
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses
@@ -48,7 +47,6 @@ internal record GetUserByEmailRequestParameters(
     [FromRoute] string Email,
     HttpContext HttpContext,
     IQueryBus QueryBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpQuery;
 

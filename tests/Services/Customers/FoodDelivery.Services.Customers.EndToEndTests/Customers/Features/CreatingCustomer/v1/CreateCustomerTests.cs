@@ -1,10 +1,11 @@
 using BuildingBlocks.Core.Exception.Types;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
+using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
-using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Entities;
+using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Requests;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
@@ -84,7 +85,7 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
             .HasProblemDetail(
                 new
                 {
-                    Detail = $"Customer with email '{fakeCustomer.Email.Value}' already exists.",
+                    Detail = $"CustomerReadModel with email '{fakeCustomer.Email.Value}' already exists.",
                     Title = nameof(CustomerAlreadyExistsException).Humanize(LetterCasing.Title),
                 }
             )

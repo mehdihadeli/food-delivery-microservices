@@ -17,7 +17,7 @@ namespace FoodDelivery.Services.Orders.Shared.Data.Migrations.Orders
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "uuid-ossp");
@@ -36,11 +36,6 @@ namespace FoodDelivery.Services.Orders.Shared.Data.Migrations.Orders
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("integer")
                         .HasColumnName("created_by");
-
-                    b.Property<long>("OriginalVersion")
-                        .IsConcurrencyToken()
-                        .HasColumnType("bigint")
-                        .HasColumnName("original_version");
 
                     b.HasKey("Id")
                         .HasName("pk_orders");

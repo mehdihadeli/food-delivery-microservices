@@ -1,98 +1,161 @@
 using System.Linq.Expressions;
-using AutoMapper.QueryableExtensions;
-using BuildingBlocks.Abstractions;
-using BuildingBlocks.Core.Linq;
-using BuildingBlocks.Core.Queries;
+using BuildingBlocks.Abstractions.Core.Paging;
+using BuildingBlocks.Core.Paging;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using IConfigurationProvider = AutoMapper.IConfigurationProvider;
+using Sieve.Models;
+using Sieve.Services;
 
 namespace BuildingBlocks.Persistence.Mongo.Extensions;
 
 public static class MongoQueryableExtensions
 {
-    public static async Task<ListResultModel<T>> ApplyPagingAsync<T>(
-        this IMongoQueryable<T> collection,
-        int page = 1,
-        int pageSize = 10,
-        CancellationToken cancellationToken = default
-    )
-        where T : notnull
-    {
-        if (page <= 0)
-            page = 1;
-
-        if (pageSize <= 0)
-            pageSize = 10;
-
-        var isEmpty = await collection.AnyAsync(cancellationToken: cancellationToken) == false;
-        if (isEmpty)
-            return ListResultModel<T>.Empty;
-
-        var totalItems = await collection.CountAsync(cancellationToken: cancellationToken);
-        var totalPages = (int)Math.Ceiling((decimal)totalItems / pageSize);
-        var data = await collection.Skip(page, pageSize).ToListAsync(cancellationToken: cancellationToken);
-
-        return ListResultModel<T>.Create(data, totalItems, page, pageSize);
-    }
-
-    public static async Task<ListResultModel<R>> ApplyPagingAsync<T, R>(
-        this IMongoQueryable<T> collection,
-        IConfigurationProvider configuration,
-        int page = 1,
-        int pageSize = 10,
-        CancellationToken cancellationToken = default
-    )
-        where R : notnull
-    {
-        if (page <= 0)
-            page = 1;
-
-        if (pageSize <= 0)
-            pageSize = 10;
-
-        var isEmpty = await collection.AnyAsync(cancellationToken: cancellationToken) == false;
-        if (isEmpty)
-            return ListResultModel<R>.Empty;
-
-        var totalItems = await collection.CountAsync(cancellationToken: cancellationToken);
-        var totalPages = (int)Math.Ceiling((decimal)totalItems / pageSize);
-        var data = collection.Skip(page, pageSize).ProjectTo<R>(configuration).ToList();
-
-        return ListResultModel<R>.Create(data, totalItems, page, pageSize);
-    }
-
-    public static IMongoQueryable<T> Skip<T>(this IMongoQueryable<T> collection, int page = 1, int resultsPerPage = 10)
-    {
-        if (page <= 0)
-            page = 1;
-
-        if (resultsPerPage <= 0)
-            resultsPerPage = 10;
-
-        var skip = (page - 1) * resultsPerPage;
-        var data = MongoQueryable.Skip(collection, skip).Take(resultsPerPage);
-
-        return data;
-    }
-
-    public static IMongoQueryable<TEntity> ApplyFilter<TEntity>(
-        this IMongoQueryable<TEntity> source,
-        IEnumerable<FilterModel>? filters
+    public static async Task<IPageList<TEntity>> ApplyPagingAsync<TEntity, TSortKey>(
+        this IMongoCollection<TEntity> collection,
+        IPageRequest pageRequest,
+        ISieveProcessor sieveProcessor,
+        Expression<Func<TEntity, TSortKey>> sortExpression,
+        CancellationToken cancellationToken
     )
         where TEntity : class
     {
-        if (filters is null)
-            return source;
+        IQueryable<TEntity> queryable = collection.AsQueryable();
+        queryable = queryable.OrderByDescending(sortExpression);
 
-        List<Expression<Func<TEntity, bool>>> filterExpressions = new List<Expression<Func<TEntity, bool>>>();
-
-        foreach (var (fieldName, comparision, fieldValue) in filters)
+        var sieveModel = new SieveModel
         {
-            Expression<Func<TEntity, bool>> expr = PredicateBuilder.Build<TEntity>(fieldName, comparision, fieldValue);
-            filterExpressions.Add(expr);
+            PageSize = pageRequest.PageSize,
+            Page = pageRequest.PageNumber,
+            Sorts = pageRequest.SortOrder,
+            Filters = pageRequest.Filters,
+        };
+
+        // https://github.com/Biarity/Sieve/issues/34#issuecomment-403817573
+        var result = sieveProcessor.Apply(sieveModel, queryable, applyPagination: false);
+
+        // Ensure ordering is applied before applying pagination
+        if (!result.Expression.ToString().Contains("OrderBy", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("The query must include an 'OrderBy' clause before pagination.");
         }
 
-        return source.Where(filterExpressions.Aggregate((expr1, expr2) => expr1.And(expr2)));
+        // The provider for the source 'IQueryable' doesn't implement 'IAsyncQueryProvider'. Only providers that implement 'IAsyncQueryProvider' can be used for Entity Framework asynchronous operations.
+        var total = result.Count();
+        result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false);
+        var items = await result.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
+
+        return PageList<TEntity>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
+    }
+
+    public static async Task<IPageList<TResult>> ApplyPagingAsync<TEntity, TResult, TSortKey>(
+        this IMongoCollection<TEntity> collection,
+        IPageRequest pageRequest,
+        ISieveProcessor sieveProcessor,
+        Func<IQueryable<TEntity>, IQueryable<TResult>> projectionFunc,
+        Expression<Func<TEntity, TSortKey>> sortExpression,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default
+    )
+        where TEntity : class
+        where TResult : class
+    {
+        IQueryable<TEntity> queryable = collection.AsQueryable();
+        if (predicate is not null)
+        {
+            queryable = queryable.Where(predicate);
+        }
+
+        queryable = queryable.OrderByDescending(sortExpression);
+
+        var sieveModel = new SieveModel
+        {
+            PageSize = pageRequest.PageSize,
+            Page = pageRequest.PageNumber,
+            Sorts = pageRequest.SortOrder,
+            Filters = pageRequest.Filters,
+        };
+
+        // https://github.com/Biarity/Sieve/issues/34#issuecomment-403817573
+        IQueryable<TEntity> result = sieveProcessor.Apply(sieveModel, queryable, applyPagination: false);
+
+        // The provider for the source 'IQueryable' doesn't implement 'IAsyncQueryProvider'. Only providers that implement 'IAsyncQueryProvider' can be used for Entity Framework asynchronous operations.
+        var total = result.Count();
+        result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: true); // Only applies pagination
+        var projectedQuery = projectionFunc(result);
+
+        var items = await projectedQuery.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
+
+        return PageList<TResult>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
+    }
+
+    public static async Task<IPageList<TResult>> ApplyPagingAsync<TEntity, TResult, TSortKey>(
+        this IMongoCollection<TEntity> collection,
+        IPageRequest pageRequest,
+        ISieveProcessor sieveProcessor,
+        Func<TEntity, TResult> map,
+        Expression<Func<TEntity, TSortKey>> sortExpression,
+        CancellationToken cancellationToken
+    )
+        where TEntity : class
+        where TResult : class
+    {
+        IQueryable<TEntity> queryable = collection.AsQueryable();
+        queryable = queryable.OrderByDescending(sortExpression);
+
+        var sieveModel = new SieveModel
+        {
+            PageSize = pageRequest.PageSize,
+            Page = pageRequest.PageNumber,
+            Sorts = pageRequest.SortOrder,
+            Filters = pageRequest.Filters,
+        };
+
+        // https://github.com/Biarity/Sieve/issues/34#issuecomment-403817573
+        var result = sieveProcessor.Apply(sieveModel, queryable, applyPagination: false);
+        // The provider for the source 'IQueryable' doesn't implement 'IAsyncQueryProvider'. Only providers that implement 'IAsyncQueryProvider' can be used for Entity Framework asynchronous operations.
+        var total = result.Count();
+        result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false); // Only applies pagination
+
+        var items = await result
+            .Select(x => map(x))
+            .ToAsyncEnumerable()
+            .ToListAsync(cancellationToken: cancellationToken);
+
+        return PageList<TResult>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
+    }
+
+    public static async Task<IPageList<TEntity>> ApplyPagingAsync<TEntity, TSortKey>(
+        this IMongoCollection<TEntity> collection,
+        IPageRequest pageRequest,
+        ISieveProcessor sieveProcessor,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        Expression<Func<TEntity, TSortKey>>? sortExpression = null,
+        CancellationToken cancellationToken = default
+    )
+        where TEntity : class
+    {
+        IQueryable<TEntity> queryable =
+            predicate != null ? collection.AsQueryable().Where(predicate) : collection.AsQueryable();
+
+        if (sortExpression != null)
+        {
+            queryable = queryable.OrderByDescending(sortExpression);
+        }
+
+        var sieveModel = new SieveModel
+        {
+            PageSize = pageRequest.PageSize,
+            Page = pageRequest.PageNumber,
+            Sorts = pageRequest.SortOrder,
+            Filters = pageRequest.Filters,
+        };
+
+        var result = sieveProcessor.Apply(sieveModel, queryable, applyPagination: false);
+        var total = result.Count();
+        result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false);
+
+        var items = await result.ToListAsync(cancellationToken: cancellationToken);
+
+        return PageList<TEntity>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
     }
 }

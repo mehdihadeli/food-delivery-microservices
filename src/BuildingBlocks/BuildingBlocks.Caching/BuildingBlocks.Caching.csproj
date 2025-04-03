@@ -10,12 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EasyCaching.Serialization.MessagePack" />
-    <PackageReference Include="EasyCaching.Serialization.Json" />
-    <PackageReference Include="EasyCaching.Redis" />
-    <PackageReference Include="EasyCaching.InMemory" />
-    <PackageReference Include="EasyCaching.Core" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
+    <PackageReference Include=" DistributedLock.Redis" />
   </ItemGroup>
 
 </Project>
-  

@@ -17,7 +17,7 @@ public class NewtonsoftObjectSerializer(JsonSerializerSettings settings) : ISeri
         return JsonConvert.DeserializeObject<T>(payload, settings);
     }
 
-    public object? Deserialize(string payload, Type type)
+    public object? Deserialize(string payload, Type? type)
     {
         return JsonConvert.DeserializeObject(payload, type, settings);
     }

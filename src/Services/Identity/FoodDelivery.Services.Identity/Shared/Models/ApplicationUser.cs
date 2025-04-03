@@ -1,3 +1,4 @@
+using FoodDelivery.Services.Shared.Identity.Users;
 using Microsoft.AspNetCore.Identity;
 
 namespace FoodDelivery.Services.Identity.Shared.Models;

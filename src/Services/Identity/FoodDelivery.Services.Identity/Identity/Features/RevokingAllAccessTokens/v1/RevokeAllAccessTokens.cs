@@ -3,12 +3,14 @@ using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Identity.Identity.Features.RevokingAccessToken.v1;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
+using Mediator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.RevokingAllAccessTokens.v1;
 
-internal record RevokeAllAccessTokens(string UserName) : ICommand
+public record RevokeAllAccessTokens(string UserName) : ICommand
 {
     /// <summary>
     /// RevokeAllAccessTokens with in-line validation.
@@ -18,35 +20,26 @@ internal record RevokeAllAccessTokens(string UserName) : ICommand
     public static RevokeAllAccessTokens Of(string? userName) => new(userName.NotBeEmptyOrNull());
 }
 
-internal class RevokeAllAccessTokenHandler : ICommandHandler<RevokeAllAccessTokens>
+public class RevokeAllAccessTokenHandler(
+    IdentityDbContext identityDbContext,
+    ICommandBus commandBus,
+    UserManager<ApplicationUser> userManager
+) : BuildingBlocks.Abstractions.Commands.ICommandHandler<RevokeAllAccessTokens>
 {
-    private readonly IMediator _mediator;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IdentityDbContext _identityDbContext;
-
-    public RevokeAllAccessTokenHandler(
-        IdentityDbContext identityDbContext,
-        IMediator mediator,
-        UserManager<ApplicationUser> userManager
-    )
+    public async ValueTask<Unit> Handle(RevokeAllAccessTokens request, CancellationToken cancellationToken)
     {
-        _identityDbContext = identityDbContext;
-        _mediator = mediator;
-        _userManager = userManager;
-    }
-
-    public async Task Handle(RevokeAllAccessTokens request, CancellationToken cancellationToken)
-    {
-        var appUser = await _userManager.FindByNameAsync(request.UserName);
+        var appUser = await userManager.FindByNameAsync(request.UserName);
         appUser.NotBeNull(new IdentityUserNotFoundException(request.UserName));
 
-        var tokens = _identityDbContext
+        var tokens = identityDbContext
             .Set<AccessToken>()
             .Where(x => x.UserId == appUser.Id && x.ExpiredAt > DateTime.Now);
 
         foreach (var accessToken in tokens)
         {
-            await _mediator.Send(new RevokeAccessToken(accessToken.Token, appUser.UserName!), cancellationToken);
+            await commandBus.SendAsync(new RevokeAccessToken(accessToken.Token, appUser.UserName!), cancellationToken);
         }
+
+        return Unit.Value;
     }
 }

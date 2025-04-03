@@ -1,8 +1,7 @@
-using AutoMapper;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Problem.HttpResults;
+using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using Cassandra.Mapping;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -16,10 +15,11 @@ public static class DebitProductStockEndpoint
         return endpoints
             .MapPost("/{productId}/debit-stock", Handle)
             .RequireAuthorization()
-            .WithTags(ProductsConfigs.Tag)
+            .WithTags(ProductsConfigurations.Tag)
             .WithName(nameof(DebitProductStock))
             .WithDisplayName(nameof(DebitProductStock).Humanize())
-            .WithSummaryAndDescription(nameof(DebitProductStock).Humanize(), nameof(DebitProductStock).Humanize())
+            .WithSummary(nameof(DebitProductStock).Humanize())
+            .WithDescription(nameof(DebitProductStock).Humanize())
             // .Produces("Debit-Stock performed successfully. (No Content)", StatusCodes.Status204NoContent)
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             // .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -30,7 +30,7 @@ public static class DebitProductStockEndpoint
             Results<NoContent, UnAuthorizedHttpProblemResult, ValidationProblem, NotFoundHttpProblemResult>
         > Handle([AsParameters] DebitProductStockRequestParameters requestParameters)
         {
-            var (request, productId, context, commandBus, _, cancellationToken) = requestParameters;
+            var (request, productId, context, commandBus, cancellationToken) = requestParameters;
 
             await commandBus.SendAsync(DebitProductStock.Of(productId, request.DebitQuantity), cancellationToken);
 
@@ -46,7 +46,6 @@ internal record DebitProductStockRequestParameters(
     [FromRoute] long ProductId,
     HttpContext HttpContext,
     ICommandBus CommandBus,
-    IMapper Mapper,
     CancellationToken CancellationToken
 ) : IHttpCommand<DebitProductStockRequest>;
 

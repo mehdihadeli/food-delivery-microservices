@@ -1,10 +1,11 @@
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Core.Messaging;
-using Humanizer;
 using MassTransit;
 
 namespace BuildingBlocks.Integration.MassTransit;
+
+using BuildingBlocks.Abstractions.Messages;
+using BuildingBlocks.Core.Messages;
+using Humanizer;
+using MassTransit;
 
 /// <summary>
 /// Setting primary exchange name for each entity type globally.
@@ -13,10 +14,10 @@ public class CustomEntityNameFormatter : IEntityNameFormatter
 {
     public string FormatEntityName<T>()
     {
-        // Check if T implements IEventEnvelope
-        if (typeof(IEventEnvelope).IsAssignableFrom(typeof(T)))
+        // Check if T implements IMessageEnvelopeBase
+        if (typeof(IMessageEnvelopeBase).IsAssignableFrom(typeof(T)))
         {
-            var messageProperty = typeof(T).GetProperty(nameof(IEventEnvelope.Message));
+            var messageProperty = typeof(T).GetProperty(nameof(IMessageEnvelopeBase.Message));
             if (typeof(IMessage).IsAssignableFrom(messageProperty!.PropertyType))
             {
                 return $"{messageProperty.PropertyType.Name.Underscore()}{MessagingConstants.PrimaryExchangePostfix}";
@@ -33,10 +34,10 @@ public class CustomEntityNameFormatter<TMessage> : IMessageEntityNameFormatter<T
 {
     public string FormatEntityName()
     {
-        // Check if T implements IEventEnvelope
-        if (typeof(IEventEnvelope).IsAssignableFrom(typeof(TMessage)))
+        // Check if T implements IMessageEnvelopeBase
+        if (typeof(IMessageEnvelopeBase).IsAssignableFrom(typeof(TMessage)))
         {
-            var messageProperty = typeof(TMessage).GetProperty(nameof(IEventEnvelope.Message));
+            var messageProperty = typeof(TMessage).GetProperty(nameof(IMessageEnvelopeBase.Message));
             if (typeof(IMessage).IsAssignableFrom(messageProperty!.PropertyType))
             {
                 return $"{messageProperty.PropertyType.Name.Underscore()}{MessagingConstants.PrimaryExchangePostfix}";

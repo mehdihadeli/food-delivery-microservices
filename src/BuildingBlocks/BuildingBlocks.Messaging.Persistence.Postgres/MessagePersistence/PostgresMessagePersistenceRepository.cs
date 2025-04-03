@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using BuildingBlocks.Abstractions.Messaging.PersistMessage;
+using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -12,16 +12,16 @@ public class PostgresMessagePersistenceRepository(
 {
     private readonly ILogger<PostgresMessagePersistenceRepository> _logger = logger;
 
-    public async Task AddAsync(StoreMessage storeMessage, CancellationToken cancellationToken = default)
+    public async Task AddAsync(PersistMessage persistMessage, CancellationToken cancellationToken = default)
     {
-        await persistenceDbContext.StoreMessages.AddAsync(storeMessage, cancellationToken);
+        await persistenceDbContext.PersistMessages.AddAsync(persistMessage, cancellationToken);
 
         await persistenceDbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(StoreMessage storeMessage, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(PersistMessage persistMessage, CancellationToken cancellationToken = default)
     {
-        persistenceDbContext.StoreMessages.Update(storeMessage);
+        persistenceDbContext.PersistMessages.Update(persistMessage);
 
         await persistenceDbContext.SaveChangesAsync(cancellationToken);
     }
@@ -33,8 +33,8 @@ public class PostgresMessagePersistenceRepository(
     )
     {
         // tacked entity here by EF
-        var message = await persistenceDbContext.StoreMessages.FirstOrDefaultAsync(
-            x => x.Id == messageId,
+        var message = await persistenceDbContext.PersistMessages.FirstOrDefaultAsync(
+            x => x.MessageId == messageId,
             cancellationToken
         );
         if (message is not null)
@@ -44,30 +44,48 @@ public class PostgresMessagePersistenceRepository(
         }
     }
 
-    public async Task<IReadOnlyList<StoreMessage>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<PersistMessage>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return (await persistenceDbContext.StoreMessages.AsNoTracking().ToListAsync(cancellationToken)).AsReadOnly();
+        return (await persistenceDbContext.PersistMessages.AsNoTracking().ToListAsync(cancellationToken)).AsReadOnly();
     }
 
-    public async Task<IReadOnlyList<StoreMessage>> GetByFilterAsync(
-        Expression<Func<StoreMessage, bool>> predicate,
+    public async Task<IReadOnlyList<PersistMessage>> GetByFilterAsync(
+        Expression<Func<PersistMessage, bool>> predicate,
         CancellationToken cancellationToken = default
     )
     {
         return (
-            await persistenceDbContext.StoreMessages.Where(predicate).AsNoTracking().ToListAsync(cancellationToken)
+            await persistenceDbContext.PersistMessages.Where(predicate).AsNoTracking().ToListAsync(cancellationToken)
         ).AsReadOnly();
     }
 
-    public async Task<StoreMessage?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public Task<IReadOnlyList<PersistMessage>> GetFilterBySateAsync(
+        MessageStatus? status = null,
+        CancellationToken cancellationToken = default
+    )
     {
-        // tacked entity here by EF
-        return await persistenceDbContext.StoreMessages.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        throw new NotImplementedException();
     }
 
-    public async Task<bool> RemoveAsync(StoreMessage storeMessage, CancellationToken cancellationToken = default)
+    public Task<IReadOnlyList<PersistMessage>> GetFilterByAsync(
+        MessageStatus? status = null,
+        MessageDeliveryType? deliveryType = null,
+        string? dataType = null,
+        CancellationToken cancellationToken = default
+    )
     {
-        persistenceDbContext.StoreMessages.Remove(storeMessage);
+        throw new NotImplementedException();
+    }
+
+    public async Task<PersistMessage?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        // tacked entity here by EF
+        return await persistenceDbContext.PersistMessages.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task<bool> RemoveAsync(PersistMessage persistMessage, CancellationToken cancellationToken = default)
+    {
+        persistenceDbContext.PersistMessages.Remove(persistMessage);
         var res = await persistenceDbContext.SaveChangesAsync(cancellationToken);
 
         return true;
@@ -75,10 +93,10 @@ public class PostgresMessagePersistenceRepository(
 
     public async Task CleanupMessages()
     {
-        if (!await persistenceDbContext.StoreMessages.AnyAsync())
+        if (!await persistenceDbContext.PersistMessages.AnyAsync())
             return;
 
-        persistenceDbContext.StoreMessages.RemoveRange(persistenceDbContext.StoreMessages);
+        persistenceDbContext.PersistMessages.RemoveRange(persistenceDbContext.PersistMessages);
 
         await persistenceDbContext.SaveChangesAsync();
     }

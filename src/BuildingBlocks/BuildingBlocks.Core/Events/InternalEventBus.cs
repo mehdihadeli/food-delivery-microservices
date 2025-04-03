@@ -1,24 +1,30 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Persistence.EventStore;
-using MediatR;
+using BuildingBlocks.Abstractions.Messages;
+using Mediator;
 using Polly;
+using Polly.Wrap;
 
 namespace BuildingBlocks.Core.Events;
 
-public class InternalEventBus(IMediator mediator, AsyncPolicy policy) : IInternalEventBus
+public class InternalEventBus(IMediator mediator, IMessagePublisher messagePublisher, AsyncPolicyWrap policy)
+    : IInternalEventBus
 {
     private static readonly ConcurrentDictionary<Type, MethodInfo> _publishMethods = new();
 
-    public async Task Publish(IEvent @event, CancellationToken ct)
+    public async Task Publish<T>(T eventData, CancellationToken ct)
+        where T : class, IEvent
     {
         var retryAsync = Policy.Handle<System.Exception>().RetryAsync(2);
 
-        await retryAsync.ExecuteAsync(c => mediator.Publish(@event, c), ct);
+        await retryAsync
+            .ExecuteAsync(async c => await mediator.Publish(eventData, c).ConfigureAwait(false), ct)
+            .ConfigureAwait(false);
     }
 
-    public async Task Publish(IEnumerable<IEvent> eventsData, CancellationToken ct)
+    public async Task Publish<T>(IEnumerable<T> eventsData, CancellationToken ct)
+        where T : class, IEvent
     {
         foreach (var eventData in eventsData)
         {
@@ -26,24 +32,19 @@ public class InternalEventBus(IMediator mediator, AsyncPolicy policy) : IInterna
         }
     }
 
-    public async Task Publish<T>(IEventEnvelope<T> eventEnvelope, CancellationToken ct)
-        where T : class
+    public async Task Publish<T>(IMessageEnvelope<T> messageEnvelope, CancellationToken ct)
+        where T : class, Abstractions.Messages.IMessage
     {
-        await policy.ExecuteAsync(
-            c =>
-            {
-                // TODO: using metadata for tracing ang monitoring here
-                return mediator.Publish(eventEnvelope.Message, c);
-            },
-            ct
-        );
+        await policy
+            .ExecuteAsync(async c => await messagePublisher.Publish(messageEnvelope, c).ConfigureAwait(false), ct)
+            .ConfigureAwait(false);
     }
 
-    public Task Publish(IEventEnvelope eventEnvelope, CancellationToken ct)
+    public Task Publish(IMessageEnvelopeBase messageEnvelope, CancellationToken ct)
     {
         // calling generic `Publish<T>` in `InternalEventBus` class
         var genericPublishMethod = _publishMethods.GetOrAdd(
-            eventEnvelope.Message.GetType(),
+            messageEnvelope.Message.GetType(),
             eventType =>
                 typeof(InternalEventBus)
                     .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
@@ -51,23 +52,18 @@ public class InternalEventBus(IMediator mediator, AsyncPolicy policy) : IInterna
                     .MakeGenericMethod(eventType)
         );
 
-        return (Task)genericPublishMethod.Invoke(this, new object[] { eventEnvelope, ct })!;
+        return (Task)genericPublishMethod.Invoke(this, new object[] { messageEnvelope, ct })!;
     }
 
     public async Task Publish<T>(IStreamEventEnvelope<T> streamEvent, CancellationToken ct)
-        where T : IDomainEvent
+        where T : class, IDomainEvent
     {
-        await policy.ExecuteAsync(
-            c =>
-            {
-                // TODO: using metadata for tracing ang monitoring here
-                return mediator.Publish(streamEvent.Data, c);
-            },
-            ct
-        );
+        await policy
+            .ExecuteAsync(async c => await messagePublisher.Publish(streamEvent, c).ConfigureAwait(false), ct)
+            .ConfigureAwait(false);
     }
 
-    public Task Publish(IStreamEventEnvelope streamEvent, CancellationToken ct)
+    public Task Publish(IStreamEventEnvelopeBase streamEvent, CancellationToken ct)
     {
         // calling generic `Publish<T>` in `InternalEventBus` class
         var genericPublishMethod = _publishMethods.GetOrAdd(

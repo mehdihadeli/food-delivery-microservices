@@ -4,10 +4,10 @@ namespace FoodDelivery.Services.Orders.Shared.Data;
 
 public class OrdersDataSeeder : IDataSeeder
 {
-    public int Order => 1;
-
-    public Task SeedAllAsync()
+    public Task SeedAllAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
+
+    public int Order => 1;
 }

@@ -20,7 +20,7 @@ namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Ev
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our message and events (because of handling versioning in other boundaries), just primitive types
-internal record ProductCreated(
+public record ProductCreated(
     long Id,
     string Name,
     decimal Price,
@@ -66,12 +66,12 @@ internal record ProductCreated(
             stock.Available,
             stock.RestockThreshold,
             stock.MaxStockThreshold,
-            status.NotBeInvalid(),
+            status.NotBeEmpty(),
             dimensions.Width,
             dimensions.Height,
             dimensions.Depth,
             size,
-            color.NotBeInvalid(),
+            color.NotBeEmpty(),
             categoryId,
             supplierId,
             brandId,
@@ -82,27 +82,20 @@ internal record ProductCreated(
     }
 }
 
-internal class ProductCreatedHandler : IDomainEventHandler<ProductCreated>
+public class ProductCreatedHandler(CatalogDbContext dbContext) : IDomainEventHandler<ProductCreated>
 {
-    private readonly CatalogDbContext _dbContext;
-
-    public ProductCreatedHandler(CatalogDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
-    public async Task Handle(ProductCreated notification, CancellationToken cancellationToken)
+    public async ValueTask Handle(ProductCreated notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
 
-        var existed = await _dbContext.ProductsView.FirstOrDefaultAsync(
+        var existed = await dbContext.ProductsView.FirstOrDefaultAsync(
             x => x.ProductId == notification.Id,
             cancellationToken
         );
 
         if (existed is null)
         {
-            var product = await _dbContext
+            var product = await dbContext
                 .Products.Include(x => x.Brand)
                 .Include(x => x.Category)
                 .Include(x => x.Supplier)
@@ -125,21 +118,19 @@ internal class ProductCreatedHandler : IDomainEventHandler<ProductCreated>
                 BrandName = product.Brand?.Name ?? string.Empty,
             };
 
-            await _dbContext.Set<ProductView>().AddAsync(productView, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.Set<ProductView>().AddAsync(productView, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
     }
 }
 
 // Mapping domain event to integration event in domain event handler is better from mapping in command handler (for preserving our domain rule invariants).
-internal class ProductCreatedDomainEventToIntegrationMappingHandler : IDomainEventHandler<ProductCreated>
+public class ProductCreatedDomainEventToIntegrationMappingHandler : IDomainEventHandler<ProductCreated>
 {
-    public ProductCreatedDomainEventToIntegrationMappingHandler() { }
-
-    public Task Handle(ProductCreated domainEvent, CancellationToken cancellationToken)
+    public ValueTask Handle(ProductCreated notification, CancellationToken cancellationToken)
     {
         // 1. Mapping DomainEvent To IntegrationEvent
         // 2. Save Integration Event to Outbox
-        return Task.CompletedTask;
+        return default;
     }
 }

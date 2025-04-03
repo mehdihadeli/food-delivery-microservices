@@ -17,12 +17,12 @@ namespace BuildingBlocks.Messaging.Persistence.Postgres.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BuildingBlocks.Abstractions.Messaging.PersistMessage.StoreMessage", b =>
+            modelBuilder.Entity("BuildingBlocks.Abstractions.Messages.MessagePersistence.PersistMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,6 +50,10 @@ namespace BuildingBlocks.Messaging.Persistence.Postgres.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("delivery_type");
 
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("message_id");
+
                     b.Property<string>("MessageStatus")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -64,9 +68,9 @@ namespace BuildingBlocks.Messaging.Persistence.Postgres.Migrations
                         .HasColumnName("retry_count");
 
                     b.HasKey("Id")
-                        .HasName("pk_store_messages");
+                        .HasName("pk_message_persistence");
 
-                    b.ToTable("store_messages", "messaging");
+                    b.ToTable("message_persistence", "messaging");
                 });
 #pragma warning restore 612, 618
         }

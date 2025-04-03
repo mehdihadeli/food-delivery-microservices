@@ -1,14 +1,6 @@
 <Project>
 
   <PropertyGroup>
-    <AspNetCoreVersion>7.0.0</AspNetCoreVersion>
-    <AspNetCoreHealthCheckVersion>6.0.2</AspNetCoreHealthCheckVersion>
-    <AspNetCoreHealthCheckUIVersion>6.0.5</AspNetCoreHealthCheckUIVersion>
-    <MicrosoftConfigurationVersion>7.0.0</MicrosoftConfigurationVersion>
-    <MicrosoftDependencyInjectionVersion>7.0.0</MicrosoftDependencyInjectionVersion>
-    <MicrosoftLoggingVersion>7.0.0</MicrosoftLoggingVersion>
-    <MassTransitVersion>8.0.8</MassTransitVersion>
-    <OpenTelemetry>1.4.0-rc.3</OpenTelemetry>
   </PropertyGroup>
 
 </Project>

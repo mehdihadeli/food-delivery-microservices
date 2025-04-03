@@ -1,6 +1,7 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+# npm run fix-analyzers
+# npm run fix-style
+# npm run fix-csharpier-format
 
-# dotnet format --verbosity diagnostic
-dotnet csharpier . && git add -A .
-dotnet csharpier --check .
+# npm run format
+# npm run style
+# npm run analyzers

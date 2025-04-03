@@ -6,7 +6,7 @@ namespace BuildingBlocks.Abstractions.Persistence;
 public interface IUnitOfWork : IDisposable
 {
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);
-    Task CommitAsync(CancellationToken cancellationToken = default);
+    Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
 public interface IUnitOfWork<out TContext> : IUnitOfWork

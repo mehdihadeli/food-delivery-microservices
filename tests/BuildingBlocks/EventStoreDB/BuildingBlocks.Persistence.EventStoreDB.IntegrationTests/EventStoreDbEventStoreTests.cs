@@ -197,7 +197,7 @@ public class EventStoreDbEventStoreTests : IClassFixture<IntegrationFixture>
     {
         Pending = 1,
         Confirmed = 2,
-        Cancelled = 4
+        Cancelled = 4,
     }
 
     private class ShoppingCart : EventSourcedAggregate<Guid>

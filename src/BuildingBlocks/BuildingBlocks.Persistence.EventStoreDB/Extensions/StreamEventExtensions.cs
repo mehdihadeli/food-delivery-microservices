@@ -1,3 +1,4 @@
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 using EventStore.Client;
 
@@ -5,7 +6,7 @@ namespace BuildingBlocks.Persistence.EventStoreDB.Extensions;
 
 public static class StreamEventExtensions
 {
-    public static IEnumerable<IStreamEventEnvelope> ToStreamEvents(this IEnumerable<ResolvedEvent> resolvedEvents)
+    public static IEnumerable<IStreamEventEnvelopeBase> ToStreamEvents(this IEnumerable<ResolvedEvent> resolvedEvents)
     {
         return resolvedEvents.Select(x => x.ToStreamEvent());
     }

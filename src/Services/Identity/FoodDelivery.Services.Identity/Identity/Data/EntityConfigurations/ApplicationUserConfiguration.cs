@@ -1,5 +1,6 @@
 using BuildingBlocks.Core.Persistence.EfCore;
 using FoodDelivery.Services.Identity.Shared.Models;
+using FoodDelivery.Services.Shared.Identity.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

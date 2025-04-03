@@ -1,12 +1,12 @@
 using Bogus;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
-using BuildingBlocks.Core.Web;
 using BuildingBlocks.Core.Web.Extensions;
-using BuildingBlocks.Swagger;
+using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
+using BuildingBlocks.Web.Extensions.WebApplicationBuilderExtensions;
 using BuildingBlocks.Web.Minimal.Extensions;
-using BuildingBlocks.Web.Modules;
 using FoodDelivery.Services.Identity;
 using FoodDelivery.Services.Identity.Api.Middlewares;
+using FoodDelivery.Services.Identity.Shared.Extensions.WebApplicationBuilderExtensions;
+using FoodDelivery.Services.Identity.Shared.Extensions.WebApplicationExtensions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Spectre.Console;
 
@@ -31,7 +31,7 @@ builder.Host.UseDefaultServiceProvider(
         // https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/web-host?view=aspnetcore-7.0&viewFallbackFrom=aspnetcore-2.2#scope-validation
         // CreateDefaultBuilder and WebApplicationBuilder in minimal apis sets `ServiceProviderOptions.ValidateScopes` and `ServiceProviderOptions.ValidateOnBuild` to true if the app's environment is Development.
-        // check dependencies are used in a valid life time scope
+        // check dependencies are used in a valid life-time scope
         options.ValidateScopes = isDevMode;
 
         // validate dependencies on the startup immediately instead of waiting for using the service - Issue with masstransit #85
@@ -39,21 +39,18 @@ builder.Host.UseDefaultServiceProvider(
     }
 );
 
-// https://www.talkingdotnet.com/disable-automatic-model-state-validation-in-asp-net-core-2-1/
-builder.Services.Configure<ApiBehaviorOptions>(options =>
-{
-    options.SuppressModelStateInvalidFilter = true;
-});
-
 builder.Services.TryAddSingleton<RevokeAccessTokenMiddleware>();
 
-builder.Services.AddValidatedOptions<AppOptions>();
+builder.AddAspnetOpenApi(["v1", "v2"]);
+
+builder.AddInfrastructure();
+
+builder.AddIdentityServices();
+
+builder.AddCustomVersioning();
 
 // register endpoints
 builder.AddMinimalEndpoints(typeof(IdentityMetadata).Assembly);
-
-/*----------------- Module Services Setup ------------------*/
-builder.AddModulesServices();
 
 var app = builder.Build();
 
@@ -62,27 +59,24 @@ if (app.Environment.IsDependencyTest())
     return;
 }
 
-/*----------------- Module Middleware Setup ------------------*/
-await app.ConfigureModules();
-
 // https://thecodeblogger.com/2021/05/27/asp-net-core-web-application-routing-and-endpoint-internals/
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-7.0#routing-basics
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-7.0#endpoints
 // https://stackoverflow.com/questions/57846127/what-are-the-differences-between-app-userouting-and-app-useendpoints
-// in .net 6 and above we don't need UseRouting and UseEndpoints but if ordering is important we should write it
-// app.UseRouting();
 app.UseRevokeAccessTokenMiddleware();
 
-/*----------------- Module Routes Setup ------------------*/
-app.MapModulesEndpoints();
+app.UseInfrastructure();
 
-// automatic discover minimal endpoints
+app.UseIdentity();
+
+app.MapIdentityEndpoints();
+
+// map registered minimal endpoints
 app.MapMinimalEndpoints();
 
-if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("docker"))
+if (app.Environment.IsDevelopment())
 {
-    // swagger middleware should register last to discover all endpoints and its versions correctly
-    app.UseCustomSwagger();
+    app.UseAspnetOpenApi();
 }
 
 await app.RunAsync();

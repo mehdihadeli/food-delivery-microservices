@@ -1,12 +1,13 @@
 using System.Reflection;
+using BuildingBlocks.Abstractions.Core.Diagnostics;
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
-using BuildingBlocks.Core.Persistence.EventStore.Extenions;
+using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
+using BuildingBlocks.Core.Persistence.EventStore.Extensions;
 using BuildingBlocks.Persistence.Marten.Subscriptions;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
 using Marten.Events.Projections;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Weasel.Core;
@@ -23,13 +24,13 @@ public static class DependencyInjectionExtensions
         params Assembly[] scanAssemblies
     )
     {
-        var assembliesToScan = scanAssemblies.Length != 0 ? scanAssemblies : new[] { Assembly.GetCallingAssembly(), };
+        var assembliesToScan = scanAssemblies.Length != 0 ? scanAssemblies : new[] { Assembly.GetCallingAssembly() };
 
         var martenOptions = configuration.BindOptions<MartenOptions>();
         configurator?.Invoke(martenOptions);
 
         // add option to the dependency injection
-        services.AddValidationOptions<MartenOptions>(opt => configurator?.Invoke(opt));
+        services.AddValidationOptions<MartenOptions>(configurator: opt => configurator?.Invoke(opt));
 
         services.AddEventSourcing<MartenEventStore>(assembliesToScan);
 
@@ -51,7 +52,13 @@ public static class DependencyInjectionExtensions
 
                 storeOptions.Projections.Add(
                     new MartenSubscription(
-                        new[] { new MartenEventPublisher(sp.GetRequiredService<IMediator>()) },
+                        new[]
+                        {
+                            new MartenEventsConsumer(
+                                sp.GetRequiredService<IInternalEventBus>(),
+                                sp.GetRequiredService<IDiagnosticsProvider>()
+                            ),
+                        },
                         sp.GetRequiredService<ILogger<MartenSubscription>>()
                     ),
                     ProjectionLifecycle.Async,

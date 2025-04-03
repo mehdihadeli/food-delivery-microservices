@@ -20,7 +20,7 @@ public class MemoryPackObjectSerializer(MemoryPackSerializerOptions options) : I
         return MemoryPackSerializer.Deserialize<T>(byteSpan, options);
     }
 
-    public object? Deserialize(string payload, Type type)
+    public object? Deserialize(string payload, Type? type)
     {
         ReadOnlySpan<byte> byteSpan = StringToReadOnlySpan(payload);
 

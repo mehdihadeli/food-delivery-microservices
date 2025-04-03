@@ -25,5 +25,5 @@ public interface ISerializer
     /// <param name="payload"></param>
     /// <param name="type"></param>
     /// <returns></returns>
-    object? Deserialize(string payload, Type type);
+    object? Deserialize(string payload, Type? type);
 }

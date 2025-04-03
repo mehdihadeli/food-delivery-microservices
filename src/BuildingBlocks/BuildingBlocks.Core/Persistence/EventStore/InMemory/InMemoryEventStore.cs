@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
-using BuildingBlocks.Core.Persistence.EventStore.Extenions;
+using BuildingBlocks.Core.Persistence.EventStore.Extensions;
 
 namespace BuildingBlocks.Core.Persistence.EventStore.InMemory;
 
@@ -14,7 +15,7 @@ public class InMemoryEventStore : IEventStore
         return Task.FromResult(_storage.ContainsKey(streamId));
     }
 
-    public Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
+    public Task<IEnumerable<IStreamEventEnvelopeBase>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         int maxCount = int.MaxValue,
@@ -23,10 +24,10 @@ public class InMemoryEventStore : IEventStore
     {
         var result = FindStream(streamId).GetEvents(fromVersion ?? StreamReadPosition.Start, maxCount);
 
-        return Task.FromResult<IEnumerable<IStreamEventEnvelope>>(result.Select(x => x.ToStreamEvent()));
+        return Task.FromResult<IEnumerable<IStreamEventEnvelopeBase>>(result.Select(x => x.ToStreamEvent()));
     }
 
-    public Task<IEnumerable<IStreamEventEnvelope>> GetStreamEventsAsync(
+    public Task<IEnumerable<IStreamEventEnvelopeBase>> GetStreamEventsAsync(
         string streamId,
         StreamReadPosition? fromVersion = null,
         CancellationToken cancellationToken = default
@@ -37,7 +38,7 @@ public class InMemoryEventStore : IEventStore
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEventEnvelope @event,
+        IStreamEventEnvelopeBase @event,
         CancellationToken cancellationToken = default
     )
     {
@@ -46,7 +47,7 @@ public class InMemoryEventStore : IEventStore
 
     public Task<AppendResult> AppendEventAsync(
         string streamId,
-        IStreamEventEnvelope @event,
+        IStreamEventEnvelopeBase @event,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )
@@ -56,7 +57,7 @@ public class InMemoryEventStore : IEventStore
 
     public Task<AppendResult> AppendEventsAsync(
         string streamId,
-        IReadOnlyCollection<IStreamEventEnvelope> events,
+        IReadOnlyCollection<IStreamEventEnvelopeBase> events,
         ExpectedStreamVersion expectedRevision,
         CancellationToken cancellationToken = default
     )

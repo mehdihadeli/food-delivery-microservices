@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using BuildingBlocks.Core.Exception.Types;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Extensions.ServiceCollection;
+using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -33,7 +33,7 @@ public static class DependencyInjectionExtensions
         configurator?.Invoke(jwtOptions);
 
         // add option to the dependency injection
-        services.AddValidationOptions<JwtOptions>(opt => configurator?.Invoke(opt));
+        services.AddValidationOptions<JwtOptions>(configurator: opt => configurator?.Invoke(opt));
 
         services.TryAddTransient<IJwtService, JwtService>();
 
@@ -65,7 +65,7 @@ public static class DependencyInjectionExtensions
                     // default skew is 5 minutes,
                     // The ClockSkew property allows you to specify the amount of leeway to account for any differences in clock times between the token issuer and the token validation server. This property defines the maximum amount of time (in seconds) by which the token's expiration or not-before time can differ from the system clock on the validation server.
                     ClockSkew = TimeSpan.Zero,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey)),
                 };
 
                 options.Events = new JwtBearerEvents
@@ -93,7 +93,7 @@ public static class DependencyInjectionExtensions
                         // }
                         return Task.CompletedTask;
                     },
-                    OnForbidden = _ => throw new ForbiddenException("You are not authorized to access this resource.")
+                    OnForbidden = _ => throw new ForbiddenException("You are not authorized to access this resource."),
                 };
             });
     }
@@ -150,23 +150,5 @@ public static class DependencyInjectionExtensions
         });
 
         return services;
-    }
-
-    public static void AddExternalLogins(this IServiceCollection services, IConfiguration configuration)
-    {
-        var jwtOptions = configuration.BindOptions<JwtOptions>(nameof(JwtOptions));
-        jwtOptions.NotBeNull();
-
-        if (jwtOptions.GoogleLoginConfigs is { })
-        {
-            services
-                .AddAuthentication()
-                .AddGoogle(googleOptions =>
-                {
-                    googleOptions.ClientId = jwtOptions.GoogleLoginConfigs.ClientId;
-                    googleOptions.ClientSecret = jwtOptions.GoogleLoginConfigs.ClientId;
-                    googleOptions.SaveTokens = true;
-                });
-        }
     }
 }

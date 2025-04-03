@@ -1,21 +1,12 @@
 using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Exception.Types;
-using BuildingBlocks.Core.Web.Extensions;
-using BuildingBlocks.Web.Extensions;
-using EasyCaching.Core;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 
 namespace FoodDelivery.Services.Identity.Api.Middlewares;
 
-public class RevokeAccessTokenMiddleware(
-    IEasyCachingProviderFactory cachingProviderFactory,
-    IOptions<CacheOptions> options
-) : IMiddleware
+public class RevokeAccessTokenMiddleware(IOptions<CacheOptions> options, HybridCache hybridCache) : IMiddleware
 {
-    private readonly IEasyCachingProvider _cachingProvider = cachingProviderFactory.GetCachingProvider(
-        options.Value.DefaultCacheType
-    );
-
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (context.User.Identity is null || string.IsNullOrWhiteSpace(context.User.Identity.Name))
@@ -25,23 +16,40 @@ public class RevokeAccessTokenMiddleware(
         }
 
         var accessToken = GetTokenFromHeader(context);
-        var userName = context.User.Identity.Name;
-
-        var revokedToken = await _cachingProvider.GetAsync<string>($"{userName}_{accessToken}_revoked_token");
-        if (string.IsNullOrWhiteSpace(revokedToken.Value))
+        if (string.IsNullOrWhiteSpace(accessToken))
         {
             await next(context);
             return;
         }
 
-        throw new UnAuthorizedException("Access token is revoked, User in not authorized to access this resource");
+        var userName = context.User.Identity.Name;
+        var cacheKey = $"{options.Value.DefaultCachePrefix}{userName}_{accessToken}_revoked_token";
+
+        // Use GetOrCreateAsync to check if the key exists without creating it
+        var revokedToken = await hybridCache.GetOrCreateAsync<string>(
+            cacheKey,
+            _ => ValueTask.FromResult<string>(null!)
+        );
+
+        if (revokedToken is not null)
+        {
+            // If the token is found in the cache, it's revoked
+            throw new UnAuthorizedException("Access token is revoked, User is not authorized to access this resource");
+        }
+
+        await next(context);
     }
 
     private static string? GetTokenFromHeader(HttpContext context)
     {
-        var authorizationHeader = context.Request.Headers.Get<string>("authorization");
+        var authorizationHeader = context.Request.Headers["Authorization"].ToString();
 
-        return authorizationHeader;
+        if (string.IsNullOrWhiteSpace(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
+        {
+            return null;
+        }
+
+        return authorizationHeader.Substring("Bearer ".Length).Trim();
     }
 }
 

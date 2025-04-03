@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Web;
-using BuildingBlocks.Core.Reflection.Extensions;
+using BuildingBlocks.Core.Extensions;
 
 namespace BuildingBlocks.Core.Types.Extensions;
 

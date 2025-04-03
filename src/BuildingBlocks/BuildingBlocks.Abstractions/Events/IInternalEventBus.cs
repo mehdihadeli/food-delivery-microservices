@@ -1,3 +1,4 @@
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 
 namespace BuildingBlocks.Abstractions.Events;
@@ -10,7 +11,8 @@ public interface IInternalEventBus
     /// <param name="eventData"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task Publish(IEvent eventData, CancellationToken ct);
+    Task Publish<T>(T eventData, CancellationToken ct)
+        where T : class, IEvent;
 
     /// <summary>
     ///     publish multiple in-memory events.
@@ -18,41 +20,42 @@ public interface IInternalEventBus
     /// <param name="eventsData"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task Publish(IEnumerable<IEvent> eventsData, CancellationToken ct);
+    Task Publish<T>(IEnumerable<T> eventsData, CancellationToken ct)
+        where T : class, IEvent;
 
     /// <summary>
     ///     publish an in-memory event based on consumed event from messaging system.
     /// </summary>
-    /// <param name="eventEnvelope"></param>
+    /// <param name="messageEnvelope"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task Publish(IEventEnvelope eventEnvelope, CancellationToken ct);
+    Task Publish(IMessageEnvelopeBase messageEnvelope, CancellationToken ct);
 
     /// <summary>
     ///     publish an in-memory event based on consumed event from messaging system.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="eventEnvelope"></param>
+    /// <param name="messageEnvelope"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task Publish<T>(IEventEnvelope<T> eventEnvelope, CancellationToken ct)
-        where T : class;
+    Task Publish<T>(IMessageEnvelope<T> messageEnvelope, CancellationToken ct)
+        where T : class, IMessage;
 
     /// <summary>
     ///     publish an in-memory event based consumed events from eventstore.
     /// </summary>
-    /// <param name="streamEventEnvelope"></param>
+    /// <param name="streamEvent"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task Publish(IStreamEventEnvelope streamEventEnvelope, CancellationToken ct);
+    Task Publish(IStreamEventEnvelopeBase streamEvent, CancellationToken ct);
 
     /// <summary>
     ///     publish an in-memory event based consumed events from eventstore.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="streamEventEnvelope"></param>
+    /// <param name="streamEvent"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task Publish<T>(IStreamEventEnvelope<T> streamEventEnvelope, CancellationToken ct)
-        where T : IDomainEvent;
+    Task Publish<T>(IStreamEventEnvelope<T> streamEvent, CancellationToken ct)
+        where T : class, IDomainEvent;
 }

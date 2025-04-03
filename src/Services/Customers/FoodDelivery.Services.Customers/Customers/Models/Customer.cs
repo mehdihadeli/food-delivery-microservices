@@ -1,5 +1,6 @@
 using BuildingBlocks.Core.Domain;
 using BuildingBlocks.Core.Domain.ValueObjects;
+using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.ValueObjects;
@@ -13,6 +14,27 @@ public class Customer : Aggregate<CustomerId>
     // EF
     // this constructor is needed when we have a parameter constructor that has some navigation property classes in the parameters and ef will skip it and try to find other constructor, here default constructor (maybe will fix .net 8)
     private Customer() { }
+
+    private Customer(
+        CustomerId id,
+        Email email,
+        PhoneNumber phoneNumber,
+        CustomerName name,
+        Guid identityId,
+        Address? address = null,
+        BirthDate? birthDate = null,
+        Nationality? nationality = null
+    )
+    {
+        Id = id;
+        Email = email;
+        PhoneNumber = phoneNumber;
+        Name = name;
+        IdentityId = identityId;
+        Address = address;
+        BirthDate = birthDate;
+        Nationality = nationality;
+    }
 
     public Guid IdentityId { get; private set; }
     public Email Email { get; private set; } = default!;
@@ -34,29 +56,22 @@ public class Customer : Aggregate<CustomerId>
     )
     {
         // input validation will do in the `command` and our `value objects` before arriving to entity and makes or domain cleaner, here we just do business validation
-        var customer = new Customer
-        {
-            Id = id,
-            Email = email,
-            PhoneNumber = phoneNumber,
-            Name = name,
-            IdentityId = identityId,
-            BirthDate = birthDate,
-            Address = address,
-            Nationality = nationality
-        };
+        id.NotBeNull();
+        email.NotBeNull();
+        phoneNumber.NotBeNull();
+        name.NotBeNull();
+        identityId.NotBeEmpty();
 
-        var (firstName, lastName) = name;
+        var customer = new Customer(id, email, phoneNumber, name, identityId, address, birthDate, nationality);
 
         customer.AddDomainEvents(
             CustomerCreated.Of(
                 id,
-                firstName,
-                lastName,
+                name.FirstName,
+                name.LastName,
                 email,
                 phoneNumber,
                 identityId,
-                DateTime.Now,
                 address?.Country,
                 address?.City,
                 address?.Detail,
@@ -106,7 +121,6 @@ public class Customer : Aggregate<CustomerId>
                 email,
                 phoneNumber,
                 IdentityId,
-                DateTime.Now,
                 birthDate!,
                 address?.Country,
                 address?.City,

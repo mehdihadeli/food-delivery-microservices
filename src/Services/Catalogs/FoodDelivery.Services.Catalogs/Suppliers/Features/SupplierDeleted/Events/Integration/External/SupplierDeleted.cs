@@ -1,11 +1,11 @@
-using BuildingBlocks.Abstractions.Events;
-using FoodDelivery.Services.Shared.Catalogs.Suppliers.Events.V1.Integration;
+using FoodDelivery.Services.Shared.Catalogs.Suppliers.Events.Integration.v1;
+using MassTransit;
 
 namespace FoodDelivery.Services.Catalogs.Suppliers.Features.SupplierDeleted.Events.Integration.External;
 
-public class SupplierDeletedConsumer : IEventHandler<SupplierDeletedV1>
+public class SupplierDeletedConsumer : IConsumer<SupplierDeletedV1>
 {
-    public Task Handle(SupplierDeletedV1 notification, CancellationToken cancellationToken)
+    public Task Consume(ConsumeContext<SupplierDeletedV1> context)
     {
         return Task.CompletedTask;
     }

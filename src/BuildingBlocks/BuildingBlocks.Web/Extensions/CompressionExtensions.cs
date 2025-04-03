@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 
 namespace BuildingBlocks.Web.Extensions;
 
-public static class CompressionExtensions
+public static partial class CompressionExtensions
 {
     public static WebApplicationBuilder AddCompression(this WebApplicationBuilder builder)
     {

@@ -19,10 +19,6 @@
 <!--  </ItemGroup>-->
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Build.Containers" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\FoodDelivery.Services.Customers\FoodDelivery.Services.Customers.csproj" />
   </ItemGroup>

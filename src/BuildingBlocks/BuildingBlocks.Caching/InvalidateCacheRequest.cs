@@ -1,5 +1,5 @@
 using BuildingBlocks.Abstractions.Caching;
-using MediatR;
+using Mediator;
 
 namespace BuildingBlocks.Caching;
 
@@ -11,7 +11,7 @@ public abstract class InvalidateCacheRequest<TRequest, TResponse> : IInvalidateC
 }
 
 public abstract class InvalidateCacheRequest<TRequest> : IInvalidateCacheRequest<TRequest>
-    where TRequest : IRequest
+    where TRequest : IRequest<Unit>
 {
     public virtual string Prefix => "Ch_";
     public abstract IEnumerable<string> CacheKeys(TRequest request);

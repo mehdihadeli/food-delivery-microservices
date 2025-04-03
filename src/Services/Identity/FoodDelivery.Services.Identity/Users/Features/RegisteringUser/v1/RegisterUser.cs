@@ -1,14 +1,12 @@
 using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Messaging;
-using BuildingBlocks.Abstractions.Messaging.PersistMessage;
-using BuildingBlocks.Core.Events;
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
-using FoodDelivery.Services.Shared.Identity.Users.Events.V1.Integration;
+using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Microsoft.AspNetCore.Identity;
-using UserState = FoodDelivery.Services.Identity.Shared.Models.UserState;
+using UserState = FoodDelivery.Services.Shared.Identity.Users.UserState;
 
 namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
 
@@ -21,7 +19,7 @@ public record RegisterUser(
     string Password,
     string ConfirmPassword,
     IEnumerable<string>? Roles = null
-) : ITxCreateCommand<RegisterUserResult>
+) : ITxCommand<RegisterUserResult>
 {
     public DateTime CreatedAt { get; init; } = DateTime.Now;
 
@@ -54,7 +52,7 @@ public record RegisterUser(
     }
 }
 
-internal class RegisterUserValidator : AbstractValidator<RegisterUser>
+public class RegisterUserValidator : AbstractValidator<RegisterUser>
 {
     public RegisterUserValidator()
     {
@@ -95,10 +93,10 @@ internal class RegisterUserValidator : AbstractValidator<RegisterUser>
 
 // using transaction script instead of using domain business logic here
 // https://www.youtube.com/watch?v=PrJIMTZsbDw
-internal class RegisterUserHandler(UserManager<ApplicationUser> userManager, IExternalEventBus externalEventBus)
+public class RegisterUserHandler(UserManager<ApplicationUser> userManager, IExternalEventBus externalEventBus)
     : ICommandHandler<RegisterUser, RegisterUserResult>
 {
-    public async Task<RegisterUserResult> Handle(RegisterUser request, CancellationToken cancellationToken)
+    public async ValueTask<RegisterUserResult> Handle(RegisterUser request, CancellationToken cancellationToken)
     {
         var applicationUser = new ApplicationUser
         {
@@ -149,10 +147,10 @@ internal class RegisterUserHandler(UserManager<ApplicationUser> userManager, IEx
                 Roles = request.Roles ?? new List<string> { IdentityConstants.Role.User },
                 RefreshTokens = applicationUser?.RefreshTokens?.Select(x => x.Token),
                 CreatedAt = request.CreatedAt,
-                UserState = UserState.Active
+                UserState = UserState.Active,
             }
         );
     }
 }
 
-internal record RegisterUserResult(IdentityUserDto? UserIdentity);
+public record RegisterUserResult(IdentityUserDto? UserIdentity);

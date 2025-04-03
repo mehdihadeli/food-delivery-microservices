@@ -1,27 +1,28 @@
+using Bogus;
 using BuildingBlocks.Abstractions.Persistence;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Catalogs.Suppliers.Data;
 
-public class SupplierDataSeeder : IDataSeeder
+public class SupplierDataSeeder(ICatalogDbContext dbContext) : IDataSeeder
 {
-    private readonly ICatalogDbContext _dbContext;
-
-    public SupplierDataSeeder(ICatalogDbContext dbContext)
+    public async Task SeedAllAsync(CancellationToken cancellationToken)
     {
-        _dbContext = dbContext;
-    }
-
-    public async Task SeedAllAsync()
-    {
-        if (await _dbContext.Suppliers.AnyAsync())
+        if (await dbContext.Suppliers.AnyAsync(cancellationToken: cancellationToken))
             return;
 
-        var suppliers = new SupplierFaker().Generate(5);
-        await _dbContext.Suppliers.AddRangeAsync(suppliers);
+        var id = 1;
+        var supplierFaker = new Faker<Supplier>().CustomInstantiator(faker =>
+        {
+            var supplier = new Supplier(SupplierId.Of(id++), faker.Person.FullName);
+            return supplier;
+        });
 
-        await _dbContext.SaveChangesAsync();
+        var suppliers = supplierFaker.Generate(5);
+        await dbContext.Suppliers.AddRangeAsync(suppliers, cancellationToken);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public int Order => 2;

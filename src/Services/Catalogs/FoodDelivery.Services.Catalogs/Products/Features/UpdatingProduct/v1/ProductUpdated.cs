@@ -18,7 +18,7 @@ namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 // https://codeopinion.com/leaking-value-objects-from-your-domain/
 // https://www.youtube.com/watch?v=CdanF8PWJng
 // we don't pass value-objects and domains to our commands and events, just primitive types
-internal record ProductUpdated(
+public record ProductUpdated(
     long Id,
     string Name,
     decimal Price,
@@ -85,7 +85,7 @@ internal record ProductUpdated(
     }
 }
 
-internal class ProductUpdatedValidator : AbstractValidator<ProductUpdated>
+public class ProductUpdatedValidator : AbstractValidator<ProductUpdated>
 {
     public ProductUpdatedValidator()
     {
@@ -109,9 +109,9 @@ internal class ProductUpdatedValidator : AbstractValidator<ProductUpdated>
     }
 }
 
-internal class ProductUpdatedHandler(CatalogDbContext dbContext) : IDomainEventHandler<ProductUpdated>
+public class ProductUpdatedHandler(CatalogDbContext dbContext) : IDomainEventHandler<ProductUpdated>
 {
-    public async Task Handle(ProductUpdated notification, CancellationToken cancellationToken)
+    public async ValueTask Handle(ProductUpdated notification, CancellationToken cancellationToken)
     {
         notification.NotBeNull();
 

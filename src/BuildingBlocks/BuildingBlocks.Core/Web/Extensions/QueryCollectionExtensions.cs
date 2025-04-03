@@ -47,7 +47,7 @@ public static class QueryCollectionExtensions
             {
                 ParameterPick.First => values.FirstOrDefault(),
                 ParameterPick.Last => values.LastOrDefault(),
-                _ => value
+                _ => value,
             };
         }
 

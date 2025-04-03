@@ -4,7 +4,7 @@ using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Domain.Exceptions;
-using BuildingBlocks.Core.Reflection.Extensions;
+using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Types.Extensions;
 
 namespace BuildingBlocks.Core.Domain.EventSourcing;
@@ -68,7 +68,7 @@ public abstract class EventSourcedAggregate<TId> : Entity<TId>, IEventSourcedAgg
     /// Add the <paramref name="domainEvent"/> to the aggregate pending changes event.
     /// </summary>
     /// <param name="domainEvent">The domain event.</param>
-    protected void AddDomainEvents(IDomainEvent domainEvent)
+    public void AddDomainEvents(IDomainEvent domainEvent)
     {
         if (!_uncommittedDomainEvents.Any(x => Equals(x.EventId, domainEvent.EventId)))
         {
@@ -86,24 +86,20 @@ public abstract class EventSourcedAggregate<TId> : Entity<TId>, IEventSourcedAgg
         return _uncommittedDomainEvents.ToImmutableList();
     }
 
+    public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
+    {
+        // create a copy because after clearing events we lost our collection
+        var events = new List<IDomainEvent>(GetUncommittedDomainEvents());
+        ClearDomainEvents();
+
+        OriginalVersion = CurrentVersion;
+
+        return events.ToImmutableList();
+    }
+
     public void ClearDomainEvents()
     {
         _uncommittedDomainEvents.Clear();
-    }
-
-    public IReadOnlyList<IDomainEvent> DequeueUncommittedDomainEvents()
-    {
-        var events = _uncommittedDomainEvents.ToImmutableList();
-        MarkUncommittedDomainEventAsCommitted();
-
-        return events;
-    }
-
-    public void MarkUncommittedDomainEventAsCommitted()
-    {
-        _uncommittedDomainEvents.Clear();
-
-        OriginalVersion = CurrentVersion;
     }
 
     public void CheckRule(IBusinessRule rule)

@@ -1,13 +1,18 @@
-using System.Security.Claims;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
+using FoodDelivery.Services.Identity.Shared.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 
 namespace FoodDelivery.Services.Identity.Identity.Services;
 
+/// <summary>
+/// Generating token claims for identity server based on identity user
+/// </summary>
+/// <param name="claimsFactory"></param>
+/// <param name="userManager"></param>
 public class IdentityProfileService(
     IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory,
     UserManager<ApplicationUser> userManager
@@ -17,20 +22,35 @@ public class IdentityProfileService(
     {
         var sub = context.Subject.GetSubjectId();
         var user = await userManager.FindByIdAsync(sub);
-        var roles = await userManager.GetRolesAsync(user);
-        var isAdmin = roles.Contains(IdentityConstants.Role.Admin);
+
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
+
+        // Will add all Claims, RoleClaims and role to the claim list
         var principal = await claimsFactory.CreateAsync(user);
+        var userClaims = principal.Claims.ToList();
 
-        var claims = principal.Claims.ToList();
-        claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
+        userClaims = userClaims.GroupBy(c => new { c.Type, c.Value }).Select(g => g.First()).ToList();
 
-        claims.Add(new Claim(JwtClaimTypes.Id, user.Id.ToString()));
-        claims.Add(new Claim(JwtClaimTypes.Name, user.UserName));
-        claims.Add(new Claim(JwtClaimTypes.Email, user.Email));
+        // Get all requested scopes
+        var requestedScopesValue = context.RequestedResources.RawScopeValues;
+        var requestedScopesClaimTypes = context
+            .RequestedResources.Resources.ApiScopes.SelectMany(x => x.UserClaims)
+            .Union(context.RequestedResources.Resources.ApiResources.SelectMany(x => x.UserClaims))
+            .Union(context.RequestedResources.Resources.IdentityResources.SelectMany(x => x.UserClaims));
 
-        claims.Add(isAdmin ? new Claim(JwtClaimTypes.Role, "admin") : new Claim(JwtClaimTypes.Role, "user"));
+        var requestedClaims = userClaims.Where(x => GetBasicClaims().Contains(x.Type)).ToList();
+        requestedClaims.AddRangeIfNotExists(userClaims.Where(x => requestedScopesClaimTypes.Contains(x.Type)).ToList());
 
-        context.IssuedClaims = claims;
+        // Only return claims that were explicitly requested via scopes
+        context.IssuedClaims = requestedClaims;
+    }
+
+    private static IList<string> GetBasicClaims()
+    {
+        return new List<string> { JwtClaimTypes.Subject, JwtClaimTypes.Name, JwtClaimTypes.Email };
     }
 
     public async Task IsActiveAsync(IsActiveContext context)

@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -27,7 +28,7 @@ internal class DeleteRestockSubscriptionByTimeEndpoint
             // .Produces(StatusCodes.Status204NoContent)
             // .ProducesValidationProblem()
             // .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .RequireAuthorization(CustomersConstants.Role.Admin)
+            .RequireAuthorization(Role.Admin)
             .WithName(nameof(DeleteRestockSubscriptionsByTime))
             .WithName(nameof(DeleteRestockSubscriptionsByTime))
             .WithDisplayName(nameof(DeleteRestockSubscriptionsByTime).Humanize())

@@ -33,6 +33,9 @@ public static class MassTransitExtensions
             // route by message type to binding fanout exchange (exchange to exchange binding)
             e.UseRoutingKeyFormatter(context => context.Message.GetType().Name.Underscore());
         });
+        
+        cfg.SetQueueArgument("x-dead-letter-exchange", $"{nameof(ProductCreatedV1).Underscore()}_dead_letter_exchange");
+        cfg.SetQueueArgument("x-dead-letter-routing-key", nameof(ProductCreatedV1).Underscore());
 
         // https://masstransit.io/documentation/transports/rabbitmq
         cfg.Message<ProductStockDebitedV1>(e =>
@@ -57,6 +60,9 @@ public static class MassTransitExtensions
             e.UseRoutingKeyFormatter(context => context.Message.GetType().Name.Underscore());
         });
 
+        cfg.SetQueueArgument("x-dead-letter-exchange", $"{nameof(ProductStockDebitedV1).Underscore()}_dead_letter_exchange");
+        cfg.SetQueueArgument("x-dead-letter-routing-key", nameof(ProductStockDebitedV1).Underscore());
+        
         // https://masstransit.io/documentation/transports/rabbitmq
         cfg.Message<ProductStockReplenishedV1>(e =>
         {
@@ -78,5 +84,8 @@ public static class MassTransitExtensions
             // route by message type to binding fanout exchange (exchange to exchange binding)
             e.UseRoutingKeyFormatter(context => context.Message.GetType().Name.Underscore());
         });
+        
+        cfg.SetQueueArgument("x-dead-letter-exchange", $"{nameof(ProductStockReplenishedV1).Underscore()}_dead_letter_exchange");
+        cfg.SetQueueArgument("x-dead-letter-routing-key", nameof(ProductStockReplenishedV1).Underscore());
     }
 }

@@ -13,6 +13,7 @@ using BuildingBlocks.Observability.Extensions;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Persistence.Mongo;
 using BuildingBlocks.Resiliency;
+using BuildingBlocks.Security.ApiKey.Authorization;
 using BuildingBlocks.Security.Jwt;
 using BuildingBlocks.SerilogLogging;
 using BuildingBlocks.SerilogLogging.Extensions;
@@ -27,6 +28,7 @@ using FoodDelivery.Services.Customers.RestockSubscriptions;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Rest;
 using FoodDelivery.Services.Customers.Users;
+using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Customers.Customers;
 using FoodDelivery.Services.Shared.Customers.Products;
 using FoodDelivery.Services.Shared.Customers.RestockSubscriptions;
@@ -55,7 +57,7 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCore();
 
         var serilogOptions = builder.Configuration.BindOptions<SerilogOptions>(nameof(SerilogOptions));
-        if (serilogOptions.Enabled && (builder.Environment.IsDevelopment() || builder.Environment.IsTest()))
+        if (serilogOptions.Enabled)
         {
             // - for production, we use OpenTelemetry
             // - we can use serilog to send logs to opentemetry with using`writeToProviders` and `builder.SeilogLogging.AddOpenTelemetry` to write logs event to `ILoggerProviders` which use by opentelemtry and .net default logging use it,
@@ -158,8 +160,8 @@ public static partial class WebApplicationBuilderExtensions
         builder.Services.AddCustomAuthorization(
             rolePolicies: new List<RolePolicy>
             {
-                new(CustomersConstants.Role.Admin, new List<string> { CustomersConstants.Role.Admin }),
-                new(CustomersConstants.Role.User, new List<string> { CustomersConstants.Role.User }),
+                new(Role.Admin, new List<string> { Role.Admin }),
+                new(Role.User, new List<string> { Role.User }),
             }
         );
 
@@ -189,7 +191,7 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.Services.AddCustomValidators(typeof(CustomersMetadata).Assembly);
 
-        builder.Services.AddPostgresMessagePersistence(builder.Configuration);
+        builder.Services.AddPostgresMessagePersistence();
 
         // External Clients
         builder.AddCustomHttpClients();

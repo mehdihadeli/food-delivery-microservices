@@ -43,7 +43,7 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCore();
 
         var serilogOptions = builder.Configuration.BindOptions<SerilogOptions>(nameof(SerilogOptions));
-        if (serilogOptions.Enabled && (builder.Environment.IsDevelopment() || builder.Environment.IsTest()))
+        if (serilogOptions.Enabled)
         {
             // - for production, we use OpenTelemetry
             // - we can use serilog to send logs to opentemetry with using`writeToProviders` and `builder.SeilogLogging.AddOpenTelemetry` to write logs event to `ILoggerProviders` which use by opentelemtry and .net default logging use it,
@@ -142,7 +142,7 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.Services.AddCustomValidators(typeof(OrdersMetadata).Assembly);
 
-        builder.Services.AddPostgresMessagePersistence(builder.Configuration);
+        builder.Services.AddPostgresMessagePersistence();
 
         return builder;
     }

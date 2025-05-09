@@ -21,11 +21,13 @@ public static partial class WebApplicationExtensions
             app.UseDeveloperExceptionPage();
         }
 
+        app.UseStaticFiles();
         app.UseCustomCors();
 
-        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security
-        app.UseAuthentication();
-        app.UseAuthorization();
+        if (app.Environment.IsTest() == false)
+            app.UseIdentityServer();
+
+        app.UseObservability();
 
         // https://aurelien-riv.github.io/aspnetcore/2022/11/09/aspnet-grafana-loki-telemetry-microservice-correlation.html
         // https://www.nuget.org/packages/Microsoft.AspNetCore.HeaderPropagation
@@ -35,10 +37,14 @@ public static partial class WebApplicationExtensions
 
         app.MapCustomHealthChecks();
 
+        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security
+        app.UseAuthentication();
+        app.UseAuthorization();
+
         // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/health-checks#non-development-environments
         app.UseRequestTimeouts();
         app.UseOutputCache();
 
-        app.UseObservability();
+        app.MapRazorPages().RequireAuthorization();
     }
 }

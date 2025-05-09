@@ -27,10 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
-    <PackageReference Include="Duende.IdentityServer" />
-    <PackageReference Include="Duende.IdentityServer.Storage" />
     <PackageReference Include="Duende.IdentityServer.AspNetIdentity" />
-    <PackageReference Include="Duende.IdentityServer.EntityFramework" />
   </ItemGroup>
 
   <!-- Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
@@ -60,6 +57,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Shared\Data\Migrations\Identity\" />
   </ItemGroup>
 
 </Project>

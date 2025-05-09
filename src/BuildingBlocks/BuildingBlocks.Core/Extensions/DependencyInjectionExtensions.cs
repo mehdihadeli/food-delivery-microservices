@@ -11,6 +11,7 @@ using BuildingBlocks.Core.Persistence;
 using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Core.Resiliency;
 using BuildingBlocks.Core.Serialization;
+using BuildingBlocks.Security.Jwt;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -26,6 +27,8 @@ public static class DependencyInjectionExtensions
         var referencingAssemblies = Assembly.GetCallingAssembly().GetReferencingAssemblies();
 
         builder.Services.AddValidatedOptions<CoreOptions>();
+
+        builder.Services.AddValidationOptions<JwtOptions>();
 
         builder.AddDiagnostics();
 

@@ -4,7 +4,7 @@ using BuildingBlocks.Core.Diagnostics.Behaviors;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messages;
 using BuildingBlocks.Core.Persistence.EfCore;
-using BuildingBlocks.Core.Web.Extensions;
+using BuildingBlocks.Core.Security;
 using BuildingBlocks.Email;
 using BuildingBlocks.HealthCheck;
 using BuildingBlocks.Integration.MassTransit;
@@ -20,9 +20,11 @@ using BuildingBlocks.Validation.Extensions;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Extensions.WebApplicationBuilderExtensions;
 using BuildingBlocks.Web.RateLimit;
-using FoodDelivery.Services.Catalogs.Products;
+using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Catalogs.Products;
 using Mediator;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using RabbitMQ.Client;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Extensions.WebApplicationBuilderExtensions;
@@ -44,7 +46,7 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCore();
 
         var serilogOptions = builder.Configuration.BindOptions<SerilogOptions>(nameof(SerilogOptions));
-        if (serilogOptions.Enabled && (builder.Environment.IsDevelopment() || builder.Environment.IsTest()))
+        if (serilogOptions.Enabled)
         {
             // - for production, we use OpenTelemetry
             // - we can use serilog to send logs to opentemetry with using`writeToProviders` and `builder.SeilogLogging.AddOpenTelemetry` to write logs event to `ILoggerProviders` which use by opentelemtry and .net default logging use it,
@@ -111,14 +113,77 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomResiliency(false);
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security
-        builder.Services.AddCustomJwtAuthentication(builder.Configuration);
-        builder.Services.AddCustomAuthorization(
-            rolePolicies: new List<RolePolicy>
+        var jwtOptions = builder.Configuration.BindOptions<JwtOptions>();
+        builder
+            .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
             {
-                new(CatalogConstants.Role.Admin, new List<string> { CatalogConstants.Role.Admin }),
-                new(CatalogConstants.Role.User, new List<string> { CatalogConstants.Role.User }),
-            }
-        );
+                options.Authority = jwtOptions.Authority;
+                options.Audience = jwtOptions.Audience;
+                options.RequireHttpsMetadata = true;
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = jwtOptions.ValidateIssuer,
+                    ValidIssuers = jwtOptions.ValidIssuers,
+                    ValidateAudience = jwtOptions.ValidateAudience,
+                    ValidAudiences = jwtOptions.ValidAudiences,
+                    ValidateLifetime = jwtOptions.ValidateLifetime,
+                    ClockSkew = jwtOptions.ClockSkew,
+                    // For IdentityServer4/Duende, we should also validate the signing key
+                    ValidateIssuerSigningKey = true,
+                    NameClaimType = "name", // Map "name" claim to User.Identity.Name
+                    RoleClaimType = "role", // Map "role" claim to User.IsInRole()
+                };
+
+                // Preserve ALL claims from the token (including "sub")
+                options.MapInboundClaims = false;
+            });
+
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy(
+                Permissions.CatalogsRead,
+                policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    // Check for client scope
+                    policy.RequireClaim(ClaimsType.Scope, Scopes.CatalogsRead, Scopes.CatalogsFull);
+                    // Check for user permission
+                    policy.RequireClaim(ClaimsType.Permission, Permissions.CatalogsRead, Permissions.CatalogsFull);
+                }
+            );
+
+            options.AddPolicy(
+                Permissions.CatalogsWrite,
+                policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    // Check for client scope
+                    policy.RequireClaim(ClaimsType.Scope, Scopes.CatalogsWrite, Scopes.CatalogsFull);
+                    // Check for user permission
+                    policy.RequireClaim(ClaimsType.Permission, Permissions.CatalogsWrite, Permissions.CatalogsFull);
+                }
+            );
+
+            // Role-based policies
+            options.AddPolicy(
+                Role.Admin,
+                x =>
+                {
+                    x.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    x.RequireRole(Role.Admin);
+                }
+            );
+            options.AddPolicy(
+                Role.User,
+                x =>
+                {
+                    x.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    x.RequireRole(Role.User);
+                }
+            );
+        });
 
         builder.AddCustomCaching();
 
@@ -146,7 +211,7 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.Services.AddCustomValidators(typeof(CatalogsMetadata).Assembly);
 
-        builder.Services.AddPostgresMessagePersistence(builder.Configuration);
+        builder.Services.AddPostgresMessagePersistence();
 
         return builder;
     }

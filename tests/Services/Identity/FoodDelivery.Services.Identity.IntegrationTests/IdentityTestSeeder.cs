@@ -17,11 +17,11 @@ public class IdentityTestSeeder(UserManager<ApplicationUser> userManager, RoleMa
 
     private async Task SeedRoles()
     {
-        if (!await roleManager.RoleExistsAsync(ApplicationRole.Admin.Name))
-            await roleManager.CreateAsync(ApplicationRole.Admin);
+        if (!await roleManager.RoleExistsAsync(ApplicationRole.AdminRole.Name))
+            await roleManager.CreateAsync(ApplicationRole.AdminRole);
 
-        if (!await roleManager.RoleExistsAsync(ApplicationRole.User.Name))
-            await roleManager.CreateAsync(ApplicationRole.User);
+        if (!await roleManager.RoleExistsAsync(ApplicationRole.UserRole.Name))
+            await roleManager.CreateAsync(ApplicationRole.UserRole);
     }
 
     private async Task SeedUsers()
@@ -39,7 +39,7 @@ public class IdentityTestSeeder(UserManager<ApplicationUser> userManager, RoleMa
             var result = await userManager.CreateAsync(user, "123456");
 
             if (result.Succeeded)
-                await userManager.AddToRoleAsync(user, ApplicationRole.Admin.Name);
+                await userManager.AddToRoleAsync(user, ApplicationRole.AdminRole.Name);
         }
     }
 }

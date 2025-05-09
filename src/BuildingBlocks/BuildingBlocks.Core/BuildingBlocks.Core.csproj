@@ -36,7 +36,7 @@
     <PackageReference Include="Sieve" />
     <PackageReference Include="MessagePack" />
     <PackageReference Include="MemoryPack" />
-    <PackageReference Include=" DistributedLock.Redis" />
+    <PackageReference Include="DistributedLock.Redis" />
     <PackageReference Include="Riok.Mapperly" />
     <PackageReference Include="FluentValidation.AspNetCore" />
     <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" />

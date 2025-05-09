@@ -57,6 +57,9 @@ public static class MassTransitExtensions
                 re.ConfigureConsumers(context);
 
                 re.RethrowFaultedMessages();
+                
+                cfg.SetQueueArgument("x-dead-letter-exchange", $"{nameof(ProductStockReplenishedV1).Underscore()}_dead_letter_exchange");
+                cfg.SetQueueArgument("x-dead-letter-routing-key", nameof(ProductStockReplenishedV1).Underscore());
             }
         );
 
@@ -100,6 +103,9 @@ public static class MassTransitExtensions
                 re.ConfigureConsumers(context);
 
                 re.RethrowFaultedMessages();
+                
+                cfg.SetQueueArgument("x-dead-letter-exchange", $"{nameof(ProductStockReplenishedV1).Underscore()}_dead_letter_exchange");
+                cfg.SetQueueArgument("x-dead-letter-routing-key", nameof(ProductStockReplenishedV1).Underscore());
             }
         );
     }

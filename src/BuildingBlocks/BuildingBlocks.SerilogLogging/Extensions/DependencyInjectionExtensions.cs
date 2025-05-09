@@ -33,7 +33,7 @@ public static class DependencyInjectionExtensions
         // https://github.com/serilog/serilog-aspnetcore#two-stage-initialization
         // https://stackoverflow.com/a/78467358
         // - Routes framework log messages through Serilog - get other sinks from top level definition
-        // - For preventing duplicate write logs by .net default logs provider we should remove them for serilog because we enabled `writeToProviders=true`
+        // - For preventing duplicate write logs by .net default logs provider, we should remove them for serilog because we enabled `writeToProviders=true` to send logs to .net default logs provider using by opentelemetry.
         builder.Logging.ClearProviders();
         builder.Services.AddSerilog(
             (sp, loggerConfiguration) =>
@@ -41,6 +41,7 @@ public static class DependencyInjectionExtensions
                 // The downside of initializing Serilog in top level is that services from the ASP.NET Core host, including the appsettings.json configuration and dependency injection, aren't available yet.
                 // setup sinks that related to `configuration` here instead of top level serilog configuration
                 // https://github.com/serilog/serilog-settings-configuration
+                // This also applies MinimumLevel + Overrides
                 loggerConfiguration.ReadFrom.Configuration(
                     builder.Configuration,
                     new ConfigurationReaderOptions { SectionName = nameof(SerilogOptions) }

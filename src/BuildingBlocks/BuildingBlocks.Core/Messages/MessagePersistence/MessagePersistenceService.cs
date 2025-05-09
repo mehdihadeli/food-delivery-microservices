@@ -83,6 +83,7 @@ public class MessagePersistenceService(
         }
 
         // message broker deliver message just to one of consumer based on round-robin algorithm. if consumer fails broker deliver the message to another consumer
+        // TODO: executing action and saving entry to inbox should be in the same transaction. because it is possible before the message is saved to the Inbox table the process crashes, broker redelivers the message and consumer will re-run the logic again (duplicate)
         await dispatchAction.Invoke(messageEnvelope).ConfigureAwait(false);
         await AddMessageCore(messageEnvelope, MessageDeliveryType.Inbox, MessageStatus.Delivered, cancellationToken)
             .ConfigureAwait(false);
@@ -213,17 +214,18 @@ public class MessagePersistenceService(
     private async Task ProcessOutbox(PersistMessage persistMessage, CancellationToken cancellationToken)
     {
         var messageId = persistMessage.MessageId;
-        var lockKey = $"message:{messageId}";
-        IDistributedSynchronizationHandle? distributedLock = null;
 
-        // default approach is using Idempotent Message Handling, Design your message handlers to be idempotent, so processing the same message multiple times does not cause issues (inbox pattern)
+        // multiple instances can process outbox message in outbox table in the same time, for publishing message based on outbox message on the database. we can accept this becuase we have deduplication in the inbox
         if (options.Value.UseDistributedLock)
         {
-            // Distributed Locking approach
+			// In a microservices environment with multiple instances of a service running, we need to ensure that only one instance executes a scheduled job, we can handle it with distributed lock
+            var lockKey = $"message:{messageId}";
+
+            // In a microservices environment with multiple instances of a service running
             // Acquire a distributed lock with a timeout
             var distributedLockProvider = serviceProvider.GetRequiredService<IDistributedLockProvider>();
 
-            distributedLock = await distributedLockProvider
+            var distributedLock = await distributedLockProvider
                 .TryAcquireLockAsync(lockKey, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
 
@@ -251,12 +253,6 @@ public class MessagePersistenceService(
         await busDirectPublisher.PublishAsync(eventEnvelope, cancellationToken).ConfigureAwait(false);
 
         await MarkAsDeliveredAsync(persistMessage.MessageId, cancellationToken).ConfigureAwait(false);
-
-        if (options.Value.UseDistributedLock)
-        {
-            // release lock
-            distributedLock?.Dispose();
-        }
 
         logger.LogInformation(
             "Message with id: {MessageId} and delivery type: {DeliveryType} processed from the persistence message store",

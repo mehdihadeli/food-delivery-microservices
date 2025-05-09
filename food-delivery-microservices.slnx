@@ -156,15 +156,19 @@
   </Folder>
   <Folder Name="/solution-items/_httpclients/">
     <File Path="_httpclients/http-client.env.json" />
+    <File Path="_httpclients\http-client.private.env.json" />
   </Folder>
   <Folder Name="/solution-items/_httpclients/catalogs/">
     <File Path="_httpclients/catalogs/catalogs.rest" />
+    <File Path="_httpclients\catalogs\catalogs.http" />
   </Folder>
   <Folder Name="/solution-items/_httpclients/customers/">
     <File Path="_httpclients/customers/customers.rest" />
+    <File Path="_httpclients\customers\customers.http" />
   </Folder>
   <Folder Name="/solution-items/_httpclients/identity/">
     <File Path="_httpclients/identity/identity.rest" />
+    <File Path="_httpclients\identity\identity.http" />
   </Folder>
   <Folder Name="/solution-items/_httpclients/orders/" />
   <Folder Name="/solution-items/_httpclients/rabbitmq/">

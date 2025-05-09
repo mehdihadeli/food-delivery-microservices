@@ -32,9 +32,6 @@ public static class DependencyInjectionExtensions
         var jwtOptions = configuration.BindOptions<JwtOptions>();
         configurator?.Invoke(jwtOptions);
 
-        // add option to the dependency injection
-        services.AddValidationOptions<JwtOptions>(configurator: opt => configurator?.Invoke(opt));
-
         services.TryAddTransient<IJwtService, JwtService>();
 
         // https://docs.microsoft.com/en-us/aspnet/core/security/authentication

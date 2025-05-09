@@ -1,0 +1,124 @@
+### Variables
+@contentType = application/json
+
+### implicit-flow-client
+GET {{identity_api}}/connect/authorize?
+    client_id=spa&
+    redirect_uri={{redirect_uri}}&
+    response_type=token&
+    scope={{scope}}&
+    state={{auth_state}}
+
+### PKCE Client
+
+### Step 1: Authorize - Get Authorization Code
+# code_challenge is base64url(SHA256("code_verifier")) - https://oidcdebugger.com
+GET {{identity_api}}/connect/authorize?
+    client_id=spa-pkce&
+    redirect_uri={{redirect_uri}}&
+    response_type=code&
+    scope={{scope}}&
+    state={{auth_state}}&
+    code_challenge={{pkce_code_challenge}}&
+    code_challenge_method={{code_challenge_method}}
+
+### Step 2: Token Exchange - Get Access Token
+# code is CODE_FROM_URL
+POST {{identity_api}}/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=spa-pkce&
+grant_type=authorization_code&
+code={{auth_code}}&
+redirect_uri={{redirect_uri}}&
+code_verifier={{pkce_code_verifier}}
+
+### Create Product
+POST {{gateway_api}}/api/v1/catalogs/products
+Authorization: {{bearer_token}}
+content-type: {{contentType}}
+
+{
+  "name": "test3",
+  "price": 100,
+  "stock": 10,
+  "restockThreshold": 5,
+  "maxStockThreshold": 10,
+  "status": 1,
+  "height": 10,
+  "width": 10,
+  "depth": 10,
+  "size": "H",
+  "color": 1,
+  "categoryId": 1,
+  "supplierId": 1,
+  "brandId": 1,
+  "description": "string",
+  "images": [
+    {
+      "imageUrl": "string",
+      "isMain": true
+    }
+  ]
+}
+
+### Get Products
+GET {{gateway_api}}/api/v1/catalogs/products?PageSize=10&PageNumber=1
+Accept: {{contentType}}
+Authorization: {{bearer_token}}
+
+### Get Product by ID
+GET {{gateway_api}}/api/v1/catalogs/products/{{product_id}}
+Accept: {{contentType}}
+Authorization: {{bearer_token}}
+
+### Update Product
+POST {{gateway_api}}/api/v1/catalogs/products/{{product_id}}
+Content-Type: {{contentType}}
+Authorization: {{bearer_token}}
+
+{
+  "name": "test3",
+  "price": 100,
+  "stock": 10,
+  "restockThreshold": 5,
+  "maxStockThreshold": 100,
+  "status": 1,
+  "productType": 0,
+  "productColor": 0,
+  "height": 10,
+  "width": 20,
+  "depth": 30,
+  "size": "M",
+  "categoryId": 1,
+  "supplierId": 1,
+  "brandId": 1,
+  "description": "test"
+}
+
+### Stock Management
+
+### Debit Product Stock
+POST {{gateway_api}}/api/v1/catalogs/products/{{product_id}}/debit-stock
+Content-Type: {{contentType}}
+Authorization: {{bearer_token}}
+
+{
+  "debitQuantity": 5
+}
+
+### Replenish Product Stock
+POST {{gateway_api}}/api/v1/catalogs/products/{{product_id}}/replenish-stock
+Content-Type: {{contentType}}
+Authorization: {{bearer_token}}
+
+{
+  "debitQuantity": 10
+}
+
+### Product Views
+
+### Get Products View
+GET {{gateway_api}}/api/v1/catalogs/products/products-view/10/1
+Accept: {{contentType}}
+Authorization: {{bearer_token}}

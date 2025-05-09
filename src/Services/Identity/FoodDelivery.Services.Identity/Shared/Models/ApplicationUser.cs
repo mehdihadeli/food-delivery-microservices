@@ -14,6 +14,8 @@ public class ApplicationUser : IdentityUser<Guid>
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = default!;
     public virtual ICollection<AccessToken> AccessTokens { get; set; } = default!;
     public virtual ICollection<ApplicationUserRole> UserRoles { get; set; } = default!;
+
+    public virtual ICollection<ApplicationUserClaim> UserClaims { get; set; } = new List<ApplicationUserClaim>();
     public UserState UserState { get; set; }
     public DateTime CreatedAt { get; set; }
 }

@@ -1,0 +1,105 @@
+### Variables
+@host = http://localhost:8000
+@contentType = application/json
+@bearerToken = Bearer {{token}}
+
+### Get restock subscriptions
+GET {{host}}/api/v1/customers/restock-subscriptions?Email=test@example.com&PageSize=10&PageNumber=1
+Accept: {{contentType}}
+Authorization: {{bearerToken}}
+
+### Delete restock subscriptions by time
+DELETE {{host}}/api/v1/customers/restock-subscriptions
+Content-Type: {{contentType}}
+Authorization: {{bearerToken}}
+
+{
+  "from": "2023-01-01T00:00:00Z",
+  "to": "2023-12-31T23:59:59Z"
+}
+
+### Create restock subscription
+POST {{host}}/api/v1/customers/restock-subscriptions
+Content-Type: {{contentType}}
+Authorization: {{bearerToken}}
+
+{
+  "customerId": 12345,
+  "productId": 67890,
+  "email": "customer@example.com"
+}
+
+### Get restock subscription by subscription id
+GET {{host}}/api/v1/customers/restock-subscriptions/12345
+Accept: {{contentType}}
+Authorization: {{bearerToken}}
+
+### Get restock subscription by id
+GET {{host}}/api/v1/customers/restock-subscriptions/550e8400-e29b-41d4-a716-446655440000
+Accept: {{contentType}}
+Authorization: {{bearerToken}}
+
+### Delete restock subscription
+DELETE {{host}}/api/v1/customers/restock-subscriptions/12345
+Authorization: {{bearerToken}}
+
+### Update customer
+PUT {{host}}/api/v1/customers/12345
+Content-Type: {{contentType}}
+Authorization: {{bearerToken}}
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "phoneNumber": "+1234567890"
+}
+
+### Get customer by id
+GET {{host}}/api/v1/customers/550e8400-e29b-41d4-a716-446655440000
+Accept: {{contentType}}
+Authorization: {{bearerToken}}
+
+### Get customers
+GET {{host}}/api/v1/customers?PageSize=10&PageNumber=1
+Accept: {{contentType}}
+Authorization: {{bearerToken}}
+
+### Create customer
+POST {{host}}/api/v1/customers
+Content-Type: {{contentType}}
+Authorization: {{bearerToken}}
+
+{
+  "email": "new.customer@example.com"
+}
+
+### Get customer by customer id
+GET {{host}}/api/v1/customers/12345
+Accept: {{contentType}}
+Authorization: {{bearerToken}}
+
+### Authentication Examples (based on your sample)
+
+### implicit-flow-client
+# GET {{keycloakAddress}}/realms/food-delivery-microservices/protocol/openid-connect/auth?
+#   client_id=implicit-flow-client&redirect_uri=http://localhost:3000&response_type=token&
+#   scope=basic%20email%20profile%20roles&
+#   state={{STATE}}
+# 
+# > {%
+#   client.global.set("token", response.body.access_token);
+# %}
+
+### client-credentials-flow
+# POST {{keycloakAddress}}/realms/food-delivery-microservices/protocol/openid-connect/token
+# Content-Type: application/x-www-form-urlencoded
+# 
+# client_id=customers-service-client&
+# client_secret={{CUSTOMERS_SERVICE_CLIENT_SECRET}}&
+# grant_type=client_credentials&
+# scope=customers-service-scope
+# 
+# > {%
+#   client.global.set("token", response.body.access_token);
+# %}

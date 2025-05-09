@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Security.Claims;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Security;
 using BuildingBlocks.Security.Jwt;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
@@ -67,12 +68,12 @@ public class GenerateJwtTokenHandler(
         appUser.NotBeNull();
 
         var userClaims = (await userManager.GetClaimsAsync(appUser))
-            .Where(x => x.Type != CustomClaimTypes.Permission)
+            .Where(x => x.Type != ClaimsType.Permission)
             .ToList();
         var roles = await userManager.GetRolesAsync(appUser);
 
         var permissions = (await userManager.GetClaimsAsync(appUser))
-            .Where(x => x.Type == CustomClaimTypes.Permission)
+            .Where(x => x.Type == ClaimsType.Permission)
             ?.Select(x => x.Value)
             .ToList();
 

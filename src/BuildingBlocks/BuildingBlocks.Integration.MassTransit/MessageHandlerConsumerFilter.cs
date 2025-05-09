@@ -24,7 +24,7 @@ public class MessageHandlerConsumerFilter<T>(
                     context.CorrelationId ?? context.Headers.GetConversationId() ?? Guid.NewGuid()
                 );
 
-        // message broker deliver message just to one of consumer based on round-robin algorithm.
+        // message broker deliver message just to one of consumer based on round-robin algorithm so we don't need distribted lock.
         await messagePersistenceService
             .AddReceivedMessageAsync<T>(
                 messageEnvelope,

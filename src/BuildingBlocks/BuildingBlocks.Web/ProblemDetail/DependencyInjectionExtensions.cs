@@ -32,7 +32,7 @@ public static class DependencyInjectionExtensions
         );
         if (useExceptionHandler)
         {
-            services.ReplaceSingleton<IProblemDetailsService, ProblemDetailsService>();
+            services.AddSingleton<IProblemDetailsService, ProblemDetailsService>();
             services.AddSingleton<IProblemDetailsWriter, ProblemDetailsWriter>();
         }
         else

@@ -20,9 +20,6 @@ internal static class IdentityConfigurations
 
     internal static WebApplicationBuilder AddIdentityModuleServices(this WebApplicationBuilder builder)
     {
-        if (builder.Environment.IsTest() == false)
-            builder.AddCustomIdentityServer();
-
         return builder;
     }
 
@@ -41,7 +38,7 @@ internal static class IdentityConfigurations
         // create a new subgroup for v1 version
         var identityGroupV1 = identityVersionGroup.MapGroup(IdentityPrefixUri).HasApiVersion(1.0);
 
-        // create a new subgroup for v2 version
+        // create a new subgroup for v2 version/
         var identityGroupV2 = identityVersionGroup.MapGroup(IdentityPrefixUri).HasApiVersion(2.0);
 
         identityGroupV1

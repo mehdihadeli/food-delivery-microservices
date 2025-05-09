@@ -2,6 +2,7 @@ using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using Cassandra.Mapping;
+using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -14,7 +15,7 @@ internal static class ReplenishProductStockEndpoint
     {
         return endpoints
             .MapPost("/{productId}/replenish-stock", Handle)
-            .RequireAuthorization()
+            .RequireAuthorization(policyNames: [Permissions.CatalogsWrite])
             .WithTags(ProductsConfigurations.Tag)
             .WithName(nameof(ReplenishProductStock))
             .WithDisplayName(nameof(ReplenishProductStock).Humanize())

@@ -47,8 +47,6 @@ public static class DependencyInjectionExtensions
                         DegradedUtilizationPercentage = 80,
                         UnhealthyUtilizationPercentage = 90,
                     };
-
-                    o.SamplingWindow = TimeSpan.FromSeconds(5);
                 });
 
             healthChecksBuilder?.Invoke(healCheckBuilder);
@@ -57,9 +55,13 @@ public static class DependencyInjectionExtensions
                 .Services.AddHealthChecksUI(setup =>
                 {
                     setup.SetEvaluationTimeInSeconds(60); // time in seconds between check
+
                     setup.AddHealthCheckEndpoint("All Checks", "/healthz");
+
                     setup.AddHealthCheckEndpoint("Infra", "/health/infra");
+
                     setup.AddHealthCheckEndpoint("Bus", "/health/bus");
+
                     setup.AddHealthCheckEndpoint("Database", "/health/database");
 
                     setup.AddHealthCheckEndpoint("Downstream Services", "/health/downstream-services");

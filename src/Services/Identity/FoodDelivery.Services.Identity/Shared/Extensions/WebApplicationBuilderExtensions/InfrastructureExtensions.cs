@@ -2,6 +2,7 @@ using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviors;
 using BuildingBlocks.Core.Diagnostics.Behaviors;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
 using BuildingBlocks.Core.Messages;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Web.Extensions;
@@ -20,9 +21,12 @@ using BuildingBlocks.Validation.Extensions;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Extensions.WebApplicationBuilderExtensions;
 using BuildingBlocks.Web.RateLimit;
+using FoodDelivery.Services.Identity.Shared.Data;
+using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users;
 using FoodDelivery.Services.Shared.Identity.Users;
 using Mediator;
+using Microsoft.AspNetCore.Identity;
 using RabbitMQ.Client;
 
 namespace FoodDelivery.Services.Identity.Shared.Extensions.WebApplicationBuilderExtensions;
@@ -32,6 +36,11 @@ public static partial class WebApplicationBuilderExtensions
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
         builder.AddAppProblemDetails();
+
+        builder.Services.AddAuthentication();
+
+        // for identity server ui
+        builder.Services.AddRazorPages();
 
         // https://github.com/martinothamar/Mediator
         // if we have mediator we should register it before AddCore, otherwise it uses NullMediator
@@ -44,7 +53,7 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCore();
 
         var serilogOptions = builder.Configuration.BindOptions<SerilogOptions>(nameof(SerilogOptions));
-        if (serilogOptions.Enabled && (builder.Environment.IsDevelopment() || builder.Environment.IsTest()))
+        if (serilogOptions.Enabled)
         {
             // - for production, we use OpenTelemetry
             // - we can use serilog to send logs to opentemetry with using`writeToProviders` and `builder.SeilogLogging.AddOpenTelemetry` to write logs event to `ILoggerProviders` which use by opentelemtry and .net default logging use it,
@@ -108,15 +117,6 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.AddCustomResiliency(false);
 
-        builder.Services.AddCustomJwtAuthentication(builder.Configuration);
-        builder.Services.AddCustomAuthorization(
-            rolePolicies: new List<RolePolicy>
-            {
-                new(IdentityConstants.Role.Admin, new List<string> { IdentityConstants.Role.Admin }),
-                new(IdentityConstants.Role.User, new List<string> { IdentityConstants.Role.User }),
-            }
-        );
-
         builder.AddCustomCaching();
 
         builder.Services.AddEmailService(builder.Configuration);
@@ -143,7 +143,12 @@ public static partial class WebApplicationBuilderExtensions
 
         builder.Services.AddCustomValidators(typeof(IdentityMetadata).Assembly);
 
-        builder.Services.AddPostgresMessagePersistence(builder.Configuration);
+        builder.Services.AddPostgresMessagePersistence();
+
+        builder.AddCustomIdentity();
+
+        if (builder.Environment.IsTest() == false)
+            builder.AddCustomIdentityServer();
 
         return builder;
     }

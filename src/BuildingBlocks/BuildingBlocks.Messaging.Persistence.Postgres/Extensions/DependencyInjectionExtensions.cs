@@ -14,13 +14,12 @@ public static class DependencyInjectionExtensions
 {
     public static void AddPostgresMessagePersistence(
         this IServiceCollection services,
-        IConfiguration configuration,
         Action<MessagePersistenceOptions>? configurator = null
     )
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-        // add option to the dependency injection
+        // add an option to the dependency injection
         services.AddValidationOptions(configurator: configurator);
 
         services.TryAddScoped<IMessagePersistenceConnectionFactory>(sp =>
@@ -50,6 +49,7 @@ public static class DependencyInjectionExtensions
             }
         );
 
+        // replace the default in-memory message persistence repository with the postgres one
         services.Replace(
             ServiceDescriptor.Scoped<IMessagePersistenceRepository, PostgresMessagePersistenceRepository>()
         );

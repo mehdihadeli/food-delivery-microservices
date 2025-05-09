@@ -1,0 +1,50 @@
+### 1. Get Authorization Code (Implicit Flow)
+# @name auth
+GET https://localhost:7001/connect/authorize?
+    client_id=spa&
+    redirect_uri=https://localhost:5001/signin-oidc&
+    response_type=token&
+    scope=catalogs:read catalogs:write&
+    state=xyz&
+    nonce=abc
+    # Follow redirect in browser to authenticate
+
+
+
+### 2. Extract Token from Redirect URL (Manual Step)
+# After authentication, extract the access_token from the redirect URL fragment
+# Example redirect URL will look like:
+# https://localhost:5001/signin-oidc#access_token=eyJhbGci...&token_type=Bearer&expires_in=3600&scope=openid%20profile%20basic%20roles%20gateway%20catalogs:read%20catalogs:write&state=xyz&session_state=abc123
+
+### 3. Set Environment Variables
+@token = eyJhbGciOiJSUzI1NiIsImtpZCI6IjA2Nz...  # Paste your actual token here
+
+### 4. Test Gateway API with Token
+GET https://localhost:5002/api/protected
+Authorization: Bearer {{token}}
+
+### 5. Test Catalog Read Access
+GET https://localhost:5002/api/catalog/items
+Authorization: Bearer {{token}}
+
+### 6. Test Catalog Write Access
+POST https://localhost:5002/api/catalog/items
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "New Item",
+  "description": "Test item"
+}
+
+### 7. Decode Token (for debugging)
+GET https://localhost:7001/connect/userinfo
+Authorization: Bearer {{token}}
+
+### 8. Refresh Token (if using hybrid flow)
+POST https://localhost:7001/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=refresh_token&
+refresh_token=your_refresh_token&
+client_id=spa

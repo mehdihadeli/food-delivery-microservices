@@ -43,9 +43,10 @@ builder.Services.TryAddSingleton<RevokeAccessTokenMiddleware>();
 
 builder.AddAspnetOpenApi(["v1", "v2"]);
 
-builder.AddInfrastructure();
-
+// first add for adding IdentityDBContext which is used by identity server
 builder.AddIdentityServices();
+
+builder.AddInfrastructure();
 
 builder.AddCustomVersioning();
 

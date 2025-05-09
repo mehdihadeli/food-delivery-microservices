@@ -27,10 +27,12 @@
     <PackageReference Include="Duende.BFF.Yarp" />
     <PackageReference Include="Microsoft.AspNetCore.HeaderPropagation" />
     <PackageReference Include="Yarp.ReverseProxy" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Observability\BuildingBlocks.Observability.csproj" />
+    <ProjectReference Include="..\..\Services\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" />
   </ItemGroup>
 
 </Project>

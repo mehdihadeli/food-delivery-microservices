@@ -2,6 +2,7 @@ using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
+using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -15,7 +16,7 @@ internal static class GetProductByIdEndpoint
         // return app.MapQueryEndpoint<GetProductByIdRequestParameters, GetProductByIdResponse, GetProductById,
         //         GetProductByIdResult>("/{id}")
         return app.MapGet("/{id}", Handle)
-            // .RequireAuthorization()
+            .RequireAuthorization(policyNames: [Permissions.CatalogsRead])
             .WithTags(ProductsConfigurations.Tag)
             .WithName(nameof(GetProductById))
             .WithDisplayName(nameof(GetProductById).Humanize())

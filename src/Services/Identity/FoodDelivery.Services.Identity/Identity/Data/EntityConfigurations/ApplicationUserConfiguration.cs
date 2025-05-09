@@ -25,6 +25,8 @@ internal class ApplicationUserConfiguration : IEntityTypeConfiguration<Applicati
             .HasDefaultValue(UserState.Active)
             .HasConversion(x => x.ToString(), x => (UserState)Enum.Parse(typeof(UserState), x));
 
+        builder.HasMany(u => u.UserClaims).WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
+
         builder.HasIndex(x => x.Email).IsUnique();
         builder.HasIndex(x => x.NormalizedEmail).IsUnique();
 

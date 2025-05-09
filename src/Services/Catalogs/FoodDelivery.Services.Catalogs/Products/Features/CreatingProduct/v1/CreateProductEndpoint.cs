@@ -1,15 +1,14 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.ProblemDetail.HttpResults;
-using Cassandra.Mapping;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Suppliers;
+using FoodDelivery.Services.Shared;
 using Humanizer;
-using Mediator;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1;
@@ -33,7 +32,7 @@ internal static class CreateProductEndpoint
         return endpoints
             .MapPost("/", Handle)
             .WithTags(ProductsConfigurations.Tag)
-            .RequireAuthorization()
+            .RequireAuthorization(policyNames: [Permissions.CatalogsWrite])
             .WithName(nameof(CreateProduct))
             .WithDisplayName(nameof(CreateProduct).Humanize())
             .WithSummary(nameof(CreateProduct).Humanize())

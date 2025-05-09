@@ -1,4 +1,6 @@
-﻿namespace FoodDelivery.ApiGateway.TestShared;
+﻿using Xunit;
+
+namespace FoodDelivery.ApiGateway.TestShared;
 
 public class UnitTest1
 {

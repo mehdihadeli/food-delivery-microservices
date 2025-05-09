@@ -10,6 +10,7 @@ using BuildingBlocks.Core.Web.Extensions;
 using Humanizer;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -76,6 +77,16 @@ public static class DependencyInjectionExtensions
             busRegistrationConfigurator.UsingRabbitMq(
                 (context, cfg) =>
                 {
+                    // retry failure in consumers 3 times by using an inbox-pattern for Transient failures(e.g. database timeout, temporary lock), and using dead-letter-queue for Permanent failures(e.g. invalid message, logical bug) and prevent redelivering forever.
+                    cfg.UseMessageRetry(r =>
+                                        {
+                                            r.Exponential(
+                                                3,
+                                                TimeSpan.FromSeconds(1),
+                                                TimeSpan.FromSeconds(60),
+                                                TimeSpan.FromSeconds(5));
+                                        });
+                    
                     // https: // github.com/MassTransit/MassTransit/issues/2018
                     // https://github.com/MassTransit/MassTransit/issues/4831
                     cfg.Publish<IIntegrationEvent>(p => p.Exclude = true);
@@ -148,8 +159,8 @@ public static class DependencyInjectionExtensions
             });
 
         // will override default null messaging types - we should not use `TryAddTransient` to replace null types
-        builder.Services.AddTransient<IExternalEventBus, MassTransitBus>();
-        builder.Services.AddTransient<IBusDirectPublisher, MasstransitDirectPublisher>();
+        builder.Services.Replace(ServiceDescriptor.Transient<IExternalEventBus, MassTransitBus>());
+        builder.Services.Replace(ServiceDescriptor.Transient<IBusDirectPublisher, MasstransitDirectPublisher>());
 
         return builder;
     }
@@ -246,8 +257,12 @@ public static class DependencyInjectionExtensions
                 // https://github.com/MassTransit/MassTransit/discussions/3117
                 // https://masstransit-project.com/usage/configuration.html#receive-endpoints
                 re.ConfigureConsumer(context, consumerType);
-
+                
                 re.RethrowFaultedMessages();
+                
+                // Set up dead-letter queue by adding arguments
+                re.SetQueueArgument("x-dead-letter-exchange", $"{messageType.Name.Underscore()}_dead_letter_exchange");
+                re.SetQueueArgument("x-dead-letter-routing-key", messageType.Name.Underscore());
             }
         );
     }

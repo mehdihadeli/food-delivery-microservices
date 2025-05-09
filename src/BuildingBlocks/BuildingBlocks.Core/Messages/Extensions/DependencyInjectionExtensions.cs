@@ -41,9 +41,7 @@ public static class DependencyInjectionExtensions
 
     private static void AddInMemoryMessagePersistence(this IServiceCollection services)
     {
-        services.Replace(
-            ServiceDescriptor.Scoped<IMessagePersistenceRepository, InMemoryMessagePersistenceRepository>()
-        );
+        services.AddScoped<IMessagePersistenceRepository, InMemoryMessagePersistenceRepository>();
     }
 
     private static void AddMessageHandler(IServiceCollection services, Assembly[] assemblies)

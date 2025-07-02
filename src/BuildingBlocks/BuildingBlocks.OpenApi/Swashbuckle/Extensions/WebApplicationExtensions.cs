@@ -1,4 +1,6 @@
+using BuildingBlocks.Core.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 using Scalar.AspNetCore;
 
 namespace BuildingBlocks.OpenApi.Swashbuckle.Extensions;
@@ -9,37 +11,34 @@ public static class WebApplicationExtensions
     {
         app.UseSwagger();
 
+        if (OpenApiOptions.IsOpenApiBuild || app.Environment.IsBuild())
+            Environment.Exit(0);
+
+        if (!app.Environment.IsDevelopment())
+            return app;
+
+        var descriptions = app.DescribeApiVersions();
+
+        // Add swagger ui
         app.UseSwaggerUI(options =>
         {
-            var descriptions = app.DescribeApiVersions();
-
             // build a swagger endpoint for each discovered API version
             foreach (var description in descriptions)
             {
-                var openApiUrl = $"/swagger/{description.GroupName}/swagger.json";
+                var openApiUrl = $"/openapi/{description.GroupName}.json";
                 var name = description.GroupName.ToUpperInvariant();
                 options.SwaggerEndpoint(openApiUrl, name);
             }
         });
 
         // Add scalar ui
-        app.MapScalarApiReference(redocOptions =>
+        app.MapScalarApiReference(scalarOptions =>
         {
-            redocOptions.WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json");
+            scalarOptions.WithOpenApiRoutePattern("/openapi/{documentName}.json");
+            scalarOptions.Theme = ScalarTheme.BluePlanet;
+            // Disable default fonts to avoid download unnecessary fonts
+            scalarOptions.DefaultFonts = false;
         });
-
-        var descriptions = app.DescribeApiVersions();
-        foreach (var description in descriptions)
-        {
-            var openApiUrl = $"/swagger/{description.GroupName}/swagger.json";
-
-            // Add Redoc ui
-            app.UseReDoc(redocOptions =>
-            {
-                redocOptions.RoutePrefix = $"redoc/{description.GroupName}";
-                redocOptions.SpecUrl(openApiUrl);
-            });
-        }
 
         return app;
     }

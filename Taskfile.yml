@@ -1,0 +1,95 @@
+version: '3'
+
+tasks:
+  prepare:
+    desc: "Install Husky and .NET tools"
+    cmds:
+      - husky install
+      - dotnet tool restore
+
+  install-dev-cert:
+    desc: "Install dev cert (Bash)"
+    cmds:
+      - curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg
+
+  upgrade-packages:
+    desc: "Upgrade .NET packages"
+    cmds:
+      - dotnet outdated -u
+
+  check-format:
+    desc: "Check formatting in path (default: .)"
+    cmds:
+      - dotnet csharpier {{.CLI_ARGS }} --check
+
+  check-style:
+    desc: "Check style in .csproj files"
+    vars:
+      PATH:
+        sh: echo "${PATH:-.}"
+    cmds:
+      - find {{.PATH}} -name "*.csproj" -exec $(DOTNET) format style {} --verify-no-changes --severity error --verbosity diagnostic \;
+
+  check-analyzers:
+    desc: "Check C# analyzer rules (no fixes)"
+    cmds:
+      - find {{.PATH}} -name "*.csproj" -exec $(DOTNET) format analyzers {} --verify-no-changes --severity error --verbosity diagnostic \;
+
+  # --- Auto-Fix Commands (with Git staging) ---
+  fix-format:
+    desc: "Fix formatting with CSharpier and stage changes"
+    cmds:
+      - dotnet csharpier .
+      - git add -A .
+
+  fix-style:
+    desc: "Fix style rules (error level) and stage changes"
+    cmds:
+      - dotnet format style --severity error --verbosity diagnostic
+      - git add -A .
+
+  fix-style-warn:
+    desc: "Fix style rules (warn level)"
+    cmds:
+      - dotnet format style --severity warn --verbosity diagnostic
+
+  fix-style-info:
+    desc: "Fix style rules (info level)"
+    cmds:
+      - dotnet format style --severity info --verbosity diagnostic
+
+  fix-analyzers:
+    desc: "Fix analyzer rules (error level) and stage changes"
+    cmds:
+      - dotnet format analyzers --severity error --verbosity diagnostic
+      - git add -A .
+
+  fix-analyzers-warn:
+    desc: "Fix analyzer rules (warn level)"
+    cmds:
+      - dotnet format analyzers --severity warn --verbosity diagnostic
+
+  fix-analyzers-info:
+    desc: "Fix analyzer rules (info level)"
+    cmds:
+      - dotnet format analyzers --severity info --verbosity diagnostic
+        
+  check-all:
+    desc: Run all validation checks
+    cmds:
+      - task: check-format
+      - task: check-style
+      - task: check-analyzers
+
+  fix-all:
+    desc: Run all fixes
+    cmds:
+      - task: fix-format
+      - task: fix-style
+      - task: fix-analyzers
+
+  pre-commit:
+    desc: Combined pre-commit tasks
+    cmds:
+      - task: fix-all
+      - task: check-all

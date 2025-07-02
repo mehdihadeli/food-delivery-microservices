@@ -2,7 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
-    <ProjectReference Include="..\BuildingBlocks.Observability\BuildingBlocks.Observability.csproj" />
+    <ProjectReference Include="..\BuildingBlocks.OpenTelemetry\BuildingBlocks.OpenTelemetry.csproj" />
     <ProjectReference Include="..\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
   </ItemGroup>
 

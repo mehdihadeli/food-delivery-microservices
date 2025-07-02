@@ -35,7 +35,7 @@ public static class DependencyInjectionExtensions
     {
         services.TryAddScoped<IMessagePersistenceService, MessagePersistenceService>();
         services.AddHostedService<MessagePersistenceBackgroundService>();
-        services.AddValidatedOptions<MessagePersistenceOptions>();
+        services.AddValidationOptions<MessagePersistenceOptions>();
         services.AddInMemoryMessagePersistence();
     }
 

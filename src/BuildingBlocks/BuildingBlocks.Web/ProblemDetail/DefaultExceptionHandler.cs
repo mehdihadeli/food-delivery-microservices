@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using BuildingBlocks.Abstractions.Web.Problem;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -12,7 +13,7 @@ namespace BuildingBlocks.Web.ProblemDetail;
 public class DefaultExceptionHandler(
     ILogger<DefaultExceptionHandler> logger,
     IWebHostEnvironment webHostEnvironment,
-    IList<IProblemDetailMapper>? problemDetailMappers
+    IEnumerable<IProblemDetailMapper>? problemDetailMappers
 ) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
@@ -21,7 +22,15 @@ public class DefaultExceptionHandler(
         CancellationToken cancellationToken
     )
     {
-        logger.LogError(exception, "An unexpected error occurred");
+        var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
+
+        logger.LogError(
+            exception,
+            "[{Handler}] Could not process a request on machine {MachineName}. TraceId: {TraceId}",
+            nameof(DefaultExceptionHandler),
+            Environment.MachineName,
+            traceId
+        );
 
         int statusCode = 0;
 
@@ -40,15 +49,28 @@ public class DefaultExceptionHandler(
         httpContext.Response.StatusCode = statusCode == 0 ? httpContext.Response.StatusCode : statusCode;
 
         await httpContext.Response.WriteAsJsonAsync(
-            PopulateNewProblemDetail(statusCode, httpContext, exception),
+            PopulateNewProblemDetail(statusCode, httpContext, exception, traceId),
             cancellationToken: cancellationToken
         );
 
         return true;
     }
 
-    private ProblemDetails PopulateNewProblemDetail(int code, HttpContext httpContext, Exception exception)
+    private ProblemDetails PopulateNewProblemDetail(
+        int code,
+        HttpContext httpContext,
+        Exception exception,
+        string traceId
+    )
     {
+        var extensions = new Dictionary<string, object?> { { "traceId", traceId } };
+
+        // Add stackTrace in development mode for debugging purposes
+        if (webHostEnvironment.IsDevelopment())
+        {
+            extensions["stackTrace"] = exception.StackTrace;
+        }
+
         // type will fill automatically by .net core
         var problem = TypedResults
             .Problem(
@@ -56,19 +78,9 @@ public class DefaultExceptionHandler(
                 detail: exception.Message,
                 title: exception.GetType().Name,
                 instance: $"{httpContext.Request.Method} {httpContext.Request.Path}",
-                extensions: webHostEnvironment.IsDevelopment()
-                    ? new Dictionary<string, object?> { { "stackTrace", exception.StackTrace } }
-                    : null
+                extensions: extensions
             )
             .ProblemDetails;
-        // var problem = new ProblemDetails
-        // 			  {
-        // 				  Type = exception.GetType().Name,
-        // 				  Title = exception.GetType().Name,
-        // 				  Detail = exception.Message,
-        // 				  Status = code,
-        // 				  Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}",
-        // 			  };
 
         return problem;
     }

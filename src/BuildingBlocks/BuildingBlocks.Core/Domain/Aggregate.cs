@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Domain.Exceptions;
+using BuildingBlocks.Core.Exception;
 
 namespace BuildingBlocks.Core.Domain;
 

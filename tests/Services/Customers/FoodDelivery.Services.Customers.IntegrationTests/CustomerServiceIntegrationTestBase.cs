@@ -1,3 +1,4 @@
+using BuildingBlocks.Persistence.EfCore.Postgres;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Rest;
@@ -52,6 +53,10 @@ public class CustomerServiceIntegrationTestBase(
 
     protected override void OverrideInMemoryConfig(IDictionary<string, string> keyValues)
     {
+        keyValues.Add(
+            $"{nameof(PostgresOptions)}:{nameof(PostgresOptions.ConnectionString)}",
+            SharedFixture.PostgresContainerFixture.ConnectionString
+        );
         keyValues.Add(
             $"{nameof(IdentityRestClientOptions)}:{nameof(IdentityRestClientOptions.BaseAddress)}",
             SharedFixture.WireMockServerUrl

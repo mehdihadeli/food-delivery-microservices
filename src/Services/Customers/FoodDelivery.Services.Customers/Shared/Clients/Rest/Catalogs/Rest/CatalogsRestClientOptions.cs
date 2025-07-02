@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Resiliency.Options;
+using BuildingBlocks.Resiliency.Options;
 
 namespace FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
 

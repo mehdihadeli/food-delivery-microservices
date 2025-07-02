@@ -5,6 +5,20 @@ namespace BuildingBlocks.Core.Diagnostics;
 /// </summary>
 public static class TelemetryTags
 {
+    // Fallback value
+    private static string _instrumentationName = "default-instrumentation";
+
+    /// <summary>
+    /// Method to configure the InstrumentationName for each microservice.
+    /// Should be called during startup.
+    /// </summary>
+    /// <param name="instrumentationName">Unique name for the service.</param>
+    public static void Configure(string instrumentationName)
+    {
+        if (!string.IsNullOrEmpty(instrumentationName))
+            _instrumentationName = instrumentationName;
+    }
+
     // https://opentelemetry.io/docs/specs/semconv/general/trace/
     // https://opentelemetry.io/docs/specs/semconv/general/attribute-naming/
     public static class Tracing
@@ -191,13 +205,13 @@ public static class TelemetryTags
 
         public static class Application
         {
-            public static string AppService = $"{DiagnosticsConstant.ApplicationInstrumentationName}.appservice";
-            public static string Consumer = $"{DiagnosticsConstant.ApplicationInstrumentationName}.consumer";
-            public static string Producer = $"{DiagnosticsConstant.ApplicationInstrumentationName}.producer";
+            public static string AppService = $"{_instrumentationName}.appservice";
+            public static string Consumer = $"{_instrumentationName}.consumer";
+            public static string Producer = $"{_instrumentationName}.producer";
 
             public static class Commands
             {
-                public static string Command = $"{DiagnosticsConstant.ApplicationInstrumentationName}.command";
+                public static string Command = $"{_instrumentationName}.command";
                 public static string CommandType = $"{Command}.type";
                 public static string CommandHandler = $"{Command}.handler";
                 public static string CommandHandlerType = $"{CommandHandler}.type";
@@ -205,7 +219,7 @@ public static class TelemetryTags
 
             public static class Queries
             {
-                public static string Query = $"{DiagnosticsConstant.ApplicationInstrumentationName}.query";
+                public static string Query = $"{_instrumentationName}.query";
                 public static string QueryType = $"{Query}.type";
                 public static string QueryHandler = $"{Query}.handler";
                 public static string QueryHandlerType = $"{QueryHandler}.type";
@@ -213,7 +227,7 @@ public static class TelemetryTags
 
             public static class Events
             {
-                public static string Event = $"{DiagnosticsConstant.ApplicationInstrumentationName}.event";
+                public static string Event = $"{_instrumentationName}.event";
                 public static string EventType = $"{Event}.type";
                 public static string EventHandler = $"{Event}.handler";
                 public static string EventHandlerType = $"{EventHandler}.type";
@@ -227,13 +241,13 @@ public static class TelemetryTags
     {
         public static class Application
         {
-            public static string AppService = $"{DiagnosticsConstant.ApplicationInstrumentationName}.appservice";
-            public static string Consumer = $"{DiagnosticsConstant.ApplicationInstrumentationName}.consumer";
-            public static string Producer = $"{DiagnosticsConstant.ApplicationInstrumentationName}.producer";
+            public static string AppService = $"{_instrumentationName}.appservice";
+            public static string Consumer = $"{_instrumentationName}.consumer";
+            public static string Producer = $"{_instrumentationName}.producer";
 
             public static class Commands
             {
-                public static string Command = $"{DiagnosticsConstant.ApplicationInstrumentationName}.command";
+                public static string Command = $"{_instrumentationName}.command";
                 public static string CommandType = $"{Command}.type";
                 public static string CommandHandler = $"{Command}.handler";
                 public static string SuccessCount = $"{CommandHandler}.success.count";
@@ -245,7 +259,7 @@ public static class TelemetryTags
 
             public static class Queries
             {
-                public static string Query = $"{DiagnosticsConstant.ApplicationInstrumentationName}.query";
+                public static string Query = $"{_instrumentationName}.query";
                 public static string QueryType = $"{Query}.type";
                 public static string QueryHandler = $"{Query}.handler";
                 public static string SuccessCount = $"{QueryHandler}.success.count";
@@ -257,7 +271,7 @@ public static class TelemetryTags
 
             public static class Events
             {
-                public static string Event = $"{DiagnosticsConstant.ApplicationInstrumentationName}.event";
+                public static string Event = $"{_instrumentationName}.event";
                 public static string EventType = $"{Event}.type";
                 public static string EventHandler = $"{Event}.handler";
                 public static string SuccessCount = $"{EventHandler}.success.count";

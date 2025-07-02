@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+.Toastify__toast {
+  @apply font-sans text-sm rounded-lg shadow-lg;
+}
+.Toastify__toast--error {
+  @apply bg-red-100 text-red-800;
+}
+.Toastify__toast--success {
+  @apply bg-green-100 text-green-800;
+}

@@ -12,7 +12,7 @@ public class UserRegisteredConsumer(ICommandBus commandBus, IServiceProvider ser
     public async Task Consume(ConsumeContext<UserRegisteredV1> context)
     {
         var userRegistered = context.Message;
-        if (userRegistered.Roles is null || !userRegistered.Roles.Contains(Role.User))
+        if (userRegistered.Roles is null || !userRegistered.Roles.Contains(Authorization.Roles.User))
             return;
 
         await commandBus.SendAsync(new CreateCustomer(userRegistered.Email));

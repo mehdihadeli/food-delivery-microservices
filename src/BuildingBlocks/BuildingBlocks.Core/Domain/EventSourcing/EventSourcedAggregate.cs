@@ -4,6 +4,7 @@ using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Domain.Exceptions;
+using BuildingBlocks.Core.Exception;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Types.Extensions;
 

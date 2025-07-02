@@ -5,6 +5,7 @@ using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
+using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Identity.Users;
 using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Mediator;
@@ -52,7 +53,7 @@ public class UpdateUserStateHandler(
             return Unit.Value;
         }
 
-        if (await userManager.IsInRoleAsync(identityUser, IdentityConstants.Role.Admin))
+        if (await userManager.IsInRoleAsync(identityUser, Authorization.Roles.Admin))
         {
             throw new UserStateCannotBeChangedException(request.State, request.UserId);
         }

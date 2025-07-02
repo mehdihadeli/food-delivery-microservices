@@ -4,21 +4,15 @@
     <IsPublishable>true</IsPublishable>
   </PropertyGroup>
 
-  <!-- https://learn.microsoft.com/en-us/dotnet/core/docker/publish-as-container -->
-  <!-- https://laurentkempe.com/2022/11/14/dotnet-7-sdk-built-in-container-support-and-ubuntu-chiseled/ -->
-  <!-- https://devblogs.microsoft.com/dotnet/announcing-builtin-container-support-for-the-dotnet-sdk/ -->
-  <!-- https://www.mytechramblings.com/posts/trying-out-the-built-in-container-support-for-the-dotnet-7-sdk/ -->
   <PropertyGroup>
-    <ContainerImageName>catalogs</ContainerImageName>
-    <ContainerImageTag>dev</ContainerImageTag>
-    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:latest</ContainerBaseImage>
+    <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)</OpenApiDocumentsDirectory>
   </PropertyGroup>
   
-<!--  <ItemGroup>-->
-<!--    <ContainerEnvironmentVariable Include="ASPNETCORE_ENVIRONMENT" Value="docker" />-->
-<!--  </ItemGroup>-->
-
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Condition="'$(Configuration)' == 'Release'">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\FoodDelivery.Services.Catalogs\FoodDelivery.Services.Catalogs.csproj" />
   </ItemGroup>

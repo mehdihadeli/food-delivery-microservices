@@ -1,5 +1,6 @@
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Core.Domain.Exceptions;
+using BuildingBlocks.Core.Exception;
 
 namespace BuildingBlocks.Core.Domain;
 

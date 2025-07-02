@@ -1,6 +1,7 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Identity.Users;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -13,7 +14,7 @@ internal static class UpdateUserStateEndpoint
     {
         return endpoints
             .MapPut("/{userId:guid}/state", Handle)
-            .AllowAnonymous()
+            .RequireAuthorization(policyNames: [Authorization.ClientPermissions.UserWrite])
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses?#typedresults-vs-results
             // .Produces<RegisterUserResponse>(StatusCodes.Status204NoContent)
             // .ProducesProblem(StatusCodes.Status404NotFound)

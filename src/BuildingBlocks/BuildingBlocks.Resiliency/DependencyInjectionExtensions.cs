@@ -1,31 +1,38 @@
 using System.Net;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Resiliency.Options;
-using Microsoft.AspNetCore.Builder;
+using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
+using BuildingBlocks.Resiliency.Options;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Retry;
+using Polly.Timeout;
+using Polly.Wrap;
 
 namespace BuildingBlocks.Resiliency;
 
 public static class DependencyInjectionExtensions
 {
-    public static WebApplicationBuilder AddCustomResiliency(
-        this WebApplicationBuilder builder,
+    public static IHostApplicationBuilder AddCustomResiliency(
+        this IHostApplicationBuilder builder,
         bool globalHttpClientResiliency = true
     )
     {
+        AddResiliencyCore(builder);
+
         if (globalHttpClientResiliency)
         {
             // https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience
             // set resiliency globally on clients
-            builder.Services.ConfigureHttpClientDefaults(httpClientBuilder =>
+            builder.Services.ConfigureHttpClientDefaults(http =>
             {
-                // add a default ResilienceHandler with `AddResilienceHandler` "standard" as name of handler
-                httpClientBuilder
-                    .AddStandardResilienceHandler()
+                // Turn on service discovery by default
+                http.AddServiceDiscovery();
+
+                // Turn on resilience by default
+                http.AddStandardResilienceHandler()
                     .Configure(
                         (cfg, sp) =>
                         {
@@ -268,5 +275,78 @@ public static class DependencyInjectionExtensions
         );
 
         return httpClientBuilder;
+    }
+
+    private static void AddResiliencyCore(IHostApplicationBuilder builder)
+    {
+        builder.Services.AddValidationOptions<PolicyOptions>();
+        var policyOptions = builder.Configuration.BindOptions<PolicyOptions>();
+
+        // `AsyncPolicyWrap<HttpResponseMessage>` can be injected in clients and can be reused.
+        builder.Services.AddSingleton<AsyncPolicyWrap<HttpResponseMessage>>(sp =>
+        {
+            // Retry policy: Do not retry on 404 Not Found
+            var retryPolicy = Policy
+                .Handle<HttpRequestException>(ex => ex.StatusCode != HttpStatusCode.NotFound) // Exclude 404
+                .OrResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode && r.StatusCode != HttpStatusCode.NotFound) // Exclude 404
+                .RetryAsync(policyOptions.RetryPolicyOptions.Count);
+
+            // HttpClient itself will still enforce its own timeout, which is 100 seconds by default. To fix this issue, you need to set the HttpClient.Timeout property to match or exceed the timeout configured in Polly's policy.
+            var timeoutPolicy = Policy.TimeoutAsync(
+                policyOptions.TimeoutPolicyOptions.TimeoutInSeconds,
+                TimeoutStrategy.Pessimistic
+            );
+
+            // at any given time there will 3 parallel requests execution for specific service call and another 6 requests for other services can be in the queue. So that if the response from customer service is delayed or blocked then we don’t use too many resources
+            var bulkheadPolicy = Policy.BulkheadAsync<HttpResponseMessage>(3, 6);
+
+            // https://github.com/App-vNext/Polly#handing-return-values-and-policytresult
+            var circuitBreakerPolicy = Policy
+                .Handle<HttpRequestException>()
+                .OrResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
+                .CircuitBreakerAsync(
+                    policyOptions.RetryPolicyOptions.Count + 1,
+                    TimeSpan.FromSeconds(policyOptions.CircuitBreakerPolicyOptions.DurationOfBreak)
+                );
+
+            var combinedPolicy = Policy.WrapAsync(retryPolicy, circuitBreakerPolicy, bulkheadPolicy);
+
+            var finalPolicy = combinedPolicy.WrapAsync(timeoutPolicy);
+
+            return finalPolicy;
+        });
+
+        builder.Services.AddSingleton<AsyncPolicyWrap>(sp =>
+        {
+            // Retry policy
+            var retryPolicy = Policy
+                .Handle<HttpRequestException>(ex => ex.StatusCode != HttpStatusCode.NotFound) // Exclude 404
+                .RetryAsync(policyOptions.RetryPolicyOptions.Count);
+
+            // Timeout policy
+            var timeoutPolicy = Policy.TimeoutAsync(
+                policyOptions.TimeoutPolicyOptions.TimeoutInSeconds,
+                TimeoutStrategy.Pessimistic
+            );
+
+            // Bulkhead policy
+            var bulkheadPolicy = Policy.BulkheadAsync(3, 6);
+
+            // Circuit breaker policy
+            var circuitBreakerPolicy = Policy
+                .Handle<HttpRequestException>()
+                .CircuitBreakerAsync(
+                    policyOptions.CircuitBreakerPolicyOptions.ExceptionsAllowedBeforeBreaking,
+                    TimeSpan.FromSeconds(policyOptions.CircuitBreakerPolicyOptions.DurationOfBreak)
+                );
+
+            // Combine policies
+            // Combine policies
+            var combinedPolicy = Policy.WrapAsync(retryPolicy, circuitBreakerPolicy, bulkheadPolicy);
+
+            var finalPolicy = combinedPolicy.WrapAsync(timeoutPolicy);
+
+            return finalPolicy;
+        });
     }
 }

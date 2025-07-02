@@ -1,10 +1,6 @@
 using BuildingBlocks.Core.Persistence.EfCore;
-using FoodDelivery.Services.Catalogs.Brands;
-using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Models;
-using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Data;
-using FoodDelivery.Services.Catalogs.Suppliers;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -21,6 +17,7 @@ public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.Id).IsUnique();
 
+        // OwnsOne calling ValueObject private constructor, for skipping value object validation during ef core materialization process, this is not possible with using `builder.Property` because we can't call provate constructor directly and we should use `Of`.
         builder.OwnsOne(
             ci => ci.Name,
             a =>
@@ -34,7 +31,6 @@ public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
             ci => ci.ProductInformation,
             a =>
             {
-                a.Property(p => p.Title).IsRequired();
                 a.Property(p => p.Content).IsRequired();
             }
         );
@@ -43,7 +39,7 @@ public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
             ci => ci.Price,
             a =>
             {
-                // configuration just for  changing column name in db (instead of price_value)
+                // configuration just for changing column name in db (instead of price_value)
                 a.Property(p => p.Value)
                     .HasColumnType(EfConstants.ColumnTypes.PriceDecimal)
                     .HasColumnName(nameof(Product.Price).Underscore())

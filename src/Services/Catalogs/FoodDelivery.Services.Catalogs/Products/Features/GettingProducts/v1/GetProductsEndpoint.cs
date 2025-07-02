@@ -17,7 +17,7 @@ internal static class GetProductsEndpoint
         // return app.MapQueryEndpoint<GetProductsRequestParameters, GetProductsResponse, GetProducts,
         //         GetProductsResult>("/")
         return app.MapGet("/", Handle)
-            .RequireAuthorization(policyNames: [Permissions.CatalogsRead])
+            //.RequireAuthorization(policyNames: [Authorization.Policies.CatalogsReadPolicy])
             .WithTags(ProductsConfigurations.Tag)
             .WithName(nameof(GetProducts))
             .WithSummary(nameof(GetProducts).Humanize())
@@ -67,4 +67,4 @@ internal record GetProductsRequestParameters(
     string? SortOrder = null
 ) : IHttpQuery, IPageRequest;
 
-internal record GetProductsResponse(IPageList<ProductDto> Products);
+internal record GetProductsResponse(IPageList<ProductDto> ProductsPageList);

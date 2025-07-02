@@ -1,0 +1,113 @@
+@page "/customers"
+
+@using FoodDelivery.BlazorWebApp.Contracts
+@using FoodDelivery.BlazorWebApp.Dtos
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inject ICustomersServiceClient CustomersServiceClient
+
+<PageTitle>Customers</PageTitle>
+
+<h1 class="mb-4">🧑‍🤝‍🧑 Customers</h1>
+
+@if (isLoading)
+{
+    <div class="alert alert-info">Loading customers...</div>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+else if (customers.Count == 0)
+{
+    <div class="text-muted text-center">No customers found.</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var customer in customers)
+        {
+            <div class="col">
+                <div class="card h-100 shadow position-relative">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title mb-1">@customer.Name</h5>
+                        <div class="card-subtitle mb-2 text-muted">@customer.Email</div>
+                        <div class="mb-1">
+                            <span class="fw-bold text-primary">ID:</span> @customer.Id
+                        </div>
+                        <div class="small text-muted">
+                            <span class="fw-bold">Address:</span>
+                            <span>@customer.Address</span>
+                        </div>
+                    </div>
+                    <!-- Actions could go here if needed -->
+                </div>
+            </div>
+        }
+    </div>
+    <div class="mt-4 d-flex justify-content-center align-items-center gap-3">
+        <button class="btn btn-light" disabled="@(currentPage == 1)" @onclick="PrevPage">
+            Previous
+        </button>
+        <span>
+            Page @currentPage of @totalPages
+        </span>
+        <button class="btn btn-light" disabled="@(currentPage == totalPages)" @onclick="NextPage">
+            Next
+        </button>
+    </div>
+}
+
+@code {
+    private List<CustomersDto> customers = new();
+    private bool isLoading;
+    private string? errorMessage;
+    private int currentPage = 1, totalPages = 1, pageSize = 12;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomers();
+    }
+
+    private async Task LoadCustomers()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+
+            var resp = await CustomersServiceClient.GetCustomersAsync(currentPage, pageSize);
+            customers = resp.CustomersPageList?.Items?.ToList() ?? new List<CustomersDto>();
+            totalPages = resp.CustomersPageList?.TotalPages ?? 1;
+            currentPage = resp.CustomersPageList?.PageNumber ?? 1;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load customers: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task PrevPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await LoadCustomers();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await LoadCustomers();
+        }
+    }
+}

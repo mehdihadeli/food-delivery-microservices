@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Web.HeaderPropagation.Extensions;
+using BuildingBlocks.Core.Web.Extensions;
 using Microsoft.AspNetCore.HeaderPropagation;
 
 namespace BuildingBlocks.Core.Messages;

@@ -1,0 +1,14 @@
+@page "/login"
+@using FoodDelivery.BlazorWebApp.Contracts
+@using FoodDelivery.BlazorWebApp.Services
+@attribute [Microsoft.AspNetCore.Mvc.IgnoreAntiforgeryToken]
+
+@inject IAccountsService AccountsService
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var returnUrl = "/";
+        await AccountsService.Login(returnUrl);
+    }
+}

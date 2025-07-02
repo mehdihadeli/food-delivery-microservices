@@ -34,10 +34,9 @@ public abstract class EfDbContextBase(DbContextOptions options)
         var types = builder.Model.GetEntityTypes().Where(x => x.ClrType.IsAssignableTo(typeof(IHaveAggregateVersion)));
         foreach (var entityType in types)
         {
-            builder
-                .Entity(entityType.ClrType)
-                .Property(nameof(IHaveAggregateVersion.OriginalVersion))
-                .IsConcurrencyToken();
+            // https://learn.microsoft.com/en-us/aspnet/core/data/ef-rp/concurrency
+            // https://learn.microsoft.com/en-us/ef/core/saving/concurrency
+            builder.Entity(entityType.ClrType).Property(nameof(IHaveAggregateVersion.OriginalVersion)).IsRowVersion();
         }
     }
 

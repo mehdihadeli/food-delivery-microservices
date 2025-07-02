@@ -7,18 +7,7 @@
       "hotReloadProfile": "aspnetcore",
       "launchBrowser": true,
       "launchUrl": "",
-      "applicationUrl": "https://localhost:3010;http://localhost:3000",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "ApiGateway.Http": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "hotReloadProfile": "aspnetcore",
-      "launchBrowser": true,
-      "launchUrl": "",
-      "applicationUrl": "http://localhost:3000",
+      "applicationUrl": "https://localhost:3001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -31,16 +20,6 @@
       "hotReloadProfile": "aspnetcore",
       "commandLineArgs": "watch -lp ApiGateway.Http",
       "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-	  "ApiGateway.LiveRecompilation": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "",
-      "applicationUrl": "http://localhost:3000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

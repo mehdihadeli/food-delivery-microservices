@@ -4,7 +4,7 @@ using Elastic.Channels;
 using Elastic.Ingest.Elasticsearch;
 using Elastic.Ingest.Elasticsearch.DataStreams;
 using Elastic.Serilog.Sinks;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Exceptions;
@@ -17,8 +17,8 @@ namespace BuildingBlocks.SerilogLogging.Extensions;
 
 public static class DependencyInjectionExtensions
 {
-    public static WebApplicationBuilder AddCustomSerilog(
-        this WebApplicationBuilder builder,
+    public static IHostApplicationBuilder AddCustomSerilog(
+        this IHostApplicationBuilder builder,
         Action<LoggerConfiguration>? extraConfigure = null,
         Action<SerilogOptions>? configurator = null
     )

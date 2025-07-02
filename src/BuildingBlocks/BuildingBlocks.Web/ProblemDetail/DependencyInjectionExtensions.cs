@@ -1,7 +1,7 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Web.Problem;
-using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using Scrutor;
 
 namespace BuildingBlocks.Web.ProblemDetail;
@@ -9,8 +9,8 @@ namespace BuildingBlocks.Web.ProblemDetail;
 // https://www.strathweb.com/2022/08/problem-details-responses-everywhere-with-asp-net-core-and-net-7/
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddCustomProblemDetails(
-        this IServiceCollection services,
+    public static IHostApplicationBuilder AddCustomProblemDetails(
+        this IHostApplicationBuilder builder,
         Action<ProblemDetailsOptions>? configure = null,
         bool useExceptionHandler = true,
         params Assembly[] scanAssemblies
@@ -18,7 +18,7 @@ public static class DependencyInjectionExtensions
     {
         var assemblies = scanAssemblies.Length != 0 ? scanAssemblies : [Assembly.GetCallingAssembly()];
 
-        services.AddProblemDetails(options =>
+        builder.Services.AddProblemDetails(options =>
             options.CustomizeProblemDetails = ctx =>
             {
                 ctx.ProblemDetails.Extensions.Add("trace-id", ctx.HttpContext.TraceIdentifier);
@@ -32,17 +32,17 @@ public static class DependencyInjectionExtensions
         );
         if (useExceptionHandler)
         {
-            services.AddSingleton<IProblemDetailsService, ProblemDetailsService>();
-            services.AddSingleton<IProblemDetailsWriter, ProblemDetailsWriter>();
+            builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
         }
         else
         {
-            services.AddExceptionHandler<DefaultExceptionHandler>();
+            builder.Services.AddSingleton<IProblemDetailsService, ProblemDetailsService>();
+            builder.Services.AddSingleton<IProblemDetailsWriter, ProblemDetailsWriter>();
         }
 
-        RegisterAllMappers(services, assemblies);
+        RegisterAllMappers(builder.Services, assemblies);
 
-        return services;
+        return builder;
     }
 
     private static void RegisterAllMappers(IServiceCollection services, Assembly[] scanAssemblies)

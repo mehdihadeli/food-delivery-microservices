@@ -1,0 +1,12 @@
+@inject NavigationManager Navigation
+
+@rendermode InteractiveAuto
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
+}
+

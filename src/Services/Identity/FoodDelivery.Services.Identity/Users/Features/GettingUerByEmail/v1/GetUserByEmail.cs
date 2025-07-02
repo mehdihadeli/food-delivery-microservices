@@ -3,7 +3,6 @@ using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
-using FoodDelivery.Services.Identity.Shared.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using Microsoft.AspNetCore.Identity;
@@ -38,7 +37,7 @@ public class GetUserByEmailHandler(UserManager<ApplicationUser> userManager)
     {
         query.NotBeNull();
 
-        var identityUser = await userManager.FindUserWithRoleByEmailAsync(query.Email);
+        var identityUser = await userManager.FindByEmailAsync(query.Email);
         identityUser.NotBeNull(new IdentityUserNotFoundException(query.Email));
 
         var userDto = identityUser.ToIdentityUserDto();

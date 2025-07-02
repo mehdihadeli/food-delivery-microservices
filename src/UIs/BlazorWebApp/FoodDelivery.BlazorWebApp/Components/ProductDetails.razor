@@ -1,0 +1,71 @@
+@using FoodDelivery.BlazorWebApp.Dtos
+<div class="card shadow-lg mx-auto my-4 p-4" style="max-width: 600px;">
+    @if (Product != null)
+    {
+        <div class="row g-0">
+            <div class="col-md-4 d-flex align-items-center">
+                @if (Product.Images is not null && Product.Images.Count > 0)
+                {
+                    <img src="@Product.Images.First()" class="img-fluid rounded" alt="@Product.Name" />
+                }
+                else
+                {
+                    <div class="border rounded bg-light d-flex align-items-center justify-content-center" style="height:140px;width:140px;">
+                        <span class="fs-1 text-secondary">🍔</span>
+                    </div>
+                }
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h4 class="card-title">@Product.Name <span class="badge bg-secondary ms-2">@Product.CategoryName</span></h4>
+                    <h5 class="text-success mb-2">$@Product.Price.ToString("0.##")</h5>
+                    <p class="card-text">@Product.Description</p>
+                    <dl class="row">
+                        <dt class="col-4">Brand:</dt>
+                        <dd class="col-8">@Product.BrandName</dd>
+                        <dt class="col-4">Supplier:</dt>
+                        <dd class="col-8">@Product.SupplierName</dd>
+                        <dt class="col-4">Stock:</dt>
+                        <dd class="col-8">
+                            @Product.Stock
+                            @if (Product.Stock <= Product.RestockThreshold)
+                            {
+                                <span class="badge bg-warning text-dark ms-2">Low</span>
+                            }
+                        </dd>
+                        <dt class="col-4">Status:</dt>
+                        <dd class="col-8">
+                            @if (Product.Status == 1)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </dd>
+                        <dt class="col-4">Color:</dt>
+                        <dd class="col-8">@Product.ProductColor</dd>
+                        <dt class="col-4">Size:</dt>
+                        <dd class="col-8">@Product.Size</dd>
+                    </dl>
+                    <button class="btn btn-outline-secondary mt-3" @onclick="OnBackClicked">Back</button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">No data.</div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public ProductDto? Product { get; set; }
+    [Parameter] public EventCallback OnBack { get; set; }
+
+    private async Task OnBackClicked()
+    {
+        await OnBack.InvokeAsync();
+    }
+}

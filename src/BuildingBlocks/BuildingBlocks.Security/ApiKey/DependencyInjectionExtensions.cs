@@ -1,22 +1,23 @@
 using BuildingBlocks.Security.ApiKey.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace BuildingBlocks.Security.ApiKey;
 
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddCustomApiKeyAuthentication(this IServiceCollection services)
+    public static WebApplicationBuilder AddCustomApiKeyAuthentication(this WebApplicationBuilder builder)
     {
-        services
-            .AddAuthentication(options =>
+        builder
+            .Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = ApiKeyAuthenticationOptions.DefaultScheme;
                 options.DefaultChallengeScheme = ApiKeyAuthenticationOptions.DefaultScheme;
             })
             .AddApiKeySupport(options => { });
 
-        services.AddAuthorization(options =>
+        builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy(
                 Policies.OnlyCustomers,
@@ -29,12 +30,12 @@ public static class DependencyInjectionExtensions
             );
         });
 
-        services.TryAddSingleton<IAuthorizationHandler, OnlyCustomersAuthorizationHandler>();
-        services.TryAddSingleton<IAuthorizationHandler, OnlyAdminsAuthorizationHandler>();
-        services.TryAddSingleton<IAuthorizationHandler, OnlyThirdPartiesAuthorizationHandler>();
+        builder.Services.TryAddSingleton<IAuthorizationHandler, OnlyCustomersAuthorizationHandler>();
+        builder.Services.TryAddSingleton<IAuthorizationHandler, OnlyAdminsAuthorizationHandler>();
+        builder.Services.TryAddSingleton<IAuthorizationHandler, OnlyThirdPartiesAuthorizationHandler>();
 
-        services.TryAddSingleton<IGetApiKeyQuery, InMemoryGetApiKeyQuery>();
+        builder.Services.TryAddSingleton<IGetApiKeyQuery, InMemoryGetApiKeyQuery>();
 
-        return services;
+        return builder;
     }
 }

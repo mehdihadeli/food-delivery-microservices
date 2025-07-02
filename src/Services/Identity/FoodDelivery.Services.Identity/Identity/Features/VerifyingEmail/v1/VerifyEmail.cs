@@ -1,9 +1,10 @@
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Data;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
+using FoodDelivery.Services.Shared.Identity.Users;
 using Mediator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -31,38 +32,29 @@ public class VerifyEmailHandler(
 {
     public async ValueTask<Unit> Handle(VerifyEmail command, CancellationToken cancellationToken)
     {
-        command.NotBeNull();
-
         var user = await userManager.FindByEmailAsync(command.Email);
-        user.NotBeNull(new IdentityUserNotFoundException(command.Email));
-
-        if (user.EmailConfirmed)
+        if (user == null)
         {
-            throw new EmailAlreadyVerifiedException(user.Email!);
+            logger.LogWarning("Email verification failed: User with email {Email} not found", command.Email);
+            throw new BadRequestException("User not found");
         }
 
-        var emailVerificationCode = await dbContext
-            .Set<EmailVerificationCode>()
-            .Where(x => x.Email == command.Email && x.Code == command.Code && x.UsedAt == null)
-            .SingleOrDefaultAsync(cancellationToken: cancellationToken);
-
-        if (emailVerificationCode == null)
+        // Verify the email confirmation token
+        var result = await userManager.ConfirmEmailAsync(user, command.Code);
+        if (!result.Succeeded)
         {
-            throw new BadRequestException("Either email or code is incorrect.");
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            logger.LogWarning("Email verification failed for {Email}: {Errors}", command.Email, errors);
+            throw new BadRequestException($"Email verification failed: {errors}");
         }
 
-        if (DateTime.Now > emailVerificationCode.SentAt.AddMinutes(5))
-        {
-            throw new BadRequestException("The code is expired.");
-        }
-
+        // Optional: Update user state or other properties
         user.EmailConfirmed = true;
-        await userManager.UpdateAsync(user);
+        user.UserState = UserState.Active;
 
-        emailVerificationCode.UsedAt = DateTime.Now;
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation("Email verified successfully for userId:{UserId}", user.Id);
+        logger.LogInformation("Email {Email} successfully verified", command.Email);
 
         return Unit.Value;
     }

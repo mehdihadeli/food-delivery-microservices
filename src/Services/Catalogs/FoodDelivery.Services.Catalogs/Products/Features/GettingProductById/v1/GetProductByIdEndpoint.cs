@@ -16,7 +16,7 @@ internal static class GetProductByIdEndpoint
         // return app.MapQueryEndpoint<GetProductByIdRequestParameters, GetProductByIdResponse, GetProductById,
         //         GetProductByIdResult>("/{id}")
         return app.MapGet("/{id}", Handle)
-            .RequireAuthorization(policyNames: [Permissions.CatalogsRead])
+            .RequireAuthorization(policyNames: [Authorization.Policies.CatalogsReadPolicy])
             .WithTags(ProductsConfigurations.Tag)
             .WithName(nameof(GetProductById))
             .WithDisplayName(nameof(GetProductById).Humanize())

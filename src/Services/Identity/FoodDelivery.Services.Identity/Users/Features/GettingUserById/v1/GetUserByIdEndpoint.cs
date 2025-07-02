@@ -1,8 +1,8 @@
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.ProblemDetail.HttpResults;
-using Cassandra.Mapping;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
+using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -14,7 +14,7 @@ public static class GetUserByIdEndpoint
     {
         return endpoints
             .MapGet("/{userId:guid}", Handle)
-            .AllowAnonymous()
+            .RequireAuthorization(policyNames: [Authorization.ClientPermissions.UserRead])
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses?#typedresults-vs-results
             // .Produces<RegisterUserResponse>(StatusCodes.Status200OK)
             // .ProducesProblem(StatusCodes.Status404NotFound)

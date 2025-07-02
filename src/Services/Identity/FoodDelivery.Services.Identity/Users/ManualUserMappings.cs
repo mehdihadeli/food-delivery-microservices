@@ -18,8 +18,6 @@ public static class ManualUserMappings
             UserState = applicationUser.UserState,
             CreatedAt = applicationUser.CreatedAt,
             LastLoggedInAt = applicationUser.LastLoggedInAt,
-            RefreshTokens = applicationUser.RefreshTokens.Select(r => r.Token),
-            Roles = applicationUser.UserRoles.Where(m => m.Role != null).Select(q => q.Role!.Name),
         };
     }
 
@@ -36,8 +34,6 @@ public static class ManualUserMappings
             UserState = applicationUser.UserState,
             CreatedAt = applicationUser.CreatedAt,
             LastLoggedInAt = applicationUser.LastLoggedInAt,
-            RefreshTokens = applicationUser.RefreshTokens.Select(r => r.Token),
-            Roles = applicationUser.UserRoles.Where(m => m.Role != null).Select(q => q.Role!.Name),
         });
     }
 }

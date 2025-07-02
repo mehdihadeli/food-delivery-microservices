@@ -2,6 +2,7 @@ using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
 
@@ -44,7 +45,8 @@ public abstract class DbContextDesignFactoryBase<TDbContext>(string connectionSt
                 }
             )
             .UseSnakeCaseNamingConvention()
-            .ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector<long>>();
+            .ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector<long>>()
+            .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
 
         return (TDbContext)Activator.CreateInstance(typeof(TDbContext), optionsBuilder.Options);
     }

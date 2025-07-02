@@ -3,19 +3,7 @@
   "version": "1.0.0",
   "description": "food-delivery-microservices",
   "scripts": {
-    "prepare": "husky && dotnet tool restore",
-    "install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg",
-	"upgrade-packages": "dotnet outdated -u",
-    "format": "dotnet csharpier . --check",
-    "style": "dotnet format style --verify-no-changes --severity error --verbosity diagnostic",
-    "analyzers": "dotnet format analyzers --verify-no-changes --severity error --verbosity diagnostic",
-    "fix-csharpier-format": "dotnet csharpier . && git add -A .",
-    "fix-style": "dotnet format style --severity error --verbosity diagnostic  && git add -A .",
-    "fix-warn-style": "dotnet format style --severity warn --verbosity diagnostic",
-    "fix-info-style": "dotnet format style --severity info --verbosity diagnostic",
-    "fix-analyzers": "dotnet format analyzers --severity error --verbosity diagnostic  && git add -A .",
-    "fix-warn-analyzers": "dotnet format analyzers  --severity warn --verbosity diagnostic",
-    "fix-info-analyzers": "dotnet format analyzers  --severity info --verbosity diagnostic"
+    "prepare": "make prepare"
   },
   "repository": {
     "type": "git",

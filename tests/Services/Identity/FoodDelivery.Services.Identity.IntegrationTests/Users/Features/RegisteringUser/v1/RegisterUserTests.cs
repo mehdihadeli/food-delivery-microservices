@@ -3,6 +3,7 @@ using FluentAssertions;
 using FoodDelivery.Services.Identity.Api;
 using FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
 using FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
+using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Tests.Shared.Fixtures;
@@ -30,7 +31,9 @@ public class RegisterUserTests : IdentityServiceIntegrationTestBase
                 faker.Person.Email,
                 faker.Phone.PhoneNumber("(+##)##########"),
                 "123456",
-                "123456"
+                "123456",
+                [Authorization.Roles.User],
+                null
             ))
             .Generate();
     }

@@ -28,7 +28,7 @@ internal class DeleteRestockSubscriptionByTimeEndpoint
             // .Produces(StatusCodes.Status204NoContent)
             // .ProducesValidationProblem()
             // .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .RequireAuthorization(Role.Admin)
+            .RequireAuthorization(Authorization.Roles.Admin)
             .WithName(nameof(DeleteRestockSubscriptionsByTime))
             .WithName(nameof(DeleteRestockSubscriptionsByTime))
             .WithDisplayName(nameof(DeleteRestockSubscriptionsByTime).Humanize())

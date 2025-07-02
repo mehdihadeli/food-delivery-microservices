@@ -1,4 +1,4 @@
-namespace BuildingBlocks.Security.Jwt;
+namespace BuildingBlocks.Core.Security;
 
 public class JwtOptions
 {

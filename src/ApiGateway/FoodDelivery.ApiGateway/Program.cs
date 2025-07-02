@@ -1,10 +1,6 @@
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Security;
-using BuildingBlocks.Observability.Extensions;
-using BuildingBlocks.Security.Jwt;
-using FoodDelivery.Services.Shared;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using FoodDelivery.ApiGateway;
+using FoodDelivery.Services.Shared.Extensions;
 using Yarp.ReverseProxy.Transforms;
 using static BuildingBlocks.Core.Messages.MessageHeaders;
 
@@ -16,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/yarp/config-files
 builder
     .Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("yarp"))
+    .LoadFromConfig(builder.Configuration.GetSection("Yarp"))
     .AddTransforms(transforms =>
     {
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/yarp/transforms
@@ -57,57 +53,30 @@ builder
         });
     });
 
-builder.AddCore();
-builder.AddCustomObservability();
-
-builder.Services.AddHeaderPropagation(options =>
+builder.Services.AddCors(options =>
 {
-    options.Headers.Add(CorrelationId);
-    options.Headers.Add(CausationId);
-});
+    var corsOptions = builder.Configuration.BindOptions<CorsOptions>();
+    corsOptions.NotBeNull();
+    if (corsOptions.AllowedOrigins.Length == 0)
+        throw new InvalidOperationException("At least one origin must be configured in CorsOptions:AllowedOrigins");
 
-var jwtOptions = builder.Configuration.BindOptions<JwtOptions>();
-builder
-    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = jwtOptions.Authority;
-        options.Audience = jwtOptions.Audience;
-        options.RequireHttpsMetadata = true;
-
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = jwtOptions.ValidateIssuer,
-            ValidIssuers = jwtOptions.ValidIssuers,
-            ValidateAudience = jwtOptions.ValidateAudience,
-            ValidAudiences = jwtOptions.ValidAudiences,
-            ValidateLifetime = jwtOptions.ValidateLifetime,
-            ClockSkew = jwtOptions.ClockSkew,
-            // For IdentityServer4/Duende, we should also validate the signing key
-            ValidateIssuerSigningKey = true,
-            NameClaimType = "name", // Map "name" claim to User.Identity.Name
-            RoleClaimType = "role", // Map "role" claim to User.IsInRole()
-        };
-
-        // Preserve ALL claims from the token (including "sub")
-        options.MapInboundClaims = false;
-    });
-builder.Services.AddAuthorization(options =>
-{
     options.AddPolicy(
-        "GatewayAccess",
-        policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim(ClaimsType.Scope, Scopes.Gateway);
-            policy.RequireClaim(ClaimsType.Permission, Permissions.GatewayAccess);
-        }
+        "ReactApp",
+        policy => policy.WithOrigins(corsOptions.AllowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()
     );
 });
 
+builder.AddServiceDefaults();
+
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
-app.UseHeaderPropagation();
+app.MapDefaultEndpoints();
+
+// CORS must come before YARP
+app.UseCors("ReactApp");
 
 app.MapGet(
     "/",

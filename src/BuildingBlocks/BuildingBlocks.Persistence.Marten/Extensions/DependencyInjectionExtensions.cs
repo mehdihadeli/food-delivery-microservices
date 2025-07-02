@@ -56,7 +56,7 @@ public static class DependencyInjectionExtensions
                         {
                             new MartenEventsConsumer(
                                 sp.GetRequiredService<IInternalEventBus>(),
-                                sp.GetRequiredService<IDiagnosticsProvider>()
+                                sp.GetRequiredService<IActivityRunner>()
                             ),
                         },
                         sp.GetRequiredService<ILogger<MartenSubscription>>()

@@ -6,6 +6,7 @@ using Medallion.Threading;
 using Medallion.Threading.Redis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 
 namespace BuildingBlocks.Caching;
@@ -14,7 +15,7 @@ namespace BuildingBlocks.Caching;
 
 public static class DependencyInjectionExtensions
 {
-    public static WebApplicationBuilder AddCustomCaching(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddCustomCaching(this IHostApplicationBuilder builder)
     {
         builder.NotBeNull();
 

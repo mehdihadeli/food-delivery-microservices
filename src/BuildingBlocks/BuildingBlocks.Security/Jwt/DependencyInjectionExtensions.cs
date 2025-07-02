@@ -1,14 +1,17 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
+using BuildingBlocks.Core.Security;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BuildingBlocks.Security.Jwt;
@@ -16,7 +19,7 @@ namespace BuildingBlocks.Security.Jwt;
 public static class DependencyInjectionExtensions
 {
     public static AuthenticationBuilder AddCustomJwtAuthentication(
-        this IServiceCollection services,
+        this IHostApplicationBuilder builder,
         IConfiguration configuration,
         Action<JwtOptions>? configurator = null
     )
@@ -31,15 +34,16 @@ public static class DependencyInjectionExtensions
 
         var jwtOptions = configuration.BindOptions<JwtOptions>();
         configurator?.Invoke(jwtOptions);
+        builder.Services.AddValidationOptions<JwtOptions>();
 
-        services.TryAddTransient<IJwtService, JwtService>();
+        builder.Services.TryAddTransient<IJwtService, JwtService>();
 
         // https://docs.microsoft.com/en-us/aspnet/core/security/authentication
         // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-6.0#use-multiple-authentication-schemes
         // https://auth0.com/blog/whats-new-in-dotnet-7-for-authentication-and-authorization/
         // since .NET 7, the default scheme is no longer required, when we define just one authentication scheme and It is automatically inferred
-        return services
-            .AddAuthentication() // no default scheme specified
+        return builder
+            .Services.AddAuthentication() // no default scheme specified
             .AddJwtBearer(options =>
             {
                 //-- JwtBearerDefaults.AuthenticationScheme --
@@ -95,7 +99,7 @@ public static class DependencyInjectionExtensions
             });
     }
 
-    public static IServiceCollection AddCustomAuthorization(
+    public static IServiceCollection AddCustomJwtAuthorization(
         this IServiceCollection services,
         IList<ClaimPolicy>? claimPolicies = null,
         IList<RolePolicy>? rolePolicies = null,

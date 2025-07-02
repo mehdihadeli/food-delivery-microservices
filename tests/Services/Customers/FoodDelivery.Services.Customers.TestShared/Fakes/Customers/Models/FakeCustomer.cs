@@ -1,7 +1,7 @@
 using Bogus;
 using BuildingBlocks.Core.Domain.ValueObjects;
 using FoodDelivery.Services.Customers.Customers.Models;
-using FoodDelivery.Services.Customers.Customers.ValueObjects;
+using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 
 namespace FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models;
 

@@ -1,73 +1,57 @@
-using Microsoft.AspNetCore.Builder;
+using BuildingBlocks.Core.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
 namespace BuildingBlocks.HealthCheck;
 
 // https://dev.to/dbolotov/observability-with-grafana-cloud-and-opentelemetry-in-net-microservices-448c
-
+// https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/health-checks
+// https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/service-defaults
 public static class DependencyInjectionExtensions
 {
-    private static readonly string[] _defaultTags = ["live", "ready"];
+    private const string HealthChecks = nameof(HealthChecks);
 
-    public static WebApplicationBuilder AddCustomHealthCheck(
-        this WebApplicationBuilder builder,
-        Action<IHealthChecksBuilder>? healthChecksBuilder = null
-    )
+    public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
     {
-        if (builder.Environment.IsDevelopment())
-        {
-            // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/health-checks#non-development-environments
-            builder.Services.AddRequestTimeouts(configure: static timeouts =>
-                timeouts.AddPolicy("HealthChecks", TimeSpan.FromSeconds(5))
-            );
+        var healthCheckOptions = builder.Configuration.BindOptions<HealthCheckOptions>();
 
-            builder.Services.AddOutputCache(configureOptions: static caching =>
-                caching.AddPolicy("HealthChecks", build: static policy => policy.Expire(TimeSpan.FromSeconds(10)))
-            );
+        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/health-checks#non-development-environments
+        builder.Services.AddRequestTimeouts(configure: timeouts =>
+            timeouts.AddPolicy(HealthChecks, TimeSpan.FromSeconds(healthCheckOptions.RequestTimeoutSecond))
+        );
 
-            var healCheckBuilder = builder
-                .Services.AddHealthChecks()
-                // Add a default liveness check to ensure app is responsive
-                .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"])
-                .AddDiskStorageHealthCheck(_ => { }, tags: _defaultTags)
-                .AddPingHealthCheck(_ => { }, tags: _defaultTags)
-                .AddPrivateMemoryHealthCheck(512 * 1024 * 1024, tags: _defaultTags)
-                .AddDnsResolveHealthCheck(_ => { }, tags: _defaultTags)
-                .AddResourceUtilizationHealthCheck(o =>
+        builder.Services.AddOutputCache(configureOptions: caching =>
+            caching.AddPolicy(
+                HealthChecks,
+                build: policy => policy.Expire(TimeSpan.FromSeconds(healthCheckOptions.ExpireAfterSecond))
+            )
+        );
+
+        builder
+            .Services.AddHealthChecks()
+            // Add a default liveness check to ensure app is responsive
+            .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"])
+            .AddDiskStorageHealthCheck(_ => { }, tags: ["live"])
+            .AddPingHealthCheck(_ => { }, tags: ["live"])
+            .AddPrivateMemoryHealthCheck(512 * 1024 * 1024, tags: ["live"])
+            .AddDnsResolveHealthCheck(_ => { }, tags: ["live"])
+            .AddResourceUtilizationHealthCheck(o =>
+            {
+                o.CpuThresholds = new ResourceUsageThresholds
                 {
-                    o.CpuThresholds = new ResourceUsageThresholds
-                    {
-                        DegradedUtilizationPercentage = 80,
-                        UnhealthyUtilizationPercentage = 90,
-                    };
+                    DegradedUtilizationPercentage = 80,
+                    UnhealthyUtilizationPercentage = 90,
+                };
 
-                    o.MemoryThresholds = new ResourceUsageThresholds
-                    {
-                        DegradedUtilizationPercentage = 80,
-                        UnhealthyUtilizationPercentage = 90,
-                    };
-                });
-
-            healthChecksBuilder?.Invoke(healCheckBuilder);
-
-            builder
-                .Services.AddHealthChecksUI(setup =>
+                o.MemoryThresholds = new ResourceUsageThresholds
                 {
-                    setup.SetEvaluationTimeInSeconds(60); // time in seconds between check
+                    DegradedUtilizationPercentage = 80,
+                    UnhealthyUtilizationPercentage = 90,
+                };
+            });
 
-                    setup.AddHealthCheckEndpoint("All Checks", "/healthz");
-
-                    setup.AddHealthCheckEndpoint("Infra", "/health/infra");
-
-                    setup.AddHealthCheckEndpoint("Bus", "/health/bus");
-
-                    setup.AddHealthCheckEndpoint("Database", "/health/database");
-
-                    setup.AddHealthCheckEndpoint("Downstream Services", "/health/downstream-services");
-                })
-                .AddInMemoryStorage();
-        }
+        // https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/#healthcheckui
+        builder.Services.AddHealthChecksUI().AddInMemoryStorage();
 
         return builder;
     }

@@ -12,8 +12,9 @@ public class PostgresContainerFixture : IAsyncLifetime
 {
     private readonly IMessageSink _messageSink;
     public PostgresContainerOptions PostgresContainerOptions { get; }
-    public PostgreSqlContainer Container { get; }
-    public int HostPort => Container.GetMappedPublicPort(PostgreSqlBuilder.PostgreSqlPort);
+    public PostgreSqlContainer PostgresContainer { get; }
+    public int HostPort => PostgresContainer.GetMappedPublicPort(PostgreSqlBuilder.PostgreSqlPort);
+    public string ConnectionString => PostgresContainer.GetConnectionString();
     public int TcpContainerPort => PostgreSqlBuilder.PostgreSqlPort;
 
     public PostgresContainerFixture(IMessageSink messageSink)
@@ -28,12 +29,12 @@ public class PostgresContainerFixture : IAsyncLifetime
             .WithName(PostgresContainerOptions.Name)
             .WithImage(PostgresContainerOptions.ImageName);
 
-        Container = postgresContainerBuilder.Build();
+        PostgresContainer = postgresContainerBuilder.Build();
     }
 
     public async Task InitializeAsync()
     {
-        await Container.StartAsync();
+        await PostgresContainer.StartAsync();
         _messageSink.OnMessage(
             new DiagnosticMessage(
                 $"Postgres fixture started on Host port {HostPort} and container tcp port {TcpContainerPort}..."
@@ -45,7 +46,7 @@ public class PostgresContainerFixture : IAsyncLifetime
     {
         try
         {
-            await using var connection = new NpgsqlConnection(Container.GetConnectionString());
+            await using var connection = new NpgsqlConnection(PostgresContainer.GetConnectionString());
             await connection.OpenAsync(cancellationToken);
 
             var checkpoint = await Respawner.CreateAsync(
@@ -65,8 +66,8 @@ public class PostgresContainerFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await Container.StopAsync();
-        await Container.DisposeAsync(); //important for the event to cleanup to be fired!
+        await PostgresContainer.StopAsync();
+        await PostgresContainer.DisposeAsync(); //important for the event to cleanup to be fired!
         _messageSink.OnMessage(new DiagnosticMessage("Postgres fixture stopped."));
     }
 }

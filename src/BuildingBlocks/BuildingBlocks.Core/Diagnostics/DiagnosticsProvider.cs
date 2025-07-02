@@ -2,132 +2,66 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Reflection;
 using BuildingBlocks.Abstractions.Core.Diagnostics;
-using BuildingBlocks.Core.Diagnostics.Extensions;
+using BuildingBlocks.Core.Extensions;
 
 namespace BuildingBlocks.Core.Diagnostics;
 
-public class DiagnosticsProvider(IMeterFactory meterFactory) : IDiagnosticsProvider
+public class DiagnosticsProvider(IMeterFactory meterFactory, string instrumentationName) : IDiagnosticsProvider
 {
-    private readonly Version? _version = Assembly.GetCallingAssembly().GetName().Version;
+    private readonly string? _version = Assembly.GetCallingAssembly().GetName().Version?.ToString();
+    private readonly List<ActivityListener> _customListeners = new();
+
     private ActivitySource? _activitySource;
-    private ActivityListener? _listener;
     private Meter? _meter;
 
-    public string InstrumentationName { get; } = DiagnosticsConstant.ApplicationInstrumentationName;
+    public string InstrumentationName { get; } = instrumentationName.NotBeEmptyOrNull();
+    public ActivitySource ActivitySource => _activitySource ??= new ActivitySource(InstrumentationName, _version);
 
-    // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing-instrumentation-walkthroughs
-    // ActivitySource is like a tracer object for creating Activity (spans)
-    public ActivitySource ActivitySource
+    public Meter Meter => _meter ??= meterFactory.Create(InstrumentationName, _version);
+
+    public void AddCustomActivityListener(ActivityListener listener)
     {
-        get
+        ArgumentNullException.ThrowIfNull(listener);
+
+        _customListeners.Add(listener);
+
+        ActivitySource.AddActivityListener(listener);
+    }
+
+    public void AddEmptyListener()
+    {
+        var emptyListener = new ActivityListener
         {
-            if (_activitySource != null)
-                return _activitySource;
-
-            _activitySource = new(InstrumentationName, _version?.ToString());
-
-            _listener = new ActivityListener
+            // Listen to all sources
+            ShouldListenTo = source => true,
+            Sample = (ref ActivityCreationOptions<ActivityContext> options) =>
+                ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStarted = activity =>
             {
-                ShouldListenTo = x => true,
-                Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
-            };
-            ActivitySource.AddActivityListener(_listener);
+                activity.AddTag("service.name", InstrumentationName);
+                Console.WriteLine($"Activity Started: {activity}");
+            },
+            ActivityStopped = activity =>
+            {
+                activity.AddTag("service.name", InstrumentationName);
+                Console.WriteLine($"Activity Stopped: {activity}");
+            },
+        };
 
-            return _activitySource;
-        }
+        _customListeners.Add(emptyListener);
+
+        ActivitySource.AddActivityListener(emptyListener);
     }
 
-    // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics-instrumentation
-    public Meter Meter
-    {
-        get
-        {
-            if (_meter != null)
-                return _meter;
-
-            _meter = meterFactory.Create(InstrumentationName, _version?.ToString());
-
-            return _meter;
-        }
-    }
-
-    public async Task ExecuteActivityAsync(
-        CreateActivityInfo createActivityInfo,
-        Func<Activity?, CancellationToken, Task> action,
-        CancellationToken cancellationToken = default
-    )
-    {
-        if (_activitySource != null && !_activitySource.HasListeners())
-        {
-            await action(null, cancellationToken);
-
-            return;
-        }
-
-        using var activity =
-            ActivitySource
-                .CreateActivity(
-                    name: $"{InstrumentationName}.{createActivityInfo.Name}",
-                    kind: createActivityInfo.ActivityKind,
-                    parentContext: createActivityInfo.Parent ?? default,
-                    idFormat: ActivityIdFormat.W3C,
-                    tags: createActivityInfo.Tags
-                )
-                ?.Start() ?? Activity.Current;
-
-        try
-        {
-            await action(activity!, cancellationToken);
-            activity?.SetOkStatus();
-        }
-        catch (System.Exception ex)
-        {
-            activity?.SetErrorStatus(ex);
-            throw;
-        }
-    }
-
-    public async Task<TResult?> ExecuteActivityAsync<TResult>(
-        CreateActivityInfo createActivityInfo,
-        Func<Activity?, CancellationToken, Task<TResult>> action,
-        CancellationToken cancellationToken = default
-    )
-    {
-        if (_activitySource != null && !_activitySource.HasListeners())
-        {
-            return await action(null, cancellationToken);
-        }
-
-        using var activity =
-            ActivitySource
-                .CreateActivity(
-                    name: $"{InstrumentationName}.{createActivityInfo.Name}",
-                    kind: createActivityInfo.ActivityKind,
-                    parentContext: createActivityInfo.Parent ?? default,
-                    idFormat: ActivityIdFormat.W3C,
-                    tags: createActivityInfo.Tags
-                )
-                ?.Start() ?? Activity.Current;
-
-        try
-        {
-            var result = await action(activity!, cancellationToken);
-
-            activity?.SetOkStatus();
-
-            return result;
-        }
-        catch (System.Exception ex)
-        {
-            activity?.SetErrorStatus(ex);
-            throw;
-        }
-    }
-
+    // Dispose of all listeners and other resources
     public void Dispose()
     {
-        _listener?.Dispose();
-        _meter?.Dispose();
+        foreach (var listener in _customListeners)
+        {
+            listener.Dispose();
+        }
+
         _activitySource?.Dispose();
+        _meter?.Dispose();
     }
 }

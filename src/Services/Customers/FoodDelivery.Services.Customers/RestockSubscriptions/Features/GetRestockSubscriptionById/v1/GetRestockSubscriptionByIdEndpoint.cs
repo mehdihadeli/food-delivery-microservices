@@ -25,7 +25,7 @@ internal class GetRestockSubscriptionByIdEndpoint
     {
         return builder
             .MapGet("/{id:guid}", HandleAsync)
-            .RequireAuthorization(Role.Admin)
+            .RequireAuthorization(Authorization.Roles.Admin)
             // .Produces<GetRestockSubscriptionByIdResponse>(StatusCodes.Status200OK)
             // .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             // .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)

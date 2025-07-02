@@ -30,23 +30,8 @@ public static partial class ServiceCollectionExtensions
     public static IServiceCollection AddValidationOptions<T>(
         this IServiceCollection services,
         string? key = null,
-        Action<T>? configurator = null
-    )
-        where T : class
-    {
-        return AddValidatedOptions(
-            services,
-            key ?? typeof(T).Name,
-            RequiredConfigurationValidator.Validate,
-            configurator
-        );
-    }
-
-    public static IServiceCollection AddValidatedOptions<T>(
-        this IServiceCollection services,
-        string? key = null,
-        Func<T, bool>? validator = null,
-        Action<T>? configurator = null
+        Action<T>? configurator = null,
+        Func<T, bool>? validator = null
     )
         where T : class
     {

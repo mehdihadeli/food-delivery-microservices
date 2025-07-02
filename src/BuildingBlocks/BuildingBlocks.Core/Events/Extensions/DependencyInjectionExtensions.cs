@@ -30,13 +30,13 @@ internal static class DependencyInjectionExtensions
             scan.FromAssemblies(scanAssemblies)
                 .AddClasses(classes => classes.AssignableTo<IEventMapper>(), false)
                 .AsImplementedInterfaces()
-                .WithSingletonLifetime()
+                .WithScopedLifetime()
                 .AddClasses(classes => classes.AssignableTo<IIntegrationEventMapper>(), false)
                 .AsImplementedInterfaces()
-                .WithSingletonLifetime()
+                .WithScopedLifetime()
                 .AddClasses(classes => classes.AssignableTo<IDomainNotificationEventMapper>(), false)
                 .AsImplementedInterfaces()
-                .WithSingletonLifetime()
+                .WithScopedLifetime()
         );
     }
 }

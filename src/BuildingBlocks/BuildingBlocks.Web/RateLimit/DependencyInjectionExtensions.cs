@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Hosting;
 
 namespace BuildingBlocks.Web.RateLimit;
 
 public static class DependencyInjectionExtensions
 {
-    public static WebApplicationBuilder AddCustomRateLimit(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddCustomRateLimit(this IHostApplicationBuilder builder)
     {
         var rateLimitingOptions = builder.Configuration.BindOptions<RateLimitOptions>(nameof(RateLimitOptions));
 

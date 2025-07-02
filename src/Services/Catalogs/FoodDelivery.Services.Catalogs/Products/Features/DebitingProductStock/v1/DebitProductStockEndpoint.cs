@@ -15,7 +15,7 @@ public static class DebitProductStockEndpoint
     {
         return endpoints
             .MapPost("/{productId}/debit-stock", Handle)
-            .RequireAuthorization(policyNames: [Permissions.CatalogsWrite])
+            .RequireAuthorization(policyNames: [Authorization.Policies.CatalogsWritePolicy])
             .WithTags(ProductsConfigurations.Tag)
             .WithName(nameof(DebitProductStock))
             .WithDisplayName(nameof(DebitProductStock).Humanize())

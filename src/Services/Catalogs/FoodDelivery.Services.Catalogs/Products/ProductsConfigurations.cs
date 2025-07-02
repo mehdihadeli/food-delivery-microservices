@@ -5,23 +5,17 @@ using FoodDelivery.Services.Catalogs.Products.Features.GettingProducts.v1;
 using FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.v1;
 using FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1;
 using FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
-using FoodDelivery.Services.Catalogs.Shared;
 
 namespace FoodDelivery.Services.Catalogs.Products;
 
 internal static class ProductsConfigurations
 {
     public const string Tag = "Products";
-    public const string ProductsPrefixUri = $"{CatalogsConfigurations.CatalogModulePrefixUri}/products";
+    public const string ProductsPrefixUri = $"{ApplicationConfiguration.CatalogModulePrefixUri}/products";
 
     internal static WebApplicationBuilder AddProductsModuleServices(this WebApplicationBuilder builder)
     {
         return builder;
-    }
-
-    internal static WebApplication UseProductsModule(this WebApplication app)
-    {
-        return app;
     }
 
     internal static IEndpointRouteBuilder MapProductsModuleEndpoints(this IEndpointRouteBuilder endpoints)

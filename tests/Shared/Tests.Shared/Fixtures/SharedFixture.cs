@@ -161,12 +161,12 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         {
             keyValues.Add(
                 $"{nameof(PostgresOptions)}:{nameof(PostgresOptions.ConnectionString)}",
-                PostgresContainerFixture.Container.GetConnectionString()
+                PostgresContainerFixture.PostgresContainer.GetConnectionString()
             );
 
             keyValues.Add(
                 $"{nameof(MessagePersistenceOptions)}:{nameof(PostgresOptions.ConnectionString)}",
-                PostgresContainerFixture.Container.GetConnectionString()
+                PostgresContainerFixture.PostgresContainer.GetConnectionString()
             );
 
             keyValues.Add(

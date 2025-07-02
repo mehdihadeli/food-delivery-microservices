@@ -74,4 +74,4 @@ internal record GetCustomersRequestParameters(
     string? SortOrder = null
 ) : IHttpQuery, IPageRequest;
 
-internal record GetCustomersResponse(IPageList<CustomerReadDto> Customers);
+internal record GetCustomersResponse(IPageList<CustomerReadDto> CustomersPageList);

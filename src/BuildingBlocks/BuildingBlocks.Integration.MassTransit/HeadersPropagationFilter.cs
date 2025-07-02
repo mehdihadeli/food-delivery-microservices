@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Web.HeaderPropagation.Extensions;
+using BuildingBlocks.Core.Web.Extensions;
 using MassTransit;
 using Microsoft.AspNetCore.HeaderPropagation;
 using Microsoft.Extensions.Primitives;

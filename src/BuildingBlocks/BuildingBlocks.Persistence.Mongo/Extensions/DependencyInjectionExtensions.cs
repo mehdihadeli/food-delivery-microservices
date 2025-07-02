@@ -1,5 +1,8 @@
 using BuildingBlocks.Abstractions.Persistence.Mongo;
 using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -11,18 +14,18 @@ namespace BuildingBlocks.Persistence.Mongo.Extensions;
 
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddMongoDbContext<TContext>(this IServiceCollection services)
+    public static IHostApplicationBuilder AddMongoDbContext<TContext>(this IHostApplicationBuilder builder)
         where TContext : MongoDbContext, IMongoDbContext
     {
-        services.AddValidatedOptions<MongoOptions>(nameof(MongoOptions));
+        builder.Services.AddValidationOptions<MongoOptions>(nameof(MongoOptions));
 
-        services.AddSingleton<IMongoClient>(sp =>
+        builder.Services.AddSingleton<IMongoClient>(sp =>
         {
             var options = sp.GetRequiredService<IOptions<MongoOptions>>();
             return new MongoClient(options.Value.ConnectionString);
         });
 
-        services.AddSingleton<IMongoDatabase>(sp =>
+        builder.Services.AddSingleton<IMongoDatabase>(sp =>
         {
             var options = sp.GetRequiredService<IOptions<MongoOptions>>();
             var client = sp.GetRequiredService<IMongoClient>();
@@ -47,13 +50,23 @@ public static class DependencyInjectionExtensions
 
         RegisterConventions();
 
-        services.AddScoped(typeof(TContext));
-        services.AddScoped<IMongoDbContext>(sp => sp.GetRequiredService<TContext>());
+        builder.Services.AddScoped(typeof(TContext));
+        builder.Services.AddScoped<IMongoDbContext>(sp => sp.GetRequiredService<TContext>());
 
-        services.AddTransient(typeof(IMongoRepository<,>), typeof(MongoRepository<,>));
-        services.AddTransient(typeof(IMongoUnitOfWork<>), typeof(MongoUnitOfWork<>));
+        builder.Services.AddTransient(typeof(IMongoRepository<,>), typeof(MongoRepository<,>));
+        builder.Services.AddTransient(typeof(IMongoUnitOfWork<>), typeof(MongoUnitOfWork<>));
 
-        return services;
+        builder
+            .Services.AddHealthChecks()
+            .AddMongoDb(
+                dbFactory: sp => sp.GetRequiredService<IMongoDatabase>(),
+                name: "Mongo-Check",
+                failureStatus: HealthStatus.Unhealthy,
+                tags: ["live"],
+                timeout: TimeSpan.FromSeconds(5)
+            );
+
+        return builder;
     }
 
     private static void RegisterConventions()

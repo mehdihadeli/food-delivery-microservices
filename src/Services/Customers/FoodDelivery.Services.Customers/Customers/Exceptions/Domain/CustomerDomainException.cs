@@ -1,4 +1,5 @@
 using BuildingBlocks.Core.Domain.Exceptions;
+using BuildingBlocks.Core.Exception;
 
 namespace FoodDelivery.Services.Customers.Customers.Exceptions.Domain;
 

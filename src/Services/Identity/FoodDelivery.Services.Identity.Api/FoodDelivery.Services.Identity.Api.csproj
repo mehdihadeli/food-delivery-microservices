@@ -14,12 +14,16 @@
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:latest</ContainerBaseImage>
     <UserSecretsId>526a05d0-3da0-4d64-b60b-47482dd0cbc0</UserSecretsId>
   </PropertyGroup>
-<!--  <ItemGroup>-->
-<!--    <ContainerPort Include="80" Type="tcp" />-->
-<!--    <ContainerEnvironmentVariable Include="ASPNETCORE_ENVIRONMENT" Value="docker" />-->
-<!--  </ItemGroup>-->
+
+  <PropertyGroup>
+    <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)</OpenApiDocumentsDirectory>
+  </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Condition="'$(Configuration)' == 'Release'">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\FoodDelivery.Services.Identity\FoodDelivery.Services.Identity.csproj" />
   </ItemGroup>
@@ -104,7 +108,6 @@
     <_ContentIncludedByDefault Remove="Pages\Shared\_ValidationSummary.cshtml" />
     <_ContentIncludedByDefault Remove="Pages\_ViewImports.cshtml" />
     <_ContentIncludedByDefault Remove="Pages\_ViewStart.cshtml" />
-    <_ContentIncludedByDefault Remove="keys\is-signing-key-55A42E1CDEF3186378F0BA0BD088C648.json" />
   </ItemGroup>
 
 </Project>

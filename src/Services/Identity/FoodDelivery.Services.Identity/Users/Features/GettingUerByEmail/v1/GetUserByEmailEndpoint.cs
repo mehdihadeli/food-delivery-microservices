@@ -2,6 +2,7 @@ using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
+using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -15,7 +16,7 @@ public static class GetUserByEmailEndpoint
     {
         return endpoints
             .MapGet("/by-email/{email}", Handle)
-            .AllowAnonymous()
+            .RequireAuthorization(policyNames: [Authorization.ClientPermissions.UserRead])
             .WithTags(UsersConfigurations.Tag)
             .WithName(nameof(GetUserByEmail))
             .WithDisplayName(nameof(GetUserByEmail).Humanize())

@@ -15,7 +15,7 @@ internal static class ReplenishProductStockEndpoint
     {
         return endpoints
             .MapPost("/{productId}/replenish-stock", Handle)
-            .RequireAuthorization(policyNames: [Permissions.CatalogsWrite])
+            .RequireAuthorization(policyNames: [Authorization.Policies.CatalogsWritePolicy])
             .WithTags(ProductsConfigurations.Tag)
             .WithName(nameof(ReplenishProductStock))
             .WithDisplayName(nameof(ReplenishProductStock).Humanize())

@@ -13,6 +13,9 @@
     <File Path="pm2.yaml" />
     <File Path="readme.md" />
     <File Path="stylecop.json" />
+    <File Path="Taskfile.yml" />
+    <File Path=".justfile" />
+    <File Path="Makefile" />
   </Folder>
   <Folder Name="/solution-items/.config/">
     <File Path=".config/dotnet-tools.json" />
@@ -55,6 +58,36 @@
     <File Path=".vscode/tasks.json" />
   </Folder>
   <Folder Name="/solution-items/deployments/" />
+  <Folder Name="/solution-items/deployments/configs/">
+    <File Path="deployments\configs\dashboards.md" />
+    <File Path="deployments\configs\food-delivery-microservices-realm.json" />
+    <File Path="deployments\configs\init-postgres.sql" />
+    <File Path="deployments\configs\loki-config.yaml" />
+    <File Path="deployments\configs\otel-collector-config.yaml" />
+    <File Path="deployments\configs\prometheus.yaml" />
+    <File Path="deployments\configs\tempo.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/configs/grafana/" />
+  <Folder Name="/solution-items/deployments/configs/grafana/dashboards/">
+    <File Path="deployments\configs\grafana\dashboards\aspnet-core-dashboard.json" />
+    <File Path="deployments\configs\grafana\dashboards\aspnet-core-endpoints.json" />
+    <File Path="deployments\configs\grafana\dashboards\node-exporter.json" />
+    <File Path="deployments\configs\grafana\dashboards\postgresql.json" />
+    <File Path="deployments\configs\grafana\dashboards\rabbitmq.json" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/configs/grafana/provisioning/">
+    <File Path="deployments\configs\grafana\provisioning\my-config.yaml" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/configs/grafana/provisioning/dashboards/">
+    <File Path="deployments\configs\grafana\dashboards\aspnet-core-dashboard.json" />
+    <File Path="deployments\configs\grafana\dashboards\aspnet-core-endpoints.json" />
+    <File Path="deployments\configs\grafana\dashboards\node-exporter.json" />
+    <File Path="deployments\configs\grafana\dashboards\postgresql.json" />
+    <File Path="deployments\configs\grafana\dashboards\rabbitmq.json" />
+  </Folder>
+  <Folder Name="/solution-items/deployments/configs/grafana/provisioning/datasources/">
+    <File Path="deployments\configs\grafana\provisioning\datasources\datasource.yml" />
+  </Folder>
   <Folder Name="/solution-items/deployments/docker-compose/">
     <File Path="deployments/docker-compose/.env.catalogs.sample" />
     <File Path="deployments/docker-compose/.env.cutomers.sample" />
@@ -75,9 +108,6 @@
     <File Path="deployments/docker-compose/docker-compose.yaml" />
     <File Path="deployments/docker-compose/docker.txt" />
     <File Path="deployments/docker-compose/otel-collector-config.yaml" />
-  </Folder>
-  <Folder Name="/solution-items/deployments/docker-compose/monitoring/">
-    <File Path="deployments/docker-compose/monitoring/prometheus.yml" />
   </Folder>
   <Folder Name="/solution-items/deployments/k8s/" />
   <Folder Name="/solution-items/deployments/k8s/kubernetes/">
@@ -159,7 +189,6 @@
     <File Path="_httpclients\http-client.private.env.json" />
   </Folder>
   <Folder Name="/solution-items/_httpclients/catalogs/">
-    <File Path="_httpclients/catalogs/catalogs.rest" />
     <File Path="_httpclients\catalogs\catalogs.http" />
   </Folder>
   <Folder Name="/solution-items/_httpclients/customers/">
@@ -171,9 +200,6 @@
     <File Path="_httpclients\identity\identity.http" />
   </Folder>
   <Folder Name="/solution-items/_httpclients/orders/" />
-  <Folder Name="/solution-items/_httpclients/rabbitmq/">
-    <File Path="_httpclients/rabbitmq/rabbitmq.rest" />
-  </Folder>
   <Folder Name="/src/">
     <File Path="src/Directory.Build.props" />
     <File Path="src/Directory.Build.targets" />
@@ -185,6 +211,11 @@
     <File Path="src\ApiGateway\Dockerfile.dev" />
     <File Path="src\ApiGateway\watch.Dockerfile" />
   </Folder>
+  <Folder Name="/src/Bffs/">
+    <Project Path="src\Bffs\Mobile.Bff\FoodDelivery.Mobile.Bff\FoodDelivery.Mobile.Bff.csproj" Type="Classic C#" />
+    <Project Path="src\Bffs\Spa.Bff\FoodDelivery.Spa.Bff\FoodDelivery.Spa.Bff.csproj" Type="Classic C#" />
+    <Project Path="src\Bffs\WebApp.Bff\FoodDelivery.WebApp.Bff\FoodDelivery.WebApp.Bff.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Caching/BuildingBlocks.Caching.csproj" />
@@ -193,7 +224,6 @@
     <Project Path="src/BuildingBlocks/BuildingBlocks.HealthCheck/BuildingBlocks.HealthCheck.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Integration.MassTransit/BuildingBlocks.Integration.MassTransit.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/BuildingBlocks.Messaging.Persistence.Postgres.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Observability/BuildingBlocks.Observability.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.OpenApi/BuildingBlocks.OpenApi.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.EventStoreDB/BuildingBlocks.Persistence.EventStoreDB.csproj" />
@@ -205,6 +235,7 @@
     <Project Path="src/BuildingBlocks/BuildingBlocks.SerilogLogging/BuildingBlocks.SerilogLogging.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj" />
+    <Project Path="src\BuildingBlocks\BuildingBlocks.OpenTelemetry\BuildingBlocks.OpenTelemetry.csproj" />
     <File Path="src\BuildingBlocks\Directory.Build.props" />
   </Folder>
   <Folder Name="/src/Services/" />
@@ -283,6 +314,15 @@
   </Folder>
   <Folder Name="/src/Services/Shippings/">
     <Project Path="src/Services/Shippings/FoodDelivery.Services.Shippings.Api/FoodDelivery.Services.Shippings.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/UIs/" />
+  <Folder Name="/src/UIs/BlazorWebApp/">
+    <Project Path="src\UIs\BlazorWebApp\FoodDelivery.BlazorWebApp\FoodDelivery.BlazorWebApp.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/src/UIs/Spa/">
+    <Project Path="src\UIs\Spa\react-food-delivery\react-food-delivery.esproj" Type="{54A90642-561A-4BB1-A94E-469ADEE60C69}">
+      <Configuration Solution="Release|Any CPU" Project="Debug|Any CPU" />
+    </Project>
   </Folder>
   <Folder Name="/tests/">
     <File Path="tests/Directory.Build.props" />

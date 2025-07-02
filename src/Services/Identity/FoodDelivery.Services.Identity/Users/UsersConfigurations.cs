@@ -9,16 +9,11 @@ namespace FoodDelivery.Services.Identity.Users;
 internal static class UsersConfigurations
 {
     public const string Tag = "Users";
-    public const string UsersPrefixUri = $"{IdentityConfigurations.IdentityModulePrefixUri}/users";
+    public const string UsersPrefixUri = $"{ApplicationConfiguration.IdentityModulePrefixUri}/users";
 
     internal static WebApplicationBuilder AddUsersModuleServices(this WebApplicationBuilder builder)
     {
         return builder;
-    }
-
-    internal static WebApplication UseUsersModule(this WebApplication app)
-    {
-        return app;
     }
 
     public static IEndpointRouteBuilder MapUsersModuleEndpoints(this IEndpointRouteBuilder endpoints)

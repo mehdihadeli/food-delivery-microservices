@@ -30,7 +30,7 @@ internal class DeleteRestockSubscriptionEndpoint : IMinimalEndpoint
     {
         return builder
             .MapDelete("/{id}", HandleAsync)
-            .RequireAuthorization(Role.Admin)
+            .RequireAuthorization(Authorization.Roles.Admin)
             // .Produces(StatusCodes.Status204NoContent)
             // .ProducesValidationProblem()
             // .ProducesProblem(StatusCodes.Status401Unauthorized)

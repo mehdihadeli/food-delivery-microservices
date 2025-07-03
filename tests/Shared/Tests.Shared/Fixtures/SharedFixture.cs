@@ -14,6 +14,7 @@ using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Persistence.Mongo;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using FluentAssertions.Extensions;
 using MassTransit;
 using MassTransit.Testing;
@@ -124,19 +125,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         {
             // configure global AutoBogus settings here
             b.WithRecursiveDepth(3).WithTreeDepth(1).WithRepeatCount(1);
-        });
-
-        // close to equivalency required to reconcile precision differences between EF and Postgres
-        AssertionOptions.AssertEquivalencyUsing(options =>
-        {
-            options
-                .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1.Seconds()))
-                .WhenTypeIs<DateTime>();
-            options
-                .Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1.Seconds()))
-                .WhenTypeIs<DateTimeOffset>();
-
-            return options;
         });
 
         // new WireMockServer() is equivalent to call WireMockServer.Start()

@@ -47,7 +47,7 @@
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
-  <ItemGroup>
+ <ItemGroup>
     <PackageReference Include="Meziantou.Analyzer" Condition="$(MSBuildProjectExtension) == '.csproj'" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -78,7 +78,7 @@
     <PackageReference Include="GitVersion.MsBuild" PrivateAssets="all" Condition="'$(SkipVersion)' != 'true' AND $(MSBuildProjectExtension) == '.csproj'">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
+  </ItemGroup> 
 
   <ItemGroup>
     <Using Include="System.Linq"/>

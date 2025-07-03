@@ -53,6 +53,13 @@ jobs:
         shell: bash
         run: dotnet tool restore
 
+      - name: Run Analyzers Task
+        if: success()
+        shell: bash
+        run: |
+          echo "📂 Running analyzers for solution file: ${{ inputs.sln-path }}"
+          make check-analyzers ${{ inputs.sln-path }}
+
       - name: Run Format Task
         if: success()
         shell: bash
@@ -68,10 +75,3 @@ jobs:
         run: |
           echo "🎨 Checking style for solution file: ${{ inputs.sln-path }}"
           make check-style ${{ inputs.sln-path }}
-
-      - name: Run Analyzers Task
-        if: success()
-        shell: bash
-        run: |
-          echo "📂 Running analyzers for solution file: ${{ inputs.sln-path }}"
-          make check-analyzers ${{ inputs.sln-path }}

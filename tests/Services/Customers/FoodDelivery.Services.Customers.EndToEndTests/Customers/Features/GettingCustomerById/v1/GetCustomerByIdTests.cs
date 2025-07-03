@@ -126,7 +126,7 @@ public class GetCustomerByIdTests(
             .Satisfy<ProblemDetails>(pr =>
             {
                 pr.Detail.Should().Be($"CustomerReadModel with id '{notExistsId}' not found.");
-                pr.Title.Should().Be(nameof(CustomerNotFoundException).Humanize(LetterCasing.Title));
+                pr.Title.Should().Be(nameof(CustomerNotFoundException));
                 pr.Type.Should().Be("https://tools.ietf.org/html/rfc9110#section-15.5.5");
             })
             .And.Be404NotFound();
@@ -159,7 +159,7 @@ public class GetCustomerByIdTests(
             .Satisfy<ProblemDetails>(pr =>
             {
                 pr.Detail.Should().Contain("'Id' must not be empty.");
-                pr.Title.Should().Be(nameof(ValidationException).Humanize(LetterCasing.Title));
+                pr.Title.Should().Be(nameof(ValidationException));
                 pr.Type.Should().Be("https://tools.ietf.org/html/rfc9110#section-15.5.1");
             })
             .And.Be400BadRequest();

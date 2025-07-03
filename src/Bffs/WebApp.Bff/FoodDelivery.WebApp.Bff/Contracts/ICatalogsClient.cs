@@ -1,6 +1,3 @@
 namespace FoodDelivery.WebApp.Bff.Contracts;
 
-public interface ICatalogsClient
-{
-    
-}
+public interface ICatalogsClient { }

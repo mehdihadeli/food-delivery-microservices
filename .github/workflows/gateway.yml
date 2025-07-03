@@ -89,8 +89,6 @@ jobs:
     uses: ./.github/workflows/_pre-checks.yml
     needs: [call-detect-environment, call-semantic-version]
     with:
-      tests-path: ${{ vars.GATEWAY_SERVICE_TESTS_PATH }} # src/ApiGateway
-      project-path: ${{ vars.GATEWAY_SERVICE_PROJECT_PATH }} # src/ApiGateway
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
     secrets:
       ci-github-token: ${{ secrets.GITHUB_TOKEN }}

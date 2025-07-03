@@ -12,6 +12,15 @@
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
   </ItemGroup>
 
+  <!-- What xunit NuGet Packages Should I Use? - https://xunit.net/docs/nuget-packages-->
+  <ItemGroup>
+    <PackageReference Include="xunit" />
+    <!-- https://xunit.net/docs/nuget-packages#xunit.runner.visualstudio-->
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Meziantou.Extensions.Logging.InMemory" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
@@ -29,20 +38,10 @@
     <PackageReference Include="FluentAssertions.Web" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp" />
     <PackageReference Include="NSubstitute" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="AutoBogus" />
     <PackageReference Include="AutoBogus.NSubstitute" />
     <PackageReference Include="EasyNetQ.Management.Client" />
     <PackageReference Include="Hypothesist" />
-  </ItemGroup>
-
-
-  <!-- What xunit NuGet Packages Should I Use? - https://xunit.net/docs/nuget-packages-->
-  <ItemGroup>
-    <PackageReference Include="xunit" />
-    <!-- https://xunit.net/docs/nuget-packages#xunit.runner.visualstudio-->
-    <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
   </ItemGroup>
 
 </Project>

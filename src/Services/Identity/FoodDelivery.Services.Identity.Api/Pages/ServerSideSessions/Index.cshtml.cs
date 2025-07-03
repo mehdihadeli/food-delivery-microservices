@@ -42,14 +42,16 @@ public class IndexModel : PageModel
 
         if (_sessionManagementService != null)
         {
-            UserSessions = await _sessionManagementService.QuerySessionsAsync(new SessionQuery
-            {
-                ResultsToken = Token,
-                RequestPriorResults = Prev == "true",
-                DisplayName = DisplayNameFilter,
-                SessionId = SessionIdFilter,
-                SubjectId = SubjectIdFilter
-            });
+            UserSessions = await _sessionManagementService.QuerySessionsAsync(
+                new SessionQuery
+                {
+                    ResultsToken = Token,
+                    RequestPriorResults = Prev == "true",
+                    DisplayName = DisplayNameFilter,
+                    SessionId = SessionIdFilter,
+                    SubjectId = SubjectIdFilter,
+                }
+            );
         }
 
         return Page();
@@ -68,11 +70,18 @@ public class IndexModel : PageModel
 
         ArgumentNullException.ThrowIfNull(_sessionManagementService);
 
-        await _sessionManagementService.RemoveSessionsAsync(new RemoveSessionsContext
-        {
-            SessionId = SessionId,
-        });
+        await _sessionManagementService.RemoveSessionsAsync(new RemoveSessionsContext { SessionId = SessionId });
 
-        return RedirectToPage("/ServerSideSessions/Index", new { Token, DisplayNameFilter, SessionIdFilter, SubjectIdFilter, Prev });
+        return RedirectToPage(
+            "/ServerSideSessions/Index",
+            new
+            {
+                Token,
+                DisplayNameFilter,
+                SessionIdFilter,
+                SubjectIdFilter,
+                Prev,
+            }
+        );
     }
 }

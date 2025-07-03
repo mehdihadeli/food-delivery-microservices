@@ -2,14 +2,11 @@ name: Pre Checks
 on:
   workflow_call:
     inputs:
-      tests-path:
-        description: Tests path
-        required: true
-        type: string
-      project-path:
+      sln-path:
         description: Project path
         required: true
         type: string
+        default: "."
       dotnet-version:
         description: .Net Version
         required: true
@@ -62,26 +59,20 @@ jobs:
         shell: bash
         id: format
         run: |
-          echo "🧹 Checking format in folder: ${{ inputs.project-path }}"
-          make check-format ${{ inputs.project-path }}
-          echo "🧹 Checking format in folder: ${{ inputs.tests-path }}"
-          make check-format ${{ inputs.tests-path }}
+          echo "🧹 Checking format for solution file: ${{ inputs.sln-path }}"
+          make check-format ${{ inputs.sln-path }}
 
       - name: Run Style Task
         id: style
         shell: bash
         if: success()
         run: |
-          echo "🎨 Checking style in folder: ${{ inputs.project-path }}"
-          make check-style ${{ inputs.project-path }}
-          echo "🎨 Checking style in folder: ${{ inputs.tests-path }}"
-          make check-style ${{ inputs.tests-path }}
+          echo "🎨 Checking style for solution file: ${{ inputs.sln-path }}"
+          make check-style ${{ inputs.sln-path }}
 
       - name: Run Analyzers Task
         if: success()
         shell: bash
         run: |
-          echo "📂 Running analyzers in folder: ${{ inputs.project-path }}"
-          make check-analyzers ${{ inputs.project-path }}
-          echo "📂 Running analyzers in folder: ${{ inputs.tests-path }}"
-          make check-analyzers  ${{ inputs.tests-path }}
+          echo "📂 Running analyzers for solution file: ${{ inputs.sln-path }}"
+          make check-analyzers ${{ inputs.sln-path }}

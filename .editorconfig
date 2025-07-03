@@ -27,6 +27,7 @@ indent_size = 2
 # Indentation and spacing
 indent_size = 4
 tab_width = 4
+max_line_length = 120
 
 # New line preferences
 insert_final_newline = false
@@ -35,7 +36,7 @@ insert_final_newline = false
 [*.{cs,vb}]
 
 # Organize usings
-dotnet_separate_import_directive_groups = true
+dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = true
 file_header_template = unset
 

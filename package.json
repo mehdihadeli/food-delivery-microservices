@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "food-delivery-microservices",
   "scripts": {
-    "prepare": "make prepare"
+    "prepare": "npm install -g rust-just&&just prepare"
   },
   "repository": {
     "type": "git",

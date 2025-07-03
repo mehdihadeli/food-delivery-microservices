@@ -7,7 +7,5 @@ namespace FoodDelivery.Services.Identity.Api.Pages.Device;
 [Authorize]
 public class SuccessModel : PageModel
 {
-    public void OnGet()
-    {
-    }
+    public void OnGet() { }
 }

@@ -1,1 +1,2 @@
-task pre-commit
+# for fixing issues use 'just fix-all'
+just check-all

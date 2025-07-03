@@ -9,7 +9,6 @@ using BuildingBlocks.Core.Messages;
 
 namespace BuildingBlocks.Core.Persistence.EventStore;
 
-
 public abstract class AggregateStore(
     IEventStore eventStore,
     IAggregatesDomainEventsRequestStorage aggregatesDomainEventsStorage

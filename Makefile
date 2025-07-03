@@ -1,82 +1,86 @@
-# Makefile for food-delivery-microservices
+.PHONY: prepare install-dev-cert upgrade-packages check-format check-style check-analyzers \
+        fix-format fix-style fix-style-warn fix-style-info fix-analyzers fix-analyzers-warn \
+        fix-analyzers-info check-all fix-all help
 
-## Variables
-DOTNET := dotnet
+PROJECT_PATH ?= "."
 
-## --- Setup & Tools ---
-.PHONY: prepare
-prepare: ## Install Husky and .NET tools
-	husky install
-	$(DOTNET) tool restore
+# Install Husky and .NET tools
+prepare:
+	husky
+	dotnet tool restore
 
-.PHONY: install-dev-cert
-install-dev-cert: ## Install dev cert (Bash)
+# Install dev cert (Bash)
+install-dev-cert:
 	curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg
 
-.PHONY: upgrade-packages
-upgrade-packages: ## Upgrade .NET packages
-	$(DOTNET) outdated -u
+# Upgrade .NET packages
+upgrade-packages:
+	dotnet outdated -u
 
-## --- Dry-Run Checks (for CI/pre-commit) ---
-.PHONY: check-format
-check-format: ## Check C# formatting (CSharpier)
-	$(DOTNET) csharpier $(PROJECT_PATH) --check
+# Check C# formatting
+check-format:
+	dotnet csharpier $(PROJECT_PATH) --check
 
-.PHONY: check-style
-check-style: ## Check C# style rules (no fixes)
-	find $(PROJECT_PATH) -name "*.csproj" -exec $(DOTNET) format style {} --verify-no-changes --severity error --verbosity diagnostic \;
+# Check C# style rules
+check-style:
+	dotnet format style $(PROJECT_PATH) --verify-no-changes --severity error --verbosity diagnostic
 
-.PHONY: check-analyzers
-check-analyzers: ## Check C# analyzer rules (no fixes)
-	find $(PROJECT_PATH) -name "*.csproj" -exec $(DOTNET) format analyzers {} --verify-no-changes --severity error --verbosity diagnostic \;
+# Check C# analyzer rules
+check-analyzers:
+	dotnet format analyzers $(PROJECT_PATH) --verify-no-changes --severity error --verbosity diagnostic
 
-## --- Auto-Fix Commands (with Git staging) ---
-.PHONY: fix-format
-fix-format: ## Fix formatting with CSharpier and stage changes
-	$(DOTNET) csharpier .
-	git add -A .
+# Fix formatting and stage changes
+fix-format:
+	dotnet csharpier $(PROJECT_PATH)
 
-.PHONY: fix-style
-fix-style: ## Fix style rules (error level) and stage changes
-	$(DOTNET) format style --severity error --verbosity diagnostic
-	git add -A .
+# Fix style rules for all projects (error level)
+fix-style:
+	dotnet format style $(PROJECT_PATH) --severity error --verbosity diagnostic
 
-.PHONY: fix-style-warn
-fix-style-warn: ## Fix style rules (warn level)
-	$(DOTNET) format style --severity warn --verbosity diagnostic
+# Fix style rules (warn level)
+fix-style-warn:
+	dotnet format style $(PROJECT_PATH) --severity warn --verbosity diagnostic
 
-.PHONY: fix-style-info
-fix-style-info: ## Fix style rules (info level)
-	$(DOTNET) format style --severity info --verbosity diagnostic
+# Fix style rules (info level)
+fix-style-info:
+	dotnet format style $(PROJECT_PATH) --severity info --verbosity diagnostic
 
-.PHONY: fix-analyzers
-fix-analyzers: ## Fix analyzer rules (error level) and stage changes
-	$(DOTNET) format analyzers --severity error --verbosity diagnostic
-	git add -A .
+# Fix analyzer rules (error level)
+fix-analyzers:
+	dotnet format analyzers $(PROJECT_PATH) --severity error --verbosity diagnostic
 
-.PHONY: fix-analyzers-warn
-fix-analyzers-warn: ## Fix analyzer rules (warn level)
-	$(DOTNET) format analyzers --severity warn --verbosity diagnostic
+# Fix analyzer rules (warn level)
+fix-analyzers-warn:
+	dotnet format analyzers $(PROJECT_PATH) --severity warn --verbosity diagnostic
 
-.PHONY: fix-analyzers-info
-fix-analyzers-info: ## Fix analyzer rules (info level)
-	$(DOTNET) format analyzers --severity info --verbosity diagnostic
+# Fix analyzer rules (info level)
+fix-analyzers-info:
+	dotnet format analyzers $(PROJECT_PATH) --severity info --verbosity diagnostic
 
-.PHONY: check-all
-check-all: check-format check-style check-analyzers ## Run all validation checks
+# Run all validation checks
+check-all: check-analyzers check-format check-style
 
-.PHONY: fix-all
-fix-all: fix-format fix-style fix-analyzers # Run all fixes
+# Run all fixes
+fix-all: fix-analyzers fix-format fix-style
 
-.PHONY: pre-commit
-pre-commit: fix-all check-all
-
-## Help
-.PHONY: help
+# Show help
 help:
-	@echo "Available commands:"
-	@echo "  make prepare            Install tools"
-	@echo "  make check-all          Run all checks"
-	@echo "  make pre-commit        Run all fixes"
-	@echo "  npm run fix-format     Fix formatting"
-	@echo "  npm run check-style    Validate style"
+	@echo "Available targets:"
+	@echo "  prepare            - Install Husky and .NET tools"
+	@echo "  install-dev-cert   - Install dev cert (Bash)"
+	@echo "  upgrade-packages   - Upgrade .NET packages"
+	@echo "  check-format       - Check C# formatting"
+	@echo "  check-style        - Check C# style rules"
+	@echo "  check-analyzers    - Check C# analyzer rules"
+	@echo "  fix-format         - Fix formatting and stage changes"
+	@echo "  fix-style          - Fix style rules for all projects (error level)"
+	@echo "  fix-style-warn     - Fix style rules (warn level)"
+	@echo "  fix-style-info     - Fix style rules (info level)"
+	@echo "  fix-analyzers      - Fix analyzer rules (error level)"
+	@echo "  fix-analyzers-warn - Fix analyzer rules (warn level)"
+	@echo "  fix-analyzers-info - Fix analyzer rules (info level)"
+	@echo "  check-all          - Run all validation checks"
+	@echo "  fix-all            - Run all fixes"
+	@echo ""
+	@echo "Variables:"
+	@echo "  PROJECT_PATH - Path to project (default: \".\")"

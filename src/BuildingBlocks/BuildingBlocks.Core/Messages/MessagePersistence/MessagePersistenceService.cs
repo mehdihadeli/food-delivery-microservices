@@ -218,7 +218,7 @@ public class MessagePersistenceService(
         // multiple instances can process outbox message in outbox table in the same time, for publishing message based on outbox message on the database. we can accept this becuase we have deduplication in the inbox
         if (options.Value.UseDistributedLock)
         {
-			// In a microservices environment with multiple instances of a service running, we need to ensure that only one instance executes a scheduled job, we can handle it with distributed lock
+            // In a microservices environment with multiple instances of a service running, we need to ensure that only one instance executes a scheduled job, we can handle it with distributed lock
             var lockKey = $"message:{messageId}";
 
             // In a microservices environment with multiple instances of a service running

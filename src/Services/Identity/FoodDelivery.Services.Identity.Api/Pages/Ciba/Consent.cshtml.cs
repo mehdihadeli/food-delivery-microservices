@@ -20,7 +20,8 @@ public class Consent : PageModel
     public Consent(
         IBackchannelAuthenticationInteractionService interaction,
         IEventService events,
-        ILogger<Consent> logger)
+        ILogger<Consent> logger
+    )
     {
         _interaction = interaction;
         _events = events;
@@ -39,10 +40,7 @@ public class Consent : PageModel
             return RedirectToPage("/Home/Error/Index");
         }
 
-        Input = new InputModel
-        {
-            Id = id
-        };
+        Input = new InputModel { Id = id };
 
         return Page();
     }
@@ -50,7 +48,9 @@ public class Consent : PageModel
     public async Task<IActionResult> OnPost()
     {
         // validate return url is still valid
-        var request = await _interaction.GetLoginRequestByInternalIdAsync(Input.Id ?? throw new ArgumentNullException(nameof(Input.Id)));
+        var request = await _interaction.GetLoginRequestByInternalIdAsync(
+            Input.Id ?? throw new ArgumentNullException(nameof(Input.Id))
+        );
         if (request == null || request.Subject.GetSubjectId() != User.GetSubjectId())
         {
             _logger.InvalidId(Input.Id);
@@ -65,8 +65,17 @@ public class Consent : PageModel
             result = new CompleteBackchannelLoginRequest(Input.Id);
 
             // emit event
-            await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
-            Telemetry.Metrics.ConsentDenied(request.Client.ClientId, request.ValidatedResources.ParsedScopes.Select(s => s.ParsedName));
+            await _events.RaiseAsync(
+                new ConsentDeniedEvent(
+                    User.GetSubjectId(),
+                    request.Client.ClientId,
+                    request.ValidatedResources.RawScopeValues
+                )
+            );
+            Telemetry.Metrics.ConsentDenied(
+                request.Client.ClientId,
+                request.ValidatedResources.ParsedScopes.Select(s => s.ParsedName)
+            );
         }
         // user clicked 'yes' - validate the data
         else if (Input.Button == "yes")
@@ -77,19 +86,31 @@ public class Consent : PageModel
                 var scopes = Input.ScopesConsented;
                 if (ConsentOptions.EnableOfflineAccess == false)
                 {
-                    scopes = scopes.Where(x => x != Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess);
+                    scopes = scopes.Where(x =>
+                        x != Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess
+                    );
                 }
 
                 result = new CompleteBackchannelLoginRequest(Input.Id)
                 {
                     ScopesValuesConsented = scopes.ToArray(),
-                    Description = Input.Description
+                    Description = Input.Description,
                 };
 
                 // emit event
-                await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, result.ScopesValuesConsented, false));
+                await _events.RaiseAsync(
+                    new ConsentGrantedEvent(
+                        User.GetSubjectId(),
+                        request.Client.ClientId,
+                        request.ValidatedResources.RawScopeValues,
+                        result.ScopesValuesConsented,
+                        false
+                    )
+                );
                 Telemetry.Metrics.ConsentGranted(request.Client.ClientId, result.ScopesValuesConsented, false);
-                var denied = request.ValidatedResources.ParsedScopes.Select(s => s.ParsedName).Except(result.ScopesValuesConsented);
+                var denied = request
+                    .ValidatedResources.ParsedScopes.Select(s => s.ParsedName)
+                    .Except(result.ScopesValuesConsented);
                 Telemetry.Metrics.ConsentDenied(request.Client.ClientId, denied);
             }
             else
@@ -142,15 +163,19 @@ public class Consent : PageModel
             ClientName = request.Client.ClientName ?? request.Client.ClientId,
             ClientUrl = request.Client.ClientUri,
             ClientLogoUrl = request.Client.LogoUri,
-            BindingMessage = request.BindingMessage
+            BindingMessage = request.BindingMessage,
         };
 
-        vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources
-            .Select(x => CreateScopeViewModel(x, Input == null || Input.ScopesConsented.Contains(x.Name)))
+        vm.IdentityScopes = request
+            .ValidatedResources.Resources.IdentityResources.Select(x =>
+                CreateScopeViewModel(x, Input == null || Input.ScopesConsented.Contains(x.Name))
+            )
             .ToArray();
 
         var resourceIndicators = request.RequestedResourceIndicators ?? Enumerable.Empty<string>();
-        var apiResources = request.ValidatedResources.Resources.ApiResources.Where(x => resourceIndicators.Contains(x.Name));
+        var apiResources = request.ValidatedResources.Resources.ApiResources.Where(x =>
+            resourceIndicators.Contains(x.Name)
+        );
 
         var apiScopes = new List<ScopeViewModel>();
         foreach (var parsedScope in request.ValidatedResources.ParsedScopes)
@@ -158,19 +183,28 @@ public class Consent : PageModel
             var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
             if (apiScope != null)
             {
-                var scopeVm = CreateScopeViewModel(parsedScope, apiScope, Input == null || Input.ScopesConsented.Contains(parsedScope.RawValue));
-                scopeVm.Resources = apiResources.Where(x => x.Scopes.Contains(parsedScope.ParsedName))
-                    .Select(x => new ResourceViewModel
-                    {
-                        Name = x.Name,
-                        DisplayName = x.DisplayName ?? x.Name,
-                    }).ToArray();
+                var scopeVm = CreateScopeViewModel(
+                    parsedScope,
+                    apiScope,
+                    Input == null || Input.ScopesConsented.Contains(parsedScope.RawValue)
+                );
+                scopeVm.Resources = apiResources
+                    .Where(x => x.Scopes.Contains(parsedScope.ParsedName))
+                    .Select(x => new ResourceViewModel { Name = x.Name, DisplayName = x.DisplayName ?? x.Name })
+                    .ToArray();
                 apiScopes.Add(scopeVm);
             }
         }
         if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
         {
-            apiScopes.Add(GetOfflineAccessScope(Input == null || Input.ScopesConsented.Contains(Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess)));
+            apiScopes.Add(
+                GetOfflineAccessScope(
+                    Input == null
+                        || Input.ScopesConsented.Contains(
+                            Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess
+                        )
+                )
+            );
         }
         vm.ApiScopes = apiScopes;
 
@@ -187,7 +221,7 @@ public class Consent : PageModel
             Description = identity.Description,
             Emphasize = identity.Emphasize,
             Required = identity.Required,
-            Checked = check || identity.Required
+            Checked = check || identity.Required,
         };
     }
 
@@ -207,7 +241,7 @@ public class Consent : PageModel
             Description = apiScope.Description,
             Emphasize = apiScope.Emphasize,
             Required = apiScope.Required,
-            Checked = check || apiScope.Required
+            Checked = check || apiScope.Required,
         };
     }
 
@@ -219,7 +253,7 @@ public class Consent : PageModel
             DisplayName = ConsentOptions.OfflineAccessDisplayName,
             Description = ConsentOptions.OfflineAccessDescription,
             Emphasize = true,
-            Checked = check
+            Checked = check,
         };
     }
 }

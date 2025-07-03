@@ -27,7 +27,7 @@ public class LoggedOut : PageModel
             AutomaticRedirectAfterSignOut = LogoutOptions.AutomaticRedirectAfterSignOut,
             PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
             ClientName = string.IsNullOrEmpty(logout?.ClientName) ? logout?.ClientId : logout?.ClientName,
-            SignOutIframeUrl = logout?.SignOutIFrameUrl
+            SignOutIframeUrl = logout?.SignOutIFrameUrl,
         };
     }
 }

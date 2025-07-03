@@ -4,9 +4,7 @@ namespace FoodDelivery.Services.Identity.Api.Pages.Error;
 
 public class ViewModel
 {
-    public ViewModel()
-    {
-    }
+    public ViewModel() { }
 
     public ViewModel(string error)
     {

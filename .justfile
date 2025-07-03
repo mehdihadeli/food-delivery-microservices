@@ -1,65 +1,52 @@
-# justfile for food-delivery-microservices
-
-# Variables
-dotnet := "dotnet"
-
-# --- Setup & Tools ---
 prepare:  # Install Husky and .NET tools
-    husky install
-    {{dotnet}} tool restore
+    husky
+    dotnet tool restore
 
 install-dev-cert:  # Install dev cert (Bash)
     curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg
 
 upgrade-packages:  # Upgrade .NET packages
-    {{dotnet}} outdated -u
+    dotnet outdated -u
 
-# --- Dry-Run Checks (for CI/pre-commit) ---
-check-format:  # Check C# formatting (CSharpier)
-    {{dotnet}} csharpier {{PROJECT_PATH}} --check
+check-format PROJECT_PATH=".":  # Check C# formatting
+    dotnet csharpier {{PROJECT_PATH}} --check
 
-check-style:  # Check C# style rules (no fixes)
-    find {{PROJECT_PATH}} -name "*.csproj" -exec {{dotnet}} format style {} --verify-no-changes --severity error --verbosity diagnostic \;
+check-style PROJECT_PATH=".":  # Check C# style rules
+   dotnet format style {{PROJECT_PATH}} --verify-no-changes --severity error --verbosity diagnostic
 
-check-analyzers:  # Check C# analyzer rules (no fixes)
-    find {{PROJECT_PATH}} -name "*.csproj" -exec {{dotnet}} format analyzers {} --verify-no-changes --severity error --verbosity diagnostic \;
+check-analyzers PROJECT_PATH=".":  # Check C# analyzer rules
+   dotnet format analyzers {{PROJECT_PATH}} --verify-no-changes --severity error --verbosity diagnostic
 
-# --- Auto-Fix Commands (with Git staging) ---
-fix-format:  # Fix formatting with CSharpier and stage changes
-    {{dotnet}} csharpier .
-    git add -A .
+fix-format PROJECT_PATH=".":  # Fix formatting and stage changes
+    dotnet csharpier {{PROJECT_PATH}}
 
-fix-style:  # Fix style rules (error level) and stage changes
-    {{dotnet}} format style --severity error --verbosity diagnostic
-    git add -A .
+fix-style PROJECT_PATH=".":  # Fix style rules for all projects (error level)
+   dotnet format style {{PROJECT_PATH}} --severity error --verbosity diagnostic
 
-fix-style-warn:  # Fix style rules (warn level)
-    {{dotnet}} format style --severity warn --verbosity diagnostic
+fix-style-warn PROJECT_PATH=".":  # Fix style rules (warn level)
+    dotnet format style {{PROJECT_PATH}} --severity warn --verbosity diagnostic
 
-fix-style-info:  # Fix style rules (info level)
-    {{dotnet}} format style --severity info --verbosity diagnostic
+fix-style-info PROJECT_PATH=".":  # Fix style rules (info level)
+    dotnet format style {{PROJECT_PATH}} --severity info --verbosity diagnostic
 
-fix-analyzers:  # Fix analyzer rules (error level) and stage changes
-    {{dotnet}} format analyzers --severity error --verbosity diagnostic
-    git add -A .
+fix-analyzers PROJECT_PATH=".":  # Fix analyzer rules (error level)
+    dotnet format analyzers {{PROJECT_PATH}} --severity error --verbosity diagnostic
 
-fix-analyzers-warn:  # Fix analyzer rules (warn level)
-    {{dotnet}} format analyzers --severity warn --verbosity diagnostic
+fix-analyzers-warn PROJECT_PATH=".":  # Fix analyzer rules (warn level)
+    dotnet format analyzers {{PROJECT_PATH}} --severity warn --verbosity diagnostic
 
-fix-analyzers-info:  # Fix analyzer rules (info level)
-    {{dotnet}} format analyzers --severity info --verbosity diagnostic
+fix-analyzers-info PROJECT_PATH=".":  # Fix analyzer rules (info level)
+    dotnet format analyzers {{PROJECT_PATH}} --severity info --verbosity diagnostic
 
-check-all: check-format check-style check-analyzers  # Run all validation checks
+check-all:  # Run all validation checks
+    @just check-analyzers
+    @just check-format
+    @just check-style
 
-fix-all: fix-format fix-style fix-analyzers  # Run all fixes
+fix-all:  # Run all fixes
+    @just fix-analyzers
+    @just fix-format
+    @just fix-style
 
-pre-commit: fix-all check-all  # Run all fixes and checks
-
-# Help
 help:
-    @echo "Available commands:"
-    @echo "  just prepare            Install tools"
-    @echo "  just check-all          Run all checks"
-    @echo "  just pre-commit        Run all fixes"
-    @echo "  npm run fix-format     Fix formatting"
-    @echo "  npm run check-style    Validate style"
+    @just --list --unsorted

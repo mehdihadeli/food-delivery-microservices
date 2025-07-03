@@ -25,7 +25,8 @@ public class Index : PageModel
         IDeviceFlowInteractionService interaction,
         IEventService eventService,
         IOptions<IdentityServerOptions> options,
-        ILogger<Index> logger)
+        ILogger<Index> logger
+    )
     {
         _interaction = interaction;
         _events = eventService;
@@ -51,32 +52,38 @@ public class Index : PageModel
             return Page();
         }
 
-        Input = new InputModel
-        {
-            UserCode = userCode,
-        };
+        Input = new InputModel { UserCode = userCode };
 
         return Page();
     }
 
     public async Task<IActionResult> OnPost()
     {
-        var request = await _interaction.GetAuthorizationContextAsync(Input.UserCode ?? throw new ArgumentNullException(nameof(Input.UserCode)));
-        if (request == null) return RedirectToPage("/Home/Error/Index");
+        var request = await _interaction.GetAuthorizationContextAsync(
+            Input.UserCode ?? throw new ArgumentNullException(nameof(Input.UserCode))
+        );
+        if (request == null)
+            return RedirectToPage("/Home/Error/Index");
 
         ConsentResponse? grantedConsent = null;
 
         // user clicked 'no' - send back the standard 'access_denied' response
         if (Input.Button == "no")
         {
-            grantedConsent = new ConsentResponse
-            {
-                Error = AuthorizationError.AccessDenied
-            };
+            grantedConsent = new ConsentResponse { Error = AuthorizationError.AccessDenied };
 
             // emit event
-            await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
-            Telemetry.Metrics.ConsentDenied(request.Client.ClientId, request.ValidatedResources.ParsedScopes.Select(s => s.ParsedName));
+            await _events.RaiseAsync(
+                new ConsentDeniedEvent(
+                    User.GetSubjectId(),
+                    request.Client.ClientId,
+                    request.ValidatedResources.RawScopeValues
+                )
+            );
+            Telemetry.Metrics.ConsentDenied(
+                request.Client.ClientId,
+                request.ValidatedResources.ParsedScopes.Select(s => s.ParsedName)
+            );
         }
         // user clicked 'yes' - validate the data
         else if (Input.Button == "yes")
@@ -87,20 +94,36 @@ public class Index : PageModel
                 var scopes = Input.ScopesConsented;
                 if (ConsentOptions.EnableOfflineAccess == false)
                 {
-                    scopes = scopes.Where(x => x != Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess);
+                    scopes = scopes.Where(x =>
+                        x != Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess
+                    );
                 }
 
                 grantedConsent = new ConsentResponse
                 {
                     RememberConsent = Input.RememberConsent,
                     ScopesValuesConsented = scopes.ToArray(),
-                    Description = Input.Description
+                    Description = Input.Description,
                 };
 
                 // emit event
-                await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, grantedConsent.ScopesValuesConsented, grantedConsent.RememberConsent));
-                Telemetry.Metrics.ConsentGranted(request.Client.ClientId, grantedConsent.ScopesValuesConsented, grantedConsent.RememberConsent);
-                var denied = request.ValidatedResources.ParsedScopes.Select(s => s.ParsedName).Except(grantedConsent.ScopesValuesConsented);
+                await _events.RaiseAsync(
+                    new ConsentGrantedEvent(
+                        User.GetSubjectId(),
+                        request.Client.ClientId,
+                        request.ValidatedResources.RawScopeValues,
+                        grantedConsent.ScopesValuesConsented,
+                        grantedConsent.RememberConsent
+                    )
+                );
+                Telemetry.Metrics.ConsentGranted(
+                    request.Client.ClientId,
+                    grantedConsent.ScopesValuesConsented,
+                    grantedConsent.RememberConsent
+                );
+                var denied = request
+                    .ValidatedResources.ParsedScopes.Select(s => s.ParsedName)
+                    .Except(grantedConsent.ScopesValuesConsented);
                 Telemetry.Metrics.ConsentDenied(request.Client.ClientId, denied);
             }
             else
@@ -130,7 +153,6 @@ public class Index : PageModel
         return Page();
     }
 
-
     private async Task<bool> SetViewModelAsync(string userCode)
     {
         var request = await _interaction.GetAuthorizationContextAsync(userCode);
@@ -153,10 +175,14 @@ public class Index : PageModel
             ClientName = request.Client.ClientName ?? request.Client.ClientId,
             ClientUrl = request.Client.ClientUri,
             ClientLogoUrl = request.Client.LogoUri,
-            AllowRememberConsent = request.Client.AllowRememberConsent
+            AllowRememberConsent = request.Client.AllowRememberConsent,
         };
 
-        vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources.Select(x => CreateScopeViewModel(x, Input == null || Input.ScopesConsented.Contains(x.Name))).ToArray();
+        vm.IdentityScopes = request
+            .ValidatedResources.Resources.IdentityResources.Select(x =>
+                CreateScopeViewModel(x, Input == null || Input.ScopesConsented.Contains(x.Name))
+            )
+            .ToArray();
 
         var apiScopes = new List<ScopeViewModel>();
         foreach (var parsedScope in request.ValidatedResources.ParsedScopes)
@@ -164,13 +190,24 @@ public class Index : PageModel
             var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
             if (apiScope != null)
             {
-                var scopeVm = CreateScopeViewModel(parsedScope, apiScope, Input == null || Input.ScopesConsented.Contains(parsedScope.RawValue));
+                var scopeVm = CreateScopeViewModel(
+                    parsedScope,
+                    apiScope,
+                    Input == null || Input.ScopesConsented.Contains(parsedScope.RawValue)
+                );
                 apiScopes.Add(scopeVm);
             }
         }
         if (DeviceOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
         {
-            apiScopes.Add(GetOfflineAccessScope(Input == null || Input.ScopesConsented.Contains(Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess)));
+            apiScopes.Add(
+                GetOfflineAccessScope(
+                    Input == null
+                        || Input.ScopesConsented.Contains(
+                            Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess
+                        )
+                )
+            );
         }
         vm.ApiScopes = apiScopes;
 
@@ -186,7 +223,7 @@ public class Index : PageModel
             Description = identity.Description,
             Emphasize = identity.Emphasize,
             Required = identity.Required,
-            Checked = check || identity.Required
+            Checked = check || identity.Required,
         };
     }
 
@@ -200,7 +237,7 @@ public class Index : PageModel
             Description = apiScope.Description,
             Emphasize = apiScope.Emphasize,
             Required = apiScope.Required,
-            Checked = check || apiScope.Required
+            Checked = check || apiScope.Required,
         };
     }
 
@@ -212,7 +249,7 @@ public class Index : PageModel
             DisplayName = DeviceOptions.OfflineAccessDisplayName,
             Description = DeviceOptions.OfflineAccessDescription,
             Emphasize = true,
-            Checked = check
+            Checked = check,
         };
     }
 }

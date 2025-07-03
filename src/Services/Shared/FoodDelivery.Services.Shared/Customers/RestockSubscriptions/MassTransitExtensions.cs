@@ -34,8 +34,11 @@ public static class MassTransitExtensions
             // route by message type to binding fanout exchange (exchange to exchange binding)
             e.UseRoutingKeyFormatter(context => context.Message.GetType().Name.Underscore());
         });
-        
-        cfg.SetQueueArgument("x-dead-letter-exchange", $"{nameof(RestockSubscriptionCreatedV1).Underscore()}_dead_letter_exchange");
+
+        cfg.SetQueueArgument(
+            "x-dead-letter-exchange",
+            $"{nameof(RestockSubscriptionCreatedV1).Underscore()}_dead_letter_exchange"
+        );
         cfg.SetQueueArgument("x-dead-letter-routing-key", nameof(RestockSubscriptionCreatedV1).Underscore());
     }
 }

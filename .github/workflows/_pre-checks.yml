@@ -4,7 +4,6 @@ on:
     inputs:
       sln-path:
         description: Project path
-        required: true
         type: string
         default: "."
       dotnet-version:

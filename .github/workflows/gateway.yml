@@ -21,6 +21,7 @@ on:
       - main
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-affects-specific-files
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
+    types: [opened, synchronize, reopened]
     paths:
       - src/ApiGateway/**
       - src/BuildingBlocks/**

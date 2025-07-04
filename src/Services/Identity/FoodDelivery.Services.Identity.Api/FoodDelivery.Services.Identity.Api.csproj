@@ -9,9 +9,6 @@
   <!-- https://devblogs.microsoft.com/dotnet/announcing-builtin-container-support-for-the-dotnet-sdk/ -->
   <!-- https://www.mytechramblings.com/posts/trying-out-the-built-in-container-support-for-the-dotnet-7-sdk/ -->
   <PropertyGroup>
-    <ContainerImageName>identity</ContainerImageName>
-    <ContainerImageTag>dev</ContainerImageTag>
-    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:latest</ContainerBaseImage>
     <UserSecretsId>526a05d0-3da0-4d64-b60b-47482dd0cbc0</UserSecretsId>
   </PropertyGroup>
 
@@ -24,7 +21,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\FoodDelivery.Services.Identity\FoodDelivery.Services.Identity.csproj" />
   </ItemGroup>
 

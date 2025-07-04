@@ -13,7 +13,6 @@
     <File Path="pm2.yaml" />
     <File Path="readme.md" />
     <File Path="stylecop.json" />
-    <File Path="Taskfile.yml" />
     <File Path=".justfile" />
     <File Path="Makefile" />
   </Folder>

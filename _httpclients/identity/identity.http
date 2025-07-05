@@ -1,15 +1,30 @@
+### Variables
+@contentType = application/json
+@bearer_token= Bearer {{access_token}}
+
 ### implicit-flow-client
-GET {{identity_api}}/connect/authorize?
+GET {{gateway_api}}/auth/connect/authorize?
     client_id=spa&
     redirect_uri={{implicit_redirect_uri}}&
     response_type=token&
     scope={{implicit_scope}}&
     state={{auth_state}}
+
+#################################################################
+### Client Credentials Flow
+POST {{gateway_api}}/auth/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+    &client_id=test-client-credential
+    &client_secret={{client_credential_secret}}
+    &scope={{client_credential_scope}}
+
 #################################################################
 ### PKCE Client
 ### Step 1: Authorize - Get Authorization Code
 # code_challenge is base64url(SHA256("code_verifier")) - https://oidcdebugger.com
-GET {{identity_api}}/connect/authorize?
+GET {{gateway_api}}/auth/connect/authorize?
     client_id={{pkce_clientId}}&
     redirect_uri={{pkce_redirect_uri}}&
     response_type=code&
@@ -20,7 +35,7 @@ GET {{identity_api}}/connect/authorize?
 
 ### Step 2: Token Exchange - Get Access Token
 # code is CODE_FROM_URL
-POST {{identity_api}}/connect/token
+POST {{gateway_api}}/auth/connect/token
 Content-Type: application/x-www-form-urlencoded
 
 client_id={{pkce_clientId}}&
@@ -29,5 +44,3 @@ client_secret={{pkce_secret}}&
 code={{pkce_auth_code}}&
 redirect_uri={{pkce_redirect_uri}}&
 code_verifier={{pkce_code_verifier}}
-
-##################################################################

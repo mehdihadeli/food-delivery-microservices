@@ -5,7 +5,7 @@ namespace FoodDelivery.BlazorWebApp.Services;
 
 public class CustomersServiceClient(IHttpClientFactory factory) : ICustomersServiceClient
 {
-    private const string CustomersBasePath = "/web-app-bff/api/v1/customers/customers";
+    private const string CustomersBasePath = "/api-bff/api/v1/customers/customers";
     private readonly HttpClient _gatewayClient = factory.CreateClient("ApiGatewayClient");
 
     // GET: /api/v1/customers/customers?PageNumber=1&PageSize=10

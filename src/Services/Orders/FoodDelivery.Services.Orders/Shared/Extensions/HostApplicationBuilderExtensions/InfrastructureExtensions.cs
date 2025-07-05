@@ -1,3 +1,4 @@
+using System.Net;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviors;
 using BuildingBlocks.Core.Diagnostics.Behaviors;
@@ -16,6 +17,7 @@ using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.RateLimit;
 using FoodDelivery.Services.Orders.Customers;
 using Mediator;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace FoodDelivery.Services.Orders.Shared.Extensions.HostApplicationBuilderExtensions;
 
@@ -32,6 +34,14 @@ public static partial class HostApplicationBuilderExtensions
         });
 
         builder.AddCoreServices();
+
+        builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
 
         builder.AddCustomVersioning();
         builder.AddAspnetOpenApi(["v1", "v2"]);

@@ -43,7 +43,8 @@ public static partial class HostApplicationBuilderExtensions
                 options =>
                 {
                     // https://docs.duendesoftware.com/bff/fundamentals/session/handlers/#the-openid-connect-authentication-handler
-                    options.Authority = oauthOptions.Authority; // https://demo.duendesoftware.com/
+                    // proxy url: https://localhost:3001/auth
+                    options.Authority = oauthOptions.Authority;
                     // confidential client using code flow
                     options.ClientId = oauthOptions.ClientId;
                     options.ClientSecret = oauthOptions.ClientSecret;
@@ -60,7 +61,7 @@ public static partial class HostApplicationBuilderExtensions
                     // options.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
                     // options.RemoteSignOutPath = new PathString("/signout-oidc");
 
-                    // save tokens into authentication session
+                    // save tokens into the authentication session
                     // to enable automatic token management
                     options.SaveTokens = oauthOptions.SaveTokens;
 

@@ -191,11 +191,9 @@
     <File Path="_httpclients\catalogs\catalogs.http" />
   </Folder>
   <Folder Name="/solution-items/_httpclients/customers/">
-    <File Path="_httpclients/customers/customers.rest" />
     <File Path="_httpclients\customers\customers.http" />
   </Folder>
   <Folder Name="/solution-items/_httpclients/identity/">
-    <File Path="_httpclients/identity/identity.rest" />
     <File Path="_httpclients\identity\identity.http" />
   </Folder>
   <Folder Name="/solution-items/_httpclients/orders/" />
@@ -210,10 +208,15 @@
     <File Path="src\ApiGateway\Dockerfile.dev" />
     <File Path="src\ApiGateway\watch.Dockerfile" />
   </Folder>
-  <Folder Name="/src/Bffs/">
+  <Folder Name="/src/Bffs/" />
+  <Folder Name="/src/Bffs/Api.Bff/">
+    <Project Path="src\Bffs\Api.Bff\FoodDelivery.Api.Bff\FoodDelivery.Api.Bff.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/src/Bffs/Mobile.Bff/">
     <Project Path="src\Bffs\Mobile.Bff\FoodDelivery.Mobile.Bff\FoodDelivery.Mobile.Bff.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/src/Bffs/Spa.Bff/">
     <Project Path="src\Bffs\Spa.Bff\FoodDelivery.Spa.Bff\FoodDelivery.Spa.Bff.csproj" Type="Classic C#" />
-    <Project Path="src\Bffs\WebApp.Bff\FoodDelivery.WebApp.Bff\FoodDelivery.WebApp.Bff.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj" />
@@ -275,8 +278,6 @@
     <Project Path="src/Services/Identity/FoodDelivery.Services.Identity/FoodDelivery.Services.Identity.csproj" />
     <File Path="src/Services/Identity/Directory.Build.props" />
     <File Path="src/Services/Identity/Dockerfile" />
-    <File Path="src/Services/Identity/nuget.config" />
-    <File Path="src/Services/Identity/readme.md" />
     <File Path="src\Services\Identity\Dockerfile.dev" />
     <File Path="src\Services\Identity\Dockerfile.watch" />
   </Folder>

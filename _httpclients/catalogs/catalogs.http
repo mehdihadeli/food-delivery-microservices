@@ -3,17 +3,28 @@
 @bearer_token= Bearer {{access_token}}
 
 ### implicit-flow-client
-GET {{identity_api}}/connect/authorize?
+GET {{gateway_api}}/auth/connect/authorize?
     client_id=spa&
     redirect_uri={{implicit_redirect_uri}}&
     response_type=token&
     scope={{implicit_scope}}&
     state={{auth_state}}
+
+#################################################################
+### Client Credentials Flow
+POST {{gateway_api}}/auth/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+    &client_id=test-client-credential
+    &client_secret={{client_credential_secret}}
+    &scope={{client_credential_scope}}
+
 #################################################################
 ### PKCE Client
 ### Step 1: Authorize - Get Authorization Code
 # code_challenge is base64url(SHA256("code_verifier")) - https://oidcdebugger.com
-GET {{identity_api}}/connect/authorize?
+GET {{gateway_api}}/auth/connect/authorize?
     client_id={{pkce_clientId}}&
     redirect_uri={{pkce_redirect_uri}}&
     response_type=code&
@@ -24,7 +35,7 @@ GET {{identity_api}}/connect/authorize?
 
 ### Step 2: Token Exchange - Get Access Token
 # code is CODE_FROM_URL
-POST {{identity_api}}/connect/token
+POST {{gateway_api}}/auth/connect/token
 Content-Type: application/x-www-form-urlencoded
 
 client_id={{pkce_clientId}}&
@@ -37,7 +48,7 @@ code_verifier={{pkce_code_verifier}}
 ##################################################################
 
 ### Create Product
-POST {{catalog_api}}/api/v1/catalogs/products
+POST {{gateway_api}}/api-bff/api/v1/catalogs/products
 Authorization: {{bearer_token}}
 content-type: {{contentType}}
 
@@ -66,17 +77,17 @@ content-type: {{contentType}}
 }
 
 ### Get Products
-GET {{catalog_api}}/api/v1/catalogs/products?PageSize=10&PageNumber=1
+GET {{gateway_api}}/api-bff/api/v1/catalogs/products?PageSize=10&PageNumber=1
 Accept: {{contentType}}
 Authorization: {{bearer_token}}
 
 ### Get Product by ID
-GET {{catalog_api}}/api/v1/catalogs/products/{{product_id}}
+GET {{gateway_api}}/api-bff/api/v1/catalogs/products/{{product_id}}
 Accept: {{contentType}}
 Authorization: {{bearer_token}}
 
 ### Update Product
-POST {{catalog_api}}/api/v1/catalogs/products/{{product_id}}
+POST {{gateway_api}}/api-bff/api/v1/catalogs/products/{{product_id}}
 Content-Type: {{contentType}}
 Authorization: {{bearer_token}}
 
@@ -102,7 +113,7 @@ Authorization: {{bearer_token}}
 ### Stock Management
 
 ### Debit Product Stock
-POST {{catalog_api}}/api/v1/catalogs/products/{{product_id}}/debit-stock
+POST {{gateway_api}}/api-bff/api/v1/catalogs/products/{{product_id}}/debit-stock
 Content-Type: {{contentType}}
 Authorization: {{bearer_token}}
 
@@ -111,7 +122,7 @@ Authorization: {{bearer_token}}
 }
 
 ### Replenish Product Stock
-POST {{catalog_api}}/api/v1/catalogs/products/{{product_id}}/replenish-stock
+POST {{gateway_api}}/api-bff/api/v1/catalogs/products/{{product_id}}/replenish-stock
 Content-Type: {{contentType}}
 Authorization: {{bearer_token}}
 
@@ -122,6 +133,6 @@ Authorization: {{bearer_token}}
 ### Product Views
 
 ### Get Products View
-GET {{catalog_api}}/api/v1/catalogs/products/products-view/10/1
+GET {{gateway_api}}/api-bff/api/v1/catalogs/products/products-view/10/1
 Accept: {{contentType}}
 Authorization: {{bearer_token}}

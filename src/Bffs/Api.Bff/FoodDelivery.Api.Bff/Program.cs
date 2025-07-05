@@ -1,14 +1,12 @@
 using System.Net.Http.Headers;
-using BuildingBlocks.Core.Diagnostics.Extensions;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extensions;
-using BuildingBlocks.OpenTelemetry.Extensions;
 using FoodDelivery.Services.Shared.Extensions;
 using FoodDelivery.WebApp.Bff;
 using FoodDelivery.WebApp.Bff.Clients;
 using FoodDelivery.WebApp.Bff.Contracts;
 using FoodDelivery.WebApp.Bff.Extensions;
 using FoodDelivery.WebApp.Bff.Extensions.HostApplicationBuilderExtensions;
+using Microsoft.AspNetCore.HttpOverrides;
 using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +42,14 @@ builder
         });
     });
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 builder.AddCustomAuthentication();
 builder.AddCustomAuthorization();
 
@@ -76,6 +82,10 @@ builder
     .AddHttpClientAuthorization();
 
 var app = builder.Build();
+
+// Reads standard forwarded headers (X-Forwarded-For, X-Forwarded-Proto, X-Forwarded-Host) and updates the request information accordingly,
+// Ensures the application sees the original client IP, protocol (HTTP/HTTPS), and host rather than the proxy's information
+app.UseForwardedHeaders();
 
 app.MapDefaultEndpoints();
 

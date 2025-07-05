@@ -3,17 +3,28 @@
 @bearer_token= Bearer {{access_token}}
 
 ### implicit-flow-client
-GET {{identity_api}}/connect/authorize?
+GET {{gateway_api}}/auth/connect/authorize?
     client_id=spa&
     redirect_uri={{implicit_redirect_uri}}&
     response_type=token&
     scope={{implicit_scope}}&
     state={{auth_state}}
+
+#################################################################
+### Client Credentials Flow
+POST {{gateway_api}}/auth/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+    &client_id=test-client-credential
+    &client_secret={{client_credential_secret}}
+    &scope={{client_credential_scope}}
+
 #################################################################
 ### PKCE Client
 ### Step 1: Authorize - Get Authorization Code
 # code_challenge is base64url(SHA256("code_verifier")) - https://oidcdebugger.com
-GET {{identity_api}}/connect/authorize?
+GET {{gateway_api}}/auth/connect/authorize?
     client_id={{pkce_clientId}}&
     redirect_uri={{pkce_redirect_uri}}&
     response_type=code&
@@ -24,7 +35,7 @@ GET {{identity_api}}/connect/authorize?
 
 ### Step 2: Token Exchange - Get Access Token
 # code is CODE_FROM_URL
-POST {{identity_api}}/connect/token
+POST {{gateway_api}}/auth/connect/token
 Content-Type: application/x-www-form-urlencoded
 
 client_id={{pkce_clientId}}&
@@ -37,12 +48,12 @@ code_verifier={{pkce_code_verifier}}
 ##################################################################
 
 ### Get restock subscriptions
-GET {{customer_api}}/api/v1/customers/restock-subscriptions?Email=test@example.com&PageSize=10&PageNumber=1
+GET {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions?Email=test@example.com&PageSize=10&PageNumber=1
 Accept: {{contentType}}
 Authorization: {{bearer_token}}
 
 ### Delete restock subscriptions by time
-DELETE {{customer_api}}/api/v1/customers/restock-subscriptions
+DELETE {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions
 Content-Type: {{contentType}}
 Authorization: {{bearer_token}}
 
@@ -52,7 +63,7 @@ Authorization: {{bearer_token}}
 }
 
 ### Create restock subscription
-POST {{customer_api}}/api/v1/customers/restock-subscriptions
+POST {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions
 Content-Type: {{contentType}}
 Authorization: {{bearer_token}}
 
@@ -63,21 +74,21 @@ Authorization: {{bearer_token}}
 }
 
 ### Get restock subscription by subscription id
-GET {{customer_api}}/api/v1/customers/restock-subscriptions/12345
+GET {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions/12345
 Accept: {{contentType}}
 Authorization: {{bearer_token}}
 
 ### Get restock subscription by id
-GET {{customer_api}}/api/v1/customers/restock-subscriptions/550e8400-e29b-41d4-a716-446655440000
+GET {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions/550e8400-e29b-41d4-a716-446655440000
 Accept: {{contentType}}
 Authorization: {{bearer_token}}
 
 ### Delete restock subscription
-DELETE {{customer_api}}/api/v1/customers/restock-subscriptions/12345
+DELETE {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions/12345
 Authorization: {{bearer_token}}
 
 ### Update customer
-PUT {{customer_api}}/api/v1/customers/12345
+PUT {{gateway_api}}/api-bff/api/v1/customers/12345
 Content-Type: {{contentType}}
 Authorization: {{bearer_token}}
 
@@ -89,17 +100,17 @@ Authorization: {{bearer_token}}
 }
 
 ### Get customer by id
-GET {{customer_api}}/api/v1/customers/550e8400-e29b-41d4-a716-446655440000
+GET {{gateway_api}}/api-bff/api/v1/customers/550e8400-e29b-41d4-a716-446655440000
 Accept: {{contentType}}
 Authorization: {{bearer_token}}
 
 ### Get customers
-GET {{customer_api}}/api/v1/customers?PageSize=10&PageNumber=1
+GET {{gateway_api}}/api-bff/api/v1/customers?PageSize=10&PageNumber=1
 Accept: {{contentType}}
 Authorization: {{bearer_token}}
 
 ### Create customer
-POST {{customer_api}}/api/v1/customers
+POST {{gateway_api}}/api-bff/api/v1/customers
 Content-Type: {{contentType}}
 Authorization: {{bearer_token}}
 
@@ -108,6 +119,6 @@ Authorization: {{bearer_token}}
 }
 
 ### Get customer by customer id
-GET {{customer_api}}/api/v1/customers/12345
+GET {{gateway_api}}/api-bff/api/v1/customers/12345
 Accept: {{contentType}}
 Authorization: {{bearer_token}}

@@ -1,3 +1,4 @@
+using System.Net;
 using BuildingBlocks.Caching.Behaviors;
 using BuildingBlocks.Core.Diagnostics.Behaviors;
 using BuildingBlocks.Core.Extensions;
@@ -13,6 +14,7 @@ using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.RateLimit;
 using Mediator;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace FoodDelivery.Services.Identity.Shared.Extensions.HostApplicationBuilderExtensions;
 
@@ -41,6 +43,14 @@ public static partial class HostApplicationBuilderExtensions
 
         // for identity server ui
         builder.Services.AddRazorPages();
+
+        builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
 
         builder.AddCustomVersioning();
         builder.AddAspnetOpenApi(["v1", "v2"]);

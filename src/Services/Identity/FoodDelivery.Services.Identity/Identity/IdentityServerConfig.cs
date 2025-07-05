@@ -287,6 +287,35 @@ public static class IdentityServerConfig
             },
             new()
             {
+                ClientId = "test-client-credential",
+                ClientName = "Test Client Credentials",
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientSecrets = { new Secret("secret".Sha256()) },
+                AllowedScopes =
+                {
+                    // id-token is available in pkce and is not available in implicit-low
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.OfflineAccess,
+                    Authorization.Scopes.UsersInfo,
+                    Authorization.Scopes.Roles,
+                    Authorization.Scopes.Gateway,
+                    Authorization.Scopes.CatalogsRead,
+                    Authorization.Scopes.CatalogsWrite,
+                    Authorization.Scopes.CatalogsFull,
+                    Authorization.Scopes.OrdersRead,
+                    Authorization.Scopes.OrdersWrite,
+                    Authorization.Scopes.OrdersFull,
+                    Authorization.Scopes.CustomersRead,
+                    Authorization.Scopes.CustomersWrite,
+                    Authorization.Scopes.CustomersFull,
+                    Authorization.Scopes.UsersRead,
+                    Authorization.Scopes.UsersWrite,
+                    Authorization.Scopes.UsersFull,
+                },
+            },
+            new()
+            {
                 ClientId = "maui",
                 ClientName = "MAUI Client",
                 AllowedGrantTypes = GrantTypes.Code,

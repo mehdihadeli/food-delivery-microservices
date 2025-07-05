@@ -9,6 +9,7 @@ using FoodDelivery.Spa.Bff.Clients;
 using FoodDelivery.Spa.Bff.Contracts;
 using FoodDelivery.Spa.Bff.Extensions;
 using FoodDelivery.Spa.Bff.Extensions.HostApplicationBuilderExtensions;
+using Microsoft.AspNetCore.HttpOverrides;
 using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +56,14 @@ builder
         });
     });
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 // - For BFF aggregate endpoints and local endpoints in bff, avoid using YARP and instead call microservices directly with typed HttpClient instances. YARP adds unnecessary latency (BFF → YARP → Microservice) and overhead, whereas direct calls (BFF → Microservice)
 // are faster and allow better control over retries, timeouts, and caching. Use YARP only for passthrough routes, not aggregation (requests from outside the BFF), not for internal BFF logic like aggregates.
 // - Client with user interaction and it is not machine-to-machine communication (client credential)
@@ -83,6 +92,10 @@ builder.AddCustomAuthentication();
 builder.AddCustomAuthorization();
 
 var app = builder.Build();
+
+// Reads standard forwarded headers (X-Forwarded-For, X-Forwarded-Proto, X-Forwarded-Host) and updates the request information accordingly,
+// Ensures the application sees the original client IP, protocol (HTTP/HTTPS), and host rather than the proxy's information
+app.UseForwardedHeaders();
 
 app.MapDefaultEndpoints();
 

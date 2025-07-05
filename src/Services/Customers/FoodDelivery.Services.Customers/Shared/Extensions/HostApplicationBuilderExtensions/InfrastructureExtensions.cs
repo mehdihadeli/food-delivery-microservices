@@ -1,3 +1,4 @@
+using System.Net;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviors;
 using BuildingBlocks.Core.Diagnostics.Behaviors;
@@ -22,6 +23,7 @@ using FoodDelivery.Services.Shared.Customers.Products;
 using FoodDelivery.Services.Shared.Customers.RestockSubscriptions;
 using FoodDelivery.Services.Shared.Customers.Users;
 using Mediator;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace FoodDelivery.Services.Customers.Shared.Extensions.HostApplicationBuilderExtensions;
@@ -39,6 +41,14 @@ public static partial class HostApplicationBuilderExtensions
         });
 
         builder.AddCoreServices();
+
+        builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
 
         builder.AddCustomVersioning();
         builder.AddAspnetOpenApi(["v1", "v2"]);

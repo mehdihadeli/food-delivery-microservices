@@ -20,15 +20,18 @@ COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
+COPY ./src/ApiGateway/Directory.Build.props ./ApiGateway/
 
-# https://docs.docker.com/build/cache/#order-your-layers
-# with any changes in csproj files all downstream layer will rebuild, so dotnet restore will execute again
-COPY ./src/Services/Shared/FoodDelivery.Services.Shared/FoodDelivery.Services.Shared.csproj ./Services/Shared/FoodDelivery.Services.Shared/
-
+COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
+COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
+COPY ./src/BuildingBlocks/BuildingBlocks.HealthCheck/BuildingBlocks.HealthCheck.csproj ./BuildingBlocks/BuildingBlocks.HealthCheck/
+COPY ./src/BuildingBlocks/BuildingBlocks.OpenTelemetry/BuildingBlocks.OpenTelemetry.csproj ./BuildingBlocks/BuildingBlocks.OpenTelemetry/
+COPY ./src/BuildingBlocks/BuildingBlocks.Resiliency/BuildingBlocks.Resiliency.csproj ./BuildingBlocks/BuildingBlocks.Resiliency/
+COPY ./src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj ./BuildingBlocks/BuildingBlocks.Web/
 
 # https://docs.docker.com/build/cache/#order-your-layers
 # with any changes in csproj files all downstream layer will rebuil, so dotnet restore will execute again
-COPY ./src/ApiGateway/Directory.Build.props ./ApiGateway/
+COPY ./src/Services/Shared/FoodDelivery.Services.Shared/FoodDelivery.Services.Shared.csproj ./Services/Shared/FoodDelivery.Services.Shared/
 COPY ./src/ApiGateway/FoodDelivery.ApiGateway/FoodDelivery.ApiGateway.csproj ./ApiGateway/FoodDelivery.ApiGateway/
 
 # https://docs.docker.com/build/cache/

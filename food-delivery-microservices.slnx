@@ -206,7 +206,6 @@
     <Project Path="src/ApiGateway/FoodDelivery.ApiGateway/FoodDelivery.ApiGateway.csproj" />
     <File Path="src\ApiGateway\Dockerfile" />
     <File Path="src\ApiGateway\Dockerfile.dev" />
-    <File Path="src\ApiGateway\watch.Dockerfile" />
   </Folder>
   <Folder Name="/src/Bffs/" />
   <Folder Name="/src/Bffs/Api.Bff/">

@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Caching\BuildingBlocks.Caching.csproj"/>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Email\BuildingBlocks.Email.csproj"/>
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Integration.MassTransit\BuildingBlocks.Integration.MassTransit.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.OpenApi\BuildingBlocks.OpenApi.csproj"/>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj"/>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.SerilogLogging\BuildingBlocks.SerilogLogging.csproj"/>

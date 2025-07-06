@@ -1,11 +1,9 @@
-using MassTransit;
-
-namespace BuildingBlocks.Integration.MassTransit;
-
 using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Core.Messages;
 using Humanizer;
 using MassTransit;
+
+namespace BuildingBlocks.Integration.MassTransit;
 
 /// <summary>
 /// Setting primary exchange name for each entity type globally.

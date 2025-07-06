@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Abstractions\BuildingBlocks.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Integration.MassTransit\BuildingBlocks.Integration.MassTransit.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.SerilogLogging\BuildingBlocks.SerilogLogging.csproj" />

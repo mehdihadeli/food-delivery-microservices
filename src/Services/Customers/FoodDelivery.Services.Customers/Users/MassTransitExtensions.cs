@@ -3,7 +3,7 @@ using Humanizer;
 using MassTransit;
 using RabbitMQ.Client;
 
-namespace FoodDelivery.Services.Shared.Customers.Users;
+namespace FoodDelivery.Services.Customers.Users;
 
 public static class MassTransitExtensions
 {

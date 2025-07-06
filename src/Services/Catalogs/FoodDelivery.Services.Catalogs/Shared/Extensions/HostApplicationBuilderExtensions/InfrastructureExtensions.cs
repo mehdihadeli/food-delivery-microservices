@@ -16,6 +16,7 @@ using BuildingBlocks.Web.Cors;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.RateLimit;
+using FoodDelivery.Services.Catalogs.Products;
 using FoodDelivery.Services.Shared.Catalogs.Products;
 using Mediator;
 using Microsoft.AspNetCore.HttpOverrides;

@@ -12,9 +12,4 @@ internal static class CategoriesConfigurations
 
         return builder;
     }
-
-    internal static WebApplication UseCategoriesModule(this WebApplication app)
-    {
-        return app;
-    }
 }

@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
 
 namespace BuildingBlocks.Core.Domain.Exceptions;
 

@@ -1,5 +1,5 @@
 using FoodDelivery.Services.Customers.Customers.Models;
-using FoodDelivery.Services.Customers.Customers.ValueObjects;
+using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Customers.Shared.Data;

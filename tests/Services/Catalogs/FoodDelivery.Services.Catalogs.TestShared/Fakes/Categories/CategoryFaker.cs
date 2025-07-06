@@ -2,7 +2,7 @@ using Bogus;
 using BuildingBlocks.Abstractions.Domain;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Categories.ValueObjects;
-using FoodDelivery.Services.Catalogs.Products.ValueObjects;
+using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.TestShared.Fakes.Categories;
 

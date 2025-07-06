@@ -1,10 +1,8 @@
+using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Messages;
+using BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 
 namespace BuildingBlocks.Core.Persistence.EventStore;
-
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Persistence.EventStore;
-using BuildingBlocks.Abstractions.Persistence.EventStore.Projections;
 
 public class ReadProjectionPublisher(IServiceProvider serviceProvider) : IReadProjectionPublisher
 {

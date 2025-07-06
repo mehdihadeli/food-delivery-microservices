@@ -1,5 +1,5 @@
 using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
-using BuildingBlocks.Core.Resiliency.Options;
+using BuildingBlocks.Resiliency.Options;
 using Microsoft.Extensions.Options;
 
 namespace BuildingBlocks.Resiliency.HttpClient;
@@ -16,7 +16,7 @@ public static class HttpClientExtensions
     {
         // https://github.com/App-vNext/Polly/wiki/Polly-and-HttpClientFactory
         // https://github.com/App-vNext/Polly/wiki/PolicyRegistry
-        services.AddValidatedOptions<TClientOptions>();
+        services.AddValidationOptions<TClientOptions>();
 
         services
             .AddHttpClient<TClient, TImplementation>()
@@ -58,7 +58,7 @@ public static class HttpClientExtensions
         where TClientOptions : HttpClientOptions, new()
     {
         // https://github.com/App-vNext/Polly/wiki/Polly-and-HttpClientFactory#step-2-configure-a-client-with-polly-policies-in-startup
-        services.AddValidatedOptions<TClientOptions>();
+        services.AddValidationOptions<TClientOptions>();
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests#named-clients
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0#createclient

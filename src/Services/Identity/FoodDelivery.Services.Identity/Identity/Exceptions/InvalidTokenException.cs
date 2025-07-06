@@ -1,6 +1,6 @@
 using System.Net;
 using System.Security.Claims;
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
 
 namespace FoodDelivery.Services.Identity.Identity.Exceptions;
 

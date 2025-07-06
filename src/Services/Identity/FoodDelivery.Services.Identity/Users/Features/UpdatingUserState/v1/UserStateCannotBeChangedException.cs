@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
 using BuildingBlocks.Core.Types.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Shared.Identity.Users;

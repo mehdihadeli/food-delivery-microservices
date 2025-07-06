@@ -1,0 +1,15 @@
+@page "/logout"
+@using FoodDelivery.BlazorWebApp.Contracts
+@using FoodDelivery.BlazorWebApp.Extensions
+@using FoodDelivery.BlazorWebApp.Services
+@attribute [Microsoft.AspNetCore.Mvc.IgnoreAntiforgeryToken]
+
+@inject IAccountsService AccountsService
+@inject NavigationManager Navigation
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AccountsService.LogOutAsync(Navigation.GetHttpContext());
+    }
+}

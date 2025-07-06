@@ -35,15 +35,13 @@ public static class DependencyInjectionExtensions
     {
         services.TryAddScoped<IMessagePersistenceService, MessagePersistenceService>();
         services.AddHostedService<MessagePersistenceBackgroundService>();
-        services.AddValidatedOptions<MessagePersistenceOptions>();
+        services.AddValidationOptions<MessagePersistenceOptions>();
         services.AddInMemoryMessagePersistence();
     }
 
     private static void AddInMemoryMessagePersistence(this IServiceCollection services)
     {
-        services.Replace(
-            ServiceDescriptor.Scoped<IMessagePersistenceRepository, InMemoryMessagePersistenceRepository>()
-        );
+        services.AddScoped<IMessagePersistenceRepository, InMemoryMessagePersistenceRepository>();
     }
 
     private static void AddMessageHandler(IServiceCollection services, Assembly[] assemblies)

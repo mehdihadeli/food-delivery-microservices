@@ -2,6 +2,7 @@ using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
+using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -24,7 +25,7 @@ internal class GetRestockSubscriptionBySubscriptionIdEndpoint
     {
         return builder
             .MapGet("/{restockSubscriptionId}", HandleAsync)
-            .RequireAuthorization(CustomersConstants.Role.Admin)
+            .RequireAuthorization(Authorization.Roles.Admin)
             // .Produces<GetRestockSubscriptionBySubscriptionIdResponse>(StatusCodes.Status200OK)
             // .Produces<StatusCodeProblemDetails>(StatusCodes.Status401Unauthorized)
             // .Produces<StatusCodeProblemDetails>(StatusCodes.Status400BadRequest)

@@ -1,17 +1,18 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Extensions;
-using LinqKit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Hosting;
 using Scrutor;
 
 namespace BuildingBlocks.Web.Minimal.Extensions;
 
 public static class MinimalApiExtensions
 {
-    public static IServiceCollection AddMinimalEndpoints(
-        this WebApplicationBuilder applicationBuilder,
+    public static IHostApplicationBuilder AddMinimalEndpoints(
+        this IHostApplicationBuilder builder,
         params Assembly[] scanAssemblies
     )
     {
@@ -22,7 +23,7 @@ public static class MinimalApiExtensions
             scanAssemblies = referencingAssemblies.ToArray();
         }
 
-        applicationBuilder.Services.Scan(scan =>
+        builder.Services.Scan(scan =>
             scan.FromAssemblies(scanAssemblies)
                 .AddClasses(
                     classes =>
@@ -36,88 +37,46 @@ public static class MinimalApiExtensions
                 .WithLifetime(ServiceLifetime.Scoped)
         );
 
-        return applicationBuilder.Services;
-    }
-
-    public static IServiceCollection AddMinimalEndpoints(
-        this IServiceCollection services,
-        params Assembly[] scanAssemblies
-    )
-    {
-        if (scanAssemblies.Length == 0)
-        {
-            // Find assemblies that reference the current assembly
-            var referencingAssemblies = Assembly.GetExecutingAssembly().GetReferencingAssemblies();
-            scanAssemblies = referencingAssemblies.ToArray();
-        }
-
-        services.Scan(scan =>
-            scan.FromAssemblies(scanAssemblies)
-                .AddClasses(
-                    classes =>
-                        classes
-                            .AssignableTo<IMinimalEndpoint>()
-                            .Where(type => type is { IsAbstract: false, IsInterface: false }),
-                    publicOnly: false
-                )
-                .UsingRegistrationStrategy(RegistrationStrategy.Append)
-                .As<IMinimalEndpoint>()
-                .WithLifetime(ServiceLifetime.Scoped)
-        );
-
-        return services;
+        return builder;
     }
 
     /// <summary>
     /// Map registered minimal apis.
     /// </summary>
-    /// <param name="builder"></param>
+    /// <param name="endpoints"></param>
     /// <returns></returns>
-    public static Microsoft.AspNetCore.Routing.IEndpointRouteBuilder MapMinimalEndpoints(
-        this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder builder
-    )
+    public static IEndpointRouteBuilder MapMinimalEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        using var scope = builder.ServiceProvider.CreateScope();
+        using var scope = endpoints.ServiceProvider.CreateScope();
+        var minimalEndpoints = scope.ServiceProvider.GetServices<IMinimalEndpoint>();
 
-        var endpoints = scope.ServiceProvider.GetServices<IMinimalEndpoint>().ToList();
+        // First, group all endpoints by their category/group name
+        var endpointGroups = minimalEndpoints.GroupBy(e => e.GroupName);
 
-        // https://github.com/dotnet/aspnet-api-versioning/commit/b789e7e980e83a7d2f82ce3b75235dee5e0724b4
-        // changed from MapApiGroup to NewVersionedApi in v7.0.0
-        var versionGroups = endpoints
-            .GroupBy(x => x.GroupName)
-            .ToDictionary(x => x.Key, c => builder.NewVersionedApi(c.Key).WithTags(c.Key));
-
-        var versionSubGroups = endpoints
-            .GroupBy(x => new
-            {
-                x.GroupName,
-                x.PrefixRoute,
-                x.Version,
-            })
-            .ToDictionary(
-                x => x.Key,
-                c => versionGroups[c.Key.GroupName].MapGroup(c.Key.PrefixRoute).HasApiVersion(c.Key.Version)
-            );
-
-        var endpointVersions = endpoints
-            .GroupBy(x => new { x.GroupName, x.Version })
-            .Select(x => new
-            {
-                Verion = x.Key.Version,
-                x.Key.GroupName,
-                Endpoints = x.Select(v => v),
-            });
-
-        foreach (var endpointVersion in endpointVersions)
+        foreach (var group in endpointGroups)
         {
-            var versionGroup = versionSubGroups.FirstOrDefault(x => x.Key.GroupName == endpointVersion.GroupName).Value;
+            var groupName = group.Key;
+            var versionedApi = endpoints.NewVersionedApi(name: groupName).WithTags(groupName);
 
-            endpointVersion.Endpoints.ForEach(ep =>
+            // Get all unique versions for this group and order them
+            var versions = group.Select(e => e.Version).Distinct().OrderBy(v => v);
+
+            foreach (var version in versions)
             {
-                ep.MapEndpoint(versionGroup);
-            });
+                // Get the route prefix (all endpoints in this version group share the same prefix)
+                var routePrefix = group.First(e => e.Version == version).PrefixRoute;
+
+                // Create versioned subgroup
+                var versionedGroup = versionedApi.MapGroup(routePrefix).HasApiVersion(version).MapToApiVersion(version);
+
+                // Map all endpoints for this specific version
+                foreach (var endpoint in group.Where(e => e.Version == version))
+                {
+                    endpoint.MapEndpoint(versionedGroup);
+                }
+            }
         }
 
-        return builder;
+        return endpoints;
     }
 }

@@ -17,52 +17,10 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.AccessToken", b =>
-                {
-                    b.Property<Guid>("InternalCommandId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("internal_command_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("CreatedByIp")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("created_by_ip");
-
-                    b.Property<DateTime>("ExpiredAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expired_at");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("token");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("InternalCommandId")
-                        .HasName("pk_access_tokens");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_access_tokens_user_id");
-
-                    b.HasIndex("Token", "UserId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_access_tokens_token_user_id");
-
-                    b.ToTable("access_tokens", (string)null);
-                });
 
             modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationRole", b =>
                 {
@@ -94,6 +52,36 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("asp_net_roles", (string)null);
+                });
+
+            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationRoleClaim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text")
+                        .HasColumnName("claim_type");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text")
+                        .HasColumnName("claim_value");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("role_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_asp_net_role_claims");
+
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("ix_asp_net_role_claims_role_id");
+
+                    b.ToTable("asp_net_role_claims", (string)null);
                 });
 
             modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationUser", b =>
@@ -216,171 +204,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                     b.ToTable("asp_net_users", (string)null);
                 });
 
-            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationUserRole", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("role_id");
-
-                    b.HasKey("UserId", "RoleId")
-                        .HasName("pk_asp_net_user_roles");
-
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_asp_net_user_roles_role_id");
-
-                    b.ToTable("asp_net_user_roles", (string)null);
-                });
-
-            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.EmailVerificationCode", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("character(6)")
-                        .HasColumnName("code")
-                        .IsFixedLength();
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("email");
-
-                    b.Property<DateTime>("SentAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("sent_at");
-
-                    b.Property<DateTime?>("UsedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("used_at");
-
-                    b.HasKey("Id")
-                        .HasName("pk_email_verification_codes");
-
-                    b.ToTable("email_verification_codes", (string)null);
-                });
-
-            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.PasswordResetCode", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("character(6)")
-                        .HasColumnName("code")
-                        .IsFixedLength();
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("email");
-
-                    b.Property<DateTime>("SentAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("sent_at");
-
-                    b.Property<DateTime?>("UsedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("used_at");
-
-                    b.HasKey("Id")
-                        .HasName("pk_password_reset_codes");
-
-                    b.ToTable("password_reset_codes", (string)null);
-                });
-
-            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.RefreshToken", b =>
-                {
-                    b.Property<Guid>("InternalCommandId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("internal_command_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("CreatedByIp")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("created_by_ip");
-
-                    b.Property<DateTime>("ExpiredAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expired_at");
-
-                    b.Property<DateTime?>("RevokedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("revoked_at");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("token");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("InternalCommandId")
-                        .HasName("pk_refresh_tokens");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_refresh_tokens_user_id");
-
-                    b.HasIndex("Token", "UserId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_refresh_tokens_token_user_id");
-
-                    b.ToTable("refresh_tokens", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("text")
-                        .HasColumnName("claim_type");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("text")
-                        .HasColumnName("claim_value");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("role_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_asp_net_role_claims");
-
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_asp_net_role_claims_role_id");
-
-                    b.ToTable("asp_net_role_claims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationUserClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -408,6 +232,25 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                         .HasDatabaseName("ix_asp_net_user_claims_user_id");
 
                     b.ToTable("asp_net_user_claims", (string)null);
+                });
+
+            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationUserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("role_id");
+
+                    b.HasKey("UserId", "RoleId")
+                        .HasName("pk_asp_net_user_roles");
+
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("ix_asp_net_user_roles_role_id");
+
+                    b.ToTable("asp_net_user_roles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -461,52 +304,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                     b.ToTable("asp_net_user_tokens", (string)null);
                 });
 
-            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.AccessToken", b =>
-                {
-                    b.HasOne("FoodDelivery.Services.Identity.Shared.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("AccessTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_access_tokens_asp_net_users_user_id");
-
-                    b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationUserRole", b =>
-                {
-                    b.HasOne("FoodDelivery.Services.Identity.Shared.Models.ApplicationRole", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_roles_asp_net_roles_role_id");
-
-                    b.HasOne("FoodDelivery.Services.Identity.Shared.Models.ApplicationUser", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_roles_asp_net_users_user_id");
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.RefreshToken", b =>
-                {
-                    b.HasOne("FoodDelivery.Services.Identity.Shared.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_refresh_tokens_asp_net_users_user_id");
-
-                    b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("FoodDelivery.Services.Identity.Shared.Models.ApplicationRole", null)
                         .WithMany()
@@ -516,7 +314,7 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                         .HasConstraintName("fk_asp_net_role_claims_asp_net_roles_role_id");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationUserClaim", b =>
                 {
                     b.HasOne("FoodDelivery.Services.Identity.Shared.Models.ApplicationUser", null)
                         .WithMany()
@@ -524,6 +322,23 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_claims_asp_net_users_user_id");
+                });
+
+            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationUserRole", b =>
+                {
+                    b.HasOne("FoodDelivery.Services.Identity.Shared.Models.ApplicationRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_asp_net_user_roles_asp_net_roles_role_id");
+
+                    b.HasOne("FoodDelivery.Services.Identity.Shared.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_asp_net_user_roles_asp_net_users_user_id");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -544,20 +359,6 @@ namespace FoodDelivery.Services.Identity.Shared.Data.Migrations.Identity
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
-                });
-
-            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationRole", b =>
-                {
-                    b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("FoodDelivery.Services.Identity.Shared.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("AccessTokens");
-
-                    b.Navigation("RefreshTokens");
-
-                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

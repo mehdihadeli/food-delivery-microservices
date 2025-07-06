@@ -15,7 +15,8 @@ public sealed class FakeUserRegisteredV1 : Faker<UserRegisteredV1>
             f.Person.UserName,
             f.Person.FirstName,
             f.Person.LastName,
-            new List<string> { "user" }
+            new List<string> { "user" },
+            null
         ));
     }
 }

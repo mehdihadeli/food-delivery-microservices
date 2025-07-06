@@ -6,7 +6,7 @@ using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
-using FoodDelivery.Services.Customers.Customers.ValueObjects;
+using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using FoodDelivery.Services.Customers.Products;
 using FoodDelivery.Services.Customers.Products.Exceptions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Exceptions;

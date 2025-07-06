@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Net.Http.Json;
 using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
 using FoodDelivery.Services.Customers.Products.Models;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
 using Microsoft.AspNetCore.Http.Extensions;

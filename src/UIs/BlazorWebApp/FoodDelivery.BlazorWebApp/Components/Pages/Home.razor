@@ -1,0 +1,42 @@
+﻿@page "/"
+
+@rendermode InteractiveServer
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+@if (User?.Identity?.IsAuthenticated == true)
+{
+    <p>Welcome, @User.Identity.Name!</p>
+}
+else
+{
+    <p>Welcome to our app!</p>
+    <p>You are not authenticated.</p>
+    <button class="btn btn-link p-0" @onclick="NavigateToLogin">Log in</button>
+
+}
+
+@code {
+    private ClaimsPrincipal? User { get; set; }
+
+    private void NavigateToLogin()
+    {
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        User = authState.User;
+    }
+
+}
+

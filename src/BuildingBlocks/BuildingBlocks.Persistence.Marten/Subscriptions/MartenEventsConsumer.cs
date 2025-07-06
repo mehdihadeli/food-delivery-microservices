@@ -2,14 +2,14 @@ using System.Diagnostics;
 using BuildingBlocks.Abstractions.Core.Diagnostics;
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Core.Diagnostics;
+using BuildingBlocks.Core.Diagnostics.Extensions;
 using BuildingBlocks.Persistence.Marten.Extensions;
 using Marten;
 using Marten.Events;
-using Shared.Observability;
 
 namespace BuildingBlocks.Persistence.Marten.Subscriptions;
 
-public class MartenEventsConsumer(IInternalEventBus internalEventBus, IDiagnosticsProvider diagnosticsProvider)
+public class MartenEventsConsumer(IInternalEventBus internalEventBus, IActivityRunner activityRunner)
     : IMartenEventsConsumer
 {
     public async Task ConsumeAsync(
@@ -25,7 +25,7 @@ public class MartenEventsConsumer(IInternalEventBus internalEventBus, IDiagnosti
             var activityName =
                 $"{DiagnosticsConstant.Components.Consumer}.{nameof(MartenEventsConsumer)}/{nameof(ConsumeAsync)}";
 
-            await diagnosticsProvider
+            await activityRunner
                 .ExecuteActivityAsync(
                     new CreateActivityInfo
                     {

@@ -15,10 +15,10 @@ public class IdentityContext(DbContextOptions<IdentityContext> options)
         ApplicationUser,
         ApplicationRole,
         Guid,
-        IdentityUserClaim<Guid>,
+        ApplicationUserClaim,
         ApplicationUserRole,
         IdentityUserLogin<Guid>,
-        IdentityRoleClaim<Guid>,
+        ApplicationRoleClaim,
         IdentityUserToken<Guid>
     >(options),
         IDbFacadeResolver,

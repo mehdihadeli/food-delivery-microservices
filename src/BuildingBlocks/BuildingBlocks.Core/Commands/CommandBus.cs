@@ -11,8 +11,6 @@ public class CommandBus(
     IMessageMetadataAccessor messageMetadataAccessor
 ) : AsyncCommandBus(serviceProvider, messageMetadataAccessor), ICommandBus
 {
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
-
     public async Task<TResult> SendAsync<TResult>(
         Abstractions.Commands.ICommand<TResult> command,
         CancellationToken cancellationToken = default
@@ -33,7 +31,7 @@ public class CommandBus(
     )
     {
         // to prevent cycle dependencies in MessagePersistenceService
-        var messagePersistenceService = _serviceProvider.GetRequiredService<IMessagePersistenceService>();
+        var messagePersistenceService = serviceProvider.GetRequiredService<IMessagePersistenceService>();
 
         await messagePersistenceService
             .AddInternalMessageAsync(internalCommandCommand, cancellationToken)

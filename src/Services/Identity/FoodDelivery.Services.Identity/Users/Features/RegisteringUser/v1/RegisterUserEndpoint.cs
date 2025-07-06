@@ -2,6 +2,7 @@ using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
+using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -13,7 +14,7 @@ public static class RegisterUserEndpoint
     {
         return endpoints
             .MapPost("/", Handle)
-            .AllowAnonymous()
+            .RequireAuthorization(policyNames: [Authorization.ClientPermissions.UserWrite])
             // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses?#typedresults-vs-results
             // .Produces<RegisterUserResponse>(StatusCodes.Status201Created)
             // .ProducesValidationProblem(StatusCodes.Status400BadRequest)
@@ -55,16 +56,15 @@ internal record RegisterUserRequestParameters(
 
 // parameters can be pass as null from the user
 internal record RegisterUserRequest(
-    string? FirstName,
-    string? LastName,
-    string? UserName,
-    string? Email,
-    string? PhoneNumber,
-    string? Password,
-    string? ConfirmPassword
-)
-{
-    public List<string> Roles { get; init; } = [IdentityConstants.Role.User];
-}
+    string FirstName,
+    string LastName,
+    string UserName,
+    string Email,
+    string PhoneNumber,
+    string Password,
+    string ConfirmPassword,
+    IEnumerable<string>? Permissions,
+    IEnumerable<string> Roles
+);
 
 internal record RegisterUserResponse(IdentityUserDto? UserIdentity);

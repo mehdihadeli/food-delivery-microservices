@@ -1,16 +1,16 @@
-namespace BuildingBlocks.Core.Extensions;
-
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
+
+namespace BuildingBlocks.Core.Extensions;
 
 // https://dev.to/lambdasharp/c-asserting-a-value-is-not-null-in-null-aware-code-f8m
 // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/nullable-analysis
 // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/caller-information
 public static class ValidationExtensions
 {
-    private static readonly HashSet<string> _allowedCurrency = new() { "USD", "EUR" };
+    private static readonly HashSet<string> AllowedCurrency = ["USD", "EUR"];
 
     public static T NotBeNull<T>(
         [NotNull] this T? argument,
@@ -97,7 +97,7 @@ public static class ValidationExtensions
             throw new ValidationException(message: $"{argumentName} cannot be null or empty.");
         }
 
-        return argument.Value.NotBeEmpty();
+        return argument.Value.NotBeEmpty(argumentName);
     }
 
     public static int NotBeNegativeOrZero(
@@ -107,7 +107,7 @@ public static class ValidationExtensions
     {
         if (argument <= 0)
         {
-            throw new ValidationException($"{argumentName} cannot be zero.");
+            throw new ValidationException($"{argumentName} cannot be negative or zero.");
         }
 
         return argument;
@@ -123,7 +123,7 @@ public static class ValidationExtensions
             throw new ValidationException(message: $"{argumentName} cannot be null or empty.");
         }
 
-        return argument.Value.NotBeNegativeOrZero();
+        return argument.Value.NotBeNegativeOrZero(argumentName);
     }
 
     public static long NotBeNegativeOrZero(
@@ -139,7 +139,7 @@ public static class ValidationExtensions
         return argument;
     }
 
-    public static long NotBeNegativeOrZero(
+    public static int NotBeNegativeOrZero(
         [NotNull] this int? argument,
         [CallerArgumentExpression("argument")] string? argumentName = null
     )
@@ -149,7 +149,7 @@ public static class ValidationExtensions
             throw new ValidationException(message: $"{argumentName} cannot be null or empty.");
         }
 
-        return argument.Value.NotBeNegativeOrZero();
+        return argument.Value.NotBeNegativeOrZero(argumentName);
     }
 
     public static decimal NotBeNegativeOrZero(
@@ -175,7 +175,7 @@ public static class ValidationExtensions
             throw new ValidationException(message: $"{argumentName} cannot be null or empty.");
         }
 
-        return argument.Value.NotBeNegativeOrZero();
+        return argument.Value.NotBeNegativeOrZero(argumentName);
     }
 
     public static double NotBeNegativeOrZero(
@@ -201,7 +201,7 @@ public static class ValidationExtensions
             throw new ValidationException(message: $"{argumentName} cannot be null or empty.");
         }
 
-        return argument.Value.NotBeNegativeOrZero();
+        return argument.Value.NotBeNegativeOrZero(argumentName);
     }
 
     public static string NotBeInvalidEmail(
@@ -258,7 +258,7 @@ public static class ValidationExtensions
     )
     {
         currency = currency.ToUpperInvariant();
-        if (!_allowedCurrency.Contains(currency))
+        if (!AllowedCurrency.Contains(currency))
         {
             throw new ValidationException($"{argumentName} is not a valid currency.");
         }
@@ -277,7 +277,7 @@ public static class ValidationExtensions
             throw new ValidationException(message: $"{argumentName} cannot be null or empty.");
         }
 
-        enumValue.NotBeEmpty();
+        enumValue.NotBeEmpty(argumentName);
 
         return enumValue;
     }
@@ -288,7 +288,7 @@ public static class ValidationExtensions
     )
         where TEnum : Enum
     {
-        enumValue.NotBeNull();
+        enumValue.NotBeNull(argumentName);
 
         // returns `true` if `enumValue` corresponds to one of the defined values in `TEnum`
         if (!Enum.IsDefined(typeof(TEnum), enumValue))

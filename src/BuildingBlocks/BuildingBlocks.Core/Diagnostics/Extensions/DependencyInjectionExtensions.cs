@@ -1,28 +1,29 @@
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using BuildingBlocks.Abstractions.Core.Diagnostics;
-using BuildingBlocks.Core.Diagnostics.CoreDiagnostics.Commands;
-using BuildingBlocks.Core.Diagnostics.CoreDiagnostics.Query;
-using BuildingBlocks.Core.Extensions;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 
 namespace BuildingBlocks.Core.Diagnostics.Extensions;
 
 public static class DependencyInjectionExtensions
 {
-    public static WebApplicationBuilder AddDiagnostics(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddDiagnostics(
+        this IHostApplicationBuilder builder,
+        string instrumentationName
+    )
     {
         Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 
-        var coreOptions = builder.Configuration.BindOptions<CoreOptions>();
-        ArgumentException.ThrowIfNullOrEmpty(coreOptions.InstrumentationName);
-        DiagnosticsConstant.ApplicationInstrumentationName = coreOptions.InstrumentationName;
+        TelemetryTags.Configure(instrumentationName);
 
-        builder.Services.AddSingleton<IDiagnosticsProvider, DiagnosticsProvider>();
+        builder.Services.AddSingleton<IDiagnosticsProvider>(sp =>
+        {
+            var meterFactory = sp.GetRequiredService<IMeterFactory>();
 
-        builder.Services.AddTransient<CommandHandlerActivity>();
-        builder.Services.AddTransient<CommandHandlerMetrics>();
-        builder.Services.AddTransient<QueryHandlerActivity>();
-        builder.Services.AddTransient<QueryHandlerMetrics>();
+            return new DiagnosticsProvider(meterFactory, instrumentationName);
+        });
+
+        builder.Services.AddSingleton<IActivityRunner, ActivityRunner>();
 
         return builder;
     }

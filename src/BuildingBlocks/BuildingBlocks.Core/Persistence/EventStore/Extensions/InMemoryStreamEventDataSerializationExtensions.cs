@@ -1,13 +1,11 @@
-using BuildingBlocks.Abstractions.Messages;
-using BuildingBlocks.Core.Messages;
-
-namespace BuildingBlocks.Core.Persistence.EventStore.Extensions;
-
 using System.Text;
-using BuildingBlocks.Abstractions.Persistence.EventStore;
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Messages;
 using BuildingBlocks.Core.Types;
 using Newtonsoft.Json;
+
+namespace BuildingBlocks.Core.Persistence.EventStore.Extensions;
 
 public static class InMemoryStreamEventDataSerializationExtensions
 {

@@ -1,15 +1,14 @@
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.ProblemDetail.HttpResults;
-using Cassandra.Mapping;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
-using FoodDelivery.Services.Catalogs.Products.ValueObjects;
+using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 using FoodDelivery.Services.Catalogs.Suppliers;
+using FoodDelivery.Services.Shared;
 using Humanizer;
-using Mediator;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1;
@@ -19,13 +18,6 @@ internal static class CreateProductEndpoint
 {
     internal static RouteHandlerBuilder MapCreateProductsEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        // return endpoints.MapCommandEndpoint<
-        //     CreateProductRequest,
-        //     CreateProductResponse,
-        //     CreateProduct,
-        //     CreateProductResult
-        // >("/", StatusCodes.Status201Created, getId: response => response.Id);
-
         // https://github.com/dotnet/aspnetcore/issues/45082
         // https://github.com/dotnet/aspnetcore/issues/40753
         // https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/2414
@@ -33,7 +25,7 @@ internal static class CreateProductEndpoint
         return endpoints
             .MapPost("/", Handle)
             .WithTags(ProductsConfigurations.Tag)
-            .RequireAuthorization()
+            .RequireAuthorization(policyNames: [Authorization.UserPermissions.CatalogsWrite])
             .WithName(nameof(CreateProduct))
             .WithDisplayName(nameof(CreateProduct).Humanize())
             .WithSummary(nameof(CreateProduct).Humanize())
@@ -44,7 +36,7 @@ internal static class CreateProductEndpoint
             // .ProducesProblem("UnAuthorized request.", StatusCodes.Status401Unauthorized)
             .MapToApiVersion(1.0);
 
-        async Task<
+        static async Task<
             Results<CreatedAtRoute<CreateProductResponse>, UnAuthorizedHttpProblemResult, ValidationProblem>
         > Handle([AsParameters] CreateProductRequestParameters requestParameters)
         {
@@ -108,7 +100,8 @@ public record CreateProductRequest(
     ProductColor Color = ProductColor.Black,
     ProductStatus Status = ProductStatus.Available,
     ProductType ProductType = ProductType.Food,
-    IEnumerable<CreateProductImageRequest>? Images = null
-);
-
-public record CreateProductImageRequest(string ImageUrl, bool IsMain);
+    IEnumerable<CreateProductRequest.CreateProductImageRequest>? Images = null
+)
+{
+    public record CreateProductImageRequest(string? ImageUrl, bool IsMain);
+}

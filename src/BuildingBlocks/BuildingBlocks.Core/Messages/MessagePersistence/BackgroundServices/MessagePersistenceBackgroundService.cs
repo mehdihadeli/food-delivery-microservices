@@ -1,11 +1,10 @@
-namespace BuildingBlocks.Core.Messages.MessagePersistence.BackgroundServices;
-
 using BuildingBlocks.Abstractions.Messages.MessagePersistence;
-using BuildingBlocks.Abstractions.Types;
 using BuildingBlocks.Core.Web.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+namespace BuildingBlocks.Core.Messages.MessagePersistence.BackgroundServices;
 
 // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services
 public class MessagePersistenceBackgroundService(

@@ -12,8 +12,8 @@ public class PostgresContainerFixtureTests : IAsyncLifetime
     [CategoryTrait(TestCategory.Unit)]
     public async Task init_container()
     {
-        _fixture.Container.Should().NotBeNull();
-        _fixture.Container.GetConnectionString().Should().NotBeEmpty();
+        _fixture.PostgresContainer.Should().NotBeNull();
+        _fixture.PostgresContainer.GetConnectionString().Should().NotBeEmpty();
     }
 
     // [Fact]

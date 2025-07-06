@@ -1,6 +1,6 @@
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Core.Domain;
-using FoodDelivery.Services.Catalogs.Products.ValueObjects;
+using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.Products.Models;
 

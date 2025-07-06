@@ -1,22 +1,27 @@
 using System.Reflection;
+using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using OAuthOptions = BuildingBlocks.Core.Security.OAuthOptions;
 
 namespace BuildingBlocks.OpenApi.Swashbuckle.Extensions;
 
 public static class DependencyInjectionExtensions
 {
-    public static WebApplicationBuilder AddSwaggerOpenApi(this WebApplicationBuilder builder, Assembly appAssembly)
+    public static IHostApplicationBuilder AddSwaggerOpenApi(this IHostApplicationBuilder builder, Assembly appAssembly)
     {
-        builder.Services.AddConfigurationOptions<OpenApiOptions>(nameof(OpenApiOptions));
+        builder.Services.AddConfigurationOptions<OpenApiOptions>();
+        var openApiOptions = builder.Configuration.BindOptions<OpenApiOptions>();
+        var oAuthOptions = builder.Configuration.BindOptions<OAuthOptions>();
 
-        // only needed for minimal api but having it in controller based approach doesn't have any affect.
+        // only needed for minimal api but having it in a controller-based approach doesn't have any effect.
         builder.Services.AddEndpointsApiExplorer();
 
-        // IConfigureOptions executes by the order that they are registered, here this configuration run before `AddSwaggerGen` configuration.
+        // IConfigureOptions executes by the order that they are registered, here this configuration runs before `AddSwaggerGen` configuration.
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-9.0#options-interfaces
         builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerGenVersioningOptions>();
 
@@ -48,61 +53,74 @@ public static class DependencyInjectionExtensions
                 options.IncludeXmlComments(filePath);
             }
 
-            AddSecurityScheme(options);
+            AddSecurityScheme(options, openApiOptions, oAuthOptions);
         });
 
         return builder;
     }
 
-    private static void AddSecurityScheme(SwaggerGenOptions options)
+    private static void AddSecurityScheme(
+        SwaggerGenOptions options,
+        OpenApiOptions openApiOptions,
+        OAuthOptions oauthOptions
+    )
     {
         // https://github.com/domaindrivendev/Swashbuckle.AspNetCore#add-security-definitions-and-requirements
-        // Bearer token scheme
-        options.AddSecurityDefinition(
-            "Bearer",
-            new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description =
-                    "Enter 'Bearer' [space] and your token in the text input below.\n\nExample: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'",
-            }
-        );
+        switch (openApiOptions.SecurityUIMode)
+        {
+            case SecurityUIMode.Oauth2:
+                var scopesDictionary = oauthOptions.OpenApiScopes.ToDictionary(
+                    scope => scope,
+                    scope => $"Access to {scope}"
+                );
 
-        // API Key scheme
-        options.AddSecurityDefinition(
-            "ApiKey",
-            new OpenApiSecurityScheme
-            {
-                Name = "X-API-KEY",
-                Type = SecuritySchemeType.ApiKey,
-                In = ParameterLocation.Header,
-                Description = "Enter your API key in the text input below.\n\nExample: '12345-abcdef'",
-            }
-        );
-
-        // Add Security Requirements
-        options.AddSecurityRequirement(
-            new OpenApiSecurityRequirement
-            {
+                var oauthSecurityScheme = new OpenApiSecurityScheme
                 {
-                    new OpenApiSecurityScheme
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
                     {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
+                        Implicit = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri($"{oauthOptions.Authority}/connect/authorize"),
+                            TokenUrl = new Uri($"{oauthOptions.Authority}/connect/token"),
+                            Scopes = scopesDictionary,
+                        },
+                        // Authorization Code flow with PKCE
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri($"{oauthOptions.Authority}/connect/authorize"),
+                            TokenUrl = new Uri($"{oauthOptions.Authority}/connect/token"),
+                            Scopes = scopesDictionary,
+                        },
                     },
-                    new List<string>() // No specific scopes for bearer
-                },
+                };
+                options.AddSecurityDefinition(OAuthDefaults.DisplayName, oauthSecurityScheme);
+                break;
+            case SecurityUIMode.ApiKey:
+                // API Key scheme
+                var apiKeySecurityScheme = new OpenApiSecurityScheme
                 {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "ApiKey" },
-                    },
-                    new List<string>() // No specific scopes for API Key
-                },
-            }
-        );
+                    Name = "X-API-KEY",
+                    Type = SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Header,
+                    Description = "Enter your API key in the text input below.\n\nExample: '12345-abcdef'",
+                };
+                options.AddSecurityDefinition("ApiKey", apiKeySecurityScheme);
+                break;
+            case SecurityUIMode.Jwt:
+                // Bearer token scheme
+                var bearerSecurityScheme = new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description =
+                        "Enter 'Bearer' [space] and your token in the text input below.\n\nExample: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'",
+                };
+                options.AddSecurityDefinition("Bearer", bearerSecurityScheme);
+                break;
+        }
     }
 }

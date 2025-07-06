@@ -1,0 +1,124 @@
+### Variables
+@contentType = application/json
+@bearer_token= Bearer {{access_token}}
+
+### implicit-flow-client
+GET {{gateway_api}}/auth/connect/authorize?
+    client_id=spa&
+    redirect_uri={{implicit_redirect_uri}}&
+    response_type=token&
+    scope={{implicit_scope}}&
+    state={{auth_state}}
+
+#################################################################
+### Client Credentials Flow
+POST {{gateway_api}}/auth/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+    &client_id=test-client-credential
+    &client_secret={{client_credential_secret}}
+    &scope={{client_credential_scope}}
+
+#################################################################
+### PKCE Client
+### Step 1: Authorize - Get Authorization Code
+# code_challenge is base64url(SHA256("code_verifier")) - https://oidcdebugger.com
+GET {{gateway_api}}/auth/connect/authorize?
+    client_id={{pkce_clientId}}&
+    redirect_uri={{pkce_redirect_uri}}&
+    response_type=code&
+    scope={{pkce_scope}}&
+    state={{auth_state}}&
+    code_challenge={{pkce_code_challenge}}&
+    code_challenge_method={{code_challenge_method}}
+
+### Step 2: Token Exchange - Get Access Token
+# code is CODE_FROM_URL
+POST {{gateway_api}}/auth/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id={{pkce_clientId}}&
+grant_type=authorization_code&
+client_secret={{pkce_secret}}&
+code={{pkce_auth_code}}&
+redirect_uri={{pkce_redirect_uri}}&
+code_verifier={{pkce_code_verifier}}
+
+##################################################################
+
+### Get restock subscriptions
+GET {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions?Email=test@example.com&PageSize=10&PageNumber=1
+Accept: {{contentType}}
+Authorization: {{bearer_token}}
+
+### Delete restock subscriptions by time
+DELETE {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions
+Content-Type: {{contentType}}
+Authorization: {{bearer_token}}
+
+{
+  "from": "2023-01-01T00:00:00Z",
+  "to": "2023-12-31T23:59:59Z"
+}
+
+### Create restock subscription
+POST {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions
+Content-Type: {{contentType}}
+Authorization: {{bearer_token}}
+
+{
+  "customerId": 12345,
+  "productId": 67890,
+  "email": "customer@example.com"
+}
+
+### Get restock subscription by subscription id
+GET {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions/12345
+Accept: {{contentType}}
+Authorization: {{bearer_token}}
+
+### Get restock subscription by id
+GET {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions/550e8400-e29b-41d4-a716-446655440000
+Accept: {{contentType}}
+Authorization: {{bearer_token}}
+
+### Delete restock subscription
+DELETE {{gateway_api}}/api-bff/api/v1/customers/restock-subscriptions/12345
+Authorization: {{bearer_token}}
+
+### Update customer
+PUT {{gateway_api}}/api-bff/api/v1/customers/12345
+Content-Type: {{contentType}}
+Authorization: {{bearer_token}}
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "phoneNumber": "+1234567890"
+}
+
+### Get customer by id
+GET {{gateway_api}}/api-bff/api/v1/customers/550e8400-e29b-41d4-a716-446655440000
+Accept: {{contentType}}
+Authorization: {{bearer_token}}
+
+### Get customers
+GET {{gateway_api}}/api-bff/api/v1/customers?PageSize=10&PageNumber=1
+Accept: {{contentType}}
+Authorization: {{bearer_token}}
+
+### Create customer
+POST {{gateway_api}}/api-bff/api/v1/customers
+Content-Type: {{contentType}}
+Authorization: {{bearer_token}}
+
+{
+  "email": "new.customer@example.com"
+}
+
+### Get customer by customer id
+GET {{gateway_api}}/api-bff/api/v1/customers/12345
+Accept: {{contentType}}
+Authorization: {{bearer_token}}

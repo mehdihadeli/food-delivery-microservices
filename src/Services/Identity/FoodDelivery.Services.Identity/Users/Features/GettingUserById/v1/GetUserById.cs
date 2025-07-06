@@ -29,7 +29,7 @@ public class GetUserByIdHandler(UserManager<ApplicationUser> userManager)
     {
         query.NotBeNull();
 
-        var identityUser = await userManager.FindUserWithRoleByIdAsync(query.Id);
+        var identityUser = await userManager.FindByIdAsync(query.Id.ToString());
         identityUser.NotBeNull(new IdentityUserNotFoundException(query.Id));
 
         var identityUserDto = identityUser.ToIdentityUserDto();

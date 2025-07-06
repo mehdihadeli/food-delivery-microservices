@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
@@ -86,7 +86,7 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
                 new
                 {
                     Detail = $"CustomerReadModel with email '{fakeCustomer.Email.Value}' already exists.",
-                    Title = nameof(CustomerAlreadyExistsException).Humanize(LetterCasing.Title),
+                    Title = nameof(CustomerAlreadyExistsException),
                 }
             )
             .And.Be409Conflict();
@@ -108,11 +108,7 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
         response
             .Should()
             .ContainsProblemDetail(
-                new ProblemDetails
-                {
-                    Detail = "Email address is invalid.",
-                    Title = nameof(ValidationException).Humanize(LetterCasing.Title),
-                }
+                new ProblemDetails { Detail = "Email address is invalid.", Title = nameof(ValidationException) }
             )
             .And.Be400BadRequest();
     }

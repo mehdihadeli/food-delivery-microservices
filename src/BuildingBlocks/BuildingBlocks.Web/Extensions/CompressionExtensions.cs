@@ -1,12 +1,13 @@
 using System.IO.Compression;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Hosting;
 
 namespace BuildingBlocks.Web.Extensions;
 
-public static partial class CompressionExtensions
+public static class CompressionExtensions
 {
-    public static WebApplicationBuilder AddCompression(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddCompression(this IHostApplicationBuilder builder)
     {
         builder.Services.AddResponseCompression(options =>
         {

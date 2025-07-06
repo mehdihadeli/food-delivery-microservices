@@ -5,8 +5,9 @@ using Cassandra.Mapping;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Models;
-using FoodDelivery.Services.Catalogs.Products.ValueObjects;
+using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 using FoodDelivery.Services.Catalogs.Suppliers;
+using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -21,7 +22,7 @@ public static class UpdateProductEndpoint
         return endpoints
             .MapPost("/{id}", Handle)
             .WithTags(ProductsConfigurations.Tag)
-            .RequireAuthorization()
+            .RequireAuthorization(policyNames: [Authorization.Policies.CatalogsWritePolicy])
             .WithName(nameof(UpdateProduct))
             .WithDisplayName(nameof(UpdateProduct).Humanize())
             .WithSummary(nameof(UpdateProduct).Humanize())

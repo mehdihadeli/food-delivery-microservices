@@ -10,7 +10,8 @@ public record UserRegisteredV1(
     string UserName,
     string FirstName,
     string LastName,
-    IEnumerable<string>? Roles
+    IEnumerable<string> Roles,
+    IEnumerable<string>? Permissions
 ) : IntegrationEvent
 {
     /// <summary>
@@ -23,15 +24,17 @@ public record UserRegisteredV1(
     /// <param name="firstName"></param>
     /// <param name="lastName"></param>
     /// <param name="roles"></param>
+    /// <param name="permissions"></param>
     /// <returns></returns>
     public static UserRegisteredV1 Of(
         Guid identityId,
-        string? email,
-        string? phoneNumber,
-        string? userName,
-        string? firstName,
-        string? lastName,
-        IEnumerable<string>? roles
+        string email,
+        string phoneNumber,
+        string userName,
+        string firstName,
+        string lastName,
+        IEnumerable<string> roles,
+        IEnumerable<string>? permissions
     )
     {
         return new UserRegisteredV1(
@@ -41,7 +44,8 @@ public record UserRegisteredV1(
             userName.NotBeEmptyOrNull(),
             firstName.NotBeEmptyOrNull(),
             lastName.NotBeEmptyOrNull(),
-            roles
+            roles.NotBeNull(),
+            permissions
         );
     }
 }

@@ -17,8 +17,8 @@ using FoodDelivery.Services.Catalogs.Products.Features.ChangingRestockThreshold.
 using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Domain;
 using FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1.Events.Domain;
 using FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1.Events.Domain;
+using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 using FoodDelivery.Services.Catalogs.Products.Rules;
-using FoodDelivery.Services.Catalogs.Products.ValueObjects;
 using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 

@@ -10,8 +10,6 @@ public class PostgresMessagePersistenceRepository(
     ILogger<PostgresMessagePersistenceRepository> logger
 ) : IMessagePersistenceRepository
 {
-    private readonly ILogger<PostgresMessagePersistenceRepository> _logger = logger;
-
     public async Task AddAsync(PersistMessage persistMessage, CancellationToken cancellationToken = default)
     {
         await persistenceDbContext.PersistMessages.AddAsync(persistMessage, cancellationToken);

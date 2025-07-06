@@ -14,6 +14,7 @@ using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Persistence.Mongo;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using FluentAssertions.Extensions;
 using MassTransit;
 using MassTransit.Testing;
@@ -161,12 +162,12 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         {
             keyValues.Add(
                 $"{nameof(PostgresOptions)}:{nameof(PostgresOptions.ConnectionString)}",
-                PostgresContainerFixture.Container.GetConnectionString()
+                PostgresContainerFixture.PostgresContainer.GetConnectionString()
             );
 
             keyValues.Add(
                 $"{nameof(MessagePersistenceOptions)}:{nameof(PostgresOptions.ConnectionString)}",
-                PostgresContainerFixture.Container.GetConnectionString()
+                PostgresContainerFixture.PostgresContainer.GetConnectionString()
             );
 
             keyValues.Add(

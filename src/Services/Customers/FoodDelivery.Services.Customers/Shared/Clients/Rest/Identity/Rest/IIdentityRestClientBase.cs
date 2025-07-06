@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Web.Extensions;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Dtos;

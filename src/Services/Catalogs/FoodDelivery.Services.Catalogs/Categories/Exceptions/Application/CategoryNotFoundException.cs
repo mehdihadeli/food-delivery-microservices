@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
 
 namespace FoodDelivery.Services.Catalogs.Categories.Exceptions.Application;
 

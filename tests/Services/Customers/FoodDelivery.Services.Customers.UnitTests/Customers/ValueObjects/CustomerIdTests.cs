@@ -1,8 +1,8 @@
 using Bogus;
 using FluentAssertions;
-using FoodDelivery.Services.Customers.Customers.ValueObjects;
+using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using Tests.Shared.XunitCategories;
-using ValidationException = BuildingBlocks.Core.Exception.Types.ValidationException;
+using ValidationException = BuildingBlocks.Core.Exception.ValidationException;
 
 namespace FoodDelivery.Services.Customers.UnitTests.Customers.ValueObjects;
 

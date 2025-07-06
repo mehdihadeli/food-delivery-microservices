@@ -1,44 +1,47 @@
-using BuildingBlocks.Core.Web.Extensions;
-using BuildingBlocks.Core.Web.HeaderPropagation.Extensions;
-using BuildingBlocks.HealthCheck;
-using BuildingBlocks.Observability.Extensions;
-using BuildingBlocks.Web.Extensions;
+using BuildingBlocks.Web.Cors;
+using BuildingBlocks.Web.Minimal.Extensions;
 
 namespace FoodDelivery.Services.Identity.Shared.Extensions.WebApplicationExtensions;
 
-public static partial class WebApplicationExtensions
+public static class WebApplicationExtensions
 {
     public static void UseInfrastructure(this WebApplication app)
     {
-        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling
-        // https://github.com/dotnet/aspnetcore/pull/26567
-        app.UseExceptionHandler(new ExceptionHandlerOptions { AllowStatusCode404Response = true });
+        // Reads standard forwarded headers (X-Forwarded-For, X-Forwarded-Proto, X-Forwarded-Host) and updates the request information accordingly,
+        // Ensures the application sees the original client IP, protocol (HTTP/HTTPS), and host rather than the proxy's information
+        app.UseForwardedHeaders();
+        app.Use(
+            (context, next) =>
+            {
+                // Handles the custom X-Forwarded-Prefix header that YARP is setting.Sets the PathBase property on the request so the application generates correct URLs.
+                // Without this, URL generation might not include the original path prefix (/app, /auth).
+                if (
+                    context.Request.Headers.TryGetValue("X-Forwarded-Prefix", out var prefix)
+                    && prefix.ToString().StartsWith('/')
+                )
+                {
+                    context.Request.PathBase = prefix.ToString().TrimEnd('/');
+                }
 
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment() || app.Environment.IsTest())
-        {
-            // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/handle-errrors
-            app.UseDeveloperExceptionPage();
-        }
+                return next();
+            }
+        );
 
-        app.UseCustomCors();
+        app.UseStaticFiles();
+
+        app.UseDefaultCors();
+
+        // This cookie policy fixes login issues with Chrome 80+ using HTTP
+        app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+        app.UseIdentityServer();
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security
         app.UseAuthentication();
         app.UseAuthorization();
 
-        // https://aurelien-riv.github.io/aspnetcore/2022/11/09/aspnet-grafana-loki-telemetry-microservice-correlation.html
-        // https://www.nuget.org/packages/Microsoft.AspNetCore.HeaderPropagation
-        // https://gist.github.com/davidfowl/c34633f1ddc519f030a1c0c5abe8e867
-        // https://github.com/dotnet/aspnetcore/blob/main/src/Middleware/HeaderPropagation/test/HeaderPropagationIntegrationTest.cs
-        app.UseHeaderPropagation();
+        // map registered minimal endpoints
+        app.MapMinimalEndpoints();
 
-        app.MapCustomHealthChecks();
-
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/health-checks#non-development-environments
-        app.UseRequestTimeouts();
-        app.UseOutputCache();
-
-        app.UseObservability();
+        app.MapRazorPages().RequireAuthorization();
     }
 }

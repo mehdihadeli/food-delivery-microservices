@@ -2,7 +2,7 @@ namespace BuildingBlocks.Core.Diagnostics;
 
 public static class DiagnosticsConstant
 {
-    public static string? ApplicationInstrumentationName;
+    public const string InstrumentationName = "InstrumentationName";
 
     public static class Components
     {

@@ -1,14 +1,13 @@
-using BuildingBlocks.Abstractions.Messages;
-using BuildingBlocks.Core.Messages;
-
-namespace BuildingBlocks.Core.Persistence.EventStore;
-
 using System.Collections.Immutable;
 using BuildingBlocks.Abstractions.Domain.EventSourcing;
 using BuildingBlocks.Abstractions.Events;
+using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 using BuildingBlocks.Core.Domain;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Messages;
+
+namespace BuildingBlocks.Core.Persistence.EventStore;
 
 public abstract class AggregateStore(
     IEventStore eventStore,

@@ -1,7 +1,7 @@
 using BuildingBlocks.Core.Messages;
 using Microsoft.AspNetCore.HeaderPropagation;
 
-namespace BuildingBlocks.Core.Web.HeaderPropagation.Extensions;
+namespace BuildingBlocks.Core.Web.Extensions;
 
 public static class HeaderPropagationStoreExtensions
 {

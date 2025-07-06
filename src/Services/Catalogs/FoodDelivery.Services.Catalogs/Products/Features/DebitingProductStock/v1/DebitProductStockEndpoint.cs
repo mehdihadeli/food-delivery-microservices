@@ -2,6 +2,7 @@ using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using Cassandra.Mapping;
+using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -14,7 +15,7 @@ public static class DebitProductStockEndpoint
     {
         return endpoints
             .MapPost("/{productId}/debit-stock", Handle)
-            .RequireAuthorization()
+            .RequireAuthorization(policyNames: [Authorization.Policies.CatalogsWritePolicy])
             .WithTags(ProductsConfigurations.Tag)
             .WithName(nameof(DebitProductStock))
             .WithDisplayName(nameof(DebitProductStock).Humanize())

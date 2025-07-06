@@ -21,6 +21,7 @@ on:
       - main
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-affects-specific-files
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
+    types: [opened, synchronize, reopened]
     paths:
       - src/Services/Customers/**
       - src/BuildingBlocks/**
@@ -89,8 +90,6 @@ jobs:
     uses: ./.github/workflows/_pre-checks.yml
     needs: [call-detect-environment, call-semantic-version]
     with:
-      tests-path: ${{ vars.CUSTOMERS_SERVICE_TESTS_PATH }} # tests/Services/Customers
-      project-path: ${{ vars.CUSTOMERS_SERVICE_PROJECT_PATH }} # src/Services/Customers
       dotnet-version: ${{ vars.DOTNET_VERSION }} # 9.0.*
     secrets:
       ci-github-token: ${{ secrets.GITHUB_TOKEN }}

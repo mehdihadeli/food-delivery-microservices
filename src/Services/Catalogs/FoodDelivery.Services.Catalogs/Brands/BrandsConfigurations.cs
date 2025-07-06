@@ -12,9 +12,4 @@ internal static class BrandsConfigurations
 
         return builder;
     }
-
-    internal static WebApplication UseBrandsModule(this WebApplication app)
-    {
-        return app;
-    }
 }

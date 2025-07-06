@@ -9,15 +9,15 @@ public interface IDiagnosticsProvider : IDisposable
     ActivitySource ActivitySource { get; }
     Meter Meter { get; }
 
-    Task ExecuteActivityAsync(
-        CreateActivityInfo createActivityInfo,
-        Func<Activity?, CancellationToken, Task> action,
-        CancellationToken cancellationToken = default
-    );
+    /// <summary>
+    /// Allow adding a new custom listener.
+    /// </summary>
+    /// <param name="listener"></param>
+    void AddCustomActivityListener(ActivityListener listener);
 
-    Task<TResult?> ExecuteActivityAsync<TResult>(
-        CreateActivityInfo createActivityInfo,
-        Func<Activity?, CancellationToken, Task<TResult>> action,
-        CancellationToken cancellationToken = default
-    );
+    /// <summary>
+    ///  This method creates a minimal, no-frills ActivityListener that forces all activities to be Created and Sampled.
+    ///  Ensures ActivitySource.CreateActivity() never returns null and can be used for unit tests.
+    /// </summary>
+    void AddEmptyListener();
 }

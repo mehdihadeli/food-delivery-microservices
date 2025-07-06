@@ -3,8 +3,8 @@ using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Abstractions.Web.MinimalApi;
 using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Web.ProblemDetail.HttpResults;
-using Cassandra.Mapping;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
+using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -15,7 +15,7 @@ internal static class GetUsersEndpoint
     internal static RouteHandlerBuilder MapGetUsersByPageEndpoint(this IEndpointRouteBuilder app)
     {
         return app.MapGet("/", Handle)
-            .RequireAuthorization()
+            .RequireAuthorization(policyNames: [Authorization.ClientPermissions.UserRead])
             .WithTags(UsersConfigurations.Tag)
             .WithName(nameof(GetUsers))
             .WithDescription(nameof(GetUsers).Humanize())

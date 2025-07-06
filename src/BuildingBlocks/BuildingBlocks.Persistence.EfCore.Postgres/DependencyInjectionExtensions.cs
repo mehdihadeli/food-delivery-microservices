@@ -10,16 +10,17 @@ using Core.Persistence.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace BuildingBlocks.Persistence.EfCore.Postgres;
 
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddPostgresDbContext<TDbContext>(
-        this IServiceCollection services,
+    public static IHostApplicationBuilder AddPostgresDbContext<TDbContext>(
+        this IHostApplicationBuilder builder,
         Assembly? migrationAssembly = null,
-        Action<DbContextOptionsBuilder>? builder = null,
+        Action<DbContextOptionsBuilder>? dbContextBuilder = null,
         Action<PostgresOptions>? configurator = null,
         params Assembly[] assembliesToScan
     )
@@ -27,17 +28,17 @@ public static class DependencyInjectionExtensions
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-        // Add option to the dependency injection
-        services.AddValidationOptions(configurator: configurator);
+        // Add an option to the dependency injection
+        builder.Services.AddValidationOptions(configurator: configurator);
 
-        services.AddScoped<IConnectionFactory>(sp =>
+        builder.Services.AddScoped<IConnectionFactory>(sp =>
         {
             var postgresOptions = sp.GetRequiredService<IOptions<PostgresOptions>>().Value;
             postgresOptions.ConnectionString.NotBeNullOrWhiteSpace();
             return new NpgsqlConnectionFactory(postgresOptions.ConnectionString);
         });
 
-        services.AddDbContext<TDbContext>(
+        builder.Services.AddDbContext<TDbContext>(
             (sp, options) =>
             {
                 var postgresOptions = sp.GetRequiredService<IOptions<PostgresOptions>>().Value;
@@ -75,26 +76,38 @@ public static class DependencyInjectionExtensions
                     )
                 );
 
-                builder?.Invoke(options);
+                dbContextBuilder?.Invoke(options);
             }
         );
 
-        services.AddScoped<IDbFacadeResolver>(provider => provider.GetService<TDbContext>()!);
-        services.AddScoped<IDomainEventContext>(provider => provider.GetService<TDbContext>()!);
+        builder.Services.AddScoped<IDbFacadeResolver>(provider => provider.GetService<TDbContext>()!);
+        builder.Services.AddScoped<IDomainEventContext>(provider => provider.GetService<TDbContext>()!);
 
-        services.AddPostgresRepositories(assembliesToScan);
-        services.AddPostgresUnitOfWork(assembliesToScan);
+        builder.AddPostgresRepositories(assembliesToScan);
+        builder.AddPostgresUnitOfWork(assembliesToScan);
 
-        return services;
+        builder
+            .Services.AddHealthChecks()
+            .AddNpgSql(
+                sp =>
+                {
+                    var postgresOptions = sp.GetRequiredService<IOptions<PostgresOptions>>().Value;
+                    return postgresOptions.ConnectionString;
+                },
+                name: "Postgres-Check",
+                tags: ["live"]
+            );
+
+        return builder;
     }
 
-    private static IServiceCollection AddPostgresRepositories(
-        this IServiceCollection services,
+    private static IHostApplicationBuilder AddPostgresRepositories(
+        this IHostApplicationBuilder builder,
         params Assembly[] assembliesToScan
     )
     {
         var scanAssemblies = assembliesToScan.Length != 0 ? assembliesToScan : [Assembly.GetCallingAssembly()];
-        services.Scan(scan =>
+        builder.Services.Scan(scan =>
             scan.FromAssemblies(scanAssemblies)
                 .AddClasses(classes => classes.AssignableTo(typeof(IRepository<,>)), false)
                 .AsImplementedInterfaces()
@@ -102,16 +115,16 @@ public static class DependencyInjectionExtensions
                 .WithTransientLifetime()
         );
 
-        return services;
+        return builder;
     }
 
-    private static IServiceCollection AddPostgresUnitOfWork(
-        this IServiceCollection services,
+    private static IHostApplicationBuilder AddPostgresUnitOfWork(
+        this IHostApplicationBuilder builder,
         params Assembly[] assembliesToScan
     )
     {
         var scanAssemblies = assembliesToScan.Length != 0 ? assembliesToScan : [Assembly.GetCallingAssembly()];
-        services.Scan(scan =>
+        builder.Services.Scan(scan =>
             scan.FromAssemblies(scanAssemblies)
                 .AddClasses(classes => classes.AssignableTo(typeof(IEfUnitOfWork<>)), false)
                 .AsImplementedInterfaces()
@@ -119,6 +132,6 @@ public static class DependencyInjectionExtensions
                 .WithTransientLifetime()
         );
 
-        return services;
+        return builder;
     }
 }

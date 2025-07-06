@@ -1,7 +1,2 @@
-# npm run fix-analyzers
-# npm run fix-style
-# npm run fix-csharpier-format
-
-# npm run format
-# npm run style
-# npm run analyzers
+# for fixing issues use 'just fix-all'
+just check-all

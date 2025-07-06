@@ -1,9 +1,12 @@
+using System.Security.Claims;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Messages;
+using BuildingBlocks.Core.Security;
 using BuildingBlocks.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
+using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Microsoft.AspNetCore.Identity;
 using UserState = FoodDelivery.Services.Shared.Identity.Users.UserState;
@@ -18,7 +21,8 @@ public record RegisterUser(
     string PhoneNumber,
     string Password,
     string ConfirmPassword,
-    IEnumerable<string>? Roles = null
+    IEnumerable<string> Roles,
+    IEnumerable<string>? Permissions
 ) : ITxCommand<RegisterUserResult>
 {
     public DateTime CreatedAt { get; init; } = DateTime.Now;
@@ -34,20 +38,32 @@ public record RegisterUser(
     /// <param name="password"></param>
     /// <param name="confirmPassword"></param>
     /// <param name="roles"></param>
+    /// <param name="permissions"></param>
     /// <returns></returns>
     public static RegisterUser Of(
-        string? firstName,
-        string? lastName,
-        string? userName,
-        string? email,
-        string? phoneNumber,
-        string? password,
-        string? confirmPassword,
-        IEnumerable<string>? roles = null
+        string firstName,
+        string lastName,
+        string userName,
+        string email,
+        string phoneNumber,
+        string password,
+        string confirmPassword,
+        IEnumerable<string> roles,
+        IEnumerable<string>? permissions
     )
     {
         return new RegisterUserValidator().HandleValidation(
-            new RegisterUser(firstName!, lastName!, userName!, email!, phoneNumber!, password!, confirmPassword!, roles)
+            new RegisterUser(
+                firstName,
+                lastName,
+                userName,
+                email,
+                phoneNumber,
+                password,
+                confirmPassword,
+                roles,
+                permissions
+            )
         );
     }
 }
@@ -72,6 +88,8 @@ public class RegisterUserValidator : AbstractValidator<RegisterUser>
             .Equal(x => x.Password)
             .WithMessage("The password and confirmation password do not match.")
             .NotEmpty();
+
+        RuleFor(v => v.Roles).NotEmpty();
         RuleFor(v => v.Roles)
             .Custom(
                 (roles, c) =>
@@ -79,8 +97,8 @@ public class RegisterUserValidator : AbstractValidator<RegisterUser>
                     if (
                         roles != null
                         && !roles.All(x =>
-                            x.Contains(IdentityConstants.Role.Admin, StringComparison.Ordinal)
-                            || x.Contains(IdentityConstants.Role.User, StringComparison.Ordinal)
+                            x.Contains(Authorization.Roles.Admin, StringComparison.Ordinal)
+                            || x.Contains(Authorization.Roles.User, StringComparison.Ordinal)
                         )
                     )
                     {
@@ -93,11 +111,15 @@ public class RegisterUserValidator : AbstractValidator<RegisterUser>
 
 // using transaction script instead of using domain business logic here
 // https://www.youtube.com/watch?v=PrJIMTZsbDw
-public class RegisterUserHandler(UserManager<ApplicationUser> userManager, IExternalEventBus externalEventBus)
-    : ICommandHandler<RegisterUser, RegisterUserResult>
+public class RegisterUserHandler(
+    UserManager<ApplicationUser> userManager,
+    RoleManager<ApplicationRole> roleManager,
+    IExternalEventBus externalEventBus
+) : ICommandHandler<RegisterUser, RegisterUserResult>
 {
     public async ValueTask<RegisterUserResult> Handle(RegisterUser request, CancellationToken cancellationToken)
     {
+        // Create the user
         var applicationUser = new ApplicationUser
         {
             FirstName = request.FirstName,
@@ -113,13 +135,30 @@ public class RegisterUserHandler(UserManager<ApplicationUser> userManager, IExte
         if (!identityResult.Succeeded)
             throw new RegisterIdentityUserException(string.Join(',', identityResult.Errors.Select(e => e.Description)));
 
-        var roleResult = await userManager.AddToRolesAsync(
-            applicationUser,
-            request.Roles ?? new List<string> { IdentityConstants.Role.User }
-        );
+        // Validate that all requested roles exist
+        var rolesToAssign = request.Roles.ToList();
+        await ValidateRolesExist(rolesToAssign);
 
+        // Add user to roles
+        var roleResult = await userManager.AddToRolesAsync(applicationUser, rolesToAssign);
         if (!roleResult.Succeeded)
             throw new RegisterIdentityUserException(string.Join(',', roleResult.Errors.Select(e => e.Description)));
+
+        // Add user-specific permissions if any
+        if (request.Permissions != null && request.Permissions.Any())
+        {
+            var permissionClaims = request
+                .Permissions.Select(permission => new Claim(ClaimsType.Permission, permission))
+                .ToList();
+
+            var addClaimsResult = await userManager.AddClaimsAsync(applicationUser, permissionClaims);
+            if (!addClaimsResult.Succeeded)
+            {
+                throw new RegisterIdentityUserException(
+                    string.Join(',', addClaimsResult.Errors.Select(e => e.Description))
+                );
+            }
+        }
 
         var userRegistered = UserRegisteredV1.Of(
             applicationUser.Id,
@@ -128,11 +167,10 @@ public class RegisterUserHandler(UserManager<ApplicationUser> userManager, IExte
             applicationUser.UserName,
             applicationUser.FirstName,
             applicationUser.LastName,
-            request.Roles
+            rolesToAssign,
+            request.Permissions
         );
 
-        // publish our integration event and save to outbox should do in same transaction of our business logic actions. we could use TxBehaviour or ITxDbContextExecutes interface
-        // This service is not DDD, so we couldn't use DomainEventPublisher to publish mapped integration events
         await externalEventBus.PublishAsync(userRegistered, cancellationToken);
 
         return new RegisterUserResult(
@@ -144,12 +182,22 @@ public class RegisterUserHandler(UserManager<ApplicationUser> userManager, IExte
                 UserName = applicationUser.UserName,
                 FirstName = applicationUser.FirstName,
                 LastName = applicationUser.LastName,
-                Roles = request.Roles ?? new List<string> { IdentityConstants.Role.User },
-                RefreshTokens = applicationUser?.RefreshTokens?.Select(x => x.Token),
+                Roles = rolesToAssign,
                 CreatedAt = request.CreatedAt,
                 UserState = UserState.Active,
             }
         );
+    }
+
+    private async Task ValidateRolesExist(IEnumerable<string> roleNames)
+    {
+        foreach (var roleName in roleNames)
+        {
+            if (!await roleManager.RoleExistsAsync(roleName))
+            {
+                throw new InvalidOperationException($"Role '{roleName}' does not exist in the system");
+            }
+        }
     }
 }
 

@@ -11,8 +11,8 @@ public class IdentityUserDto
     public string FirstName { get; set; } = default!;
     public string LastName { get; set; } = default!;
     public DateTime? LastLoggedInAt { get; set; }
-    public IEnumerable<string>? RefreshTokens { get; set; }
-    public IEnumerable<string>? Roles { get; set; }
+    public IList<string> Roles { get; set; } = new List<string>();
+    public IList<string> Permissions { get; set; } = new List<string>();
     public UserState UserState { get; set; }
     public DateTime CreatedAt { get; set; }
 }

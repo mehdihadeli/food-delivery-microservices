@@ -175,7 +175,7 @@ public class CustomWebApplicationFactory<TEntryPoint>(Action<IWebHostBuilder>? w
                     // for working fake token this should be set to jwt
                     c.BearerValueType = FakeJwtBearerBearerValueType.Jwt;
                 })
-                .Services.AddCustomAuthorization(
+                .Services.AddCustomJwtAuthorization(
                     rolePolicies: new List<RolePolicy>
                     {
                         new(Constants.Users.Admin.Role, new List<string> { Constants.Users.Admin.Role }),

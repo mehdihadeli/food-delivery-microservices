@@ -376,3 +376,6 @@ coverage.info
 .env.catalogs
 .env.customers
 .env.identity
+
+# exclude keys directory
+keys/

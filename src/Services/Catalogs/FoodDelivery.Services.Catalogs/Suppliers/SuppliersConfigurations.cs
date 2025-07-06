@@ -12,9 +12,4 @@ internal static class SuppliersConfigurations
 
         return builder;
     }
-
-    internal static WebApplication UseSuppliersModule(this WebApplication app)
-    {
-        return app;
-    }
 }

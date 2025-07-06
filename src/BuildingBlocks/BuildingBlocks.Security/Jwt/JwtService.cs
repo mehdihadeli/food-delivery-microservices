@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Security;
 using BuildingBlocks.Core.Utils;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -49,8 +50,8 @@ public class JwtService(IOptions<JwtOptions> jwtOptions) : IJwtService
                 JwtRegisteredClaimNames.Iat,
                 DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)
             ),
-            new(CustomClaimTypes.RefreshToken, refreshToken ?? ""),
-            new(CustomClaimTypes.IpAddress, ipAddress),
+            new(ClaimsType.RefreshToken, refreshToken ?? ""),
+            new(ClaimsType.IpAddress, ipAddress),
         };
 
         if (rolesClaims?.Any() is true)
@@ -66,9 +67,7 @@ public class JwtService(IOptions<JwtOptions> jwtOptions) : IJwtService
         {
             foreach (var permissionsClaim in permissionsClaims)
             {
-                jwtClaims.Add(
-                    new Claim(CustomClaimTypes.Permission, permissionsClaim.ToLower(CultureInfo.InvariantCulture))
-                );
+                jwtClaims.Add(new Claim(ClaimsType.Permission, permissionsClaim.ToLower(CultureInfo.InvariantCulture)));
             }
         }
 

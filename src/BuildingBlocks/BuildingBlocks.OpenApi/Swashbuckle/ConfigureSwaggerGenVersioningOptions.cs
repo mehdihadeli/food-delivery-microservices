@@ -1,8 +1,6 @@
-﻿using System.Text;
-using Asp.Versioning.ApiExplorer;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Asp.Versioning.ApiExplorer;
+using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -19,7 +17,7 @@ namespace BuildingBlocks.OpenApi.Swashbuckle;
 public class ConfigureSwaggerGenVersioningOptions : IConfigureOptions<SwaggerGenOptions>
 {
     private readonly IApiVersionDescriptionProvider _apiVersionDescriptionProvider;
-    private readonly OpenApiOptions _openApiOptions;
+    private readonly OpenApiOptions? _openApiOptions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigureSwaggerGenVersioningOptions"/> class.
@@ -35,7 +33,6 @@ public class ConfigureSwaggerGenVersioningOptions : IConfigureOptions<SwaggerGen
         _openApiOptions = options.Value;
     }
 
-    /// <inheritdoc />
     public void Configure(SwaggerGenOptions options)
     {
         // add a swagger document for each discovered API version
@@ -48,69 +45,19 @@ public class ConfigureSwaggerGenVersioningOptions : IConfigureOptions<SwaggerGen
 
     private OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
     {
-        var text = new StringBuilder(_openApiOptions.Description);
         var info = new OpenApiInfo
         {
-            Title = _openApiOptions.Title ?? "OpenApi Documentation",
-            Description = _openApiOptions.Description ?? "OpenApi Documentation",
-            Version = description.ApiVersion.ToString(),
+            License = new OpenApiLicense { Name = _openApiOptions?.LicenseName, Url = _openApiOptions?.LicenseUrl },
             Contact = new OpenApiContact
             {
-                Name = _openApiOptions.ContactUserName ?? string.Empty,
-                Email = _openApiOptions.ContactEmail,
+                Name = _openApiOptions?.AuthorName,
+                Url = _openApiOptions?.AuthorUrl,
+                Email = _openApiOptions?.AuthorEmail,
             },
-            License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") },
+            Version = description.ApiVersion.ToString(),
+            Title = _openApiOptions?.Title,
+            Description = description.BuildDescription(_openApiOptions?.Description),
         };
-
-        if (description.IsDeprecated)
-        {
-            text.Append(" This API version has been deprecated.");
-        }
-
-        if (description.SunsetPolicy is { } policy)
-        {
-            if (policy.Date is { } when)
-            {
-                text.Append(" The API will be sunset on ").Append(when.Date.ToShortDateString()).Append('.');
-            }
-
-            if (policy.HasLinks)
-            {
-                text.AppendLine();
-
-                var rendered = false;
-
-                foreach (var link in policy.Links)
-                {
-                    if (link.Type == "text/html")
-                    {
-                        if (!rendered)
-                        {
-                            text.Append("<h4>Links</h4><ul>");
-                            rendered = true;
-                        }
-
-                        text.Append("<li><a href=\"");
-                        text.Append(link.LinkTarget.OriginalString);
-                        text.Append("\">");
-                        text.Append(
-                            StringSegment.IsNullOrEmpty(link.Title)
-                                ? link.LinkTarget.OriginalString
-                                : link.Title.ToString()
-                        );
-                        text.Append("</a></li>");
-                    }
-                }
-
-                if (rendered)
-                {
-                    text.Append("</ul>");
-                }
-            }
-        }
-
-        text.Append("<h4>Additional Information</h4>");
-        info.Description = text.ToString();
 
         return info;
     }

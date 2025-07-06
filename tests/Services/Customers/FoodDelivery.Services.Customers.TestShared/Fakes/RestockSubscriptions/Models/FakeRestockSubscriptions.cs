@@ -1,6 +1,6 @@
 using Bogus;
 using BuildingBlocks.Core.Domain.ValueObjects;
-using FoodDelivery.Services.Customers.Customers.ValueObjects;
+using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using FoodDelivery.Services.Customers.Products;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Models;
 using FoodDelivery.Services.Customers.RestockSubscriptions.ValueObjects;

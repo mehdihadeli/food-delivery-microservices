@@ -1,14 +1,9 @@
-using System.Globalization;
-using System.Security.Cryptography;
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Email;
-using FoodDelivery.Services.Identity.Shared.Data;
-using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Mediator;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.SendingEmailVerificationCode.v1;
@@ -20,7 +15,6 @@ public record SendEmailVerificationCode(string Email) : ICommand
 
 public class SendEmailVerificationCodeCommandHandler(
     UserManager<ApplicationUser> userManager,
-    IdentityContext context,
     IEmailSender emailSender,
     ILogger<SendEmailVerificationCodeCommandHandler> logger
 ) : BuildingBlocks.Abstractions.Commands.ICommandHandler<SendEmailVerificationCode>
@@ -28,36 +22,25 @@ public class SendEmailVerificationCodeCommandHandler(
     public async ValueTask<Unit> Handle(SendEmailVerificationCode command, CancellationToken cancellationToken)
     {
         command.NotBeNull();
-        var identityUser = await userManager.FindByEmailAsync(command.Email);
 
-        identityUser.NotBeNull(new IdentityUserNotFoundException(command.Email));
-
-        if (identityUser.EmailConfirmed)
-            throw new ConflictException("Email is already confirmed.");
-
-        bool isExists = await context
-            .Set<EmailVerificationCode>()
-            .AnyAsync(evc => evc.Email == command.Email && evc.SentAt.AddMinutes(5) > DateTime.Now, cancellationToken);
-
-        if (isExists)
+        var user = await userManager.FindByEmailAsync(command.Email);
+        if (user == null)
         {
-            throw new BadRequestException(
-                "You already have an active code. Please wait! You may receive the code in your email. If not, please try again after sometimes."
+            logger.LogWarning(
+                "Email verification code request failed: User with email {Email} not found",
+                command.Email
             );
+            throw new BadRequestException("User not found");
         }
 
-        int randomNumber = RandomNumberGenerator.GetInt32(0, 1000000);
-        string verificationCode = randomNumber.ToString("D6", CultureInfo.InvariantCulture);
-
-        EmailVerificationCode emailVerificationCode = new EmailVerificationCode()
+        if (user.EmailConfirmed)
         {
-            Code = verificationCode,
-            Email = command.Email,
-            SentAt = DateTime.Now,
-        };
+            logger.LogWarning("Email {Email} is already verified", command.Email);
+            throw new BadRequestException("Email is already verified");
+        }
 
-        await context.Set<EmailVerificationCode>().AddAsync(emailVerificationCode, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
+        // Generate email confirmation token
+        var verificationCode = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
         (string Email, string VerificationCode) model = (command.Email, verificationCode);
 
@@ -70,7 +53,7 @@ public class SendEmailVerificationCodeCommandHandler(
 
         await emailSender.SendAsync(emailObject);
 
-        logger.LogInformation("Verification email sent successfully for userId:{UserId}", identityUser.Id);
+        logger.LogInformation("Verification email sent successfully for userId:{UserId}", user.Id);
 
         return Unit.Value;
     }

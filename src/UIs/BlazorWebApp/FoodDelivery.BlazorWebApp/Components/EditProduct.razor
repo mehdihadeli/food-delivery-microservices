@@ -1,0 +1,91 @@
+@using FoodDelivery.BlazorWebApp.Contracts
+@using FoodDelivery.BlazorWebApp.Dtos
+@inject ICatalogsServiceClient CatalogsServiceClient
+
+<EditForm Model="product" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <h4>Edit Product</h4>
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+    <div class="mb-3">
+        <label>Name</label>
+        <InputText class="form-control" @bind-Value="product.Name" />
+    </div>
+    <div class="mb-3">
+        <label>Price</label>
+        <InputNumber class="form-control" @bind-Value="product.Price" />
+    </div>
+    <div class="mb-3">
+        <label>Stock</label>
+        <InputNumber class="form-control" @bind-Value="product.Stock" />
+    </div>
+    <div class="mb-3">
+        <label>Description</label>
+        <InputTextArea class="form-control" @bind-Value="product.Description" />
+    </div>
+    <div class="mt-3">
+        <button class="btn btn-primary" disabled="@(isSaving)">Save Changes</button>
+        <button class="btn btn-secondary ms-2" type="button" @onclick="OnCancelClicked">Cancel</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter, EditorRequired] public ProductDto Product { get; set; } = default!;
+    [Parameter] public EventCallback OnSaved { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private UpdateProductRequest product = new();
+    private bool isSaving = false;
+    private string? errorMessage = null;
+
+    protected override void OnParametersSet()
+    {
+        if (Product != null)
+        {
+            product = new UpdateProductRequest
+            {
+                Name = Product.Name,
+                Price = Product.Price,
+                Stock = Product.Stock,
+                RestockThreshold = Product.RestockThreshold,
+                MaxStockThreshold = Product.MaxStockThreshold,
+                Status = (int)Product.Status,
+                ProductType = (int)Product.ProductType,
+                Color = (int)Product.ProductColor,
+                Height = Product.Height,
+                Width = Product.Width,
+                Depth = Product.Depth,
+                Size = Product.Size,
+                CategoryId = Product.CategoryId,
+                SupplierId = Product.SupplierId,
+                BrandId = Product.BrandId,
+                Description = Product.Description,
+            };
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isSaving = true;
+        errorMessage = null;
+        try
+        {
+            await CatalogsServiceClient.UpdateProductAsync(Product.Id, product);
+            await OnSaved.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        isSaving = false;
+    }
+
+    private async Task OnCancelClicked()
+    {
+        await OnCancel.InvokeAsync();
+    }
+}

@@ -1,0 +1,264 @@
+@page "/products"
+@using FoodDelivery.BlazorWebApp.Contracts
+@using FoodDelivery.BlazorWebApp.Dtos
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject ICatalogsServiceClient CatalogsServiceClient
+
+<PageTitle>Products</PageTitle>
+
+<h1 class="mb-4">🍔 Products</h1>
+
+@if (showDetails && selectedProduct != null)
+{
+    <ProductDetails Product="selectedProduct" OnBack="CloseDetails"/>
+}
+else if (showAddEdit)
+{
+    @if (isEdit && selectedProduct != null)
+    {
+        <EditProduct Product="selectedProduct" OnSaved="OnFormSaved" OnCancel="CloseForm"/>
+    }
+    else
+    {
+        <NewProduct OnSaved="OnFormSaved" OnCancel="CloseForm"/>
+    }
+}
+else
+{
+    <div class="mb-3 d-flex justify-content-between align-items-center">
+        <span class="fs-4 fw-semibold">Product Catalog</span>
+        <button class="btn btn-success" @onclick="ShowAddForm">
+            + Add Product
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="alert alert-info">Loading products...</div>
+    }
+    else if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+    else if (products.Count == 0)
+    {
+        <div class="text-muted text-center">No products found.</div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+            @foreach (var product in products)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow position-relative">
+                        @if (product.Images != null && product.Images.Count > 0)
+                        {
+                            <img src="@product.Images.First()" alt="@product.Name"
+                                 class="card-img-top"
+                                 style="object-fit:cover;height:170px;"/>
+                        }
+                        else
+                        {
+                            <div class="bg-light text-center d-flex align-items-center justify-content-center"
+                                 style="height:170px;">
+                                <span class="text-secondary">No Image</span>
+                            </div>
+                        }
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title mb-1">@product.Name</h5>
+                            <div class="card-subtitle mb-2 text-muted">
+                                @product.CategoryName
+                            </div>
+                            <div class="mb-1">
+                                <span class="fw-bold text-success">$@product.Price:F2</span>
+                                <span class="text-muted ms-2 small">@product.BrandName</span>
+                            </div>
+                            <div class="small text-muted">@Truncate(product.Description)</div>
+                            <div class="mt-auto">
+                                <span
+                                    class="badge bg-primary">Size: @(product.Size ?? $"{product.Width}x{product.Height}x{product.Depth}")</span>
+                                <span class="badge bg-secondary ms-1">Stock: @product.Stock</span>
+                                @if (product.Stock <= product.RestockThreshold)
+                                {
+                                    <span class="badge bg-warning text-dark ms-1">Low Stock</span>
+                                }
+                                @if (product.Status != 1)
+                                {
+                                    <span class="badge bg-dark ms-1">Inactive</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex gap-2">
+                            <button class="btn btn-sm btn-warning flex-fill"
+                                    @onclick="async () => await ShowDetails(product.Id)">Details
+                            </button>
+                            <button class="btn btn-sm btn-primary flex-fill"
+                                    @onclick="async () => await ShowEditForm(product.Id)">Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger flex-fill"
+                                    @onclick="async () => await DeleteProduct(product.Id)">Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="mt-4 d-flex justify-content-center align-items-center gap-3">
+            <button class="btn btn-light" disabled="@(currentPage == 1)" @onclick="PrevPage">
+                Previous
+            </button>
+            <span>
+                Page @currentPage of @totalPages
+            </span>
+            <button class="btn btn-light" disabled="@(currentPage == totalPages)" @onclick="NextPage">
+                Next
+            </button>
+        </div>
+    }
+}
+
+@code {
+    private List<ProductDto> products = new();
+    private bool isLoading, showAddEdit, showDetails, isEdit;
+    private string? errorMessage;
+    private int currentPage = 1, totalPages = 1, pageSize = 12;
+    private ProductDto? selectedProduct;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProducts();
+    }
+
+    private async Task LoadProducts()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+
+            var resp = await CatalogsServiceClient.GetProductsAsync(currentPage, pageSize);
+            products = resp.ProductsPageList.Items.ToList();
+            totalPages = resp.ProductsPageList.TotalPages;
+            currentPage = resp.ProductsPageList.PageNumber;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task ShowDetails(long id)
+    {
+        isLoading = true;
+        try
+        {
+            var resp = await CatalogsServiceClient.GetProductByIdAsync(id);
+            selectedProduct = resp.Product;
+            showDetails = true;
+            if (selectedProduct == null)
+            {
+                errorMessage = $"No product found for id {id}";
+            }
+            Console.WriteLine($"ShowDetails: selectedProduct = {selectedProduct?.Name ?? "null"}");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged(); // Optional: Force render update
+        }
+    }
+
+
+    private void CloseDetails() => showDetails = false;
+
+    private void ShowAddForm()
+    {
+        selectedProduct = null;
+        showAddEdit = true;
+        isEdit = false;
+    }
+
+    private async Task ShowEditForm(long id)
+    {
+        isLoading = true;
+        try
+        {
+            var resp = await CatalogsServiceClient.GetProductByIdAsync(id);
+            selectedProduct = resp.Product;
+            showAddEdit = true;
+            isEdit = true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void CloseForm()
+    {
+        showAddEdit = false;
+        isEdit = false;
+        selectedProduct = null;
+    }
+
+    private async Task OnFormSaved()
+    {
+        CloseForm();
+        await LoadProducts();
+    }
+
+    private async Task DeleteProduct(long id)
+    {
+        isLoading = true;
+        try
+        {
+            await CatalogsServiceClient.DeleteProductAsync(id);
+            await LoadProducts();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void PrevPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            _ = LoadProducts();
+        }
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            _ = LoadProducts();
+        }
+    }
+
+    private string Truncate(string? text, int maxLen = 60)
+        => string.IsNullOrWhiteSpace(text) ? "No description" :
+            text.Length > maxLen ? (text.Substring(0, maxLen) + "...") : text;
+
+}

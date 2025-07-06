@@ -1,7 +1,7 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.Exception.Types;
+using BuildingBlocks.Core.Exception;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
 using BuildingBlocks.Core.Messages;
@@ -9,7 +9,10 @@ using BuildingBlocks.Core.Reflection;
 using BuildingBlocks.Core.Web.Extensions;
 using Humanizer;
 using MassTransit;
+using MassTransit;
+using MassTransit.Logging;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -19,31 +22,72 @@ namespace BuildingBlocks.Integration.MassTransit;
 
 public static class DependencyInjectionExtensions
 {
-    public static WebApplicationBuilder AddMasstransitEventBus(
-        this WebApplicationBuilder builder,
+    public static IHostApplicationBuilder AddMasstransitEventBus(
+        this IHostApplicationBuilder builder,
         Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureMessagesTopologies = null,
         Action<IBusRegistrationConfigurator>? configureBusRegistration = null,
         Action<RabbitMqOptions>? configurator = null,
-        Action<MasstransitOptions>? configureMasstransitOptions = null
+        Action<MasstransitOptions>? configureMasstransitOptions = null,
+        Assembly[]? assemblies = null
     )
     {
+        assemblies ??= [Assembly.GetCallingAssembly()];
+
         // Add option to the dependency injection
         builder.Services.AddValidationOptions(configurator: configureMasstransitOptions);
         builder.Services.AddValidationOptions(configurator: configurator);
 
         var masstransitOptions = builder.Configuration.BindOptions(configureMasstransitOptions);
 
-        // Find all referenced assemblies to current assemblies
-        var assemblies = Assembly.GetCallingAssembly().GetReferencingAssemblies();
-
         if (!builder.Environment.IsTest())
         {
             builder.Services.AddMassTransit(ConfiguratorAction);
+            builder
+                .Services.AddHealthChecks()
+                .AddRabbitMQ(
+                    async sp =>
+                    {
+                        var rabbitMqOptions = sp.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+                        var factory = new ConnectionFactory { Uri = new Uri(rabbitMqOptions.ConnectionString) };
+                        return await factory.CreateConnectionAsync().ConfigureAwait(false);
+                    },
+                    name: "RabbitMQ-Check",
+                    timeout: TimeSpan.FromSeconds(3),
+                    tags: ["live"]
+                );
         }
         else
         {
             builder.Services.AddMassTransitTestHarness(ConfiguratorAction);
         }
+
+        builder
+            .Services.AddOptions<MassTransitHostOptions>()
+            .Configure(options =>
+            {
+                options.WaitUntilStarted = true;
+                options.StartTimeout = TimeSpan.FromSeconds(30);
+                options.StopTimeout = TimeSpan.FromSeconds(60);
+            });
+
+        builder
+            .Services.AddOptions<HostOptions>()
+            .Configure(options =>
+            {
+                options.StartupTimeout = TimeSpan.FromSeconds(60);
+                options.ShutdownTimeout = TimeSpan.FromSeconds(60);
+            });
+
+        // will override default null messaging types - we should not use `TryAddTransient` to replace null types
+        builder.Services.Replace(ServiceDescriptor.Transient<IExternalEventBus, MassTransitBus>());
+        builder.Services.Replace(ServiceDescriptor.Transient<IBusDirectPublisher, MasstransitDirectPublisher>());
+
+        builder
+            .Services.AddOpenTelemetry()
+            .WithMetrics(b => b.AddMeter(DiagnosticHeaders.DefaultListenerName))
+            .WithTracing(p => p.AddSource(DiagnosticHeaders.DefaultListenerName));
+
+        return builder;
 
         void ConfiguratorAction(IBusRegistrationConfigurator busRegistrationConfigurator)
         {
@@ -59,6 +103,10 @@ public static class DependencyInjectionExtensions
 
             // https://masstransit-project.com/usage/configuration.html#receive-endpoints
             busRegistrationConfigurator.AddConsumers(assemblies);
+
+            busRegistrationConfigurator.AddSagas(assemblies);
+
+            busRegistrationConfigurator.AddActivities(assemblies);
 
             // https://masstransit.io/documentation/configuration#endpoint-name-formatters
             // uses by `ConfigureEndpoints` for naming `queues` and `receive endpoint` names
@@ -76,6 +124,12 @@ public static class DependencyInjectionExtensions
             busRegistrationConfigurator.UsingRabbitMq(
                 (context, cfg) =>
                 {
+                    // retry failure in consumers 3 times by using an inbox-pattern for Transient failures(e.g. database timeout, temporary lock), and using dead-letter-queue for Permanent failures(e.g. invalid message, logical bug) and prevent redelivering forever.
+                    cfg.UseMessageRetry(r =>
+                    {
+                        r.Exponential(3, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(5));
+                    });
+
                     // https: // github.com/MassTransit/MassTransit/issues/2018
                     // https://github.com/MassTransit/MassTransit/issues/4831
                     cfg.Publish<IIntegrationEvent>(p => p.Exclude = true);
@@ -129,29 +183,6 @@ public static class DependencyInjectionExtensions
                 }
             );
         }
-
-        builder
-            .Services.AddOptions<MassTransitHostOptions>()
-            .Configure(options =>
-            {
-                options.WaitUntilStarted = true;
-                options.StartTimeout = TimeSpan.FromSeconds(30);
-                options.StopTimeout = TimeSpan.FromSeconds(60);
-            });
-
-        builder
-            .Services.AddOptions<HostOptions>()
-            .Configure(options =>
-            {
-                options.StartupTimeout = TimeSpan.FromSeconds(60);
-                options.ShutdownTimeout = TimeSpan.FromSeconds(60);
-            });
-
-        // will override default null messaging types - we should not use `TryAddTransient` to replace null types
-        builder.Services.AddTransient<IExternalEventBus, MassTransitBus>();
-        builder.Services.AddTransient<IBusDirectPublisher, MasstransitDirectPublisher>();
-
-        return builder;
     }
 
     private static void ApplyMessagesSendTopology(
@@ -248,6 +279,10 @@ public static class DependencyInjectionExtensions
                 re.ConfigureConsumer(context, consumerType);
 
                 re.RethrowFaultedMessages();
+
+                // Set up dead-letter queue by adding arguments
+                re.SetQueueArgument("x-dead-letter-exchange", $"{messageType.Name.Underscore()}_dead_letter_exchange");
+                re.SetQueueArgument("x-dead-letter-routing-key", messageType.Name.Underscore());
             }
         );
     }
@@ -276,7 +311,7 @@ public static class DependencyInjectionExtensions
     {
         retryConfigurator
             .Exponential(3, TimeSpan.FromMilliseconds(200), TimeSpan.FromMinutes(120), TimeSpan.FromMilliseconds(200))
-            .Ignore<ValidationException>(); // don't retry if we have invalid data and message goes to _error queue masstransit
+            .Ignore<ValidationException>(); // don't retry if we have invalid data and a message goes to _error queue masstransit
 
         return retryConfigurator;
     }

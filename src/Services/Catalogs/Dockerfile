@@ -21,7 +21,7 @@ ENV ASPNETCORE_ENVIRONMENT docker
 # RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 # USER appuser
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 as build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 # path are related to build context, here for us build context is root folder
 # https://docs.docker.com/build/building/context/

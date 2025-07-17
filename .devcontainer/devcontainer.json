@@ -26,6 +26,17 @@
       "additionalVersions": "latest, 9.0.201",
       "aspNetCoreRuntimeVersions": "latest, 9.0.3"
     },
+    // https://github.com/Azure-Samples/aks-store-demo/blob/main/.devcontainer/devcontainer.json
+    // "ghcr.io/azure/azure-dev/azd:latest": {},
+    // "ghcr.io/devcontainers/features/azure-cli:1": {
+    //   "version": "latest",
+    //   "extensions": "aks-preview",
+    //   "installBicep": true
+    // },
+    // // https://github.com/devcontainers/features/tree/main/src/kubectl-helm-minikube
+    // "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
+    // // https://github.com/devcontainers/features/tree/main/src/terraform
+    // "ghcr.io/devcontainers/features/terraform:1": {},
     // https://github.com/devcontainers/features/tree/main/src/github-cli
     "ghcr.io/devcontainers/features/github-cli:1": {
       "version": "2"
@@ -36,10 +47,6 @@
     },
     // https://github.com/devcontainers/features/tree/main/src/node
     "ghcr.io/devcontainers/features/node:1": {},
-    // // https://github.com/devcontainers/features/tree/main/src/kubectl-helm-minikube
-    // "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
-    // // https://github.com/devcontainers/features/tree/main/src/terraform
-    // "ghcr.io/devcontainers/features/terraform:1": {},
     // https://github.com/devcontainers/features/tree/main/src/docker-in-docker
     // https://devopscube.com/run-docker-in-docker/
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
@@ -73,6 +80,12 @@
         "explorer.confirmDelete": false,
         "terminal.integrated.defaultProfile.windows": "PowerShell",
         "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "zsh": {
+            "path": "zsh",
+            "icon": "terminal-bash"
+          }
+        },
         "powershell.cwd": "~",
         "terminal.external.windowsExec": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
         "[jsonc]": {
@@ -106,11 +119,11 @@
         "esbenp.prettier-vscode",
         "vscode-icons-team.vscode-icons",
         "csharpier.csharpier-vscode",
-		"DavidAnson.vscode-markdownlint",
+        "DavidAnson.vscode-markdownlint",
         "redhat.vscode-yaml",
         "kennylong.kubernetes-yaml-formatter",
         "sonarsource.sonarlint-vscode",
-		"ms-vscode.makefile-tools"
+        "ms-vscode.makefile-tools"
       ]
     }
   },

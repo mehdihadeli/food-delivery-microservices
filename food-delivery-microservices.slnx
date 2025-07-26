@@ -106,7 +106,6 @@
     <File Path="deployments/docker-compose/docker-compose.services.yaml" />
     <File Path="deployments/docker-compose/docker-compose.yaml" />
     <File Path="deployments/docker-compose/docker.txt" />
-    <File Path="deployments/docker-compose/otel-collector-config.yaml" />
   </Folder>
   <Folder Name="/solution-items/deployments/k8s/" />
   <Folder Name="/solution-items/deployments/k8s/kubernetes/">
@@ -207,6 +206,10 @@
     <File Path="src\ApiGateway\Dockerfile" />
     <File Path="src\ApiGateway\Dockerfile.dev" />
   </Folder>
+  <Folder Name="/src/Aspire/">
+    <Project Path="src\Aspire\FoodDelivery.AppHost\FoodDelivery.AppHost.csproj" Type="Classic C#" />
+    <Project Path="src\Aspire\FoodDelivery.ServiceDefaults\FoodDelivery.ServiceDefaults.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/src/Bffs/" />
   <Folder Name="/src/Bffs/Api.Bff/">
     <Project Path="src\Bffs\Api.Bff\FoodDelivery.Api.Bff\FoodDelivery.Api.Bff.csproj" Type="Classic C#" />
@@ -236,7 +239,11 @@
     <Project Path="src/BuildingBlocks/BuildingBlocks.SerilogLogging/BuildingBlocks.SerilogLogging.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj" />
+    <Project Path="src\BuildingBlocks\BuildingBlocks.AspireIntegrations\BuildingBlocks.AspireIntegrations.csproj" Type="Classic C#" />
+    <Project Path="src\BuildingBlocks\BuildingBlocks.Caching.AzureRedis\BuildingBlocks.Caching.AzureRedis.csproj" Type="Classic C#" />
     <Project Path="src\BuildingBlocks\BuildingBlocks.OpenTelemetry\BuildingBlocks.OpenTelemetry.csproj" />
+    <Project Path="src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.AzureCosmosDB\BuildingBlocks.Persistence.EfCore.AzureCosmosDB.csproj" Type="Classic C#" />
+    <Project Path="src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.AzurePostgres\BuildingBlocks.Persistence.EfCore.AzurePostgres.csproj" Type="Classic C#" />
     <File Path="src\BuildingBlocks\Directory.Build.props" />
   </Folder>
   <Folder Name="/src/Services/" />

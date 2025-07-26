@@ -6,6 +6,7 @@ using Humanizer;
 using MassTransit;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using Constants = BuildingBlocks.Core.Constants;
 using MessageHeaders = BuildingBlocks.Core.Messages.MessageHeaders;
 
 namespace BuildingBlocks.Integration.MassTransit;
@@ -55,7 +56,7 @@ public class MasstransitDirectPublisher(IBus bus, IOptions<MasstransitOptions> m
 
         if (string.IsNullOrEmpty(exchangeOrTopic))
         {
-            exchangeOrTopic = $"{bindExchangeName}{MessagingConstants.PrimaryExchangePostfix}";
+            exchangeOrTopic = $"{bindExchangeName}{Constants.MessagingConstants.PrimaryExchangePostfix}";
         }
 
         // Ref: https://stackoverflow.com/a/60269493/581476

@@ -1,10 +1,11 @@
+using System.Diagnostics;
 using BuildingBlocks.Abstractions.Web.Problem;
-using Humanizer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace BuildingBlocks.Web.ProblemDetail;
 
@@ -12,7 +13,8 @@ namespace BuildingBlocks.Web.ProblemDetail;
 public class ProblemDetailsService(
     IEnumerable<IProblemDetailsWriter> writers,
     IWebHostEnvironment webHostEnvironment,
-    IEnumerable<IProblemDetailMapper>? problemDetailMappers = null
+    ILogger<ProblemDetailsService> logger,
+    IEnumerable<IProblemDetailMapper>? problemDetailMappers
 ) : IProblemDetailsService
 {
     public ValueTask WriteAsync(ProblemDetailsContext context)
@@ -21,94 +23,93 @@ public class ProblemDetailsService(
         ArgumentNullException.ThrowIfNull(context.ProblemDetails);
         ArgumentNullException.ThrowIfNull(context.HttpContext);
 
-        // with help of `capture exception middleware` for capturing actual thrown exception, in .net 8 preview 5 it will create automatically
+        // Skip if response already started or status code < 400
+        if (context.HttpContext.Response.HasStarted || context.HttpContext.Response.StatusCode < 400)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        // with the help of `capture exception middleware` for capturing actual thrown exception, in .net 8 preview 5 it will create automatically
         IExceptionHandlerFeature? exceptionFeature = context.HttpContext.Features.Get<IExceptionHandlerFeature>();
 
+        Exception? exception = exceptionFeature?.Error ?? context.Exception;
+
         // if we throw an exception, we should create appropriate ProblemDetail based on the exception, else we just return default ProblemDetail with status 500 or a custom ProblemDetail which is returned from the endpoint
-        if (exceptionFeature is not null)
-        {
-            CreateProblemDetailFromException(context, exceptionFeature);
-        }
+        CreateProblemDetailFromException(context, exception);
 
-        if (context.HttpContext.Response.HasStarted || context.HttpContext.Response.StatusCode < 400 || !writers.Any())
-            return ValueTask.CompletedTask;
-
-        IProblemDetailsWriter problemDetailsWriter = null!;
-        if (writers.Count() == 1)
-        {
-            IProblemDetailsWriter writer = writers.First();
-            return !writer.CanWrite(context) ? ValueTask.CompletedTask : writer.WriteAsync(context);
-        }
-
+        // Write using the best-matched writer
         foreach (var writer in writers)
         {
             if (writer.CanWrite(context))
             {
-                problemDetailsWriter = writer;
-                break;
+                return writer.WriteAsync(context);
             }
         }
 
-        return problemDetailsWriter?.WriteAsync(context) ?? ValueTask.CompletedTask;
+        logger.LogWarning("No suitable IProblemDetailsWriter found for the current context.");
+
+        return ValueTask.CompletedTask;
     }
 
-    private void CreateProblemDetailFromException(
-        ProblemDetailsContext context,
-        IExceptionHandlerFeature exceptionFeature
-    )
+    private void CreateProblemDetailFromException(ProblemDetailsContext context, Exception? exception)
     {
-        if (problemDetailMappers is not null && problemDetailMappers.Any())
+        var traceId = Activity.Current?.Id ?? context.HttpContext.TraceIdentifier;
+
+        if (exception is { })
+        {
+            logger.LogError(
+                exception,
+                "Could not process a request on machine {MachineName}. TraceId: {TraceId}",
+                Environment.MachineName,
+                traceId
+            );
+        }
+
+        int statusCode = 0;
+
+        if (problemDetailMappers is not null && problemDetailMappers.Any() && exception is { })
         {
             foreach (var problemDetailMapper in problemDetailMappers)
             {
-                MapProblemDetail(context, exceptionFeature, problemDetailMapper);
+                statusCode = problemDetailMapper.GetMappedStatusCodes(exception);
             }
         }
-        else
+        else if (exception is { })
         {
-            var defaultMapper = new DefaultProblemDetailMapper();
-            MapProblemDetail(context, exceptionFeature, defaultMapper);
+            statusCode = new DefaultProblemDetailMapper().GetMappedStatusCodes(exception);
         }
+
+        context.HttpContext.Response.StatusCode = statusCode;
+
+        context.ProblemDetails = PopulateNewProblemDetail(statusCode, context.HttpContext, exception, traceId);
     }
 
-    private void MapProblemDetail(
-        ProblemDetailsContext context,
-        IExceptionHandlerFeature exceptionFeature,
-        IProblemDetailMapper problemDetailMapper
-    )
-    {
-        var mappedStatusCode = problemDetailMapper.GetMappedStatusCodes(exceptionFeature.Error);
-        if (mappedStatusCode > 0)
-        {
-            PopulateNewProblemDetail(
-                context.ProblemDetails,
-                context.HttpContext,
-                mappedStatusCode,
-                exceptionFeature.Error
-            );
-            context.HttpContext.Response.StatusCode = mappedStatusCode;
-        }
-    }
-
-    private void PopulateNewProblemDetail(
-        ProblemDetails existingProblemDetails,
+    private ProblemDetails PopulateNewProblemDetail(
+        int code,
         HttpContext httpContext,
-        int statusCode,
-        Exception exception
+        Exception? exception,
+        string traceId
     )
     {
-        // We should override ToString method in the exception for showing correct title.
-        existingProblemDetails.Title = exception.GetType().Name.Humanize(LetterCasing.Title);
-        existingProblemDetails.Detail = exception.Message;
-        existingProblemDetails.Status = statusCode;
-        existingProblemDetails.Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}";
+        var extensions = new Dictionary<string, object?> { { "traceId", traceId } };
 
-        if (webHostEnvironment.IsDevelopment())
+        // Add stackTrace in development mode for debugging purposes
+        if (webHostEnvironment.IsDevelopment() && exception is { })
         {
-            existingProblemDetails.Extensions = new Dictionary<string, object?>
-            {
-                { "stackTrace", exception.StackTrace },
-            };
+            extensions["stackTrace"] = exception.StackTrace;
         }
+
+        // type will fill automatically by .net core
+        var problem = TypedResults
+            .Problem(
+                statusCode: code,
+                detail: exception?.Message,
+                title: exception?.GetType().Name,
+                instance: $"{httpContext.Request.Method} {httpContext.Request.Path}",
+                extensions: extensions
+            )
+            .ProblemDetails;
+
+        return problem;
     }
 }

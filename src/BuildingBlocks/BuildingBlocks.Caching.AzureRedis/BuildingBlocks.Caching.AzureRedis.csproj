@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup Label="Aspire Packages">
+    <!--https://learn.microsoft.com/en-us/dotnet/aspire/caching/azure-cache-for-redis-integration?tabs=dotnet-cli-->
+    <PackageReference Include="Aspire.Hosting.Azure.Redis" />
+    <PackageReference Include="Aspire.StackExchange.Redis" />
+  </ItemGroup>
+
+</Project>

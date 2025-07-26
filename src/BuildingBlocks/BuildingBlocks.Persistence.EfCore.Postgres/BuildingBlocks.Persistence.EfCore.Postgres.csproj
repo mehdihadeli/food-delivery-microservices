@@ -10,12 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+
     <PackageReference Include="Dapper" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="SqlKata" />
   </ItemGroup>
   
-  <ItemGroup>
+  <ItemGroup Label="Aspire Packages">
+    <!--https://learn.microsoft.com/en-us/dotnet/aspire/database/postgresql-entity-framework-integration-->
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+  
+  <ItemGroup Label="Health Check">
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
   </ItemGroup>

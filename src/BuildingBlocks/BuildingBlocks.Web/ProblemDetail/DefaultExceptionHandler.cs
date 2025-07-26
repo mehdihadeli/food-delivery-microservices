@@ -13,7 +13,8 @@ namespace BuildingBlocks.Web.ProblemDetail;
 public class DefaultExceptionHandler(
     ILogger<DefaultExceptionHandler> logger,
     IWebHostEnvironment webHostEnvironment,
-    IEnumerable<IProblemDetailMapper>? problemDetailMappers
+    IEnumerable<IProblemDetailMapper>? problemDetailMappers,
+    IProblemDetailsService problemDetailsService
 ) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
@@ -22,51 +23,56 @@ public class DefaultExceptionHandler(
         CancellationToken cancellationToken
     )
     {
-        var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
+        logger.LogError(exception, "An unexpected error occurred");
 
-        logger.LogError(
-            exception,
-            "[{Handler}] Could not process a request on machine {MachineName}. TraceId: {TraceId}",
-            nameof(DefaultExceptionHandler),
-            Environment.MachineName,
-            traceId
-        );
+        var problemDetail = CreateProblemDetailFromException(httpContext, exception);
 
-        int statusCode = 0;
-
-        if (problemDetailMappers is not null && problemDetailMappers.Any())
+        var context = new ProblemDetailsContext
         {
-            foreach (var problemDetailMapper in problemDetailMappers)
-            {
-                statusCode = problemDetailMapper.GetMappedStatusCodes(exception);
-            }
-        }
-        else
-        {
-            statusCode = new DefaultProblemDetailMapper().GetMappedStatusCodes(exception);
-        }
+            HttpContext = httpContext,
+            Exception = exception,
+            ProblemDetails = problemDetail,
+        };
 
-        httpContext.Response.StatusCode = statusCode == 0 ? httpContext.Response.StatusCode : statusCode;
-
-        await httpContext.Response.WriteAsJsonAsync(
-            PopulateNewProblemDetail(statusCode, httpContext, exception, traceId),
-            cancellationToken: cancellationToken
-        );
+        await problemDetailsService.WriteAsync(context);
 
         return true;
+    }
+
+    private ProblemDetails CreateProblemDetailFromException(HttpContext context, Exception? exception)
+    {
+        var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
+
+        if (exception is { })
+        {
+            logger.LogError(
+                exception,
+                "Could not process a request on machine {MachineName}. TraceId: {TraceId}",
+                Environment.MachineName,
+                traceId
+            );
+        }
+
+        int statusCode =
+            problemDetailMappers?.Select(m => m.GetMappedStatusCodes(exception)).FirstOrDefault()
+            ?? new DefaultProblemDetailMapper().GetMappedStatusCodes(exception);
+
+        context.Response.StatusCode = statusCode;
+
+        return PopulateNewProblemDetail(statusCode, context, exception, traceId);
     }
 
     private ProblemDetails PopulateNewProblemDetail(
         int code,
         HttpContext httpContext,
-        Exception exception,
+        Exception? exception,
         string traceId
     )
     {
         var extensions = new Dictionary<string, object?> { { "traceId", traceId } };
 
         // Add stackTrace in development mode for debugging purposes
-        if (webHostEnvironment.IsDevelopment())
+        if (webHostEnvironment.IsDevelopment() && exception is { })
         {
             extensions["stackTrace"] = exception.StackTrace;
         }
@@ -75,8 +81,8 @@ public class DefaultExceptionHandler(
         var problem = TypedResults
             .Problem(
                 statusCode: code,
-                detail: exception.Message,
-                title: exception.GetType().Name,
+                detail: exception?.Message,
+                title: exception?.GetType().Name,
                 instance: $"{httpContext.Request.Method} {httpContext.Request.Path}",
                 extensions: extensions
             )

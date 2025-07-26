@@ -2,6 +2,7 @@ using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Persistence.EfCore.Postgres;
+using BuildingBlocks.Persistence.EfCore.Postgres.Extensions;
 using BuildingBlocks.Persistence.Mongo.Extensions;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Data;

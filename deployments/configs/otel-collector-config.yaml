@@ -76,12 +76,12 @@ exporters:
     endpoint: "http://elasticsearch:9200"
   
   zipkin:
-    endpoint: "http://zipkin-all-in-one:9411/api/v2/spans"
+    endpoint: "http://zipkin:9411/api/v2/spans"
     format: proto
 
   # export collected telemetry traces to jaeger OTLP grpc port, we can send data to other available endpoints and ports on jaeger as well
   otlp/jaeger:
-    endpoint: "http://jaeger-all-in-one:4317"
+    endpoint: "http://jaeger:4317"
     tls:
       insecure: true
 

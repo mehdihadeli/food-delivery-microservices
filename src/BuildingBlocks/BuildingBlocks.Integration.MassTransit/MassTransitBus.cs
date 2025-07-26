@@ -1,5 +1,7 @@
 using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Messages.MessagePersistence;
+using BuildingBlocks.Core;
+using BuildingBlocks.Core.Constants;
 using BuildingBlocks.Core.Messages;
 using Humanizer;
 using Microsoft.Extensions.Options;

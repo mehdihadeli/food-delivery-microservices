@@ -11,9 +11,14 @@ public class ProblemDetailsWriter(IOptions<ProblemDetailsOptions> options) : IPr
     public ValueTask WriteAsync(ProblemDetailsContext context)
     {
         var httpContext = context.HttpContext;
-        TypedResults.Problem(context.ProblemDetails);
+
+        // Apply final customization (if any)
         _options.CustomizeProblemDetails?.Invoke(context);
 
+        // Ensure required fields are set
+        context.ProblemDetails.Status ??= httpContext.Response.StatusCode;
+
+        // Write JSON response
         return new ValueTask(
             httpContext.Response.WriteAsJsonAsync(
                 context.ProblemDetails,

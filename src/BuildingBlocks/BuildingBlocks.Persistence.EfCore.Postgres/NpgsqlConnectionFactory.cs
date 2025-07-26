@@ -4,7 +4,7 @@ using BuildingBlocks.Abstractions.Persistence.EfCore;
 using BuildingBlocks.Core.Extensions;
 using Npgsql;
 
-namespace Core.Persistence.Postgres;
+namespace BuildingBlocks.Persistence.EfCore.Postgres;
 
 public class NpgsqlConnectionFactory : IConnectionFactory
 {

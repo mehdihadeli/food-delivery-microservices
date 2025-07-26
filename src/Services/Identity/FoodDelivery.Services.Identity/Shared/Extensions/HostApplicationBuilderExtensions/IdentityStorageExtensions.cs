@@ -2,6 +2,7 @@ using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Persistence.EfCore.Postgres;
+using BuildingBlocks.Persistence.EfCore.Postgres.Extensions;
 using FoodDelivery.Services.Identity.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 

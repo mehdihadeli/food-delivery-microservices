@@ -16,6 +16,11 @@
   // using a Dockerfile with Docker Compose, https://containers.dev/guide/dockerfile#docker-compose-image
   "dockerComposeFile": "docker-compose.yaml",
   "service": "devcontainer",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb",
+    "storage": "32gb"
+  },
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
@@ -52,6 +57,7 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "dockerDashComposeVersion": "v2"
     },
+    "ghcr.io/prom3theu5/aspirational-manifests/aspirate:latest": {},
     "ghcr.io/devcontainers/features/git:1": {},
     // https://github.com/devcontainers/features/tree/main/src/common-utils
     "ghcr.io/devcontainers/features/common-utils:2": {
@@ -127,11 +133,7 @@
       ]
     }
   },
-  "hostRequirements": {
-    "cpus": 2,
-    "memory": "8gb",
-    "storage": "32gb"
-  },
+
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [5000, 5001],
   // "portsAttributes": {
@@ -141,7 +143,7 @@
   // }
   // https://containers.dev/implementors/json_reference/#lifecycle-scripts
   "updateContentCommand": "chmod +x .devcontainer/scripts/update.sh",
-  "postCreateCommand": "chmod +x .devcontainer/scripts/post-create.sh"
+  "postCreateCommand": "chmod +x .devcontainer/scripts/post-create.sh",
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   // "remoteUser": "root"
 }

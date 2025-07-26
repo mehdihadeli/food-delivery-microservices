@@ -26,14 +26,14 @@ datasources:
   - name: Jaeger
     type: jaeger
     access: proxy
-    url: http://jaeger-all-in-one:16686
+    url: http://jaeger:16686
     editable: false
     uid: jaeger-uid  
       
   - name: Zipkin
     type: zipkin
     access: proxy
-    url: http://zipkin-all-in-one:9411
+    url: http://zipkin:9411
     editable: false
     uid: zipkin-uid
 
@@ -74,7 +74,7 @@ datasources:
           
   - name: Kibana 
     type: elasticsearch
-    url: http://elasticsearch:9200
+    url: http://elastic-search:9200
     access: proxy
     isDefault: false
     uid: kibana-uid

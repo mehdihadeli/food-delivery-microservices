@@ -6,53 +6,55 @@
 name: food-delivery-microservices-infrastructure
 
 services:
-  #######################################################
-  #  rabbitmq
-  #######################################################
-  rabbitmq:
-    image: rabbitmq:management
-    container_name: rabbitmq
-    restart: unless-stopped
-    ports:
-      - ${RABBITMQ_HOST_PORT:-5672}:${RABBITMQ_PORT:-5672}
-      - ${RABBITMQ_HOST_API_PORT:-15672}:${RABBITMQ_API_PORT:-15672}
-      # volumes:
-      #   - rabbitmq:/var/lib/rabbitmq
-    networks:
-      - infrastructure
-
-  #######################################################
-  #  postgres
-  #######################################################
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    restart: unless-stopped
-    ports:
-      - ${POSTGRES_HOST_PORT:-5432}:${POSTGRES_PORT:-5432}
-    #https://docs.docker.com/compose/environment-variables/env-file/#parameter-expansion
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-    volumes:
-      - ./../configs/init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql
-    networks:
-      - infrastructure
-  #######################################################
-  #  mongo
-  #######################################################
-  mongo:
-    image: mongo:latest
-    container_name: mongo
-    restart: unless-stopped
-    # https://docs.docker.com/compose/environment-variables/env-file/#parameter-expansion
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-admin}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS:-admin}
-    ports:
-      - ${MONGO_HOST_PORT:-27017}:${MONGO_PORT:-27017}
-    networks:
-      - infrastructure
+#  #######################################################
+#  #  rabbitmq
+#  #######################################################
+#  rabbitmq:
+#    image: rabbitmq:management-alpine
+#    container_name: rabbitmq
+#    restart: unless-stopped
+#    environment:
+#      - RABBITMQ_PLUGINS_DIR=/opt/rabbitmq/plugins:/additional-plugins
+#      - RABBITMQ_ENABLED_PLUGINS_FILE=/additional-plugins/rabbitmq_enabled_plugins
+#    volumes:
+#      - ./../configs/rabbitmq-plugins:/additional-plugins
+#    ports:
+#      - ${RABBITMQ_HOST_PORT:-5672}:${RABBITMQ_PORT:-5672}
+#      - ${RABBITMQ_HOST_API_PORT:-15672}:${RABBITMQ_API_PORT:-15672}
+#    networks:
+#      - infrastructure
+#  #######################################################
+#  #  postgres
+#  #######################################################
+#  postgres:
+#    image: postgres:latest
+#    container_name: postgres
+#    restart: unless-stopped
+#    ports:
+#      - ${POSTGRES_HOST_PORT:-5432}:${POSTGRES_PORT:-5432}
+#    #https://docs.docker.com/compose/environment-variables/env-file/#parameter-expansion
+#    environment:
+#      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+#    volumes:
+#      - ./../configs/init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql
+#    networks:
+#      - infrastructure
+#  #######################################################
+#  #  mongo
+#  #######################################################
+#  mongo:
+#    image: mongo:latest
+#    container_name: mongo
+#    restart: unless-stopped
+#    # https://docs.docker.com/compose/environment-variables/env-file/#parameter-expansion
+#    environment:
+#      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-admin}
+#      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS:-admin}
+#    ports:
+#      - ${MONGO_HOST_PORT:-27017}:${MONGO_PORT:-27017}
+#    networks:
+#      - infrastructure
   # #######################################################
   # #  eventstore-db
   # #######################################################
@@ -60,32 +62,32 @@ services:
   # # https://hub.docker.com/r/eventstore/eventstore/tags
   # # https://stackoverflow.com/questions/65272764/ports-are-not-available-listen-tcp-0-0-0-0-50070-bind-an-attempt-was-made-to
   # # EVENTSTORE_MEM_DB=true, it tells the EventStoreDB container to use an in-memory database, which means that any data stored in EventStoreDB will not be persisted between container restarts. Once the container is stopped or restarted, all data will be lost.
-  # eventstore:
-    # image: eventstore/eventstore:latest
-    # container_name: eventstore
-    # restart: on-failure
-    # environment:
-      # - EVENTSTORE_CLUSTER_SIZE=1
-      # - EVENTSTORE_RUN_PROJECTIONS=All
-      # - EVENTSTORE_START_STANDARD_PROJECTIONS=false
-      # - EVENTSTORE_EXT_TCP_PORT=1113
-      # - EVENTSTORE_HTTP_PORT=2113
-      # - EVENTSTORE_INSECURE=true
-      # - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
-      # - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
-      # - EVENTSTORE_MEM_DB=true
-    # ports:
-      # - "1113:1113"
-      # - ${EVENTSTORE_HOST_PORT:-2113}:${EVENTSTORE_PORT:-2113}
-    # volumes:
-      # - type: volume
-        # source: eventstore-volume-data
-        # target: /var/lib/eventstore
-      # - type: volume
-        # source: eventstore-volume-logs
-        # target: /var/log/eventstore
-    # networks:
-      # - infrastructure
+#   eventstore:
+#     image: eventstore/eventstore:latest
+#     container_name: eventstore
+#     restart: unless-stopped
+#     environment:
+#       - EVENTSTORE_CLUSTER_SIZE=1
+#       - EVENTSTORE_RUN_PROJECTIONS=All
+#       - EVENTSTORE_START_STANDARD_PROJECTIONS=false
+#       - EVENTSTORE_EXT_TCP_PORT=1113
+#       - EVENTSTORE_HTTP_PORT=2113
+#       - EVENTSTORE_INSECURE=true
+#       - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+#       - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+#       - EVENTSTORE_MEM_DB=true
+#     ports:
+#       - "1113:1113"
+#       - ${EVENTSTORE_HOST_PORT:-2113}:${EVENTSTORE_PORT:-2113}
+#     volumes:
+#       - type: volume
+#         source: eventstore_data
+#         target: /var/lib/eventstore
+#       - type: volume
+#         source: eventstore_logs
+#         target: /var/log/eventstore
+#     networks:
+#       - infrastructure
   # #######################################################
   # #  aspire dashboard
   # #######################################################
@@ -94,101 +96,104 @@ services:
   # # https://devblogs.microsoft.com/dotnet/dotnet-aspire-general-availability/
   # # https://anthonysimmon.com/dotnet-aspire-dashboard-best-tool-visualize-opentelemetry-local-dev/
   # # https://learn.microsoft.com/en-us/samples/dotnet/aspire-samples/aspire-standalone-dashboard/
-  # aspire-dashboard:
-  #   image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
-  #   container_name: aspire-dashboard
-  #   environment:
-  #     # for disable login in development mode
-  #     - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
-  #   ports:
-  #     - ${ASPIRE_DASHBOARD_PORT:-18888}:18888  # Dashboard UI port
-  #     - ${ASPIRE_OTEL_EXPORTER_PORT:-4319}:18889   # OTLP exporter port , 4317,4318 already reserved by otel-collector
-  #   restart: unless-stopped
-  #   networks:
-  #     - infrastructure
-  # #######################################################
-  # #  jaeger
-  # # https://www.jaegertracing.io/docs/1.64/deployment/
-  # # https://www.jaegertracing.io/docs/1.6/deployment/
-  # #######################################################
-  # jaeger-all-in-one:
-  #   image: jaegertracing/all-in-one:latest
-  #   container_name: jaeger-all-in-one
-  #   restart: unless-stopped
-  #   ports:
-  #     - "6831:6831/udp" # UDP port for Jaeger agent
-  #     - "16686:16686" # endpoints and Jaeger UI
-  #     - "14268:14268" # HTTP port for accept trace spans directly from clients
-  #     - "14317:4317" # OTLP gRPC receiver for jaeger
-  #     - "14318:4318" # OTLP http receiver for jaeger
-  #     # - "9411" # Accepts Zipkin spans - /api/v2/spans
-  #   networks:
-  #     - infrastructure
-
-  # #######################################################
-  # #  zipkin
-  # # https://zipkin.io/pages/quickstart
-  # #######################################################
-  # zipkin-all-in-one:
-  #   image: openzipkin/zipkin:latest
-  #   container_name: zipkin-all-in-one
-  #   restart: unless-stopped
-  #   ports:
-  #     - "9411:9411"
-  #   networks:
-  #     - infrastructure
-  # #######################################################
-  # #  otel-collector
-  # # https://opentelemetry.io/docs/collector/installation/
-  # # https://github.com/open-telemetry/opentelemetry-collector
-  # # https://github.com/open-telemetry/opentelemetry-collector-contrib
-  # # we can use none contrib docker `otel/opentelemetry-collector` version from `https://github.com/open-telemetry/opentelemetry-collector` repository but,
-  # # if we need more components like `elasticsearch` we should use `otel/opentelemetry-collector-contrib` image of `https://github.com/open-telemetry/opentelemetry-collector-contrib` repository.
-  # #######################################################
-  # otel-collector:
-  #   image: otel/opentelemetry-collector-contrib:latest
-  #   container_name: otel-collector
-  #   restart: unless-stopped
-  #   command: [ "--config=/etc/otelcol-contrib/config.yaml" ]
-  #   volumes:
-  #     - ./../configs/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
-  #   ports:
-  #     - "11888:1888" # pprof extension
-  #     - "8888:8888" # Prometheus metrics exposed by the Collector
-  #     - "8889:8889" # Prometheus exporter metrics
-  #     - "13133:13133" # health_check extension
-  #     - "4317:4317" # OTLP gRPC receiver
-  #     - "4318:4318" # OTLP http receiver
-  #     - "55679:55679" # zpages extension
-  #   depends_on:
-  #     - jaeger-all-in-one
-  #     - zipkin-all-in-one
-  #   networks:
-  #     - infrastructure
+#   aspire-dashboard:
+#     image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+#     container_name: aspire-dashboard
+#     environment:
+#       # for disable login in development mode
+#       - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
+#     ports:
+#       - ${ASPIRE_DASHBOARD_PORT:-18888}:18888  # Dashboard UI port
+#       - ${ASPIRE_OTEL_EXPORTER_PORT:-4319}:18889   # OTLP exporter port , 4317,4318 already reserved by otel-collector
+#     restart: unless-stopped
+#     networks:
+#       - infrastructure
+#   #######################################################
+#   #  jaeger
+#   # https://www.jaegertracing.io/docs/1.64/deployment/
+#   # https://www.jaegertracing.io/docs/1.6/deployment/
+#   #######################################################
+   jaeger:
+     image: jaegertracing/all-in-one:latest
+     container_name: jaeger
+     restart: unless-stopped
+     expose:
+       # just expose container port not host port - https://docs.docker.com/reference/compose-file/services/#expose
+       - 6831/udp # UDP port for Jaeger agent (container port)
+       - 14268  # HTTP port for accept trace spans directly from clients (container port)
+       - 4317 # OTLP gRPC receiver for jaeger (container port)
+       - 4318 # OTLP http receiver for jaeger (container port)
+       # - 9411 # Accepts Zipkin spans - /api/v2/spans (container port)
+     ports:
+       # expose both host and container port - https://docs.docker.com/reference/compose-file/services/#ports
+       - "16686:16686" # endpoints and Jaeger UI
+     networks:
+       - infrastructure
+#   #######################################################
+#   #  zipkin
+#   # https://zipkin.io/pages/quickstart
+#   #######################################################
+   zipkin:
+     image: openzipkin/zipkin:latest
+     container_name: zipkin
+     restart: unless-stopped
+     ports:
+       - "9411:9411"
+     networks:
+       - infrastructure
+   #######################################################
+   #  otel-collector
+   # https://opentelemetry.io/docs/collector/installation/
+   # https://github.com/open-telemetry/opentelemetry-collector
+   # https://github.com/open-telemetry/opentelemetry-collector-contrib
+   # we can use none contrib docker `otel/opentelemetry-collector` version from `https://github.com/open-telemetry/opentelemetry-collector` repository but,
+   # if we need more components like `elasticsearch` we should use `otel/opentelemetry-collector-contrib` image of `https://github.com/open-telemetry/opentelemetry-collector-contrib` repository.
+   #######################################################
+    otel-collector:
+      image: otel/opentelemetry-collector-contrib:latest
+      container_name: otel-collector
+      restart: unless-stopped
+      command: [ "--config=/etc/otelcol-contrib/config.yaml" ]
+      volumes:
+        - ./../configs/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+      ports:
+        - "11888:1888" # pprof extension
+        - "8888:8888" # Prometheus metrics exposed by the Collector
+        - "8889:8889" # Prometheus exporter metrics
+        - "13133:13133" # health_check extension
+        - "4317:4317" # OTLP gRPC receiver
+        - "4318:4318" # OTLP http receiver
+        - "55679:55679" # zpages extension
+      depends_on:
+        - jaeger
+        - zipkin
+      networks:
+        - infrastructure
   # #######################################################
   # #  prometheus
   # # https://prometheus.io/docs/introduction/first_steps/
   # # https://prometheus.io/docs/prometheus/3.1/installation/
   # # https://grafana.com/docs/grafana-cloud/send-data/metrics/metrics-prometheus/prometheus-config-examples/docker-compose-linux/
   # #######################################################
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   restart: unless-stopped
-  #   ports:
-  #     - "9090:9090"
-  #   volumes:
-  #     - ./../configs/prometheus.yaml:/etc/prometheus/prometheus.yml
-  #   # to passe one flag, such as "--log.level=debug" or "--web.enable-remote-write-receiver", we need to override the whole command, as we can't just pass one extra argument
-  #   command:
-  #     - "--config.file=/etc/prometheus/prometheus.yml"
-  #     - "--storage.tsdb.path=/prometheus"
-  #     - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-  #     - "--web.console.templates=/usr/share/prometheus/consoles"
-  #     # need this for the OpenTelemetry collector to be able to put metrics into Prometheus
-  #     - "--web.enable-remote-write-receiver"
-  #   #   - "--log.level=debug"
-  #   networks:
-  #     - infrastructure
+   prometheus:
+     image: prom/prometheus:latest
+     restart: unless-stopped
+     ports:
+       # just expose container port not host port - https://docs.docker.com/reference/compose-file/services/#expose
+       - 9090:9090 # http and ui port
+     volumes:
+       - ./../configs/prometheus.yaml:/etc/prometheus/prometheus.yml
+     # to passe one flag, such as "--log.level=debug" or "--web.enable-remote-write-receiver", we need to override the whole command, as we can't just pass one extra argument
+     command:
+       - "--config.file=/etc/prometheus/prometheus.yml"
+       - "--storage.tsdb.path=/prometheus"
+       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+       - "--web.console.templates=/usr/share/prometheus/consoles"
+       # need this for the OpenTelemetry collector to be able to put metrics into Prometheus
+       - "--web.enable-remote-write-receiver"
+       - "--log.level=debug"
+     networks:
+       - infrastructure
   # #######################################################
   # # node-exporter
   # # https://prometheus.io/docs/guides/node-exporter/
@@ -217,29 +222,26 @@ services:
   # # https://grafana.com/docs/grafana/latest/setup-grafana/configure-docker/
   # # https://github.com/grafana/intro-to-mltp/blob/main/grafana/provisioning/datasources/datasources.yaml
   # #######################################################
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   container_name: grafana
-  #   restart: unless-stopped
-  #   environment:
-  #     - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
-  #     - GF_SECURITY_ADMIN_USER=admin
-  #     - GF_SECURITY_ADMIN_PASSWORD=admin
-  #     - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
-  #     #      - GF_AUTH_ANONYMOUS_ENABLED=true
-  #     #      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-  #     #      - GF_AUTH_DISABLE_LOGIN_FORM=true
-  #   depends_on:
-  #     - prometheus
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./../configs/grafana/provisioning:/etc/grafana/provisioning
-  #     - ./../configs/grafana/dashboards:/var/lib/grafana/dashboards
-  #     ## https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/
-  #     # - ./../configs/grafana/grafana.ini:/etc/grafana/grafana.ini
-  #   networks:
-  #     - infrastructure
+   grafana:
+     image: grafana/grafana:latest
+     container_name: grafana
+     restart: unless-stopped
+     environment:
+       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+       - GF_SECURITY_ADMIN_USER=admin
+       - GF_SECURITY_ADMIN_PASSWORD=admin
+       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+     depends_on:
+       - prometheus
+     ports:
+       - "3000:3000"
+     volumes:
+       - ./../configs/grafana/provisioning:/etc/grafana/provisioning
+       - ./../configs/grafana/dashboards:/var/lib/grafana/dashboards
+       ## https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/
+       # - ./../configs/grafana/grafana.ini:/etc/grafana/grafana.ini
+     networks:
+       - infrastructure
   # #######################################################
   # # tempo
   # # https://github.com/grafana/tempo/blob/main/example/docker-compose/otel-collector/docker-compose.yaml
@@ -247,85 +249,88 @@ services:
   # # https://github.com/grafana/tempo/blob/main/example/docker-compose/local
   # # https://github.com/grafana/tempo/tree/main/example/docker-compose
   # #######################################################
-  # tempo:
-  #   image: grafana/tempo:latest
-  #   container_name: tempo
-  #   restart: unless-stopped
-  #   command: [ "-config.file=/etc/tempo.yaml" ]
-  #   volumes:
-  #     - ./../configs/tempo.yaml:/etc/tempo.yaml
-  #   ports:
-  #     - "3200" # tempo
-  #     - "24317:4317" # otlp grpc
-  #     - "24318:4318" # otlp http
-  #   networks:
-  #     - infrastructure
+   tempo:
+     image: grafana/tempo:latest
+     container_name: tempo
+     restart: unless-stopped
+     command: [ "-config.file=/etc/tempo.yaml" ]
+     volumes:
+       - ./../configs/tempo.yaml:/etc/tempo.yaml
+     expose:
+       # just expose container port not host port - https://docs.docker.com/reference/compose-file/services/#expose
+       - 3200 # HTTP port, doesn't have direct ui port and should visualize in grafana (container port)
+       - 9095 # gRPC port (container port)
+       - 4317 # otlp grpc (container port)
+       - 4318 # otlp http (container port)
+     networks:
+       - infrastructure
   # #######################################################
   # # loki
   # # https://grafana.com/docs/opentelemetry/collector/send-logs-to-loki/
   # # https://github.com/grafana/loki/blob/main/production/docker-compose.yaml
   # # https://github.com/grafana/loki/blob/main/examples/getting-started/docker-compose.yaml
   # #######################################################
-  # loki:
-  #   image: grafana/loki:latest
-  #   hostname: loki
-  #   container_name: loki
-  #   ports:
-  #     - "3100:3100"
-  #   command: -config.file=/etc/loki/local-config.yaml
-  #   volumes:
-  #     - ./../configs/loki-config.yaml:/etc/loki/local-config.yaml
-  #   networks:
-  #     - infrastructure
-
+   loki:
+     image: grafana/loki:latest
+     hostname: loki
+     container_name: loki
+     expose:
+       # just expose container port not host port - https://docs.docker.com/reference/compose-file/services/#expose
+       - 3100 # HTTP port, doesn't have direct ui port and should visualize in grafana (container port)
+       - 9096 # gRPC port (container port)
+     command: -config.file=/etc/loki/local-config.yaml
+     volumes:
+       - ./../configs/loki-config.yaml:/etc/loki/local-config.yaml
+     networks:
+       - infrastructure
   # #######################################################
   # # elasticsearch
   # # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/docker.html#docker-compose-file
   # #######################################################
-  # elasticsearch:
-  #   container_name: elasticsearch
-  #   restart: unless-stopped
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
-  #   environment:
-  #     - discovery.type=single-node
-  #     - cluster.name=docker-cluster
-  #     - node.name=docker-node
-  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-  #     - xpack.security.enabled=false
-  #     - xpack.security.http.ssl.enabled=false
-  #     - xpack.security.transport.ssl.enabled=false
-  #     - network.host=0.0.0.0
-  #     - http.port=9200
-  #     - transport.host=localhost
-  #     - bootstrap.memory_lock=true
-  #     - cluster.routing.allocation.disk.threshold_enabled=false
-  #   ulimits:
-  #     memlock:
-  #       soft: -1
-  #       hard: -1
-  #   volumes:
-  #     - elastic-data:/usr/share/elasticsearch/data
-  #   ports:
-  #     - ${ELASTIC_HOST_PORT:-9200}:${ELASTIC_PORT:-9200}
-  #     - 9300:9300
-  #   networks:
-  #     - infrastructure
+#  elastic-search:
+#     container_name: elastic-search
+#     restart: unless-stopped
+#     image: docker.elastic.co/elasticsearch/elasticsearch:9.0.4
+#     environment:
+#       - discovery.type=single-node
+#       - cluster.name=docker-cluster
+#       - node.name=docker-node
+#       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#       - xpack.security.enabled=false
+#       - xpack.security.http.ssl.enabled=false
+#       - xpack.security.transport.ssl.enabled=false
+#       - network.host=0.0.0.0
+#       - http.port=9200
+#       - transport.host=localhost
+#       - bootstrap.memory_lock=true
+#       - cluster.routing.allocation.disk.threshold_enabled=false
+#     ulimits:
+#       memlock:
+#         soft: -1
+#         hard: -1
+#     volumes:
+#       - elastic-data:/usr/share/elasticsearch/data
+#     ports:
+#       - ${ELASTIC_HOST_PORT:-9200}:${ELASTIC_PORT:-9200}
+#       - 9300:9300
+#     networks:
+#       - infrastructure
   # #######################################################
   # # kibana
   # # https://www.elastic.co/guide/en/kibana/current/docker.html
   # #######################################################
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:8.17.0
-  #   container_name: kibana
-  #   restart: unless-stopped
-  #   environment:
-  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-  #   ports:
-  #     - ${KIBANA_HOST_PORT:-5601}:${KIBANA_PORT:-5601}
-  #   depends_on:
-  #     - elasticsearch
-  #   networks:
-  #     - infrastructure
+#   kibana:
+#     image: docker.elastic.co/kibana/kibana:9.0.3
+#     container_name: kibana
+#     restart: unless-stopped
+#     environment:
+#       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#     ports:
+#       - ${KIBANA_HOST_PORT:-5601}:${KIBANA_PORT:-5601}
+#     depends_on:
+#       - elasticsearch
+#     networks:
+#       - infrastructure
   # #######################################################
   # #  Redis
   # # https://developer.redis.com/howtos/quick-start
@@ -338,7 +343,6 @@ services:
   #     - infrastructure
   #   ports:
   #     - 6379:6379
-
   # #######################################################
   # # Keycloak
   # # https://www.keycloak.org/server/configuration
@@ -420,6 +424,30 @@ services:
   #   depends_on:
   #     - postgres
 
+#  azure-cosmosdb-emulator:
+#    restart: unless-stopped
+#    container_name: "azure-cosmosdb-emulator"
+#    hostname: "azurecosmosemulator"
+#    image: 'mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest'
+#    mem_limit: 4GB
+#    tty: true
+#    ports:
+#      - '8081:8081' # Data Explorer
+#      - '8900:8900'
+#      - '8901:8901'
+#      - '8902:8902'
+#      - '10250:10250'
+#      - '10251:10251'
+#      - '10252:10252'
+#      - '10253:10253'
+#      - '10254:10254'
+#      - '10255:10255'
+#      - '10256:10256'
+#      - '10350:10350'
+#    environment:
+#      - AZURE_COSMOS_EMULATOR_PARTITION_COUNT=3
+#      - AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE=false
+      
 networks:
   infrastructure:
     name: infrastructure

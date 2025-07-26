@@ -2,6 +2,15 @@ prepare:  # Install Husky and .NET tools
     husky
     dotnet tool restore
 
+aspire-run:  # Run .NET Aspire application
+    aspire run 
+
+run PROJECT_PATH=".": # Run the current project
+    dotnet run 
+
+run-project PROJECT_PATH:  # Run the input .NET project
+    dotnet run --project {{PROJECT_PATH}}
+
 install-dev-cert:  # Install dev cert (Bash)
     curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg
 

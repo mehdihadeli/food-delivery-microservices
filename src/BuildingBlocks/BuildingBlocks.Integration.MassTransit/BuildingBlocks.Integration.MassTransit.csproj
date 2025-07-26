@@ -13,8 +13,14 @@
     <PackageReference Include="MassTransit.RabbitMQ" />
   </ItemGroup>
   
-  <ItemGroup>
+  <ItemGroup Label="Aspire Packages">
+    <PackageReference Include="Aspire.RabbitMQ.Client.v7" />
+  </ItemGroup>
+  
+  <ItemGroup Label="Health Check">
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
     <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" />
   </ItemGroup>
+  
+  
 </Project>

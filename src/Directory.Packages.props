@@ -3,13 +3,29 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <EnablePackageVersionOverride>true</EnablePackageVersionOverride>
+    <AspireVersion>9.3.1</AspireVersion>
   </PropertyGroup>
   <PropertyGroup>
     <IsPublishable>false</IsPublishable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
   <ItemGroup Label="Authentication - Identity">
+    <PackageVersion Include="Aspire.Azure.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting" Version="9.3.2" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Azure" Version="9.3.2" />
+    <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Azure.CosmosDB" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Azure.PostgreSQL" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Azure.Redis" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Docker" Version="9.3.1-preview.1.25305.6" />
+    <PackageVersion Include="Aspire.Hosting.Elasticsearch" Version="9.2.1-preview.1.25222.1" />
+    <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="9.3.1-preview.1.25305.6" />
+    <PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.Cosmos" Version="9.3.1" />
+    <PackageVersion Include="Aspire.MongoDB.Driver.v3" Version="9.3.1" />
+    <PackageVersion Include="Aspire.RabbitMQ.Client.v7" Version="9.3.1" />
+    <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.3.0" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.EventStore" Version="9.6.0" />
     <PackageVersion Include="Duende.AccessTokenManagement.OpenIdConnect" Version="3.2.0" />
     <PackageVersion Include="Duende.BFF" Version="3.0.0" />
     <PackageVersion Include="Duende.BFF.Blazor" Version="3.0.0" />
@@ -20,8 +36,8 @@
     <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="7.0.5" />
     <PackageVersion Include="Duende.IdentityServer.EntityFramework" Version="7.0.5" />
     <PackageVersion Include="Duende.BFF.Yarp" Version="3.0.0" />
+    <PackageVersion Include="Grpc.Net.Client" Version="2.71.0" />
   </ItemGroup>
-
   <ItemGroup Label="ASP.NET Core - Microsoft">
     <!-- Entity Framework Core -->
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.6" />
@@ -66,7 +82,6 @@
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
     <PackageVersion Include="Microsoft.Diagnostics.NETCore.Client" Version="0.2.607501" />
   </ItemGroup>
-
   <ItemGroup Label="Logging - Monitoring">
     <PackageVersion Include="Serilog.Enrichers.CorrelationId" Version="3.0.1" />
     <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
@@ -82,7 +97,6 @@
     <PackageVersion Include="Serilog.Sinks.Seq" Version="9.0.0" />
     <PackageVersion Include="Serilog.Sinks.Spectre" Version="0.5.0" />
   </ItemGroup>
-
   <ItemGroup Label="OpenTelemetry - Observability">
     <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.12.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.12.0-beta.1" />
@@ -90,7 +104,6 @@
     <PackageVersion Include="Grafana.OpenTelemetry" Version="1.2.0" />
     <PackageVersion Include="OpenTelemetry.Api" Version="1.12.0" />
     <PackageVersion Include="Npgsql.OpenTelemetry" Version="9.0.3" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.12.0" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.12.0-beta.1" />
@@ -98,7 +111,6 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Process" Version="1.12.0-beta.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
   </ItemGroup>
-
   <ItemGroup Label="Health Checks">
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="9.0.6" />
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.6" />
@@ -117,14 +129,12 @@
     <PackageVersion Include="AspNetCore.HealthChecks.Uris" Version="9.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.EventStore" Version="9.0.0" />
   </ItemGroup>
-
   <ItemGroup Label="Messaging - Eventing">
     <PackageVersion Include="MassTransit" Version="8.5.0" />
     <PackageVersion Include="MassTransit.Kafka" Version="8.3.4" />
     <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.0" />
     <PackageVersion Include="MassTransit.Abstractions" Version="8.5.0" />
   </ItemGroup>
-
   <ItemGroup Label="API Documentation">
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.6" />
     <PackageVersion Include="Asp.Versioning.Http" Version="8.1.0" />
@@ -134,12 +144,10 @@
     <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.1" />
     <PackageVersion Include="Saunter" Version="0.13.0" />
   </ItemGroup>
-
   <ItemGroup Label="Serialization">
     <PackageVersion Include="MessagePack" Version="3.1.4" />
     <PackageVersion Include="MemoryPack" Version="1.21.4" />
   </ItemGroup>
-
   <ItemGroup Label="Other Packages">
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.2.0" />
     <PackageVersion Include="Ardalis.Specification" Version="9.2.0" />
@@ -167,19 +175,19 @@
     <PackageVersion Include="Open.ChannelExtensions" Version="9.1.0" />
     <PackageVersion Include="DistributedLock.Redis" Version="1.0.3" />
     <PackageVersion Include="IdGen" Version="3.0.7" />
+    <PackageVersion Include="CliWrap" Version="3.9.0" />
+    <PackageVersion Include="Grpc.HealthCheck" Version="2.71.0" />
+    <PackageVersion Include="Grpc.Net.ClientFactory" Version="2.71.0" />
   </ItemGroup>
-
   <ItemGroup Label="Testing">
     <PackageVersion Include="Bogus" Version="35.6.3" />
     <PackageVersion Include="AutoBogus" Version="2.13.1" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
   </ItemGroup>
-
   <ItemGroup Label="Communication">
     <PackageVersion Include="MailKit" Version="4.13.0" />
     <PackageVersion Include="SendGrid" Version="9.29.3" />
   </ItemGroup>
-
   <ItemGroup Label="Analyzers">
     <PackageVersion Include="Meziantou.Analyzer" Version="2.0.203" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
@@ -190,5 +198,17 @@
     <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.13.2" />
     <PackageVersion Include="AsyncAwaitBestPractices" Version="9.0.0" />
     <PackageVersion Include="ErrorProne.NET.CoreAnalyzers" Version="0.7.0-beta.1" />
+  </ItemGroup>
+  <ItemGroup Label="Aspire">
+    <PackageVersion Include="Aspire.AppHost.Sdk" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Qdrant" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Yarp" Version="9.3.1-preview.1.25305.6" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.k6" Version="9.5.0" />
+    <PackageVersion Include="Aspire.Hosting.MongoDB" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.3.1" />
+    <PackageVersion Include="Aspire.StackExchange.Redis" Version="9.3.1" />
   </ItemGroup>
 </Project>

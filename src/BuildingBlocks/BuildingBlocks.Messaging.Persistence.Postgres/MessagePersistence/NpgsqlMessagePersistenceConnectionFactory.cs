@@ -1,5 +1,5 @@
 using BuildingBlocks.Core.Messages.MessagePersistence;
-using Core.Persistence.Postgres;
+using BuildingBlocks.Persistence.EfCore.Postgres;
 
 namespace BuildingBlocks.Messaging.Persistence.Postgres.MessagePersistence;
 

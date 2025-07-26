@@ -1,11 +1,13 @@
 using System.Net;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviors;
+using BuildingBlocks.Caching.Extensions;
 using BuildingBlocks.Core.Diagnostics.Behaviors;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Email;
 using BuildingBlocks.Integration.MassTransit;
+using BuildingBlocks.Integration.MassTransit.Extensions;
 using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
 using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
 using BuildingBlocks.SerilogLogging;

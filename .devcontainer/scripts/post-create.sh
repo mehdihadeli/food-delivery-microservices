@@ -9,7 +9,14 @@ set -eax
 dotnet dev-certs https --trust
 
 # Install .NET Aspire project templates
-dotnet new install Aspire.ProjectTemplates
+dotnet new install Aspire.ProjectTemplates --force
+
+# Install aspirate
+# https://github.com/prom3theu5/aspirational-manifests
+dotnet tool install -g aspirate --prerelease
+
+# https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.2#-aspire-cli-preview
+dotnet tool install --global aspire.cli --prerelease
 
 # Update npm to latest version
 echo "📦 Updating npm to latest version..."

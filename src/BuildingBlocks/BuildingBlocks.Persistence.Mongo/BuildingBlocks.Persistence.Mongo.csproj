@@ -8,9 +8,13 @@
     <IsPackable>true</IsPackable>
   </PropertyGroup>
   
-  <ItemGroup>
+  <ItemGroup Label="Health Check">
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
     <PackageReference Include="AspNetCore.HealthChecks.MongoDb" />
+  </ItemGroup>
+  
+  <ItemGroup Label="Aspire Packages">
+    <PackageReference Include="Aspire.MongoDB.Driver.v3" />
   </ItemGroup>
 
 </Project>

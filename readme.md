@@ -24,9 +24,7 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
 
 ## ⭐ Support
 
-If you like feel free to ⭐ this repository, It helps out :)
-
-Thanks a bunch for supporting me!
+🌟 Don't forget to [star (🌟) this repo](https://docs.github.com/en/get-started/exploring-projects-on-github/saving-repositories-with-stars) to find it easier later and Support.
 
 ## Table of Contents
 

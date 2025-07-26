@@ -8,7 +8,7 @@ namespace BuildingBlocks.Web.ProblemDetail;
 
 internal sealed class DefaultProblemDetailMapper : IProblemDetailMapper
 {
-    public int GetMappedStatusCodes(Exception exception)
+    public int GetMappedStatusCodes(Exception? exception)
     {
         return exception switch
         {

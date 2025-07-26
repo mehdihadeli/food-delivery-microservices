@@ -13,6 +13,18 @@ prepare:
 install-dev-cert:
 	curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg
 
+# Run the current .NET project
+run: 
+	dotnet run
+
+# Run the input .NET project
+run-project: 
+	dotnet run --project $(PROJECT_PATH)
+
+# Run .NET Aspire application
+aspire-run: 
+	aspire run
+
 # Upgrade .NET packages
 upgrade-packages:
 	dotnet outdated -u

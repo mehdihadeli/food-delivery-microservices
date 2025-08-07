@@ -5,15 +5,14 @@ using BuildingBlocks.Core.Security;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Shared;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Identity.Shared.Data;
 
 public class IdentityDataSeeder(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
-    : IDataSeeder
+    : IDataSeeder<IdentityContext>
 {
-    public int Order => 1;
-
-    public async Task SeedAllAsync(CancellationToken cancellationToken)
+    public async Task SeedAsync(IdentityContext context)
     {
         await SeedRoles();
         await SeedUsers();

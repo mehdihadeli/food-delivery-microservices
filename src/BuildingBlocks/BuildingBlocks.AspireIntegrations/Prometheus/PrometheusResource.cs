@@ -15,8 +15,10 @@ public class PrometheusResource(string name) : ContainerResource(name), IResourc
     public const int ProxyOrContainerHostWebPort = 9090;
 
     private EndpointReference? _primaryEndpoint;
+    private EndpointReference? _httpEndpoint;
 
     public EndpointReference PrimaryEndpoint => _primaryEndpoint ??= new(this, PrimaryEndpointName);
+    public EndpointReference HttpEndpoint => _httpEndpoint ??= new(this, HttpEndpointName);
 
     public ReferenceExpression ConnectionStringExpression =>
         ReferenceExpression.Create(

@@ -4,6 +4,7 @@ using BuildingBlocks.Persistence.Mongo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Sdk;
+using Xunit.v3;
 
 namespace Tests.Shared.Fixtures;
 

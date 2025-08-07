@@ -1,11 +1,12 @@
 using BuildingBlocks.Abstractions.Events;
 using BuildingBlocks.Abstractions.Persistence;
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Persistence.EfCore.Postgres.Extensions;
 using BuildingBlocks.Persistence.Mongo.Extensions;
 using FoodDelivery.Services.Orders.Shared.Contracts;
 using FoodDelivery.Services.Orders.Shared.Data;
+using FoodDelivery.Services.Shared.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Orders.Shared.Extensions.HostApplicationBuilderExtensions;
@@ -34,7 +35,22 @@ public static partial class HostApplicationBuilderExtensions
         }
         else
         {
-            builder.AddPostgresDbContext<OrdersDbContext>();
+            builder.AddPostgresDbContext<OrdersDbContext>(
+                connectionStringName: AspireApplicationResources.PostgresDatabase.Orders,
+                action: app =>
+                {
+                    if (app.Environment.IsDevelopment() || app.Environment.IsAspireRun())
+                    {
+                        // apply migration and seed data for dev environment
+                        app.AddMigration<OrdersDbContext, OrdersDataSeeder>();
+                    }
+                    else
+                    {
+                        // just apply migration for production without seeding
+                        app.AddMigration<OrdersDbContext>();
+                    }
+                }
+            );
         }
 
         builder.Services.AddScoped<IOrdersDbContext>(provider => provider.GetRequiredService<OrdersDbContext>());
@@ -42,6 +58,8 @@ public static partial class HostApplicationBuilderExtensions
 
     private static void AddMongoReadStorage(IHostApplicationBuilder builder)
     {
-        builder.AddMongoDbContext<OrderReadDbContext>();
+        builder.AddMongoDbContext<OrderReadDbContext>(
+            connectionStringName: AspireApplicationResources.MongoDatabase.Orders
+        );
     }
 }

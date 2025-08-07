@@ -11,6 +11,7 @@
   <ItemGroup Label="Aspire Packages">
     <!--https://learn.microsoft.com/en-us/dotnet/aspire/caching/stackexchange-redis-distributed-caching-integration-->
     <PackageReference Include="Aspire.StackExchange.Redis" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" />
   </ItemGroup>
   
   <ItemGroup>

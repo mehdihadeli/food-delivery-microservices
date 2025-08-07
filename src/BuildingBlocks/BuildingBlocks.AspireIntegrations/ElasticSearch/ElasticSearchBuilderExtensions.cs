@@ -1,8 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Net.Sockets;
 using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace BuildingBlocks.AspireIntegrations.ElasticSearch;
 
@@ -100,8 +98,8 @@ public static class ElasticSearchBuilderExtensions
         bool useExistingServerInstance = false,
         bool proxyEnabled = true,
         bool persistenceEnabled = false,
-        int? proxyOrContainerHostHttpPort = ElasticsearchResource.ProxyOrContainerHostHttpPort,
-        int? proxyOrContainerHostTransportPort = ElasticsearchResource.ProxyOrContainerHostTransportPort,
+        int? proxyOrContainerHostHttpPort = ElasticSearchDefaults.ProxyOrContainerHostHttpPort,
+        int? proxyOrContainerHostTransportPort = ElasticSearchDefaults.ProxyOrContainerHostTransportPort,
         int memoryLimitMB = 512,
         bool disableSecurity = true,
         string clusterName = "docker-cluster",
@@ -116,64 +114,36 @@ public static class ElasticSearchBuilderExtensions
             return builder.AddConnectionString(nameOrConnectionStringName);
         }
 
-        var elasticsearchResource = new ElasticsearchResource(nameOrConnectionStringName);
-
-        string? connectionString = null;
-
-        builder.Eventing.Subscribe<ConnectionStringAvailableEvent>(
-            elasticsearchResource,
-            async (@event, cancellationToken) =>
-            {
-                connectionString =
-                    await elasticsearchResource
-                        .ConnectionStringExpression.GetValueAsync(cancellationToken)
-                        .ConfigureAwait(false)
-                    ?? throw new DistributedApplicationException(
-                        $"ConnectionStringAvailableEvent was published for the '{elasticsearchResource.Name}' resource but the connection string was null."
-                    );
-            }
-        );
-
-        var healthCheckKey = $"{nameOrConnectionStringName}_check";
-        builder
-            .Services.AddHealthChecks()
-            .Add(
-                new HealthCheckRegistration(
-                    healthCheckKey,
-                    _ => new ElasticsearchHealthCheck(elasticsearchResource, connectionString!),
-                    failureStatus: default,
-                    tags: default,
-                    timeout: default
-                )
-            );
-
         var elasticsearch = builder
-            .AddResource(elasticsearchResource)
-            .WithImage(ElasticsearchContainerImageTags.Image, ElasticsearchContainerImageTags.Tag)
-            .WithImageRegistry(ElasticsearchContainerImageTags.Registry)
+            .AddElasticsearch(nameOrConnectionStringName)
+            .WithImage(ElasticSearchDefaults.Image, ElasticSearchDefaults.Tag)
+            .WithImageRegistry(ElasticSearchDefaults.Registry)
             .WithContainerName(nameOrConnectionStringName)
-            .WithDataVolume()
             // HTTP API endpoint
-            .WithHttpEndpoint(
-                port: proxyOrContainerHostHttpPort,
-                targetPort: ElasticsearchResource.HttpContainerPort,
-                name: ElasticsearchResource.HttpEndpointName,
-                isProxied: proxyEnabled
-            // `isExternal` as default is `null` and will be assigned to `false` at the end when it's null
+            .WithEndpoint(
+                ElasticSearchDefaults.HttpEndpointName,
+                endpoint =>
+                {
+                    endpoint.Port = proxyOrContainerHostHttpPort;
+                    endpoint.TargetPort = ElasticSearchDefaults.HttpContainerPort;
+                    endpoint.IsProxied = proxyEnabled;
+                    endpoint.IsExternal = false;
+                }
             )
             // Transport endpoint
             .WithEndpoint(
-                port: proxyOrContainerHostTransportPort,
-                targetPort: ElasticsearchResource.TransportContainerPort,
-                name: ElasticsearchResource.TransportEndpointName,
-                isProxied: proxyEnabled,
-                scheme: "tcp",
-                isExternal: false
+                ElasticSearchDefaults.TransportEndpointName,
+                endpoint =>
+                {
+                    endpoint.Port = proxyOrContainerHostTransportPort;
+                    endpoint.TargetPort = ElasticSearchDefaults.TransportContainerPort;
+                    endpoint.IsProxied = proxyEnabled;
+                    endpoint.IsExternal = false;
+                }
             )
             .WithEnvironment(context =>
                 ConfigureEnvironments(memoryLimitMB, disableSecurity, clusterName, nodeName, context)
-            )
-            .WithHealthCheck(healthCheckKey);
+            );
 
         if (builder.ExecutionContext.IsPublishMode || persistenceEnabled)
         {
@@ -194,7 +164,6 @@ public static class ElasticSearchBuilderExtensions
         EnvironmentCallbackContext context
     )
     {
-        context.EnvironmentVariables.Add("discovery.type", "single-node");
         context.EnvironmentVariables.Add("cluster.name", clusterName);
         context.EnvironmentVariables.Add("node.name", nodeName);
         context.EnvironmentVariables.Add("ES_JAVA_OPTS", $"-Xms{memoryLimitMb}m -Xmx{memoryLimitMb}m");
@@ -205,31 +174,26 @@ public static class ElasticSearchBuilderExtensions
 
         if (disableSecurity)
         {
-            context.EnvironmentVariables.Add("xpack.security.enabled", "false");
             context.EnvironmentVariables.Add("xpack.security.http.ssl.enabled", "false");
             context.EnvironmentVariables.Add("xpack.security.transport.ssl.enabled", "false");
         }
     }
 
-    public static IResourceBuilder<ElasticsearchResource> WithDataVolume(
-        this IResourceBuilder<ElasticsearchResource> builder,
-        string? name = null
-    )
+    private static class ElasticSearchDefaults
     {
-        ArgumentNullException.ThrowIfNull(builder);
-        return builder.WithVolume(
-            name ?? VolumeNameGenerator.Generate(builder, "data"),
-            ElasticsearchResource.DataTargetPath
-        );
-    }
+        internal const string Registry = "docker.elastic.co";
+        internal const string Image = "elasticsearch/elasticsearch";
+        internal const string Tag = "9.0.4";
 
-    public static IResourceBuilder<ElasticsearchResource> WithDataBindMount(
-        this IResourceBuilder<ElasticsearchResource> builder,
-        string source
-    )
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(source);
-        return builder.WithBindMount(source, ElasticsearchResource.DataTargetPath);
+        internal const string HttpEndpointName = "http";
+        internal const string TransportEndpointName = "internal";
+
+        public const string DefaultResourceName = "elasticsearch";
+
+        public const int HttpContainerPort = 9200;
+        public const int ProxyOrContainerHostHttpPort = 9200;
+
+        public const int TransportContainerPort = 9300;
+        public const int ProxyOrContainerHostTransportPort = 9300;
     }
 }

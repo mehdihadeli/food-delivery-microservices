@@ -1,4 +1,4 @@
-CREATE DATABASE catalogs_service;
-CREATE DATABASE identity_service;
-CREATE DATABASE orders_service;
-CREATE DATABASE customers_service;
+CREATE DATABASE catalogs;
+CREATE DATABASE identity;
+CREATE DATABASE orders;
+CREATE DATABASE customers;

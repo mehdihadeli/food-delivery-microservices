@@ -15,14 +15,12 @@ public static class DependencyInjectionExtensions
 {
     public static IHostApplicationBuilder AddCustomProblemDetails(
         this IHostApplicationBuilder builder,
+        Assembly[] scanAssemblies,
         Action<ProblemDetailsOptions>? configure = null,
         bool useExceptionHandler = true,
-        bool useCustomProblemDetailsService = false,
-        params Assembly[] scanAssemblies
+        bool useCustomProblemDetailsService = false
     )
     {
-        var assemblies = scanAssemblies.Length != 0 ? scanAssemblies : [Assembly.GetCallingAssembly()];
-
         if (useExceptionHandler)
         {
             builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
@@ -57,7 +55,7 @@ public static class DependencyInjectionExtensions
             });
         }
 
-        RegisterAllMappers(builder.Services, assemblies);
+        RegisterAllMappers(builder.Services, scanAssemblies);
 
         return builder;
     }

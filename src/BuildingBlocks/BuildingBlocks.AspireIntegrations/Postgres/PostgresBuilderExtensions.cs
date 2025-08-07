@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 
-namespace BuildingBlocks.Persistence.EfCore.Postgres.Extensions;
+namespace BuildingBlocks.AspireIntegrations.Postgres;
 
 [Experimental("ASPIREPROXYENDPOINTS001")]
 public static class PostgresBuilderExtensions
@@ -179,9 +179,10 @@ public static class PostgresBuilderExtensions
     /// <param name="builder">
     /// A tuple containing an optional PostgreSQL server resource and the distributed application builder.
     /// </param>
-    /// <param name="databaseNameOrConnectionStringName">
-    /// The name to use for the new database (if creating one) or the key/name of an existing connection string for remote/external servers.
+    /// <param name="nameOrConnectionStringName">
+    /// The name of a postgres database resource (if creating one) or the key/name of an existing connection string for remote/external servers.
     /// </param>
+    /// <param name="databaseName">database name</param>
     /// <returns>
     /// A resource builder for the configured PostgreSQL database connection, either newly created or from an existing connection string.
     /// </returns>
@@ -190,7 +191,8 @@ public static class PostgresBuilderExtensions
             IResourceBuilder<PostgresServerResource>? postgresResource,
             IDistributedApplicationBuilder applicationBuilder
         ) builder,
-        string databaseNameOrConnectionStringName
+        string nameOrConnectionStringName,
+        string? databaseName = null
     )
     {
         if (builder.postgresResource is null)
@@ -198,11 +200,13 @@ public static class PostgresBuilderExtensions
             // https://learn.microsoft.com/en-us/dotnet/aspire/database/postgresql-integration?tabs=dotnet-cli#add-postgresql-server-resource
             // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/app-host-overview#execution-context
             // consider each database name as a connection string name to connect to an existing server instance like `catalogsdb` as a connection string name
-            return builder.applicationBuilder.AddConnectionString(databaseNameOrConnectionStringName);
+            return builder.applicationBuilder.AddConnectionString(nameOrConnectionStringName);
         }
 
+        ArgumentException.ThrowIfNullOrWhiteSpace(databaseName);
+
         // use database name to create a connection string with `databaseNameOrConnectionStringName` new database name and using existing parent connection string in PostgresServerResource for creating a new connection resource for this database
-        return builder.postgresResource.AddDatabase(databaseNameOrConnectionStringName);
+        return builder.postgresResource.AddDatabase(name: nameOrConnectionStringName, databaseName: databaseName);
     }
 
     private static class PostgresDefaults

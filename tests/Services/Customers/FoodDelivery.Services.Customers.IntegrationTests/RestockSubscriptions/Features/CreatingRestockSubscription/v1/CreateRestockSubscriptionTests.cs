@@ -6,14 +6,12 @@ using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models;
 using Microsoft.EntityFrameworkCore;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
-using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 
 public class CreateRestockSubscriptionTests(
-    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-    ITestOutputHelper outputHelper
-) : CustomerServiceIntegrationTestBase(sharedFixture, outputHelper)
+    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture
+) : CustomerServiceIntegrationTestBase(sharedFixture)
 {
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
@@ -31,7 +29,10 @@ public class CreateRestockSubscriptionTests(
         );
 
         // Act
-        var createdCustomerSubscriptionResponse = await SharedFixture.CommandAsync(command);
+        var createdCustomerSubscriptionResponse = await SharedFixture.CommandAsync(
+            command,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         createdCustomerSubscriptionResponse.RestockSubscriptionId.Should().BeGreaterThan(0);

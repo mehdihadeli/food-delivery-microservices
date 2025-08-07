@@ -1,35 +1,19 @@
-using Xunit.Sdk;
-
 namespace Tests.Shared.XunitCategories;
 
 /// <summary>
-/// Could filter by `dotnet test --filter "Category=Feature"` and `dotnet test --filter "Feature=201"` in running tests in command line
+/// Enables filtering via 'dotnet test --filter "Category=Feature"' and 'dotnet test --filter "Feature=201"'
 /// </summary>
-[TraitDiscoverer(FeatureTraitDiscoverer.DiscovererTypeName, XunitConstants.AssemblyName)]
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
-public class FeatureTraitAttribute : Attribute, ITraitAttribute
+public sealed class FeatureTraitAttribute : Attribute
 {
-    public FeatureTraitAttribute(int id)
-    {
-        Id = id;
-    }
+    public FeatureTraitAttribute(int id) => Id = id;
 
+    // xUnit 3 exposes all public get-only properties as traits
     public int Id { get; }
-}
 
-internal class FeatureTraitDiscoverer : ITraitDiscoverer
-{
-    private const string Key = "Feature";
-    internal const string DiscovererTypeName =
-        $"{XunitConstants.AssemblyName}.{nameof(XunitCategories)}.{nameof(FeatureTraitDiscoverer)}";
+    // For traditional trait-key for test filters: "Feature"
+    public int Feature => Id;
 
-    public IEnumerable<KeyValuePair<string, string>> GetTraits(IAttributeInfo traitAttribute)
-    {
-        var id = traitAttribute.GetNamedArgument<int?>("Id");
-
-        yield return new KeyValuePair<string, string>("Category", Key);
-
-        if (id is { })
-            yield return new KeyValuePair<string, string>(Key, id.ToString()!);
-    }
+    // For compatibility with legacy "Category" groupings
+    public string Category => "Feature";
 }

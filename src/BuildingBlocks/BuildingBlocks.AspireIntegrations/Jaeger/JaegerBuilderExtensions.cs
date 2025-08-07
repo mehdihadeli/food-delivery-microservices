@@ -73,10 +73,8 @@ public static class JaegerBuilderExtensions
     /// <param name="persistenceEnabled">
     /// Configures the container with persistent storage when true
     /// </param>
-    /// <param name="proxyOrContainerHostUiPort">
-    /// Port for the Jaeger UI (16686). Behavior depends on proxyEnabled and uiProxyEnabled:
-    /// - When proxyEnabled and uiProxyEnabled: Proxy port (null for auto-assigned)
-    /// - Otherwise: Host port (null for auto-assigned)
+    /// <param name="proxyOrContainerHostHttpPort">
+    /// Port for the Jaeger UI (16686). Behavior depends on proxyEnabled
     /// </param>
     /// <param name="proxyOrContainerHostAgentPort">
     /// Port for the Jaeger agent (6831). Behavior depends on proxyEnabled:
@@ -105,7 +103,7 @@ public static class JaegerBuilderExtensions
         bool useExistingServerInstance = false,
         bool proxyEnabled = true,
         bool persistenceEnabled = false,
-        int? proxyOrContainerHostUiPort = JaegerResource.ProxyOrContainerHostUiPort,
+        int? proxyOrContainerHostHttpPort = JaegerResource.ProxyOrContainerHostQueryHttpPort,
         int? proxyOrContainerHostAgentPort = JaegerResource.ProxyOrContainerHostAgentPort,
         int? proxyOrContainerHostCollectorPort = JaegerResource.ProxyOrContainerHostCollectorPort,
         int? proxyOrContainerHostOtlpGrpcPort = JaegerResource.ProxyOrContainerHostOtlpGrpcPort,
@@ -122,13 +120,11 @@ public static class JaegerBuilderExtensions
 
         var jaegerResource = new JaegerResource(nameOrConnectionStringName);
 
-        string? connectionString = null;
-
         builder.Eventing.Subscribe<ConnectionStringAvailableEvent>(
             jaegerResource,
             async (@event, cancellationToken) =>
             {
-                connectionString =
+                var connectionString =
                     await jaegerResource
                         .ConnectionStringExpression.GetValueAsync(cancellationToken)
                         .ConfigureAwait(false)
@@ -144,7 +140,7 @@ public static class JaegerBuilderExtensions
             .Add(
                 new HealthCheckRegistration(
                     healthCheckKey,
-                    _ => new JaegerHealthCheck(jaegerResource, connectionString!),
+                    _ => new JaegerHealthCheck(jaegerResource),
                     failureStatus: default,
                     tags: default,
                     timeout: default
@@ -158,9 +154,9 @@ public static class JaegerBuilderExtensions
             .WithContainerName(nameOrConnectionStringName)
             // UI endpoint
             .WithEndpoint(
-                port: proxyOrContainerHostUiPort,
-                targetPort: JaegerResource.UiContainerPort,
-                name: JaegerResource.UiEndpointName,
+                port: proxyOrContainerHostHttpPort,
+                targetPort: JaegerResource.QueryHttpContainerPort,
+                name: JaegerResource.QueryHttpEndpointName,
                 isProxied: proxyEnabled,
                 scheme: "http",
                 isExternal: true

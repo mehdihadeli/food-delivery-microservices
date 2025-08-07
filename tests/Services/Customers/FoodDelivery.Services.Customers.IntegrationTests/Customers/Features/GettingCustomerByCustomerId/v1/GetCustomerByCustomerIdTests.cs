@@ -1,6 +1,5 @@
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
-using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.GettingCustomerByCustomerId.v1;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
@@ -8,14 +7,12 @@ using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models.Read;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
-using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests.Customers.Features.GettingCustomerByCustomerId.v1;
 
 public class GetCustomerByCustomerIdTests(
-    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-    ITestOutputHelper outputHelper
-) : CustomerServiceIntegrationTestBase(sharedFixture, outputHelper)
+    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture
+) : CustomerServiceIntegrationTestBase(sharedFixture)
 {
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
@@ -27,7 +24,7 @@ public class GetCustomerByCustomerIdTests(
 
         // Act
         var query = new GetCustomerByCustomerId(fakeCustomerReadModel.CustomerId);
-        var customer = (await SharedFixture.QueryAsync(query)).Customer;
+        var customer = (await SharedFixture.QueryAsync(query, TestContext.Current.CancellationToken)).Customer;
 
         // Assert
         customer.Should().BeEquivalentTo(fakeCustomerReadModel, options => options.ExcludingMissingMembers());

@@ -2,18 +2,30 @@ using BuildingBlocks.Core.Extensions;
 using MongoDB.Driver;
 using Testcontainers.MongoDb;
 using Tests.Shared.Helpers;
+using Xunit;
 using Xunit.Sdk;
+using Xunit.v3;
 
 namespace Tests.Shared.Fixtures;
 
 public class MongoContainerFixture : IAsyncLifetime
 {
     private readonly IMessageSink _messageSink;
+    private string? _connectionString;
 
     public MongoContainerOptions MongoContainerOptions { get; }
     public MongoDbContainer Container { get; }
     public int HostPort => Container.GetMappedPublicPort(MongoDbBuilder.MongoDbPort);
     public int TcpContainerPort => MongoDbBuilder.MongoDbPort;
+
+    // like something generates by mongo aspire connection for a database
+    public string ConnectionString =>
+        _connectionString ??=
+            $"{
+                Container.GetConnectionString().Replace("?directConnection=true", "", StringComparison.InvariantCulture)
+            }{
+                MongoContainerOptions.DatabaseName
+            }?authSource=admin&authMechanism=SCRAM-SHA-256";
 
     public MongoContainerFixture(IMessageSink messageSink)
     {
@@ -37,7 +49,7 @@ public class MongoContainerFixture : IAsyncLifetime
         await DropDatabaseCollections(cancellationToken);
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await Container.StartAsync();
         _messageSink.OnMessage(
@@ -47,7 +59,7 @@ public class MongoContainerFixture : IAsyncLifetime
         );
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await Container.StopAsync();
         await Container.DisposeAsync(); //important for the event to cleanup to be fired!

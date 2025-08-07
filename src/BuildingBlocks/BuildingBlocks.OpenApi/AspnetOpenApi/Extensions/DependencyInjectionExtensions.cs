@@ -1,6 +1,5 @@
 using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
 using BuildingBlocks.OpenApi.AspnetOpenApi.Transformers;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 
 namespace BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;

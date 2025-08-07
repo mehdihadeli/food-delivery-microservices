@@ -1,10 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.OpenTelemetry\BuildingBlocks.OpenTelemetry.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
-    <ProjectReference Include="..\..\..\Services\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" />
+    <ProjectReference Include="..\..\..\Aspire\FoodDelivery.ServiceDefaults\FoodDelivery.ServiceDefaults.csproj" />
   </ItemGroup>
   
   <ItemGroup>

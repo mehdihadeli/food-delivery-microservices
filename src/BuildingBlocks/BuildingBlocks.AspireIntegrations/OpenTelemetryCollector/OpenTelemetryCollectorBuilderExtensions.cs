@@ -146,13 +146,11 @@ public static class OpenTelemetryCollectorBuilderExtensions
 
         var otelResource = new OpenTelemetryCollectorResource(nameOrConnectionStringName);
 
-        string? connectionString = null;
-
         builder.Eventing.Subscribe<ConnectionStringAvailableEvent>(
             otelResource,
             async (@event, cancellationToken) =>
             {
-                connectionString =
+                var connectionString =
                     await otelResource.ConnectionStringExpression.GetValueAsync(cancellationToken).ConfigureAwait(false)
                     ?? throw new DistributedApplicationException(
                         $"ConnectionStringAvailableEvent was published for the '{otelResource.Name}' resource but the connection string was null."
@@ -166,7 +164,7 @@ public static class OpenTelemetryCollectorBuilderExtensions
             .Add(
                 new HealthCheckRegistration(
                     healthCheckKey,
-                    _ => new OpenTelemetryCollectorHealthCheck(otelResource, connectionString!),
+                    _ => new OpenTelemetryCollectorHealthCheck(otelResource),
                     failureStatus: default,
                     tags: default,
                     timeout: default

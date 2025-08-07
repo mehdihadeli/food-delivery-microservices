@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  
   <ItemGroup>
     <ProjectReference Include="..\FoodDelivery.Services.Catalogs.TestShared\FoodDelivery.Services.Catalogs.TestShared.csproj" />
   </ItemGroup>

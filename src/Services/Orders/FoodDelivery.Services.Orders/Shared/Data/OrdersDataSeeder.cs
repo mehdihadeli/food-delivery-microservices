@@ -2,12 +2,10 @@ using BuildingBlocks.Abstractions.Persistence;
 
 namespace FoodDelivery.Services.Orders.Shared.Data;
 
-public class OrdersDataSeeder : IDataSeeder
+public class OrdersDataSeeder : IDataSeeder<OrdersDbContext>
 {
-    public Task SeedAllAsync(CancellationToken cancellationToken)
+    public Task SeedAsync(OrdersDbContext context)
     {
         return Task.CompletedTask;
     }
-
-    public int Order => 1;
 }

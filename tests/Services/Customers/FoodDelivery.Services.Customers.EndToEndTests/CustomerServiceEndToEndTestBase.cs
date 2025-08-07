@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Tests.Shared.Fixtures;
 using Tests.Shared.TestBase;
-using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.EndToEndTests;
 
@@ -15,7 +14,7 @@ namespace FoodDelivery.Services.Customers.EndToEndTests;
 public class CustomerServiceEndToEndTestBase(
     SharedFixtureWithEfCoreAndMongo<Api.CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
     ITestOutputHelper outputHelper
-) : EndToEndTestTestBase<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext>(sharedFixture, outputHelper)
+) : EndToEndTestTestBase<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext>(sharedFixture)
 {
     private IdentityServiceWireMock? _identityServiceWireMock;
     private CatalogsServiceWireMock? _catalogsServiceWireMock;

@@ -1,7 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace BuildingBlocks.Abstractions.Persistence;
 
-public interface IDataSeeder
+public interface IDataSeeder<in TContext>
+    where TContext : DbContext
 {
-    Task SeedAllAsync(CancellationToken cancellationToken);
-    int Order { get; }
+    Task SeedAsync(TContext context);
 }

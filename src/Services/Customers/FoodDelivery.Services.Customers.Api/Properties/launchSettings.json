@@ -1,41 +1,39 @@
 ﻿{
   "$schema": "https://json.schemaecommerce.org/launchsettings.json",
   "profiles": {
-    "Customers.Https": {
+    "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "hotReloadProfile": "aspnetcore",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchBrowser": false,
       "applicationUrl": "https://localhost:8001;http://localhost:8000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-	"Customers.Http": {
+	"http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "hotReloadProfile": "aspnetcore",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchBrowser": false,
       "applicationUrl": "http://localhost:8000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Customers.Watch": {
+    "watch": {
       "commandName": "Executable",
       "executablePath": "dotnet",
       "workingDirectory": "$(ProjectDir)",
       "hotReloadEnabled": true,
       "hotReloadProfile": "aspnetcore",
-      "commandLineArgs": "watch -lp Customers.Api.Http",
+      "commandLineArgs": "watch -lp http",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Customers.LiveRecompilation": {
+    "liveRecompilation": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "hotReloadProfile": "aspnetcore",

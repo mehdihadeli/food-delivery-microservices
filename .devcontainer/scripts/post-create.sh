@@ -15,8 +15,8 @@ dotnet new install Aspire.ProjectTemplates --force
 # https://github.com/prom3theu5/aspirational-manifests
 dotnet tool install -g aspirate --prerelease
 
-# https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.2#-aspire-cli-preview
-dotnet tool install --global aspire.cli --prerelease
+# https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.4#-aspire-cli-is-generally-available
+dotnet tool install -g Aspire.Cli
 
 # Update npm to latest version
 echo "📦 Updating npm to latest version..."

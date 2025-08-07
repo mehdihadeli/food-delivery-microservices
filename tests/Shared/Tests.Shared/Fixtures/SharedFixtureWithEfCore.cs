@@ -4,6 +4,7 @@ using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Sdk;
+using Xunit.v3;
 
 namespace Tests.Shared.Fixtures;
 

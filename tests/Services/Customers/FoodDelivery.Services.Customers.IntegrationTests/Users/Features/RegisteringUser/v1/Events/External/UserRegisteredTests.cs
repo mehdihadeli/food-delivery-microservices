@@ -5,12 +5,9 @@ using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Events;
 using FoodDelivery.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
 using FoodDelivery.Services.Shared.Customers.Customers.Events.Integration.v1;
 using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
-using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
-using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests.Users.Features.RegisteringUser.v1.Events.External;
 
@@ -19,10 +16,9 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
     private static UserRegisteredV1 _userRegistered = default!;
 
     public UserRegisteredTests(
-        SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-        ITestOutputHelper outputHelper
+        SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture
     )
-        : base(sharedFixture, outputHelper)
+        : base(sharedFixture)
     {
         _userRegistered = new FakeUserRegisteredV1().Generate();
 
@@ -37,7 +33,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldConsuming<UserRegisteredV1>();
+        await SharedFixture.ShouldConsuming<UserRegisteredV1>(TestContext.Current.CancellationToken);
     }
 
     // [Fact]
@@ -62,7 +58,9 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldConsuming<UserRegisteredV1, UserRegisteredConsumer>();
+        await SharedFixture.ShouldConsuming<UserRegisteredV1, UserRegisteredConsumer>(
+            TestContext.Current.CancellationToken
+        );
     }
 
     [Fact]
@@ -94,7 +92,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldProcessingInternalCommand<CreateCustomerRead>();
+        await SharedFixture.ShouldProcessingInternalCommand<CreateCustomerRead>(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -126,7 +124,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldProcessingOutboxMessage<CustomerCreatedV1>();
+        await SharedFixture.ShouldProcessingOutboxMessage<CustomerCreatedV1>(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -137,6 +135,6 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldPublishing<CustomerCreatedV1>();
+        await SharedFixture.ShouldPublishing<CustomerCreatedV1>(TestContext.Current.CancellationToken);
     }
 }

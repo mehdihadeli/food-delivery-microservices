@@ -97,13 +97,11 @@ public static class ZipkinBuilderExtensions
 
         var zipkinResource = new ZipkinResource(nameOrConnectionStringName);
 
-        string? connectionString = null;
-
         builder.Eventing.Subscribe<ConnectionStringAvailableEvent>(
             zipkinResource,
             async (@event, cancellationToken) =>
             {
-                connectionString =
+                var connectionString =
                     await zipkinResource
                         .ConnectionStringExpression.GetValueAsync(cancellationToken)
                         .ConfigureAwait(false)
@@ -119,7 +117,7 @@ public static class ZipkinBuilderExtensions
             .Add(
                 new HealthCheckRegistration(
                     healthCheckKey,
-                    _ => new ZipkinHealthCheck(zipkinResource, connectionString!),
+                    _ => new ZipkinHealthCheck(zipkinResource),
                     failureStatus: default,
                     tags: default,
                     timeout: default

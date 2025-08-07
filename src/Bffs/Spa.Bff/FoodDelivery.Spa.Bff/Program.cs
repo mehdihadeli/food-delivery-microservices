@@ -1,10 +1,9 @@
+using System.Net;
 using System.Net.Http.Headers;
-using BuildingBlocks.Core.Diagnostics.Extensions;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extensions;
-using BuildingBlocks.OpenTelemetry.Extensions;
+using BuildingBlocks.Web.Cors;
 using Duende.Bff.Yarp;
-using FoodDelivery.Services.Shared.Extensions;
+using FoodDelivery.ServiceDefaults.Extensions;
 using FoodDelivery.Spa.Bff.Clients;
 using FoodDelivery.Spa.Bff.Contracts;
 using FoodDelivery.Spa.Bff.Extensions;
@@ -15,6 +14,19 @@ using Yarp.ReverseProxy.Transforms;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+builder.Services.AddCors(options =>
+{
+    var corsOptions = builder.Configuration.BindOptions<CorsOptions>();
+    corsOptions.NotBeNull();
+    if (corsOptions.AllowedOrigins.Length == 0)
+        throw new InvalidOperationException("At least one origin must be configured in CorsOptions:AllowedOrigins");
+
+    options.AddPolicy(
+        "ReactApp",
+        policy => policy.WithOrigins(corsOptions.AllowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()
+    );
+});
 
 builder
     .Services.AddBff()
@@ -60,8 +72,13 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+
+    // Clear default networks/proxies (optional, but recommended for strict control)
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
+
+    // Add YARP's localhost IP as a trusted proxy
+    options.KnownProxies.Add(IPAddress.Parse("::1"));
 });
 
 // - For BFF aggregate endpoints and local endpoints in bff, avoid using YARP and instead call microservices directly with typed HttpClient instances. YARP adds unnecessary latency (BFF → YARP → Microservice) and overhead, whereas direct calls (BFF → Microservice)
@@ -93,11 +110,16 @@ builder.AddCustomAuthorization();
 
 var app = builder.Build();
 
-// Reads standard forwarded headers (X-Forwarded-For, X-Forwarded-Proto, X-Forwarded-Host) and updates the request information accordingly,
-// Ensures the application sees the original client IP, protocol (HTTP/HTTPS), and host rather than the proxy's information
+// - Forwarded Headers Middleware should run before other middleware.
+// - `X-Forwarded` is enabled by default to `Set` on yarp transformers. https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/yarp/transforms-request?view=aspnetcore-9.0#x-forwarded
+// - Reads standard forwarded headers (X-Forwarded-For, X-Forwarded-Proto, X-Forwarded-Host) and updates the request information accordingly,
+// Ensures the application sees the original client IP, protocol (HTTP/HTTPS), and host rather than the proxy's information and set them on Context.Request, but we can access to original values through Request.Headers and `X-Original-Host`, `X-Original-For`
 app.UseForwardedHeaders();
 
 app.MapDefaultEndpoints();
+
+// CORS must come before YARP
+app.UseCors("ReactApp");
 
 app.UseAuthentication();
 
@@ -112,8 +134,8 @@ app.UseAuthorization();
 // This has to be added after 'UseAuthorization()'
 app.MapBffManagementEndpoints();
 
-app.Map(
-    "/",
+app.MapGet(
+    "/signin-callback",
     context =>
     {
         var reactSpa = builder.Configuration["Redirects:ReactSpaAddress"];
@@ -123,15 +145,15 @@ app.Map(
     }
 );
 
+app.MapGet("/", (HttpContext context) => "Spa Bff.").AllowAnonymous();
+
 app.MapGet("/api", (HttpContext context) => "Protected endpoint").RequireAuthorization();
 
 // https://docs.duendesoftware.com/bff/fundamentals/apis/yarp/#anti-forgery-protection
 app.MapReverseProxy(proxyApp =>
-    {
-        proxyApp.UseAntiforgeryCheck();
-    })
-    // https://docs.duendesoftware.com/bff/fundamentals/apis/yarp/#anti-forgery-protection
-    .AsBffApiEndpoint();
+{
+    proxyApp.UseAntiforgeryCheck();
+});
 
 // bff local endpoints, external endpoints handle by Yarp
 app.MapAllLocalEndpoints();

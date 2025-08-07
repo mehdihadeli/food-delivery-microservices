@@ -25,6 +25,10 @@ public class EventStoreDbOptions
     // https://developers.eventstore.com/clients/http-api/v5
     public string HttpConnectionString => $"http://{Host}:{HttpPort}";
     public EventStoreDbSubscriptionOptions SubscriptionOptions { get; set; } = null!;
+
+    public bool DisableHealthChecks { get; set; }
+
+    public bool DisableTracing { get; set; }
 }
 
 public class EventStoreDbSubscriptionOptions

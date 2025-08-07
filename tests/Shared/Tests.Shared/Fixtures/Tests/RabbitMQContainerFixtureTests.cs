@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NSubstitute;
 using Tests.Shared.XunitCategories;
+using Xunit;
+using Xunit.Sdk;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -23,14 +25,14 @@ public class RabbitMQContainerFixtureTests : IAsyncLifetime
         await _fixture.CleanupQueuesAsync();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var sink = Substitute.For<IMessageSink>();
         _fixture = new RabbitMQContainerFixture(sink);
         await _fixture.InitializeAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _fixture.DisposeAsync();
     }

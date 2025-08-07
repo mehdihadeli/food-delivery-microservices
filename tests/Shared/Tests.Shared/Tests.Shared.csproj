@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Caching\BuildingBlocks.Caching.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Integration.MassTransit\BuildingBlocks.Integration.MassTransit.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.SerilogLogging\BuildingBlocks.SerilogLogging.csproj" />
@@ -12,25 +13,30 @@
   </ItemGroup>
 
   <!-- What xunit NuGet Packages Should I Use? - https://xunit.net/docs/nuget-packages-->
-  <ItemGroup>
-    <PackageReference Include="xunit" />
+  <ItemGroup Label="XUnit">
+    <PackageReference Include="Testcontainers.Redis" />
+    <PackageReference Include="xunit.v3" />
+  </ItemGroup>
+  
+  <ItemGroup Label="VSTest Runner">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <!-- https://xunit.net/docs/nuget-packages#xunit.runner.visualstudio-->
     <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Meziantou.Extensions.Logging.InMemory" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
-    <PackageReference Include="Serilog.Sinks.XUnit" />
     <PackageReference Include="Testcontainers.MongoDb" />
     <PackageReference Include="Testcontainers.MsSql" />
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="Testcontainers.RabbitMq" />
     <PackageReference Include="WebMotions.Fake.Authentication.JwtBearer" />
     <PackageReference Include="WireMock.Net" />
-    <PackageReference Include="XunitContext" />
     <PackageReference Include="Respawn" />
     <PackageReference Include="Testcontainers" />
     <PackageReference Include="FluentAssertions" />
@@ -39,7 +45,6 @@
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="AutoBogus" />
     <PackageReference Include="AutoBogus.NSubstitute" />
-    <PackageReference Include="EasyNetQ.Management.Client" />
     <PackageReference Include="Hypothesist" />
   </ItemGroup>
 

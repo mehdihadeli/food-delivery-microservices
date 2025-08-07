@@ -65,17 +65,17 @@
       ],
       "rollForward": false
     },
-    "aspire.cli": {
-      "version": "9.3.1-preview.1.25305.6",
-      "commands": [
-        "aspire"
-      ],
-      "rollForward": false
-    },
     "aspirate": {
       "version": "9.1.0",
       "commands": [
         "aspirate"
+      ],
+      "rollForward": false
+    },
+    "aspire.cli": {
+      "version": "9.4.0",
+      "commands": [
+        "aspire"
       ],
       "rollForward": false
     }

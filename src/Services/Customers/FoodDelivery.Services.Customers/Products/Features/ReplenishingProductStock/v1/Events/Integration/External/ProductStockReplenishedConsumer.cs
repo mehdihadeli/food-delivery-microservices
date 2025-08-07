@@ -2,9 +2,11 @@ using BuildingBlocks.Abstractions.Commands;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 using FoodDelivery.Services.Shared.Catalogs.Products.Events.Integration.v1;
 using MassTransit;
+using Saunter.Attributes;
 
 namespace FoodDelivery.Services.Customers.Products.Features.ReplenishingProductStock.v1.Events.Integration.External;
 
+[AsyncApi]
 public class ProductStockReplenishedConsumer(ICommandBus commandBus, ILogger<ProductStockReplenishedConsumer> logger)
     : IConsumer<ProductStockReplenishedV1>
 {

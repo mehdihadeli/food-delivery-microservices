@@ -3,6 +3,8 @@ using BuildingBlocks.Messaging.Persistence.Postgres.MessagePersistence;
 using FluentAssertions;
 using NSubstitute;
 using Tests.Shared.XunitCategories;
+using Xunit;
+using Xunit.Sdk;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -40,14 +42,14 @@ public class EfDbContextTransactionFixture : IAsyncLifetime
         _fixture.DbContext.PersistMessages.Count().Should().Be(0);
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var sink = Substitute.For<IMessageSink>();
         _fixture = new EfDbContextTransactionFixture<MessagePersistenceDbContext>(sink);
         await _fixture.InitializeAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _fixture.DisposeAsync();
     }

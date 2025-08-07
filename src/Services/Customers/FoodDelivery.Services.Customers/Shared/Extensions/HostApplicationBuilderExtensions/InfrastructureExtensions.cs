@@ -1,14 +1,12 @@
-using System.Net;
-using BuildingBlocks.Caching;
 using BuildingBlocks.Caching.Behaviors;
 using BuildingBlocks.Caching.Extensions;
-using BuildingBlocks.Core.Diagnostics.Behaviors;
+using BuildingBlocks.Core.Constants;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Persistence.EfCore;
+using BuildingBlocks.Core.Pipelines;
 using BuildingBlocks.Email;
-using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Integration.MassTransit.Extensions;
-using BuildingBlocks.Messaging.Persistence.Postgres.Extensions;
+using BuildingBlocks.Messaging.Persistence.Postgres;
 using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
 using BuildingBlocks.SerilogLogging;
 using BuildingBlocks.SerilogLogging.Extensions;
@@ -24,10 +22,8 @@ using FoodDelivery.Services.Customers.RestockSubscriptions;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Rest;
 using FoodDelivery.Services.Customers.Users;
-using FoodDelivery.Services.Shared.Customers.Customers;
-using FoodDelivery.Services.Shared.Customers.RestockSubscriptions;
+using FoodDelivery.Services.Shared.Constants;
 using Mediator;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace FoodDelivery.Services.Customers.Shared.Extensions.HostApplicationBuilderExtensions;
@@ -46,14 +42,6 @@ public static partial class HostApplicationBuilderExtensions
 
         builder.AddCoreServices();
 
-        builder.Services.Configure<ForwardedHeadersOptions>(options =>
-        {
-            options.ForwardedHeaders =
-                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
-            options.KnownNetworks.Clear();
-            options.KnownProxies.Clear();
-        });
-
         builder.AddCustomVersioning();
         builder.AddAspnetOpenApi(["v1", "v2"]);
 
@@ -61,15 +49,6 @@ public static partial class HostApplicationBuilderExtensions
 
         builder.AddCustomAuthentication();
         builder.AddCustomAuthorization();
-
-        var serilogOptions = builder.Configuration.BindOptions<SerilogOptions>();
-        if (serilogOptions.Enabled)
-        {
-            // - for production, we use OpenTelemetry
-            // - we can use serilog to send logs to opentemetry with using`writeToProviders` and `builder.SeilogLogging.AddOpenTelemetry` to write logs event to `ILoggerProviders` which use by opentelemtry and .net default logging use it,
-            // and here we used .net default logging without any configuration, and it is fully compatible with `builder.SeilogLogging.AddOpenTelemetry` for sending logs to opentelemetry
-            builder.AddCustomSerilog();
-        }
 
         builder.AddMasstransitEventBus(
             configureMessagesTopologies: (context, cfg) =>
@@ -113,7 +92,7 @@ public static partial class HostApplicationBuilderExtensions
                 tags: ["live"]
             );
 
-        builder.AddCustomCaching();
+        builder.AddCustomCaching(redisConnectionStringName: AspireResources.Redis);
 
         builder.Services.AddEmailService(builder.Configuration);
 
@@ -131,7 +110,9 @@ public static partial class HostApplicationBuilderExtensions
 
         builder.Services.AddCustomValidators(typeof(CustomersMetadata).Assembly);
 
-        builder.Services.AddPostgresMessagePersistence();
+        builder.AddPostgresMessagePersistence(
+            connectionStringName: AspireApplicationResources.PostgresDatabase.Customers
+        );
 
         // External Clients
         builder.AddCustomHttpClients();

@@ -130,7 +130,7 @@ public static class EventStoreBuilderExtensions
                     endpoint.TargetPort = EventStoreDefaults.HttpContainerPort;
                     endpoint.IsProxied = proxyEnabled;
                     endpoint.Port = proxyOrContainerHostHttpPort;
-                    endpoint.IsExternal = false;
+                    endpoint.IsExternal = true;
                 }
             )
             .WithEndpoint(

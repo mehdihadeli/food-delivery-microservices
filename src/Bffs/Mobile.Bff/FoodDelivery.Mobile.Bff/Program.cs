@@ -1,4 +1,4 @@
-using FoodDelivery.Services.Shared.Extensions;
+using FoodDelivery.ServiceDefaults.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

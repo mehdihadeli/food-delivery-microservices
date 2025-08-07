@@ -1,10 +1,17 @@
-using System.Net.Sockets;
+using System.Net;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace BuildingBlocks.AspireIntegrations.Jaeger;
 
-internal sealed class JaegerHealthCheck(JaegerResource resource, string connectionString) : IHealthCheck
+internal sealed class JaegerHealthCheck(JaegerResource resource) : IHealthCheck
 {
+    private readonly HttpClient _httpClient = new();
+
+    // https://grafana.com/docs/tempo/latest/api_docs/#readiness-probe
+    private readonly Uri _healthEndpoint = new(
+        $"http://{resource.QueryHttpEndpoint.Host}:{resource.QueryHttpEndpoint.Port}"
+    );
+
     public async Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,
         CancellationToken cancellationToken = default
@@ -12,18 +19,15 @@ internal sealed class JaegerHealthCheck(JaegerResource resource, string connecti
     {
         try
         {
-            // Get Jaeger's gRPC endpoint details
-            var host = resource.PrimaryEndpoint.Host;
-            var port = resource.PrimaryEndpoint.Port;
+            var response = await _httpClient.GetAsync(_healthEndpoint, cancellationToken);
 
-            using var tcpClient = new TcpClient();
-            await tcpClient.ConnectAsync(host, port, cancellationToken);
-
-            return HealthCheckResult.Healthy("Successfully connected to Jaeger OTLP gRPC endpoint.");
+            return response.StatusCode == HttpStatusCode.OK
+                ? HealthCheckResult.Healthy("Jaeger is healthy and ready")
+                : HealthCheckResult.Unhealthy("Jaeger health check failed");
         }
         catch (Exception ex)
         {
-            return HealthCheckResult.Unhealthy("Failed to connect to Jaeger OTLP gRPC endpoint.", ex);
+            return HealthCheckResult.Unhealthy("Failed to check Jaeger health status", ex);
         }
     }
 }

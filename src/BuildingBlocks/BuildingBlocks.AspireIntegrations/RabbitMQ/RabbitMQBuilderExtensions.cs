@@ -120,6 +120,7 @@ public static class RabbitMQBuilderExtensions
             .AddRabbitMQ(nameOrConnectionStringName, rabbitMqUser, rabbitMqPassword, port: proxyOrContainerHostPort)
             .WithImagePullPolicy(ImagePullPolicy.Missing)
             .WithImage(RabbitMQDefaults.ContainerImageName, RabbitMQDefaults.ContainerImageTag)
+            .WithContainerName(nameOrConnectionStringName)
             .WithManagementPlugin(proxyOrContainerManagementPort)
             // config existing endpoint using endpoint name
             .WithEndpoint(

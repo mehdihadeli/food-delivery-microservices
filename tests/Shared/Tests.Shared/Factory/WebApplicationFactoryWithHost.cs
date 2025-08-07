@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Tests.Shared.Extensions;
+using Xunit;
 using Environments = BuildingBlocks.Core.Web.Environments;
 
 namespace Tests.Shared.Factory;
@@ -53,21 +54,21 @@ class WebApplicationFactoryWithHost<TEntryPoint>(
         builder.UseEnvironment(Environments.Test);
         builder.UseContentRoot(".");
 
-        // UseSerilog on WebHostBuilder is absolute so we should use IHostBuilder
-        builder.UseSerilog(
-            (ctx, loggerConfiguration) =>
-            {
-                //https://github.com/trbenning/serilog-sinks-xunit
-                if (TestOutputHelper is not null)
-                {
-                    loggerConfiguration.WriteTo.TestOutput(
-                        TestOutputHelper,
-                        LogEventLevel.Information,
-                        "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}"
-                    );
-                }
-            }
-        );
+        // // UseSerilog on WebHostBuilder is absolute so we should use IHostBuilder
+        // builder.UseSerilog(
+        //     (ctx, loggerConfiguration) =>
+        //     {
+        //         //https://github.com/trbenning/serilog-sinks-xunit
+        //         if (TestOutputHelper is not null)
+        //         {
+        //             loggerConfiguration.WriteTo.TestOutput(
+        //                 TestOutputHelper,
+        //                 LogEventLevel.Information,
+        //                 "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}"
+        //             );
+        //         }
+        //     }
+        // );
 
         // create startup with these configs
         builder.ConfigureWebHostDefaults(webBuilder =>

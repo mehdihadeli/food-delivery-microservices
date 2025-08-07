@@ -1,0 +1,68 @@
+# gateway config
+global:
+  checkNewVersion: false
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+
+api:
+  dashboard: true
+  insecure: true  # For local dev only
+
+providers:
+  docker:
+    exposedByDefault: false
+  file: {}  # We'll use inline config instead
+
+http:
+  routers:
+    spa-bff:
+      rule: "Host(`localhost`) && PathPrefix(`/spa-bff`)"
+      service: spa-bff
+      middlewares:
+        - strip-spa-bff-prefix
+        - forward-headers
+
+    api-bff:
+      rule: "Host(`localhost`) && PathPrefix(`/api-bff`)"
+      service: api-bff
+      middlewares:
+        - strip-api-bff-prefix
+        - forward-headers
+
+    # Add other routes similarly...
+  
+  services:
+    spa-bff:
+      loadBalancer:
+        servers:
+          - url: "https://spa-bff:5001"
+    api-bff:
+      loadBalancer:
+        servers:
+          - url: "https://api-bff:2001"
+    # Add other services...
+
+  middlewares:
+    strip-spa-bff-prefix:
+      stripPrefix:
+        prefixes: ["/spa-bff"]
+    
+    strip-api-bff-prefix:
+      stripPrefix:
+        prefixes: ["/api-bff"]
+    
+    forward-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Prefix: "{{ trimPrefix .Request.Header.Get \"X-Forwarded-Prefix\" }}"
+          X-Forwarded: "true"
+          X-User-Id: "{{ .User.sub }}"

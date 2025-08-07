@@ -3,6 +3,8 @@ using Humanizer;
 using MongoDB.Driver;
 using NSubstitute;
 using Tests.Shared.XunitCategories;
+using Xunit;
+using Xunit.Sdk;
 
 namespace Tests.Shared.Fixtures.Tests;
 
@@ -25,29 +27,35 @@ public class MongoContainerFixtureTests : IAsyncLifetime
         MongoClient dbClient = new MongoClient(_fixture.Container.GetConnectionString());
         await dbClient
             .GetDatabase(_fixture.MongoContainerOptions.DatabaseName)
-            .CreateCollectionAsync(nameof(TestDocument).Underscore());
+            .CreateCollectionAsync(
+                nameof(TestDocument).Underscore(),
+                cancellationToken: TestContext.Current.CancellationToken
+            );
         var testDoc = dbClient
             .GetDatabase(_fixture.MongoContainerOptions.DatabaseName)
             .GetCollection<TestDocument>(nameof(TestDocument).Underscore());
-        await testDoc.InsertOneAsync(new TestDocument() { Name = "test data" });
+        await testDoc.InsertOneAsync(
+            new TestDocument { Name = "test data" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        await _fixture.ResetDbAsync();
+        await _fixture.ResetDbAsync(TestContext.Current.CancellationToken);
 
         var collections = await dbClient
             .GetDatabase(_fixture.MongoContainerOptions.DatabaseName)
-            .ListCollectionsAsync();
+            .ListCollectionsAsync(cancellationToken: TestContext.Current.CancellationToken);
 
-        collections.ToList().Should().BeEmpty();
+        collections.ToList(cancellationToken: TestContext.Current.CancellationToken).Should().BeEmpty();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var sink = Substitute.For<IMessageSink>();
         _fixture = new MongoContainerFixture(sink);
         await _fixture.InitializeAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _fixture.DisposeAsync();
     }

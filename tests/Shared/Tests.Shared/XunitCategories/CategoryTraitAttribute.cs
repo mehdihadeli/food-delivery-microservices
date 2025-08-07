@@ -1,40 +1,18 @@
-using Xunit.Sdk;
-
 namespace Tests.Shared.XunitCategories;
 
-// Ref: https://dateo-software.de/blog/test-categories-in-xunit
-// https://www.brendanconnolly.net/organizing-tests-with-xunit-traits/
-// https://github.com/xunit/samples.xunit/tree/main/TraitExtensibility
-
 /// <summary>
-/// Could filter by 'dotnet test --filter "Category=TestCategory"' in running tests in command line
+/// Enables filtering via 'dotnet test --filter "Category=Unit"' etc.
 /// </summary>
-[TraitDiscoverer(CategoryTraitDiscoverer.DiscovererTypeName, XunitConstants.AssemblyName)]
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
-public class CategoryTraitAttribute : Attribute, ITraitAttribute
+public sealed class CategoryTraitAttribute : Attribute
 {
-    public CategoryTraitAttribute(TestCategory category)
-    {
-        Name = category;
-    }
+    public CategoryTraitAttribute(TestCategory name) => Name = name;
 
+    // Exposed as trait "Category"
     public TestCategory Name { get; }
-}
 
-public class CategoryTraitDiscoverer : ITraitDiscoverer
-{
-    private const string Key = "Category";
-
-    public const string DiscovererTypeName =
-        $"{XunitConstants.AssemblyName}.{nameof(XunitCategories)}.{nameof(CategoryTraitDiscoverer)}";
-
-    public IEnumerable<KeyValuePair<string, string>> GetTraits(IAttributeInfo traitAttribute)
-    {
-        var categoryName = traitAttribute.GetNamedArgument<TestCategory?>("Name");
-
-        if (categoryName is { })
-            yield return new KeyValuePair<string, string>(Key, categoryName.ToString()!);
-    }
+    // For traditional trait-key for test filters: "Category"
+    public string Category => Name.ToString();
 }
 
 public enum TestCategory

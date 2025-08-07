@@ -1,28 +1,27 @@
 ﻿{
   "profiles": {
-    "Identity.Https": {
+    "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
+      "launchBrowser": false,
       "hotReloadProfile": "aspnetcore",
-      "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7001;http://localhost:7000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Identity.Watch": {
+    "watch": {
       "commandName": "Executable",
       "executablePath": "dotnet",
       "workingDirectory": "$(ProjectDir)",
       "hotReloadEnabled": true,
       "hotReloadProfile": "aspnetcore",
-      "commandLineArgs": "watch -lp Identity.Api.Http",
+      "commandLineArgs": "watch -lp http",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-	  "Identity.LiveRecompilation": {
+	  "liveRecompilation": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

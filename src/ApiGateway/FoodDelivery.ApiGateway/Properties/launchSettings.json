@@ -1,18 +1,17 @@
 ﻿{
   "$schema": "https://json.schemaecommerce.org/launchsettings.json",
   "profiles": {
-    "ApiGateway.Https": {
+    "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "hotReloadProfile": "aspnetcore",
-      "launchBrowser": true,
-      "launchUrl": "",
+      "launchBrowser": false,
       "applicationUrl": "https://localhost:3001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "ApiGateway.Watch": {
+    "watch": {
       "commandName": "Project",
       "executablePath": "dotnet",
       "workingDirectory": "$(ProjectDir)",

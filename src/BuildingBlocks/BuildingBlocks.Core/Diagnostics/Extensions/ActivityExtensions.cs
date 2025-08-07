@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace BuildingBlocks.Core.Diagnostics.Extensions;
 
-internal static class ActivityExtensions
+public static class ActivityExtensions
 {
     /// <summary>
     /// Retrieves the tags from the parent of the current Activity, if available.

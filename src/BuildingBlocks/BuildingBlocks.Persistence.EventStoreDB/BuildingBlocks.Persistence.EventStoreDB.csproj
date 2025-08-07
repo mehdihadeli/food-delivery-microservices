@@ -4,6 +4,7 @@
     <ProjectReference Include="..\BuildingBlocks.OpenTelemetry\BuildingBlocks.OpenTelemetry.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Aspire.EventStore" />
     <PackageReference Include="EventStore.Client.Grpc.Streams" />
   </ItemGroup>
 </Project>

@@ -7,6 +7,7 @@ using BuildingBlocks.Core.Paging;
 using BuildingBlocks.Core.Persistence;
 using BuildingBlocks.Core.Queries;
 using BuildingBlocks.Core.Serialization;
+using BuildingBlocks.Core.Serialization.NewtonsoftSerializer;
 using Mediator;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -33,7 +34,7 @@ public static class DependencyInjectionExtensions
 
         builder.Services.AddMessages(referencingAssemblies);
 
-        builder.Services.AddPersistenceCore(referencingAssemblies);
+        builder.Services.ScanAndRegisterDbExecutors(referencingAssemblies);
 
         builder.Services.TryAddScoped<IMediator, NullMediator>();
 

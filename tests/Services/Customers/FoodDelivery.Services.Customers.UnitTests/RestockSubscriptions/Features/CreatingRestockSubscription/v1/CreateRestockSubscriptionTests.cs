@@ -1,6 +1,5 @@
 using BuildingBlocks.Core.Exception;
 using FluentAssertions;
-using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using FoodDelivery.Services.Customers.Products;
@@ -35,8 +34,8 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
     {
         // Arrange
         var customer = new FakeCustomer().Generate();
-        await CustomersDbContext.Customers.AddAsync(customer);
-        await CustomersDbContext.SaveChangesAsync();
+        await CustomersDbContext.Customers.AddAsync(customer, TestContext.Current.CancellationToken);
+        await CustomersDbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var fakeProductDto = new FakeProductDto().RuleFor(x => x.AvailableStock, 0).Generate();
 
@@ -54,12 +53,13 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
         var handler = new CreateRestockSubscriptionHandler(CustomersDbContext, _iICatalogsClient, _logger);
 
         // Act
-        var res = await handler.Handle(command, CancellationToken.None);
+        var res = await handler.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         res.Should().NotBeNull();
         var entity = await CustomersDbContext.RestockSubscriptions.FindAsync(
-            RestockSubscriptionId.Of(res.RestockSubscriptionId)
+            new object?[] { RestockSubscriptionId.Of(res.RestockSubscriptionId) },
+            TestContext.Current.CancellationToken
         );
         entity.Should().NotBeNull();
         entity!.Email.Value.Should().Be(command.Email);
@@ -75,7 +75,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
         //Act
         Func<Task> act = async () =>
         {
-            await handler.Handle(null!, CancellationToken.None);
+            await handler.Handle(null!, TestContext.Current.CancellationToken);
         };
 
         // Assert
@@ -93,7 +93,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
         //Act
         Func<Task> act = async () =>
         {
-            await handler.Handle(command, CancellationToken.None);
+            await handler.Handle(command, TestContext.Current.CancellationToken);
         };
 
         // Assert
@@ -106,8 +106,8 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
     public async Task must_throw_not_found_exception_with_none_exists_product()
     {
         var customer = new FakeCustomer().Generate();
-        await CustomersDbContext.Customers.AddAsync(customer);
-        await CustomersDbContext.SaveChangesAsync();
+        await CustomersDbContext.Customers.AddAsync(customer, TestContext.Current.CancellationToken);
+        await CustomersDbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Arrange
         var command = new CreateRestockSubscription(customer.Id, ProductId.Of(1), customer.Email.Value);
@@ -116,7 +116,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
         //Act
         Func<Task> act = async () =>
         {
-            await handler.Handle(command, CancellationToken.None);
+            await handler.Handle(command, TestContext.Current.CancellationToken);
         };
 
         // Assert
@@ -132,8 +132,8 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
     public async Task must_throw_product_has_stock_exception_with_existing_product_stock()
     {
         var customer = new FakeCustomer().Generate();
-        await CustomersDbContext.Customers.AddAsync(customer);
-        await CustomersDbContext.SaveChangesAsync(CancellationToken.None);
+        await CustomersDbContext.Customers.AddAsync(customer, TestContext.Current.CancellationToken);
+        await CustomersDbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var fakeProductDto = new FakeProductDto().RuleFor(x => x.AvailableStock, 10).Generate();
 
@@ -154,7 +154,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
         //Act
         Func<Task> act = async () =>
         {
-            await handler.Handle(command, CancellationToken.None);
+            await handler.Handle(command, TestContext.Current.CancellationToken);
         };
 
         // Assert
@@ -167,8 +167,8 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
     public async Task must_throw_exception_when_restock_already_exists()
     {
         var customer = new FakeCustomer().Generate();
-        await CustomersDbContext.Customers.AddAsync(customer);
-        await CustomersDbContext.SaveChangesAsync(CancellationToken.None);
+        await CustomersDbContext.Customers.AddAsync(customer, TestContext.Current.CancellationToken);
+        await CustomersDbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var fakeProductDto = new FakeProductDto().RuleFor(x => x.AvailableStock, 0).Generate();
         var getProductClientDto = new GetProductByIdClientDto(fakeProductDto);
@@ -186,8 +186,11 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
             .RuleFor(x => x.ProductInformation, f => ProductInformation.Of(ProductId.Of(1), f.Commerce.ProductName()))
             .RuleFor(x => x.Processed, false)
             .Generate();
-        await CustomersDbContext.RestockSubscriptions.AddAsync(fakeRestockSubscription);
-        await CustomersDbContext.SaveChangesAsync(CancellationToken.None);
+        await CustomersDbContext.RestockSubscriptions.AddAsync(
+            fakeRestockSubscription,
+            TestContext.Current.CancellationToken
+        );
+        await CustomersDbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Arrange
         var command = new CreateRestockSubscription(customer.Id, ProductId.Of(1), customer.Email.Value);
@@ -196,7 +199,7 @@ public class CreateRestockSubscriptionTests : CustomerServiceUnitTestBase
         //Act
         Func<Task> act = async () =>
         {
-            await handler.Handle(command, CancellationToken.None);
+            await handler.Handle(command, TestContext.Current.CancellationToken);
         };
 
         // Assert

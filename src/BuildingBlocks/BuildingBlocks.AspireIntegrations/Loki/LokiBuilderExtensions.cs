@@ -107,13 +107,11 @@ public static class LokiBuilderExtensions
 
         var lokiResource = new LokiResource(nameOrConnectionStringName);
 
-        string? connectionString = null;
-
         builder.Eventing.Subscribe<ConnectionStringAvailableEvent>(
             lokiResource,
             async (@event, cancellationToken) =>
             {
-                connectionString =
+                var connectionString =
                     await lokiResource.ConnectionStringExpression.GetValueAsync(cancellationToken).ConfigureAwait(false)
                     ?? throw new DistributedApplicationException(
                         $"ConnectionStringAvailableEvent was published for the '{lokiResource.Name}' resource but the connection string was null."
@@ -127,7 +125,7 @@ public static class LokiBuilderExtensions
             .Add(
                 new HealthCheckRegistration(
                     healthCheckKey,
-                    _ => new LokiHealthCheck(lokiResource, connectionString!),
+                    _ => new LokiHealthCheck(lokiResource),
                     failureStatus: default,
                     tags: default,
                     timeout: default

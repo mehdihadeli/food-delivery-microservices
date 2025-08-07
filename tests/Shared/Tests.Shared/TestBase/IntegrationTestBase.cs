@@ -1,40 +1,34 @@
 using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.Persistence;
+using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Persistence.Mongo;
-using Microsoft.AspNetCore.HeaderPropagation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Hosting;
 using Tests.Shared.Fixtures;
+using Xunit;
 
 namespace Tests.Shared.TestBase;
 
 //https://bartwullems.blogspot.com/2019/09/xunit-async-lifetime.html
 //https://www.danclarke.com/cleaner-tests-with-iasynclifetime
 //https://xunit.net/docs/shared-context
-public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLifetime
+public abstract class IntegrationTest<TEntryPoint> : IAsyncLifetime
     where TEntryPoint : class
 {
     private IServiceScope? _serviceScope;
-    private TestWorkersRunner _testWorkersRunner = default!;
 
-    protected CancellationToken CancellationToken => CancellationTokenSource.Token;
-    protected CancellationTokenSource CancellationTokenSource { get; }
+    protected CancellationToken CancellationToken => TestContext.Current.CancellationToken;
     protected int Timeout => 180;
 
     // Build Service Provider here
     protected IServiceScope Scope => _serviceScope ??= SharedFixture.ServiceProvider.CreateScope();
     protected SharedFixture<TEntryPoint> SharedFixture { get; }
 
-    protected IntegrationTest(SharedFixture<TEntryPoint> sharedFixture, ITestOutputHelper outputHelper)
-        : base(outputHelper)
+    protected IntegrationTest(SharedFixture<TEntryPoint> sharedFixture)
     {
         SharedFixture = sharedFixture;
-        SharedFixture.SetOutputHelper(outputHelper);
-
-        CancellationTokenSource = new(TimeSpan.FromSeconds(Timeout));
         CancellationToken.ThrowIfCancellationRequested();
 
         // we should not build factory service provider with getting ServiceProvider in SharedFixture construction to having capability for override
@@ -49,32 +43,24 @@ public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLif
         SharedFixture.AddOverrideEnvKeyValues(OverrideEnvKeyValues);
         SharedFixture.AddOverrideInMemoryConfig(OverrideInMemoryConfig);
 
+        // Note: building service provider here or InitializeAsync
+    }
+
+    // we use IAsyncLifetime in xunit instead of constructor when we have an async operation
+    public virtual async ValueTask InitializeAsync()
+    {
         // Note: building service provider here
-
-        // - because in IntegrationTest we don't call minimal endpoints and controllers directly our service middlewares doesn't run as a result `app.UseHeaderPropagation()` middleware won't be run which is responsible
-        // for initializing `HeaderPropagationValues.Headers` and therefore in client's message handler `HeaderPropagationMessageHandler` we get an exception.
-        // - won't be worked in async InitializeAsync correctly because of AsyncLocal
-        InitializeHeaderPropagation();
+        var testSeeders = SharedFixture.ServiceProvider.GetServices<ITestDataSeeder>();
+        foreach (var testDataSeeder in testSeeders)
+        {
+            await testDataSeeder.SeedAsync();
+        }
     }
 
-    // we use IAsyncLifetime in xunit instead of constructor when we have async operation
-    public virtual async Task InitializeAsync()
+    public virtual async ValueTask DisposeAsync()
     {
-        // for seeding, we should run it for each test separately here. but for migration we can run it just once for all tests in shared fixture
-        var seederManager = SharedFixture.ServiceProvider.GetRequiredService<IDataSeederManager>();
-        // DataSeedWorker is removed from dependency injection in the test so we can't resolve it directly.
-        var seedWorker = new DataSeedWorker(seederManager);
-
-        _testWorkersRunner = new([seedWorker]);
-        await _testWorkersRunner.StartWorkersAsync(CancellationToken.None);
-    }
-
-    public virtual async Task DisposeAsync()
-    {
-        // it is better messages delete first
-        await SharedFixture.ResetDatabasesAsync(CancellationToken);
-
-        await CancellationTokenSource.CancelAsync();
+        // cleanup data and messages in each test
+        await SharedFixture.CleanupAsync(CancellationToken);
 
         Scope.Dispose();
     }
@@ -92,18 +78,11 @@ public abstract class IntegrationTest<TEntryPoint> : XunitContextBase, IAsyncLif
     protected virtual void OverrideEnvKeyValues(IDictionary<string, string> keyValues) { }
 
     protected virtual void OverrideInMemoryConfig(IDictionary<string, string> keyValues) { }
-
-    private void InitializeHeaderPropagation()
-    {
-        var headerPropagation = SharedFixture.ServiceProvider.GetRequiredService<HeaderPropagationValues>();
-        headerPropagation.Headers ??= new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
-    }
 }
 
 public abstract class IntegrationTestBase<TEntryPoint, TContext>(
-    SharedFixtureWithEfCore<TEntryPoint, TContext> sharedFixture,
-    ITestOutputHelper outputHelper
-) : IntegrationTest<TEntryPoint>(sharedFixture, outputHelper)
+    SharedFixtureWithEfCore<TEntryPoint, TContext> sharedFixture
+) : IntegrationTest<TEntryPoint>(sharedFixture)
     where TEntryPoint : class
     where TContext : DbContext
 {
@@ -111,9 +90,8 @@ public abstract class IntegrationTestBase<TEntryPoint, TContext>(
 }
 
 public abstract class IntegrationTestBase<TEntryPoint, TWContext, TRContext>(
-    SharedFixtureWithEfCoreAndMongo<TEntryPoint, TWContext, TRContext> sharedFixture,
-    ITestOutputHelper outputHelper
-) : IntegrationTest<TEntryPoint>(sharedFixture, outputHelper)
+    SharedFixtureWithEfCoreAndMongo<TEntryPoint, TWContext, TRContext> sharedFixture
+) : IntegrationTestBase<TEntryPoint, TWContext>(sharedFixture)
     where TEntryPoint : class
     where TWContext : DbContext
     where TRContext : MongoDbContext

@@ -32,6 +32,7 @@ public static class WebApplicationExtensions
         });
 
         // Add scalar ui
+        // https://github.com/scalar/scalar/blob/fbef7e1ee82d7c9e84bc42407e309642dcec5552/documentation/integrations/aspnetcore.md
         app.MapScalarApiReference(scalarOptions =>
         {
             scalarOptions.WithOpenApiRoutePattern("/openapi/{documentName}.json");

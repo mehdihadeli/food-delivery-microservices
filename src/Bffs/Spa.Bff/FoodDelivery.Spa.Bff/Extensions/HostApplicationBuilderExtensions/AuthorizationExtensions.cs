@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace FoodDelivery.Spa.Bff.Extensions.HostApplicationBuilderExtensions;
 
@@ -8,13 +8,14 @@ public static partial class HostApplicationBuilderExtensions
     {
         builder.Services.AddAuthorization(options =>
         {
-            //// This sets a default policy that applies when no other policy is specified.
-            options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+            // This sets a default policy that applies when no other policy is specified.
             options.AddPolicy(
                 "RequireAuthenticatedUserPolicy",
                 policy =>
                 {
-                    policy.RequireAuthenticatedUser();
+                    policy
+                        .RequireAuthenticatedUser()
+                        .AddAuthenticationSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
                     // policy.RequireClaim(ClaimsType.Scope, Scopes.Gateway);
                     // policy.RequireClaim(ClaimsType.Permission, Permissions.GatewayAccess);
                 }

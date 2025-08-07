@@ -29,7 +29,7 @@ class AuthService {
   private apiBaseAddress: string;
 
   private constructor() {
-    this.apiBaseAddress = import.meta.env.VITE_GATEWAY_API_BASE_URL;
+    this.apiBaseAddress = "/gateway/spa-bff"
     this.axiosInstance = axios.create({
       baseURL: this.apiBaseAddress,
       withCredentials: true,
@@ -49,32 +49,32 @@ class AuthService {
 
     // Add response interceptor for ProblemDetails
     this.axiosInstance.interceptors.response.use(
-      (response) => response,
-      (error: AxiosError<ProblemDetails>) => {
-        if (
-          error.response?.headers["content-type"]?.includes(
-            "application/problem+json"
-          )
-        ) {
-          return Promise.reject(error);
+        (response) => response,
+        (error: AxiosError<ProblemDetails>) => {
+          if (
+              error.response?.headers["content-type"]?.includes(
+                  "application/problem+json"
+              )
+          ) {
+            return Promise.reject(error);
+          }
+
+          // Convert to ProblemDetails if not already
+          const problemDetails: ProblemDetails = {
+            type: `https://httpstatuses.com/${error.response?.status || 500}`,
+            title: error.response?.statusText || "Internal Server Error",
+            status: error.response?.status,
+            detail: error.message,
+          };
+
+          return Promise.reject({
+            ...error,
+            response: {
+              ...error.response,
+              data: problemDetails,
+            },
+          });
         }
-
-        // Convert to ProblemDetails if not already
-        const problemDetails: ProblemDetails = {
-          type: `https://httpstatuses.com/${error.response?.status || 500}`,
-          title: error.response?.statusText || "Internal Server Error",
-          status: error.response?.status,
-          detail: error.message,
-        };
-
-        return Promise.reject({
-          ...error,
-          response: {
-            ...error.response,
-            data: problemDetails,
-          },
-        });
-      }
     );
   }
 
@@ -106,14 +106,14 @@ class AuthService {
 
     try {
       const response = await this.axiosInstance.get<UserClaim[]>(
-        BFF_ENDPOINTS.USER
+          BFF_ENDPOINTS.USER
       );
       const claims = response.data;
 
       // Update service state
       let logoutUrl;
       var claimLogout = claims.find(
-        (claim) => claim.type === "bff:logout_url"
+          (claim) => claim.type === "bff:logout_url"
       )?.value;
       if (claimLogout) {
         logoutUrl = `${this.apiBaseAddress}${claimLogout}`;
@@ -153,7 +153,7 @@ class AuthService {
 
   public login(returnUrl: string = window.location.pathname): void {
     window.location.href = `${this.apiBaseAddress}${
-      BFF_ENDPOINTS.LOGIN
+        BFF_ENDPOINTS.LOGIN
     }?returnUrl=${encodeURIComponent(returnUrl)}`;
   }
 
@@ -172,8 +172,8 @@ class AuthService {
 
   private buildLogoutUrl(postLogoutRedirectUri: string): string {
     const baseUrl = this.state.logoutUrl.includes("?")
-      ? `${this.state.logoutUrl}&`
-      : `${this.state.logoutUrl}?`;
+        ? `${this.state.logoutUrl}&`
+        : `${this.state.logoutUrl}?`;
 
     return `${baseUrl}returnUrl=${encodeURIComponent(postLogoutRedirectUri)}`;
   }

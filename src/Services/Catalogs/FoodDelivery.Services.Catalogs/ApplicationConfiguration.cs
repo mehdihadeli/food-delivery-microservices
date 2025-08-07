@@ -8,7 +8,7 @@ namespace FoodDelivery.Services.Catalogs;
 
 public static class ApplicationConfiguration
 {
-    public const string CatalogModulePrefixUri = "api/v{version:apiVersion}/catalogs";
+    public const string CatalogModulePrefixUri = "api/v{version:apiVersion}";
 
     public static WebApplicationBuilder AddApplicationServices(this WebApplicationBuilder builder)
     {

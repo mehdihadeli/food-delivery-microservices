@@ -130,13 +130,11 @@ public static class TempoBuilderExtensions
 
         var tempoResource = new TempoResource(nameOrConnectionStringName);
 
-        string? connectionString = null;
-
         builder.Eventing.Subscribe<ConnectionStringAvailableEvent>(
             tempoResource,
             async (@event, cancellationToken) =>
             {
-                connectionString =
+                var connectionString =
                     await tempoResource
                         .ConnectionStringExpression.GetValueAsync(cancellationToken)
                         .ConfigureAwait(false)
@@ -152,7 +150,7 @@ public static class TempoBuilderExtensions
             .Add(
                 new HealthCheckRegistration(
                     healthCheckKey,
-                    _ => new TempoHealthCheck(tempoResource, connectionString!),
+                    _ => new TempoHealthCheck(tempoResource),
                     failureStatus: default,
                     tags: default,
                     timeout: default

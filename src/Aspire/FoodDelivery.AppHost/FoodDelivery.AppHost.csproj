@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting" />
     <PackageReference Include="Aspire.Hosting.AppHost" />
 <!--https://devblogs.microsoft.com/dotnet/dotnet-aspire-92-is-now-available-with-new-ways-to-deploy/#publish-to-docker-compose-with-your-first-publisher-integration-->
 <!--https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.2#-deployment-improvements-->
@@ -17,19 +18,26 @@
     <PackageReference Include="Aspire.Hosting.Azure.AppContainers" />
     <PackageReference Include="Aspire.Hosting.Docker" />
     <PackageReference Include="Aspire.Hosting.Kubernetes" />
+    <PackageReference Include="Aspire.Hosting.NodeJs" />
+    <PackageReference Include="Scalar.Aspire" />
   </ItemGroup>
   
-<!--  <ItemGroup Label="Aspire Refrence Projects">-->
-<!--    <ProjectReference Include="..\..\ApiGateway\FoodDelivery.ApiGateway\FoodDelivery.ApiGateway.csproj" />-->
-<!--    <ProjectReference Include="..\..\Services\Catalogs\FoodDelivery.Services.Catalogs.Api\FoodDelivery.Services.Catalogs.Api.csproj" />-->
-<!--  </ItemGroup>-->
+  <ItemGroup Label="Aspire Refrence Projects">
+    <ProjectReference Include="..\..\ApiGateway\FoodDelivery.ApiGateway\FoodDelivery.ApiGateway.csproj" />
+    <ProjectReference Include="..\..\Bffs\Api.Bff\FoodDelivery.Api.Bff\FoodDelivery.Api.Bff.csproj" />
+    <ProjectReference Include="..\..\Bffs\Spa.Bff\FoodDelivery.Spa.Bff\FoodDelivery.Spa.Bff.csproj" />
+    <ProjectReference Include="..\..\Services\Catalogs\FoodDelivery.Services.Catalogs.Api\FoodDelivery.Services.Catalogs.Api.csproj" />
+    <ProjectReference Include="..\..\Services\Orders\FoodDelivery.Services.Orders.Api\FoodDelivery.Services.Orders.Api.csproj" />
+    <ProjectReference Include="..\..\Services\Customers\FoodDelivery.Services.Customers.Api\FoodDelivery.Services.Customers.Api.csproj" />
+    <ProjectReference Include="..\..\Services\Identity\FoodDelivery.Services.Identity.Api\FoodDelivery.Services.Identity.Api.csproj" />
+    <ProjectReference Include="..\..\UIs\BlazorWebApp\FoodDelivery.BlazorWebApp\FoodDelivery.BlazorWebApp.csproj" />
+    <ProjectReference Include="..\..\UIs\Spa\react-food-delivery\react-food-delivery.esproj" />
+  </ItemGroup>
 
   <ItemGroup Label="Building Blocks Projects">
-    <ProjectReference 
-            Include="..\..\BuildingBlocks\BuildingBlocks.AspireIntegrations\BuildingBlocks.AspireIntegrations.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.AspireIntegrations\BuildingBlocks.AspireIntegrations.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Integration.MassTransit\BuildingBlocks.Integration.MassTransit.csproj" IsAspireProjectResource="false"/>
-    <ProjectReference 
-            Include="..\..\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" IsAspireProjectResource="false" />
     <ProjectReference 
             Include="..\..\Services\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" IsAspireProjectResource="false" />
   </ItemGroup>

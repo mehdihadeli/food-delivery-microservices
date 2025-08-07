@@ -17,6 +17,7 @@ public static class AspireResources
     public static readonly string ElasticSearch = nameof(ElasticSearch).Kebaberize();
     public static readonly string Kibana = nameof(Kibana).Kebaberize();
     public static readonly string EventStore = nameof(EventStore).Kebaberize();
+    public static readonly string ReactFoodDelivery = nameof(ReactFoodDelivery).Kebaberize();
     public static readonly string Rabbitmq = nameof(Rabbitmq).Kebaberize();
     public static readonly string AspireDashboard = nameof(AspireDashboard).Kebaberize();
 

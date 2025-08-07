@@ -1,9 +1,9 @@
 using BuildingBlocks.Core.Extensions;
-using EasyNetQ.Management.Client;
-using EasyNetQ.Management.Client.Model;
 using Testcontainers.RabbitMq;
 using Tests.Shared.Helpers;
+using Xunit;
 using Xunit.Sdk;
+using Xunit.v3;
 
 namespace Tests.Shared.Fixtures;
 
@@ -43,69 +43,40 @@ public class RabbitMQContainerFixture : IAsyncLifetime
 
     public async Task CleanupQueuesAsync(CancellationToken cancellationToken = default)
     {
-        // https://www.rabbitmq.com/dotnet-api-guide.html#exchanges-and-queues
-        // https://www.rabbitmq.com/management.html#http-api
-        // http://localhost:15672/api/index.html
-        // https://rawcdn.githack.com/rabbitmq/rabbitmq-server/v3.11.4/deps/rabbitmq_management/priv/www/api/index.html
-        // https://www.planetgeek.ch/2015/08/16/cleaning-up-queues-and-exchanges-on-rabbitmq/
-        // https://www.planetgeek.ch/2015/08/31/cleanup-code-for-cleaning-up-queues-and-exchanges-on-rabbitmq/
-
-
-        // here I used rabbitmq http apis (Management Plugin) but also we can also use RabbitMQ client library and channel.ExchangeDelete(), channel.QueueDelete(), official client
-        // is not complete for administrative works for example it doesn't have GetAllQueues, GetAllExchanges
-        using var managementClient = new ManagementClient(
-            endpoint: new Uri($"http://{Container.Hostname}:{ApiPort}"),
-            username: RabbitMqContainerOptions.UserName,
-            password: RabbitMqContainerOptions.Password
+        var httpClient = new HttpClient { BaseAddress = new Uri($"http://{Container.Hostname}:{ApiPort}") };
+        // Add Basic Auth for RabbitMQ management
+        var byteArray = System.Text.Encoding.ASCII.GetBytes(
+            $"{RabbitMqContainerOptions.UserName}:{RabbitMqContainerOptions.Password}"
+        );
+        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+            "Basic",
+            Convert.ToBase64String(byteArray)
         );
 
-        //Creating new exchange after each publish doesn't support by masstransit and it just creates exchanges in init phase but works for queues
-        var queues = await managementClient.GetQueuesAsync(StatsCriteria.QueueTotalsOnly, cancellationToken);
+        // 1. Get all queues
+        var response = await httpClient.GetAsync("/api/queues", cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var queuesJson = await response.Content.ReadAsStringAsync(cancellationToken);
+        // minimal model for queue info just to get vhost and name
+        var queues = System.Text.Json.JsonSerializer.Deserialize<List<RabbitMqQueueInfo>>(queuesJson);
+
+        if (queues is null)
+            return;
+
+        // 2. Purge each queue
         foreach (var queue in queues)
         {
-            await managementClient.PurgeAsync(queue, cancellationToken);
+            // Must url-encode vhost and queue name
+            var vhost = Uri.EscapeDataString(queue.vhost ?? "/");
+            var name = Uri.EscapeDataString(queue.name ?? "");
+            // POST to purge endpoint
+            var purgeResp = await httpClient.DeleteAsync($"/api/queues/{vhost}/{name}/contents", cancellationToken);
+            // If the queue doesn't exist or can't be purged, ignore error
         }
     }
 
-    // we can use this method also for when we don't use docker testcontainer
-    public async Task DropElementsAsync(CancellationToken cancellationToken = default)
-    {
-        var apiPort = Container.GetMappedPublicPort(15672);
-
-        // here I used rabbitmq http apis (Management Plugin) but also we can also use RabbitMQ client library and channel.ExchangeDelete(), channel.QueueDelete(), official client
-        // is not complete for administrative works for example it doesn't have GetAllQueues, GetAllExchanges
-        using var managementClient = new ManagementClient(
-            endpoint: new Uri($"http://{Container.Hostname}:{ApiPort}"),
-            username: RabbitMqContainerOptions.UserName,
-            password: RabbitMqContainerOptions.Password
-        );
-
-        var bd = await managementClient.GetBindingsAsync(cancellationToken);
-        var bindings = bd.Where(x => !string.IsNullOrEmpty(x.Source) && !string.IsNullOrEmpty(x.Destination));
-
-        foreach (var binding in bindings)
-        {
-            await managementClient.DeleteBindingAsync(binding, cancellationToken);
-        }
-
-        var queues = await managementClient.GetQueuesAsync(StatsCriteria.QueueTotalsOnly, cancellationToken);
-        foreach (var queue in queues)
-        {
-            await managementClient.DeleteQueueAsync(queue, DeleteQueueCriteria.IfUnused, cancellationToken);
-        }
-
-        //Creating new exchange after each publish doesn't support by masstransit and it just creates exchanges in init phase but works for queues
-        var ex = await managementClient.GetExchangesAsync(cancellationToken);
-        // ignore default rabbitmq exchanges for deleting
-        var exchanges = ex.Where(x => !x.Name.StartsWith("amq.") && !string.IsNullOrWhiteSpace(x.Name));
-
-        foreach (var exchange in exchanges)
-        {
-            await managementClient.DeleteExchangeAsync(exchange, DeleteExchangeCriteria.IfUnused, cancellationToken);
-        }
-    }
-
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await Container.StartAsync();
         _messageSink.OnMessage(
@@ -115,11 +86,17 @@ public class RabbitMQContainerFixture : IAsyncLifetime
         );
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await Container.StopAsync();
         await Container.DisposeAsync(); //important for the event to cleanup to be fired!
         _messageSink.OnMessage(new DiagnosticMessage("RabbitMq fixture stopped."));
+    }
+
+    private class RabbitMqQueueInfo
+    {
+        public string? name { get; set; }
+        public string? vhost { get; set; }
     }
 }
 

@@ -2,12 +2,15 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting" />
+    <PackageReference Include="Aspire.Hosting.Elasticsearch" />
+    <PackageReference Include="AspNetCore.HealthChecks.Elasticsearch" />
     <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="Aspire.Hosting.Redis" />
     <PackageReference Include="Aspire.Hosting.RabbitMQ" />
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.EventStore" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" />
     <PackageReference Include="Aspire.Hosting.MongoDB" />
+    <PackageReference Include="Yarp.ReverseProxy" />
   </ItemGroup>
 
 </Project>

@@ -14,7 +14,7 @@ public class ProblemDetailsService(
     IEnumerable<IProblemDetailsWriter> writers,
     IWebHostEnvironment webHostEnvironment,
     ILogger<ProblemDetailsService> logger,
-    IEnumerable<IProblemDetailMapper>? problemDetailMappers
+    IEnumerable<IProblemDetailMapper> problemDetailMappers
 ) : IProblemDetailsService
 {
     public ValueTask WriteAsync(ProblemDetailsContext context)
@@ -65,19 +65,9 @@ public class ProblemDetailsService(
             );
         }
 
-        int statusCode = 0;
-
-        if (problemDetailMappers is not null && problemDetailMappers.Any() && exception is { })
-        {
-            foreach (var problemDetailMapper in problemDetailMappers)
-            {
-                statusCode = problemDetailMapper.GetMappedStatusCodes(exception);
-            }
-        }
-        else if (exception is { })
-        {
-            statusCode = new DefaultProblemDetailMapper().GetMappedStatusCodes(exception);
-        }
+        int statusCode = !problemDetailMappers.Any()
+            ? new DefaultProblemDetailMapper().GetMappedStatusCodes(exception)
+            : problemDetailMappers.Select(m => m.GetMappedStatusCodes(exception)).FirstOrDefault();
 
         context.HttpContext.Response.StatusCode = statusCode;
 

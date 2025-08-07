@@ -61,8 +61,7 @@ public static partial class HostApplicationBuilderExtensions
                     // options.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
                     // options.RemoteSignOutPath = new PathString("/signout-oidc");
 
-                    // save tokens into the authentication session
-                    // to enable automatic token management
+                    // With SaveTokens = true, after successful login, ASP.NET Core will store the tokens in the cookie-authentication ticket, and you can retrieve them `HttpContext.GetTokenAsync("access_token")`
                     options.SaveTokens = oauthOptions.SaveTokens;
 
                     if (oauthOptions.Scopes.Any())

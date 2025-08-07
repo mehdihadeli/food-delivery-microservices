@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Tests.Shared.Fixtures;
 using Tests.Shared.TestBase;
-using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests;
 
@@ -16,9 +15,8 @@ namespace FoodDelivery.Services.Customers.IntegrationTests;
 // note: each class could have only one collection
 [Collection(IntegrationTestCollection.Name)]
 public class CustomerServiceIntegrationTestBase(
-    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-    ITestOutputHelper outputHelper
-) : IntegrationTestBase<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext>(sharedFixture, outputHelper)
+    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture
+) : IntegrationTestBase<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext>(sharedFixture)
 {
     private IdentityServiceWireMock? _identityServiceWireMock;
     private CatalogsServiceWireMock? _catalogsServiceWireMock;

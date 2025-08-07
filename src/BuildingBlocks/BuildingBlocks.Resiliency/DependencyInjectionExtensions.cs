@@ -20,19 +20,19 @@ public static class DependencyInjectionExtensions
         bool globalHttpClientResiliency = true
     )
     {
+        builder.Services.AddServiceDiscovery();
+
         AddResiliencyCore(builder);
 
         if (globalHttpClientResiliency)
         {
             // https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience
             // set resiliency globally on clients
-            builder.Services.ConfigureHttpClientDefaults(http =>
+            builder.Services.ConfigureHttpClientDefaults(httpClientBuilder =>
             {
-                // Turn on service discovery by default
-                http.AddServiceDiscovery();
-
                 // Turn on resilience by default
-                http.AddStandardResilienceHandler()
+                httpClientBuilder
+                    .AddStandardResilienceHandler()
                     .Configure(
                         (cfg, sp) =>
                         {

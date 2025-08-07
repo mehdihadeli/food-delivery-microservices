@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 
-namespace BuildingBlocks.Persistence.Mongo.Extensions;
+namespace BuildingBlocks.AspireIntegrations.Mongo;
 
 [Experimental("ASPIREPROXYENDPOINTS001")]
 public static class MongoBuilderExtensions
@@ -121,7 +121,7 @@ public static class MongoBuilderExtensions
             .WithImage(MongoDBDefaults.ContainerImageName, MongoDBDefaults.ContainerImageTag)
             // modify the existing endpoint with endpointName
             .WithEndpoint(
-                endpointName: "tcp",
+                endpointName: MongoDBDefaults.PrimaryEndpointName,
                 callback: endpoint =>
                 {
                     endpoint.TargetPort = MongoDBDefaults.ContainerPort;
@@ -159,9 +159,10 @@ public static class MongoBuilderExtensions
     /// <param name="builder">
     /// A tuple containing an optional MongoDB server resource and the distributed application builder.
     /// </param>
-    /// <param name="databaseNameOrConnectionStringName">
-    /// The name to use for the new database (if creating one) or the key/name of an existing connection string for remote/external servers.
+    /// <param name="nameOrConnectionStringName">
+    /// The name of a mongo database resource (if creating one) or the key/name of an existing connection string for remote/external servers.
     /// </param>
+    /// <param name="databaseName">database name</param>
     /// <returns>
     /// A resource builder for the configured MongoDB database connection, either newly created or from an existing connection string.
     /// </returns>
@@ -170,7 +171,8 @@ public static class MongoBuilderExtensions
             IResourceBuilder<MongoDBServerResource>? mongoResource,
             IDistributedApplicationBuilder applicationBuilder
         ) builder,
-        string databaseNameOrConnectionStringName
+        string nameOrConnectionStringName,
+        string? databaseName = null
     )
     {
         if (builder.mongoResource is null)
@@ -178,11 +180,13 @@ public static class MongoBuilderExtensions
             // https://learn.microsoft.com/en-us/dotnet/aspire/database/mongodb-integration?tabs=dotnet-cli#add-mongodb-server-resource-and-database-resource
             // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/app-host-overview#execution-context
             // consider each database name as a connection string name to connect to an existing server instance like `catalogsdb` as a connection string name
-            return builder.applicationBuilder.AddConnectionString(databaseNameOrConnectionStringName);
+            return builder.applicationBuilder.AddConnectionString(nameOrConnectionStringName);
         }
 
+        ArgumentException.ThrowIfNullOrWhiteSpace(databaseName);
+
         // use database name to create a connection string with `databaseNameOrConnectionStringName` new database name and using existing parent connection string in PostgresServerResource for creating a new connection resource for this database
-        return builder.mongoResource.AddDatabase(databaseNameOrConnectionStringName);
+        return builder.mongoResource.AddDatabase(name: nameOrConnectionStringName, databaseName: databaseName);
     }
 
     private static class MongoDBDefaults
@@ -191,6 +195,8 @@ public static class MongoBuilderExtensions
         public const string ContainerImageTag = "latest";
 
         public const string DefaultResourceName = "mongo";
+
+        public const string PrimaryEndpointName = "tcp";
 
         public const int ContainerPort = 27017;
         public const int ProxyOrContainerHostPort = 27017;

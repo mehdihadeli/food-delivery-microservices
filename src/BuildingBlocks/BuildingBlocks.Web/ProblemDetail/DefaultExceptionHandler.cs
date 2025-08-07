@@ -13,7 +13,7 @@ namespace BuildingBlocks.Web.ProblemDetail;
 public class DefaultExceptionHandler(
     ILogger<DefaultExceptionHandler> logger,
     IWebHostEnvironment webHostEnvironment,
-    IEnumerable<IProblemDetailMapper>? problemDetailMappers,
+    IEnumerable<IProblemDetailMapper> problemDetailMappers,
     IProblemDetailsService problemDetailsService
 ) : IExceptionHandler
 {
@@ -53,9 +53,9 @@ public class DefaultExceptionHandler(
             );
         }
 
-        int statusCode =
-            problemDetailMappers?.Select(m => m.GetMappedStatusCodes(exception)).FirstOrDefault()
-            ?? new DefaultProblemDetailMapper().GetMappedStatusCodes(exception);
+        int statusCode = !problemDetailMappers.Any()
+            ? new DefaultProblemDetailMapper().GetMappedStatusCodes(exception)
+            : problemDetailMappers.Select(m => m.GetMappedStatusCodes(exception)).FirstOrDefault();
 
         context.Response.StatusCode = statusCode;
 

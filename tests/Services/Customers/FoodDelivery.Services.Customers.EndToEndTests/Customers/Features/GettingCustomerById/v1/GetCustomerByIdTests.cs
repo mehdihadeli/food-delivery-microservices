@@ -2,17 +2,14 @@ using BuildingBlocks.Core.Exception;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
-using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.GettingCustomerById.v1;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models.Read;
-using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
-using Xunit.Abstractions;
 using Guid = System.Guid;
 
 namespace FoodDelivery.Services.Customers.EndToEndTests.Customers.Features.GettingCustomerById.v1;
@@ -34,7 +31,8 @@ public class GetCustomerByIdTests(
 
         // Act
         var response = await SharedFixture.NormalUserHttpClient.GetAsync(
-            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route)
+            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route),
+            TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -53,7 +51,8 @@ public class GetCustomerByIdTests(
 
         // Act
         var response = await SharedFixture.NormalUserHttpClient.GetAsync(
-            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route)
+            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route),
+            TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -117,7 +116,8 @@ public class GetCustomerByIdTests(
 
         // Act
         var response = await SharedFixture.AdminHttpClient.GetAsync(
-            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route)
+            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route),
+            TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -150,7 +150,8 @@ public class GetCustomerByIdTests(
 
         // Act
         var response = await SharedFixture.AdminHttpClient.GetAsync(
-            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route)
+            new Uri(SharedFixture.NormalUserHttpClient.BaseAddress!, route),
+            TestContext.Current.CancellationToken
         );
 
         // Assert

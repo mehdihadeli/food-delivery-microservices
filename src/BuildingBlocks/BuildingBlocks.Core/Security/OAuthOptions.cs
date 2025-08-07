@@ -9,7 +9,7 @@ public class OAuthOptions
     public string? ResponseMode { get; set; }
     public bool GetClaimsFromUserInfoEndpoint { get; set; }
     public bool MapInboundClaims { get; set; }
-    public bool SaveTokens { get; set; }
+    public bool SaveTokens { get; set; } = true;
     public IList<string> Scopes { get; set; } = new List<string>();
     public IList<string> OpenApiScopes { get; set; } = new List<string>();
     public string Authority { get; set; } = null!;

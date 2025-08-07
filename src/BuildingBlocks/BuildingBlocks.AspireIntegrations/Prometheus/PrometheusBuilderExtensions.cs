@@ -105,13 +105,11 @@ public static class PrometheusBuilderExtensions
 
         var prometheusResource = new PrometheusResource(nameOrConnectionStringName);
 
-        string? connectionString = null;
-
         builder.Eventing.Subscribe<ConnectionStringAvailableEvent>(
             prometheusResource,
             async (@event, cancellationToken) =>
             {
-                connectionString =
+                var connectionString =
                     await prometheusResource
                         .ConnectionStringExpression.GetValueAsync(cancellationToken)
                         .ConfigureAwait(false)
@@ -127,7 +125,7 @@ public static class PrometheusBuilderExtensions
             .Add(
                 new HealthCheckRegistration(
                     healthCheckKey,
-                    _ => new PrometheusHealthCheck(prometheusResource, connectionString!),
+                    _ => new PrometheusHealthCheck(prometheusResource),
                     failureStatus: default,
                     tags: default,
                     timeout: default

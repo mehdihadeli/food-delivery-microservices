@@ -4,14 +4,13 @@ using Tests.Shared.Fixtures;
 
 namespace Tests.Shared.TestBase;
 
-public class EndToEndTestTest<TEntryPoint>(SharedFixture<TEntryPoint> sharedFixture, ITestOutputHelper outputHelper)
-    : IntegrationTest<TEntryPoint>(sharedFixture, outputHelper)
+public class EndToEndTestTest<TEntryPoint>(SharedFixture<TEntryPoint> sharedFixture)
+    : IntegrationTest<TEntryPoint>(sharedFixture)
     where TEntryPoint : class;
 
 public abstract class EndToEndTestTestBase<TEntryPoint, TContext>(
-    SharedFixtureWithEfCore<TEntryPoint, TContext> sharedFixture,
-    ITestOutputHelper outputHelper
-) : EndToEndTestTest<TEntryPoint>(sharedFixture, outputHelper)
+    SharedFixtureWithEfCore<TEntryPoint, TContext> sharedFixture
+) : EndToEndTestTest<TEntryPoint>(sharedFixture)
     where TEntryPoint : class
     where TContext : DbContext
 {
@@ -19,9 +18,8 @@ public abstract class EndToEndTestTestBase<TEntryPoint, TContext>(
 }
 
 public abstract class EndToEndTestTestBase<TEntryPoint, TWContext, TRContext>(
-    SharedFixtureWithEfCoreAndMongo<TEntryPoint, TWContext, TRContext> sharedFixture,
-    ITestOutputHelper outputHelper
-) : EndToEndTestTest<TEntryPoint>(sharedFixture, outputHelper)
+    SharedFixtureWithEfCoreAndMongo<TEntryPoint, TWContext, TRContext> sharedFixture
+) : EndToEndTestTest<TEntryPoint>(sharedFixture)
     where TEntryPoint : class
     where TWContext : DbContext
     where TRContext : MongoDbContext

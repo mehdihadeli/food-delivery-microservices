@@ -5,7 +5,7 @@ using FoodDelivery.BlazorWebApp.Contracts;
 using FoodDelivery.BlazorWebApp.Extensions;
 using FoodDelivery.BlazorWebApp.Extensions.WebApplicationBuilderExtensions;
 using FoodDelivery.BlazorWebApp.Services;
-using FoodDelivery.Services.Shared.Extensions;
+using FoodDelivery.ServiceDefaults.Extensions;
 
 // blazor server-side rendering
 var builder = WebApplication.CreateBuilder(args);
@@ -27,8 +27,7 @@ builder
         configureClient: client =>
         {
             var gatewayWebAppBff = builder.Configuration.GetValue<string>("ApiGatewayAddress");
-
-            gatewayWebAppBff.NotBeEmptyOrNull();
+            ArgumentException.ThrowIfNullOrEmpty(gatewayWebAppBff);
             client.BaseAddress = new Uri(gatewayWebAppBff);
         }
     )

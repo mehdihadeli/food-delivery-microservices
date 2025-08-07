@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  
   <ItemGroup>
     <ProjectReference Include="..\FoodDelivery.Services.Customers.TestShared\FoodDelivery.Services.Customers.TestShared.csproj" />
   </ItemGroup>
@@ -17,9 +17,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="RestockSubscriptions\Models\Read\" />
   </ItemGroup>
 
 </Project>

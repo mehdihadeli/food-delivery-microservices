@@ -1,3 +1,5 @@
+using Xunit;
+
 namespace Tests.Shared.XunitCategories;
 
 //https://www.jetbrains.com/help/rider/Test_Categories.html

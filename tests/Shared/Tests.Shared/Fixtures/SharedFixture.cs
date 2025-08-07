@@ -5,6 +5,7 @@ using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Abstractions.Queries;
+using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Messages.MessagePersistence;
 using BuildingBlocks.Core.Messages.MessagePersistence.BackgroundServices;
@@ -14,22 +15,25 @@ using BuildingBlocks.Integration.MassTransit;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Persistence.Mongo;
 using FluentAssertions;
-using FluentAssertions.Equivalency;
 using FluentAssertions.Extensions;
 using MassTransit;
+using MassTransit.Internals.Caching;
 using MassTransit.Testing;
 using Mediator;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using NSubstitute;
 using Serilog;
 using Tests.Shared.Auth;
 using Tests.Shared.Extensions;
 using Tests.Shared.Factory;
 using WireMock.Server;
+using Xunit;
 using Xunit.Sdk;
+using Xunit.v3;
 using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
 using IExternalEventBus = BuildingBlocks.Abstractions.Messages.IExternalEventBus;
 using IMessage = BuildingBlocks.Abstractions.Messages.IMessage;
@@ -54,6 +58,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     public event Func<Task>? SharedFixtureDisposed;
     public ILogger Logger { get; }
     public PostgresContainerFixture PostgresContainerFixture { get; }
+    public RedisContainerFixture RedisContainerFixture { get; }
     public MongoContainerFixture MongoContainerFixture { get; }
     public RabbitMQContainerFixture RabbitMqContainerFixture { get; }
     public CustomWebApplicationFactory<TEntryPoint> Factory { get; private set; }
@@ -103,12 +108,12 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         _messageSink = messageSink;
         messageSink.OnMessage(new DiagnosticMessage("Constructing SharedFixture..."));
 
-        //https://github.com/trbenning/serilog-sinks-xunit
-        Logger = new LoggerConfiguration()
-            .MinimumLevel.Verbose()
-            .WriteTo.TestOutput(messageSink)
-            .CreateLogger()
-            .ForContext<SharedFixture<TEntryPoint>>();
+        // //https://github.com/trbenning/serilog-sinks-xunit
+        // Logger = new LoggerConfiguration()
+        //     .MinimumLevel.Verbose()
+        //     .WriteTo.TestOutput(messageSink)
+        //     .CreateLogger()
+        //     .ForContext<SharedFixture<TEntryPoint>>();
 
         // //https://github.com/testcontainers/testcontainers-dotnet/blob/8db93b2eb28bc2bc7d579981da1651cd41ec03f8/docs/custom_configuration/index.md#enable-logging
         // //// TODO: Breaking change in the testcontainer upgrade
@@ -118,6 +123,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
         // Service provider will build after getting with get accessors, we don't want to build our service provider here
         PostgresContainerFixture = new PostgresContainerFixture(messageSink);
+        RedisContainerFixture = new RedisContainerFixture(messageSink);
         MongoContainerFixture = new MongoContainerFixture(messageSink);
         RabbitMqContainerFixture = new RabbitMQContainerFixture(messageSink);
 
@@ -147,7 +153,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         Factory = new CustomWebApplicationFactory<TEntryPoint>();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         _messageSink.OnMessage(new DiagnosticMessage("SharedFixture Started..."));
 
@@ -156,48 +162,35 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         await PostgresContainerFixture.InitializeAsync();
         await MongoContainerFixture.InitializeAsync();
         await RabbitMqContainerFixture.InitializeAsync();
+        await RedisContainerFixture.InitializeAsync();
 
-        // or using `AddOverrideEnvKeyValues` and using `__` as seperator to change configs that are accessible during services registration
-        Factory.AddOverrideInMemoryConfig(keyValues =>
+        // or using `AddOverrideEnvKeyValues` and using `__` as seperator to change configs that are accessible during service registration with BindOptions
+        // with `AddOverrideInMemoryConfig` config changes are accessible after services registration and build process through IOptions<> with ServiceProvider
+        Factory.AddOverrideEnvKeyValues(keyValues =>
         {
             keyValues.Add(
-                $"{nameof(PostgresOptions)}:{nameof(PostgresOptions.ConnectionString)}",
+                $"{nameof(PostgresOptions)}__{nameof(PostgresOptions.ConnectionString)}",
                 PostgresContainerFixture.PostgresContainer.GetConnectionString()
             );
 
             keyValues.Add(
-                $"{nameof(MessagePersistenceOptions)}:{nameof(PostgresOptions.ConnectionString)}",
+                $"{nameof(MessagePersistenceOptions)}__{nameof(PostgresOptions.ConnectionString)}",
                 PostgresContainerFixture.PostgresContainer.GetConnectionString()
             );
 
             keyValues.Add(
-                $"{nameof(MongoOptions)}:{nameof(MongoOptions.ConnectionString)}",
-                MongoContainerFixture.Container.GetConnectionString()
+                $"{nameof(MongoOptions)}__{nameof(MongoOptions.ConnectionString)}",
+                MongoContainerFixture.ConnectionString
             );
 
             keyValues.Add(
-                $"{nameof(MongoOptions)}:{nameof(MongoOptions.DatabaseName)}",
-                MongoContainerFixture.MongoContainerOptions.DatabaseName
+                $"{nameof(MasstransitOptions)}__{nameof(MasstransitOptions.RabbitMQConnectionString)}",
+                RabbitMqContainerFixture.Container.GetConnectionString()
             );
 
             keyValues.Add(
-                $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.UserName)}",
-                RabbitMqContainerFixture.RabbitMqContainerOptions.UserName
-            );
-
-            keyValues.Add(
-                $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Password)}",
-                RabbitMqContainerFixture.RabbitMqContainerOptions.Password
-            );
-
-            keyValues.Add(
-                $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Host)}",
-                RabbitMqContainerFixture.Container.Hostname
-            );
-
-            keyValues.Add(
-                $"{nameof(RabbitMqOptions)}:{nameof(RabbitMqOptions.Port)}",
-                RabbitMqContainerFixture.HostPort.ToString()
+                $"{nameof(BuildingBlocks.Caching.CacheOptions)}__{nameof(RedisDistributedCacheOptions)}__{nameof(RedisDistributedCacheOptions.ConnectionString)}",
+                RedisContainerFixture.Container.GetConnectionString()
             );
         });
 
@@ -208,24 +201,18 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             cfg["WireMockUrl"] = WireMockServerUrl;
         });
 
-        //// 1. If we need fine-grained control over the behavior of the services during tests, we can remove all IHostedService in CustomWebApplicationFactory for existing app and add required ones with `AddTestHostedService` in SharedFixture `InitializeAsync` and run them manually with `TestWorkersRunner`.
-        //// 2. We can use Existing IHostedService Implementations if we want our tests to be as realistic as possible.
-        // Factory.AddTestHostedService<MigrationWorker>();
-        // Factory.AddTestHostedService<DataSeedWorker>();
-        // Factory.AddTestHostedService<MessagePersistenceBackgroundService>();
-        // Factory.AddTestHostedService<MassTransitHostedService>();
-
         if (SharedFixtureInitialized is not null)
         {
             await SharedFixtureInitialized.Invoke();
         }
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await PostgresContainerFixture.DisposeAsync();
         await MongoContainerFixture.DisposeAsync();
         await RabbitMqContainerFixture.DisposeAsync();
+        await RedisContainerFixture.DisposeAsync();
 
         WireMockServer.Stop();
         AdminHttpClient.Dispose();
@@ -240,11 +227,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         await Factory.DisposeAsync();
 
         _messageSink.OnMessage(new DiagnosticMessage("SharedFixture Stopped..."));
-    }
-
-    public async Task CleanupMessaging(CancellationToken cancellationToken = default)
-    {
-        await RabbitMqContainerFixture.CleanupQueuesAsync(cancellationToken);
     }
 
     public void WithTestConfigureServices(Action<IServiceCollection> services)
@@ -272,17 +254,11 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         Factory.AddOverrideInMemoryConfig(keyValuesAction);
     }
 
-    public async Task ResetDatabasesAsync(CancellationToken cancellationToken = default)
+    public async Task CleanupAsync(CancellationToken cancellationToken = default)
     {
         await PostgresContainerFixture.ResetDbAsync(cancellationToken);
         await MongoContainerFixture.ResetDbAsync(cancellationToken);
-    }
-
-    public void SetOutputHelper(ITestOutputHelper outputHelper)
-    {
-        // var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
-        // loggerFactory.AddXUnit(outputHelper);
-        Factory.SetOutputHelper(outputHelper);
+        await RabbitMqContainerFixture.CleanupQueuesAsync(cancellationToken);
     }
 
     public void SetAdminUser()

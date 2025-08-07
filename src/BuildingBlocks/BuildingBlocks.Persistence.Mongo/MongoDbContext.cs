@@ -7,22 +7,16 @@ using MongoDB.Driver;
 namespace BuildingBlocks.Persistence.Mongo;
 
 // https://www.thecodebuzz.com/mongodb-repository-implementation-unit-testing-net-core-example/
-public class MongoDbContext : IMongoDbContext, ITxDbContextExecution
+public class MongoDbContext(IMongoClient mongoClient, IMongoDatabase mongoDatabase)
+    : IMongoDbContext,
+        ITxDbContextExecution
 {
     public IClientSessionHandle? Session { get; set; }
-    public IMongoDatabase Database { get; }
-    public IMongoClient MongoClient { get; }
-    protected readonly IList<Func<Task>> Commands;
+    public IMongoDatabase Database { get; } = mongoDatabase;
+    public IMongoClient MongoClient { get; } = mongoClient;
+    protected readonly IList<Func<Task>> Commands = new List<Func<Task>>();
 
-    public MongoDbContext(IMongoClient mongoClient, IOptions<MongoOptions> options)
-    {
-        MongoClient = mongoClient;
-        var databaseName = options.Value.DatabaseName;
-        Database = mongoClient.GetDatabase(databaseName);
-
-        // Every command will be stored, and it'll be processed at SaveChanges
-        Commands = new List<Func<Task>>();
-    }
+    // Every command will be stored, and it'll be processed at SaveChanges
 
     public IMongoCollection<T> GetCollection<T>(string? name = null)
     {

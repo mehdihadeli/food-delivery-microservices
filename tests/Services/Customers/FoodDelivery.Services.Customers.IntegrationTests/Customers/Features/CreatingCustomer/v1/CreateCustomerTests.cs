@@ -1,6 +1,5 @@
 using BuildingBlocks.Core.Exception;
 using FluentAssertions;
-using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Internal.Mongo;
@@ -11,14 +10,12 @@ using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
-using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests.Customers.Features.CreatingCustomer.v1;
 
 public class CreateCustomerTests(
-    SharedFixtureWithEfCoreAndMongo<Api.CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-    ITestOutputHelper outputHelper
-) : CustomerServiceIntegrationTestBase(sharedFixture, outputHelper)
+    SharedFixtureWithEfCoreAndMongo<Api.CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture
+) : CustomerServiceIntegrationTestBase(sharedFixture)
 {
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
@@ -29,7 +26,7 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        var createdCustomerResponse = await SharedFixture.CommandAsync(command);
+        var createdCustomerResponse = await SharedFixture.CommandAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
         createdCustomerResponse.CustomerId.Should().BeGreaterThan(0);
@@ -71,7 +68,7 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        await SharedFixture.CommandAsync(command);
+        await SharedFixture.CommandAsync(command, TestContext.Current.CancellationToken);
 
         Func<Task> act = async () => await SharedFixture.CommandAsync(new CreateCustomer(fakeIdentityUser.Email));
 
@@ -89,10 +86,10 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        await SharedFixture.CommandAsync(command);
+        await SharedFixture.CommandAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldProcessingInternalCommand<CreateCustomerRead>();
+        await SharedFixture.ShouldProcessingInternalCommand<CreateCustomerRead>(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -104,7 +101,7 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        await SharedFixture.CommandAsync(command);
+        await SharedFixture.CommandAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
         await SharedFixture.WaitUntilConditionMet(async () =>
@@ -129,10 +126,10 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        var _ = await SharedFixture.CommandAsync(command);
+        var _ = await SharedFixture.CommandAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldPublishing<CustomerCreatedV1>();
+        await SharedFixture.ShouldPublishing<CustomerCreatedV1>(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -144,9 +141,9 @@ public class CreateCustomerTests(
         var command = new CreateCustomer(fakeIdentityUser!.Email);
 
         // Act
-        var _ = await SharedFixture.CommandAsync(command);
+        var _ = await SharedFixture.CommandAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldProcessingOutboxMessage<CustomerCreatedV1>();
+        await SharedFixture.ShouldProcessingOutboxMessage<CustomerCreatedV1>(TestContext.Current.CancellationToken);
     }
 }

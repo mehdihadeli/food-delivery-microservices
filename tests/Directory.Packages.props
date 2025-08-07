@@ -32,11 +32,12 @@
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.6.0" />
     <PackageVersion Include="Testcontainers.MongoDb" Version="4.6.0" />
     <PackageVersion Include="Testcontainers.RabbitMq" Version="4.6.0" />
+    <PackageVersion Include="Testcontainers.Redis" Version="4.6.0" />
     <PackageVersion Include="WebMotions.Fake.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageVersion Include="xunit.v3" Version="3.0.0" />
     <PackageVersion Include="XunitContext" Version="3.3.2" />
     <PackageVersion Include="WireMock.NET" Version="1.5.13" />
     <PackageVersion Include="Thinkcode.RabbitMQ.OpenAPI" Version="1.0.8" />
-    <PackageVersion Include="EasyNetQ.Management.Client" Version="3.0.0" />
     <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.1" />
@@ -47,6 +48,6 @@
     <PackageVersion Include="Meziantou.Extensions.Logging.InMemory" Version="1.2.6" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="GitVersion.MsBuild" Version="6.3.0"/>
+    <PackageVersion Include="GitVersion.MsBuild" Version="6.3.0" />
   </ItemGroup>
 </Project>

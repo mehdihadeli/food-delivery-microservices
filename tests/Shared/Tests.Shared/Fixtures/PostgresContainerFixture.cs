@@ -4,7 +4,9 @@ using Npgsql;
 using Respawn;
 using Testcontainers.PostgreSql;
 using Tests.Shared.Helpers;
+using Xunit;
 using Xunit.Sdk;
+using Xunit.v3;
 
 namespace Tests.Shared.Fixtures;
 
@@ -32,7 +34,7 @@ public class PostgresContainerFixture : IAsyncLifetime
         PostgresContainer = postgresContainerBuilder.Build();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await PostgresContainer.StartAsync();
         _messageSink.OnMessage(
@@ -64,7 +66,7 @@ public class PostgresContainerFixture : IAsyncLifetime
         }
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await PostgresContainer.StopAsync();
         await PostgresContainer.DisposeAsync(); //important for the event to cleanup to be fired!

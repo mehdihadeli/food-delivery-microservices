@@ -9,8 +9,6 @@
     <File Path="LICENSE" />
     <File Path="nuget.config" />
     <File Path="package.json" />
-    <File Path="pm2.json" />
-    <File Path="pm2.yaml" />
     <File Path="readme.md" />
     <File Path="stylecop.json" />
     <File Path=".justfile" />
@@ -105,7 +103,6 @@
     <File Path="deployments/docker-compose/docker-compose.services.prod.yaml" />
     <File Path="deployments/docker-compose/docker-compose.services.yaml" />
     <File Path="deployments/docker-compose/docker-compose.yaml" />
-    <File Path="deployments/docker-compose/docker.txt" />
   </Folder>
   <Folder Name="/solution-items/deployments/k8s/" />
   <Folder Name="/solution-items/deployments/k8s/kubernetes/">

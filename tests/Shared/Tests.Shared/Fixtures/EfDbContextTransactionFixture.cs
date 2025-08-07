@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Testcontainers.PostgreSql;
 using Tests.Shared.Helpers;
+using Xunit;
 using Xunit.Sdk;
+using Xunit.v3;
 
 namespace Tests.Shared.Fixtures;
 
@@ -57,7 +59,7 @@ public class EfDbContextTransactionFixture<TContext> : IAsyncLifetime
         }
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await Container.StartAsync();
         var options = ConfigurationHelper.BindOptions<PostgresOptions>();
@@ -78,7 +80,7 @@ public class EfDbContextTransactionFixture<TContext> : IAsyncLifetime
         _messageSink.OnMessage(new DiagnosticMessage($"EfDbContextTransactionFixture fixture started..."));
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await DbContext.DisposeAsync();
         await Container.StopAsync();

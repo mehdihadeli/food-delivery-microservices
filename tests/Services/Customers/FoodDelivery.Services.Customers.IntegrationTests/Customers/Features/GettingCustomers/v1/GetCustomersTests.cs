@@ -5,14 +5,12 @@ using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models.Read;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
-using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests.Customers.Features.GettingCustomers.v1;
 
 public class GetCustomersTests(
-    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture,
-    ITestOutputHelper outputHelper
-) : CustomerServiceIntegrationTestBase(sharedFixture, outputHelper)
+    SharedFixtureWithEfCoreAndMongo<CustomersApiMetadata, CustomersDbContext, CustomersReadDbContext> sharedFixture
+) : CustomerServiceIntegrationTestBase(sharedFixture)
 {
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
@@ -24,7 +22,7 @@ public class GetCustomersTests(
 
         // Act
         var query = new GetCustomers();
-        var listResult = (await SharedFixture.QueryAsync(query)).Customers;
+        var listResult = (await SharedFixture.QueryAsync(query, TestContext.Current.CancellationToken)).Customers;
 
         // Assert
         listResult.Should().NotBeNull();
@@ -47,7 +45,7 @@ public class GetCustomersTests(
 
         // Act
         var query = new GetCustomers { PageNumber = 1, PageSize = 2 };
-        var listResult = (await SharedFixture.QueryAsync(query)).Customers;
+        var listResult = (await SharedFixture.QueryAsync(query, TestContext.Current.CancellationToken)).Customers;
 
         // Assert
         listResult.Should().NotBeNull();

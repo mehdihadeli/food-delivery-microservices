@@ -1,18 +1,15 @@
 using BuildingBlocks.Core.Exception;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
-using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Requests;
-using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Tests.Shared.Extensions;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
-using Xunit.Abstractions;
 
 namespace FoodDelivery.Services.Customers.EndToEndTests.Customers.Features.CreatingCustomer.v1;
 
@@ -108,7 +105,12 @@ public class CreateCustomerTests : CustomerServiceEndToEndTestBase
         response
             .Should()
             .ContainsProblemDetail(
-                new ProblemDetails { Detail = "Email address is invalid.", Title = nameof(ValidationException) }
+                new ProblemDetails
+                {
+                    Detail =
+                        "{\"Message\":\"Validation failed for type CreateCustomer\",\"Errors\":[{\"Field\":\"Email\",\"Message\":\"Email address is invalid.\"}]}",
+                    Title = nameof(ValidationException),
+                }
             )
             .And.Be400BadRequest();
     }

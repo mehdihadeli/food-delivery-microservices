@@ -119,29 +119,13 @@ public static class GrafanaBuilderExtensions
 
         var grafanaResource = new GrafanaResource(nameOrConnectionStringName);
 
-        string? connectionString = null;
-
-        builder.Eventing.Subscribe<ConnectionStringAvailableEvent>(
-            grafanaResource,
-            async (@event, cancellationToken) =>
-            {
-                connectionString =
-                    await grafanaResource
-                        .ConnectionStringExpression.GetValueAsync(cancellationToken)
-                        .ConfigureAwait(false)
-                    ?? throw new DistributedApplicationException(
-                        $"ConnectionStringAvailableEvent was published for the '{grafanaResource.Name}' resource but the connection string was null."
-                    );
-            }
-        );
-
         var healthCheckKey = $"{nameOrConnectionStringName}_check";
         builder
             .Services.AddHealthChecks()
             .Add(
                 new HealthCheckRegistration(
                     healthCheckKey,
-                    _ => new GrafanaHealthCheck(grafanaResource, connectionString!),
+                    _ => new GrafanaHealthCheck(grafanaResource),
                     failureStatus: default,
                     tags: default,
                     timeout: default

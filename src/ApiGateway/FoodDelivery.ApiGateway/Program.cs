@@ -1,6 +1,6 @@
 using BuildingBlocks.Core.Extensions;
 using FoodDelivery.ApiGateway;
-using FoodDelivery.Services.Shared.Extensions;
+using FoodDelivery.ServiceDefaults.Extensions;
 using Yarp.ReverseProxy.Transforms;
 using static BuildingBlocks.Core.Messages.MessageHeaders;
 

@@ -8,10 +8,11 @@ namespace BuildingBlocks.OpenApi.AsyncApi;
 
 public static class DependencyInjectionExtensions
 {
-    public static void AddAsyncApi(this IHostApplicationBuilder builder, IList<Type> types)
+    public static void AddAsyncApi(this IHostApplicationBuilder builder, Type[] types)
     {
         var services = builder.Services;
 
+        // https://github.com/asyncapi/saunter
         services.AddAsyncApiSchemaGeneration(options =>
         {
             options.AssemblyMarkerTypes = types;
@@ -44,6 +45,10 @@ public static class DependencyInjectionExtensions
         return provider.GetService<IApiVersionDescriptionProvider>()?.ApiVersionDescriptions ?? [new(new(1, 0), "v1")];
     }
 
+    /// <summary>
+    /// Ui is available on `asyncapi/ui/index.html` and async open api document is available on `asyncapi/asyncapi.json` and use [AsyncApi] attribute to mark as a message to use in documentation
+    /// </summary>
+    /// <param name="app"></param>
     public static void UseAsyncApi(this WebApplication app)
     {
         if (!app.Environment.IsDevelopment())
@@ -51,6 +56,7 @@ public static class DependencyInjectionExtensions
             return;
         }
 
+        // https://github.com/asyncapi/saunter
         app.MapAsyncApiDocuments();
         app.MapAsyncApiUi();
     }

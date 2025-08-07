@@ -1,0 +1,1 @@
+Use for both BlazorServer and external clients

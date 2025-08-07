@@ -3,29 +3,14 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <EnablePackageVersionOverride>true</EnablePackageVersionOverride>
-    <AspireVersion>9.3.1</AspireVersion>
+    <AspireVersion>9.4</AspireVersion>
   </PropertyGroup>
   <PropertyGroup>
     <IsPublishable>false</IsPublishable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup Label="Authentication - Identity">
-    <PackageVersion Include="Aspire.Azure.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.3.1" />
-    <PackageVersion Include="Aspire.Hosting" Version="9.3.2" />
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.3.1" />
-    <PackageVersion Include="Aspire.Hosting.Azure" Version="9.3.2" />
-    <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="9.3.1" />
-    <PackageVersion Include="Aspire.Hosting.Azure.CosmosDB" Version="9.3.1" />
-    <PackageVersion Include="Aspire.Hosting.Azure.PostgreSQL" Version="9.3.1" />
-    <PackageVersion Include="Aspire.Hosting.Azure.Redis" Version="9.3.1" />
-    <PackageVersion Include="Aspire.Hosting.Docker" Version="9.3.1-preview.1.25305.6" />
-    <PackageVersion Include="Aspire.Hosting.Elasticsearch" Version="9.2.1-preview.1.25222.1" />
-    <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="9.3.1-preview.1.25305.6" />
-    <PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.Cosmos" Version="9.3.1" />
-    <PackageVersion Include="Aspire.MongoDB.Driver.v3" Version="9.3.1" />
-    <PackageVersion Include="Aspire.RabbitMQ.Client.v7" Version="9.3.1" />
-    <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.3.0" />
-    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.EventStore" Version="9.6.0" />
+    <PackageVersion Include="AspNetCore.HealthChecks.Elasticsearch" Version="9.0.0" />
     <PackageVersion Include="Duende.AccessTokenManagement.OpenIdConnect" Version="3.2.0" />
     <PackageVersion Include="Duende.BFF" Version="3.0.0" />
     <PackageVersion Include="Duende.BFF.Blazor" Version="3.0.0" />
@@ -40,47 +25,47 @@
   </ItemGroup>
   <ItemGroup Label="ASP.NET Core - Microsoft">
     <!-- Entity Framework Core -->
-    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.7" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageVersion Include="EFCore.NamingConventions" Version="9.0.0" />
     <!-- Microsoft Extensions -->
-    <PackageVersion Include="Microsoft.Extensions.Compliance.Redaction" Version="9.6.0" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.Telemetry" Version="9.6.0" />
-    <PackageVersion Include="Microsoft.Extensions.Telemetry.Abstractions" Version="9.6.0" />
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Polly" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.6.0" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.Resilience" Version="9.6.0" />
-    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.3.1" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="9.6.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.Extensions.Compliance.Redaction" Version="9.7.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Telemetry" Version="9.7.0" />
+    <PackageVersion Include="Microsoft.Extensions.Telemetry.Abstractions" Version="9.7.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Polly" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.7.0" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Resilience" Version="9.7.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.4.0" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="9.7.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="9.0.7" />
     <!-- AspNetCore -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.Middleware" Version="9.6.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.AspNetCore.HeaderPropagation" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.Middleware" Version="9.7.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.HeaderPropagation" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Http.Extensions" Version="2.3.0" />
     <!-- Others -->
-    <PackageVersion Include="Microsoft.NET.Build.Containers" Version="9.0.202" />
-    <PackageVersion Include="System.Net.Http.Json" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Kiota.Bundle" Version="1.16.1" />
+    <PackageVersion Include="Microsoft.NET.Build.Containers" Version="9.0.303" />
+    <PackageVersion Include="System.Net.Http.Json" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Kiota.Bundle" Version="1.19.0" />
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
-    <PackageVersion Include="Microsoft.Diagnostics.NETCore.Client" Version="0.2.607501" />
+    <PackageVersion Include="Microsoft.Diagnostics.NETCore.Client" Version="0.2.621003" />
   </ItemGroup>
   <ItemGroup Label="Logging - Monitoring">
     <PackageVersion Include="Serilog.Enrichers.CorrelationId" Version="3.0.1" />
@@ -110,11 +95,14 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Process" Version="1.12.0-beta.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
+    <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.3.0" />
+    <PackageVersion Include="MongoDB.Driver.Core.Extensions.DiagnosticSources" Version="2.1.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.9.0-beta.1" />
   </ItemGroup>
   <ItemGroup Label="Health Checks">
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.ResourceUtilization" Version="9.6.0" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.ResourceUtilization" Version="9.7.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.Network" Version="9.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.MongoDb" Version="9.0.0" />
@@ -136,7 +124,7 @@
     <PackageVersion Include="MassTransit.Abstractions" Version="8.5.0" />
   </ItemGroup>
   <ItemGroup Label="API Documentation">
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
     <PackageVersion Include="Asp.Versioning.Http" Version="8.1.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageVersion Include="NSwag.ApiDescription.Client" Version="14.2.0" />
@@ -200,7 +188,7 @@
     <PackageVersion Include="ErrorProne.NET.CoreAnalyzers" Version="0.7.0-beta.1" />
   </ItemGroup>
   <ItemGroup Label="Aspire">
-    <PackageVersion Include="Aspire.AppHost.Sdk" Version="9.3.1" />
+    <PackageVersion Include="Aspire.AppHost.Sdk" Version="9.4" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.3.1" />
     <PackageVersion Include="Aspire.Hosting.Qdrant" Version="9.3.1" />
     <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="9.3.1" />
@@ -210,5 +198,23 @@
     <PackageVersion Include="Aspire.Hosting.MongoDB" Version="9.3.1" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.3.1" />
     <PackageVersion Include="Aspire.StackExchange.Redis" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Azure.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting" Version="9.4.0" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.4.0" />
+    <PackageVersion Include="Aspire.Hosting.Azure" Version="9.4.0" />
+    <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="9.4.0" />
+    <PackageVersion Include="Aspire.Hosting.Azure.CosmosDB" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Azure.PostgreSQL" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Azure.Redis" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Docker" Version="9.4.0-preview.1.25378.8" />
+    <PackageVersion Include="Aspire.Hosting.Elasticsearch" Version="9.2.1-preview.1.25222.1" />
+    <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="9.4.0-preview.1.25378.8" />
+    <PackageVersion Include="Aspire.Hosting.NodeJs" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.Cosmos" Version="9.3.1" />
+    <PackageVersion Include="Aspire.MongoDB.Driver.v3" Version="9.3.1" />
+    <PackageVersion Include="Aspire.RabbitMQ.Client.v7" Version="9.3.1" />
+    <PackageVersion Include="CommunityToolkit.Aspire.EventStore" Version="9.6.0" />
+    <PackageVersion Include="Scalar.Aspire" Version="0.1.11" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.EventStore" Version="9.6.0" />
   </ItemGroup>
 </Project>

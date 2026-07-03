@@ -245,6 +245,8 @@ jobs:
           token: ${{ secrets.ci-github-token }}
           # only-summary: 'true'
           output-to: 'step-summary'
+          # Dependency test TRX files are still published below, but phoenix-actions/test-reporting
+          # currently fails to parse their single-test xUnit v3 output in this workflow.
           path: |
             **/*-unit.trx
             **/*-integration.trx

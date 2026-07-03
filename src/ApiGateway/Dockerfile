@@ -33,6 +33,7 @@ COPY ./src/BuildingBlocks/BuildingBlocks.HealthCheck/BuildingBlocks.HealthCheck.
 COPY ./src/BuildingBlocks/BuildingBlocks.OpenTelemetry/BuildingBlocks.OpenTelemetry.csproj ./BuildingBlocks/BuildingBlocks.OpenTelemetry/
 COPY ./src/BuildingBlocks/BuildingBlocks.Resiliency/BuildingBlocks.Resiliency.csproj ./BuildingBlocks/BuildingBlocks.Resiliency/
 COPY ./src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj ./BuildingBlocks/BuildingBlocks.Web/
+COPY ./src/Aspire/FoodDelivery.ServiceDefaults/FoodDelivery.ServiceDefaults.csproj ./Aspire/FoodDelivery.ServiceDefaults/
 
 # https://docs.docker.com/build/cache/#order-your-layers
 # with any changes in csproj files all downstream layer will rebuil, so dotnet restore will execute again
@@ -51,6 +52,7 @@ RUN dotnet restore ./ApiGateway/FoodDelivery.ApiGateway/FoodDelivery.ApiGateway.
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
+COPY ./src/Aspire/FoodDelivery.ServiceDefaults/ ./Aspire/FoodDelivery.ServiceDefaults/
 COPY ./src/ApiGateway/FoodDelivery.ApiGateway/  ./ApiGateway/FoodDelivery.ApiGateway/
 COPY ./src/Services/Shared/  ./Services/Shared/
 

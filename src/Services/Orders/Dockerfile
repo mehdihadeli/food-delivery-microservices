@@ -53,6 +53,7 @@ COPY ./src/BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/BuildingBlo
 COPY ./src/BuildingBlocks/BuildingBlocks.Persistence.Mongo/BuildingBlocks.Persistence.Mongo.csproj ./BuildingBlocks/BuildingBlocks.Persistence.Mongo/
 COPY ./src/BuildingBlocks/BuildingBlocks.SerilogLogging/BuildingBlocks.SerilogLogging.csproj ./BuildingBlocks/BuildingBlocks.SerilogLogging/
 COPY ./src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj ./BuildingBlocks/BuildingBlocks.Validation/
+COPY ./src/Aspire/FoodDelivery.ServiceDefaults/FoodDelivery.ServiceDefaults.csproj ./Aspire/FoodDelivery.ServiceDefaults/
 
 COPY ./src/Services/Orders/FoodDelivery.Services.Orders/FoodDelivery.Services.Orders.csproj ./Services/Orders/FoodDelivery.Services.Orders/
 COPY ./src/Services/Orders/FoodDelivery.Services.Orders.Api/FoodDelivery.Services.Orders.Api.csproj ./Services/Orders/FoodDelivery.Services.Orders.Api/
@@ -74,6 +75,7 @@ RUN dotnet restore ./Services/Orders/FoodDelivery.Services.Orders.Api/FoodDelive
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
+COPY ./src/Aspire/FoodDelivery.ServiceDefaults/ ./Aspire/FoodDelivery.ServiceDefaults/
 COPY ./src/Services/Orders/FoodDelivery.Services.Orders.Api/  ./Services/Orders/FoodDelivery.Services.Orders.Api/
 COPY ./src/Services/Orders/FoodDelivery.Services.Orders/  ./Services/Orders/FoodDelivery.Services.Orders/
 COPY ./src/Services/Shared/  ./Services/Shared/

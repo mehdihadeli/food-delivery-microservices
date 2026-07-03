@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <IsPublishable>true</IsPublishable>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Duende.BFF.Yarp" />
     <PackageReference Include="Microsoft.AspNetCore.HeaderPropagation" />

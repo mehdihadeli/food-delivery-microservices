@@ -29,7 +29,13 @@ public class EventStoreDbSubscriptionCheckPointRepository(EventStoreClient event
             return null;
         }
 
-        ResolvedEvent? @event = await result.FirstOrDefaultAsync(ct);
+        ResolvedEvent? @event = null;
+
+        await foreach (var resolvedEvent in result.WithCancellation(ct))
+        {
+            @event = resolvedEvent;
+            break;
+        }
 
         return @event?.DeserializeData<CheckpointStored>().Position;
     }

@@ -19,6 +19,8 @@ public static class DependencyInjectionExtensions
 {
     // use jbogard https://github.com/jbogard/MongoDB.Driver.Core.Extensions.DiagnosticSources package
     private const string ActivityNameSource = "MongoDB.Driver.Core.Extensions.DiagnosticSources";
+    private static readonly Lock RegistrationLock = new();
+    private static bool _mongoSerializationRegistered;
 
     public static IHostApplicationBuilder AddMongoDbContext<TContext>(
         this IHostApplicationBuilder builder,
@@ -73,10 +75,7 @@ public static class DependencyInjectionExtensions
         // we can write our own serializer register it with `RegisterSerializationProvider` and this serializer will work before default serializers.
         // BsonSerializer.RegisterSerializationProvider(new LocalDateTimeSerializationProvider());
         // Or
-        BsonSerializer.RegisterSerializer(DateTimeSerializer.LocalInstance);
-        BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.CSharpLegacy));
-
-        RegisterConventions();
+        EnsureMongoSerializationRegistered();
 
         builder.Services.AddScoped<TContext>();
         builder.Services.AddScoped<IMongoDbContext>(sp => sp.GetRequiredService<TContext>());
@@ -160,5 +159,22 @@ public static class DependencyInjectionExtensions
             },
             _ => true
         );
+    }
+
+    private static void EnsureMongoSerializationRegistered()
+    {
+        lock (RegistrationLock)
+        {
+            if (_mongoSerializationRegistered)
+            {
+                return;
+            }
+
+            BsonSerializer.RegisterSerializer(DateTimeSerializer.LocalInstance);
+            BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.CSharpLegacy));
+
+            RegisterConventions();
+            _mongoSerializationRegistered = true;
+        }
     }
 }

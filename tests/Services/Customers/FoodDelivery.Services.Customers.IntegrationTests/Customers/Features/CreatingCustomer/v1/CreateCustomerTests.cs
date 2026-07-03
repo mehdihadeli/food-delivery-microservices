@@ -48,6 +48,7 @@ public class CreateCustomerTests(
     {
         // Arrange
         var command = new CreateCustomer("test@example.com");
+        IdentityServiceWireMock.SetupGetUserByEmailNotFound(command.Email);
 
         // Act
         Func<Task> act = async () => await SharedFixture.CommandAsync(command);

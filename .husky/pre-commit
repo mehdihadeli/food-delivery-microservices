@@ -1,2 +1,5 @@
-# for fixing issues use 'just fix-all'
-just check-all
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "Running Husky pre-commit tasks..."
+dotnet tool run husky -- run --group pre-commit

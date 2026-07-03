@@ -42,7 +42,7 @@ public static class MongoQueryableExtensions
         // The provider for the source 'IQueryable' doesn't implement 'IAsyncQueryProvider'. Only providers that implement 'IAsyncQueryProvider' can be used for Entity Framework asynchronous operations.
         var total = result.Count();
         result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false);
-        var items = await result.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
+        var items = result.ToList();
 
         return PageList<TEntity>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
     }
@@ -83,7 +83,7 @@ public static class MongoQueryableExtensions
         result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: true); // Only applies pagination
         var projectedQuery = projectionFunc(result);
 
-        var items = await projectedQuery.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
+        var items = projectedQuery.ToList();
 
         return PageList<TResult>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
     }
@@ -116,10 +116,7 @@ public static class MongoQueryableExtensions
         var total = result.Count();
         result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false); // Only applies pagination
 
-        var items = await result
-            .Select(x => map(x))
-            .ToAsyncEnumerable()
-            .ToListAsync(cancellationToken: cancellationToken);
+        var items = result.Select(x => map(x)).ToList();
 
         return PageList<TResult>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
     }

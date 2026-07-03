@@ -1,4 +1,5 @@
 using BuildingBlocks.Core.Extensions;
+using BuildingBlocks.Core.Web.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
@@ -50,8 +51,12 @@ public static class DependencyInjectionExtensions
                 };
             });
 
-        // https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/#healthcheckui
-        builder.Services.AddHealthChecksUI().AddInMemoryStorage();
+        // HealthChecks UI spins up a background hosted service that is not needed in integration tests.
+        if (!builder.Environment.IsTest())
+        {
+            // https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/#healthcheckui
+            builder.Services.AddHealthChecksUI().AddInMemoryStorage();
+        }
 
         return builder;
     }

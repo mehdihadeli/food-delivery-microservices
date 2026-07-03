@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build -->
 <Project>
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+  <PropertyGroup Label="Framework">
+    <TargetFramework>net10.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <NoWarn>CS1587,CS1591,CS1998,NU5105</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Label="Build">
     <AnalysisLevel>latest-All</AnalysisLevel>
     <AnalysisMode>All</AnalysisMode>
     <AnalysisModeGlobalization>None</AnalysisModeGlobalization>
@@ -17,11 +17,23 @@
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
+    <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
   </PropertyGroup>
 
   <PropertyGroup>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
+
+  <PropertyGroup Label="Testing Platform" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests'))">
+    <OutputType>Exe</OutputType>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+  </PropertyGroup>
+
+  <ItemGroup Label="Testing Platform Packages" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests'))">
+    <PackageReference Include="xunit.v3.mtp-v2" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
+  </ItemGroup>
 
 <!-- https://codyanhorn.tech/blog/excluding-your-net-test-project-from-code-coverage -->
     <ItemGroup>
@@ -34,4 +46,15 @@
     </PackageReference>
   </ItemGroup>
 
+    <ItemGroup Label="Testing Imports" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests'))">
+        <Using Include="Xunit"/>
+        <Using Include="Shouldly"/>
+    </ItemGroup>
+
+    <ItemGroup Label="Legacy Test Runner Cleanup" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests')) Or $([System.String]::Copy('$(MSBuildProjectName)').EndsWith('TestShared')) Or '$(MSBuildProjectName)' == 'Tests.Shared'">
+      <PackageReference Remove="Microsoft.NET.Test.Sdk" />
+      <PackageReference Remove="coverlet.msbuild" />
+      <PackageReference Remove="xunit.runner.visualstudio" />
+    </ItemGroup>
+	
 </Project>

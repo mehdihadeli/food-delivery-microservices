@@ -4,7 +4,7 @@ using BuildingBlocks.Core.Constants;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Pipelines;
-using BuildingBlocks.Integration.MassTransit.Extensions;
+using BuildingBlocks.Integration.Wolverine.Extensions;
 using BuildingBlocks.Messaging.Persistence.Postgres;
 using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
 using BuildingBlocks.Validation;
@@ -41,12 +41,12 @@ public static partial class HostApplicationBuilderExtensions
         builder.AddCustomAuthentication();
         builder.AddCustomAuthorization();
 
-        builder.AddMasstransitEventBus(
-            configureMessagesTopologies: (context, cfg) =>
+        builder.AddWolverineEventBus(
+            configureMessagesTopologies: options =>
             {
-                cfg.AddCustomerEndpoints(context);
+                options.AddCustomerEndpoints();
             },
-            configureMasstransitOptions: msgCfg =>
+            configureWolverineBusOptions: msgCfg =>
             {
                 msgCfg.AutoConfigMessagesTopology = false;
             },

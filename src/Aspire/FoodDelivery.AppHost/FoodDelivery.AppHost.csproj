@@ -6,20 +6,24 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <UserSecretsId>dbe89ad9-90f1-44de-9646-7e98b2d8c69d</UserSecretsId>
+    <NoWarn>ASPIREINTERACTION001</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Aspire.Hosting" />
+  <ItemGroup Label="Integrations">
     <PackageReference Include="Aspire.Hosting.AppHost" />
-<!--https://devblogs.microsoft.com/dotnet/dotnet-aspire-92-is-now-available-with-new-ways-to-deploy/#publish-to-docker-compose-with-your-first-publisher-integration-->
-<!--https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.2#-deployment-improvements-->
-<!--https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.3#deployment&#45;&#45;publish-->
+    <PackageReference Include="Aspire.Hosting.NodeJs" />
+    <PackageReference Include="Scalar.Aspire" />
+  </ItemGroup>
+  
+    <ItemGroup Label="Deployments">
+    <!--https://devblogs.microsoft.com/dotnet/dotnet-aspire-92-is-now-available-with-new-ways-to-deploy/#publish-to-docker-compose-with-your-first-publisher-integration-->
+    <!--https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.2#-deployment-improvements-->
+    <!--https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.3#deployment&#45;&#45;publish-->
+    <!--https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.4-->
     <PackageReference Include="Aspire.Hosting.Azure" />
     <PackageReference Include="Aspire.Hosting.Azure.AppContainers" />
     <PackageReference Include="Aspire.Hosting.Docker" />
     <PackageReference Include="Aspire.Hosting.Kubernetes" />
-    <PackageReference Include="Aspire.Hosting.NodeJs" />
-    <PackageReference Include="Scalar.Aspire" />
   </ItemGroup>
   
   <ItemGroup Label="Aspire Refrence Projects">
@@ -36,7 +40,7 @@
 
   <ItemGroup Label="Building Blocks Projects">
     <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.AspireIntegrations\BuildingBlocks.AspireIntegrations.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Integration.MassTransit\BuildingBlocks.Integration.MassTransit.csproj" IsAspireProjectResource="false"/>
+    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Integration.Wolverine\BuildingBlocks.Integration.Wolverine.csproj" IsAspireProjectResource="false"/>
     <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" IsAspireProjectResource="false" />
     <ProjectReference 
             Include="..\..\Services\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" IsAspireProjectResource="false" />

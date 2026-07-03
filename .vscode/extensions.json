@@ -1,0 +1,36 @@
+{
+  "recommendations": [
+    // Angular development
+    "angular.ng-template",
+
+    // .NET development
+    "ms-dotnettools.csdevkit",
+
+    // Testing frameworks
+    "vitest.explorer",
+    "ms-playwright.playwright",
+
+    // Formatting and linting
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "csharpier.csharpier-vscode",
+    "EditorConfig.EditorConfig",
+
+    // Additional  extensions
+    "ms-azuretools.vscode-containers",
+    "github.vscode-github-actions",
+    "GitHub.vscode-pull-request-github",
+    "dzhavat.bracket-pair-toggler",
+    "streetsidesoftware.code-spell-checker",
+    "emmanuelbeziat.vscode-great-icons",
+    "PKief.material-icon-theme",
+    "DavidAnson.vscode-markdownlint",
+    "IBM.output-colorizer",
+    "humao.rest-client",
+    "mads-hartmann.bash-ide-vscode",
+    "redhat.vscode-yaml",
+    "kennylong.kubernetes-yaml-formatter",
+    "ms-vscode.makefile-tools",
+    "jetbrains.resharper-code"
+  ]
+}

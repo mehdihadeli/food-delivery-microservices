@@ -20,11 +20,14 @@ public static class EventStoreClientExtensions
             cancellationToken: cancellationToken
         );
 
-        return (
-            await readResult
-                .Select(@event => @event.DeserializeData()!)
-                .AggregateAsync(getDefault(), when, cancellationToken)
-        )!;
+        var state = getDefault();
+
+        await foreach (var @event in readResult.WithCancellation(cancellationToken))
+        {
+            state = when(state, @event.DeserializeData()!);
+        }
+
+        return state!;
     }
 
     public static async Task<ulong> Append<TEvent>(

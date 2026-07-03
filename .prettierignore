@@ -1,0 +1,7 @@
+node_modules
+.angular
+build
+coverage
+*-lock.yaml
+.github/prompts
+test-results

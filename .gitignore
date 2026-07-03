@@ -379,3 +379,6 @@ coverage.info
 
 # exclude keys directory
 keys/
+
+.junie
+.aiassistant

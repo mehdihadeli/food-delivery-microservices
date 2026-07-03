@@ -1,5 +1,5 @@
 # https://devblogs.microsoft.com/blog/introducing-awesome-github-copilot-customizations-repo
-
+# https://github.blog/changelog/2025-01-21-custom-repository-instructions-are-now-available-for-copilot-on-github-com-public-preview/
 ---
 description: 'Guidelines for building REST APIs with ASP.NET'
 applyTo: '**/*.cs, **/*.json'

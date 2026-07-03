@@ -19,5 +19,9 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
     <PackageReference Include="DistributedLock.Redis" />
   </ItemGroup>
+  
+  <ItemGroup Label="Health Check">
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+  </ItemGroup>
 
 </Project>

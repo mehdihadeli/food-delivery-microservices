@@ -622,6 +622,9 @@ resharper_blank_lines_before_multiline_statements = 1
 resharper_parentheses_non_obvious_operations = arithmetic, multiplicative, equality, relational, additive
 resharper_parentheses_redundancy_style = remove_if_not_clarifies_precedence
 
+# Possible performance issues caused by unlimited string length
+resharper_entity_framework_model_validation_unlimited_string_length_highlighting = none
+
 ##################################################################################
 ## https://github.com/DotNetAnalyzers/StyleCopAnalyzers/tree/master/documentation
 ## https://documentation.help/StyleCop/StyleCop.html

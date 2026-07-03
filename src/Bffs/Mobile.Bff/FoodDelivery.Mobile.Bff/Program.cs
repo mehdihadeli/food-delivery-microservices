@@ -6,7 +6,7 @@ builder.AddServiceDefaults();
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
+app.UseDefaultServices();
 
 app.MapGet(
     "/",

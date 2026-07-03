@@ -96,17 +96,6 @@ public static class TempoBuilderExtensions
     /// - When proxyEnabled: Proxy port (null for auto-assigned)
     /// - When !proxyEnabled: Host port (null for auto-assigned)
     /// </param>
-    /// <param name="proxyOrContainerHostOtlpGrpcPort">
-    /// Port for the OTLP gRPC endpoint (4317). Behavior depends on proxyEnabled:
-    /// - When proxyEnabled: Proxy port (null for auto-assigned)
-    /// - When !proxyEnabled: Host port (null for auto-assigned)
-    /// </param>
-    /// <param name="proxyOrContainerHostOtlpHttpPort">
-    /// Port for the OTLP HTTP endpoint (4318). Behavior depends on proxyEnabled:
-    /// - When proxyEnabled: Proxy port (null for auto-assigned)
-    /// - When !proxyEnabled: Host port (null for auto-assigned)
-    /// </param>
-    /// <returns>An IResourceBuilder for the configured Tempo resource</returns>
     public static IResourceBuilder<IResourceWithConnectionString> AddAspireTempo(
         this IDistributedApplicationBuilder builder,
         [ResourceName] string nameOrConnectionStringName,
@@ -115,9 +104,7 @@ public static class TempoBuilderExtensions
         bool persistenceEnabled = false,
         string? configBindMountPath = null,
         int? proxyOrContainerHostHttpPort = TempoResource.ProxyOrContainerHostHttpPort,
-        int? proxyOrContainerHostGrpcPort = TempoResource.ProxyOrContainerHostGrpcPort,
-        int? proxyOrContainerHostOtlpGrpcPort = TempoResource.ProxyOrContainerHostOtlpGrpcPort,
-        int? proxyOrContainerHostOtlpHttpPort = TempoResource.ProxyOrContainerHostOtlpHttpPort
+        int? proxyOrContainerHostGrpcPort = TempoResource.ProxyOrContainerHostGrpcPort
     )
     {
         ArgumentNullException.ThrowIfNull(builder);
@@ -179,7 +166,8 @@ public static class TempoBuilderExtensions
                 scheme: "tcp"
             )
             .WithEndpoint(
-                port: proxyOrContainerHostOtlpGrpcPort,
+                // set null for preventing conflict with otel-collector `4317` host port it is better we generate a random host port using `port: null` when we don't care about host port, and we just use container port, and in aspire to publish for docker it doesn't expose the host port because of `isExternal: false`.
+                port: null,
                 targetPort: TempoResource.OtlpGrpcContainerPort,
                 name: TempoResource.OtlpGrpcEndpointName,
                 isProxied: proxyEnabled,
@@ -187,12 +175,13 @@ public static class TempoBuilderExtensions
                 scheme: "tcp"
             )
             .WithEndpoint(
-                port: proxyOrContainerHostOtlpHttpPort,
+                // set null for preventing conflict with otel-collector `4318` host port it is better we generate a random host port using `port: null` when we don't care about host port, and we just use container port, and in aspire to publish for docker it doesn't expose the host port because of `isExternal: false`.
+                port: null,
                 targetPort: TempoResource.OtlpHttpContainerPort,
                 name: TempoResource.OtlpHttpEndpointName,
                 isProxied: proxyEnabled,
                 isExternal: false,
-                scheme: "http"
+                scheme: "tcp"
             )
             .WithHealthCheck(healthCheckKey);
 

@@ -14,7 +14,7 @@ public interface IAggregateBase
     ///     Does the aggregate have change that have not been committed to storage.
     /// </summary>
     /// <returns></returns>
-    public bool HasUncommittedDomainEvents();
+    bool HasUncommittedDomainEvents();
 
     /// <summary>
     /// Gets a list of uncommitted events for this aggregate and mark them as commited.

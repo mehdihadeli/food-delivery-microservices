@@ -39,15 +39,6 @@ var app = builder.Build();
 if (app.Environment.IsDependencyTest())
     return;
 
-app.Use(
-    async (context, next) =>
-    {
-        Console.WriteLine("Inline middleware before");
-        await next.Invoke();
-        Console.WriteLine("Inline middleware after");
-    }
-);
-
 // https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer
 // https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-9.0&tabs=linux-ubuntu
 // - X-Forwarded-Prefix header that set by yarp proxy use for setting `Request.BasePath` to `/auth` that use for URL generation or redirection
@@ -56,13 +47,12 @@ app.Use(
 // Ensures the application sees the original client IP, protocol (HTTP/HTTPS), and host rather than the proxy's information and set them on Context.Request, but we can access to original values through Request.Headers and `X-Original-Host`, `X-Original-For`
 app.UseForwardedHeaders();
 
-app.MapDefaultEndpoints();
+app.UseDefaultServices();
 
 app.UseInfrastructure();
 
 app.MapApplicationEndpoints();
 
-app.UseAspnetOpenApi();
-app.UseAsyncApi();
+app.MapDefaultEndpoints();
 
 await app.RunAsync();

@@ -40,6 +40,10 @@ public abstract class IntegrationTest<TEntryPoint> : IAsyncLifetime
             }
         );
         SharedFixture.WithTestConfiguration(SetupTestConfiguration);
+
+        // - Envs to override should add before Configuration provider built and collect configurations to override
+        // app configurations. After build configuration is completed, configuration elements don't update further via
+        // environment or appsettings.json because configuration providers setup is completed
         SharedFixture.AddOverrideEnvKeyValues(OverrideEnvKeyValues);
         SharedFixture.AddOverrideInMemoryConfig(OverrideInMemoryConfig);
 

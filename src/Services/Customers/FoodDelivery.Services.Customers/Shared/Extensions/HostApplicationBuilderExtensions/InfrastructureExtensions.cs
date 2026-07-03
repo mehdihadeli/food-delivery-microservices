@@ -5,7 +5,7 @@ using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Pipelines;
 using BuildingBlocks.Email;
-using BuildingBlocks.Integration.MassTransit.Extensions;
+using BuildingBlocks.Integration.Wolverine.Extensions;
 using BuildingBlocks.Messaging.Persistence.Postgres;
 using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
 using BuildingBlocks.SerilogLogging;
@@ -50,16 +50,15 @@ public static partial class HostApplicationBuilderExtensions
         builder.AddCustomAuthentication();
         builder.AddCustomAuthorization();
 
-        builder.AddMasstransitEventBus(
-            configureMessagesTopologies: (context, cfg) =>
+        builder.AddWolverineEventBus(
+            configureMessagesTopologies: options =>
             {
-                cfg.ConfigureUsersConsumeMessagesTopology(context);
-                cfg.ConfigureProductsConsumeMessagesTopology(context);
-
-                cfg.ConfigureCustomerPublishMessagesTopology();
-                cfg.ConfigureRestockSubscriptionPublishMessagesTopology();
+                options.ConfigureUsersConsumeMessagesTopology();
+                options.ConfigureProductsConsumeMessagesTopology();
+                options.ConfigureCustomerPublishMessagesTopology();
+                options.ConfigureRestockSubscriptionPublishMessagesTopology();
             },
-            configureMasstransitOptions: msgCfg =>
+            configureWolverineBusOptions: msgCfg =>
             {
                 msgCfg.AutoConfigMessagesTopology = false;
             },

@@ -52,6 +52,12 @@ public static class DependencyInjectionExtensions
 
         builder.Services.AddScoped<IConnectionFactory>(sp => new NpgsqlConnectionFactory(connectionString));
 
+        // to handle dependency injection in the interceptors, we add them to the service collection, then resolve them and add to `options.AddInterceptors`
+        builder.Services.AddSingleton<ISaveChangesInterceptor, ConcurrencyInterceptor>();
+        builder.Services.AddSingleton<ISaveChangesInterceptor, AuditInterceptor>();
+        builder.Services.AddSingleton<ISaveChangesInterceptor, SoftDeleteInterceptor>();
+        builder.Services.AddSingleton<ISaveChangesInterceptor, AggregatesDomainEventsStorageInterceptor>();
+
         builder.Services.AddDbContext<TDbContext>(
             (sp, options) =>
             {
@@ -79,14 +85,11 @@ public static class DependencyInjectionExtensions
                 // ref: https://andrewlock.net/series/using-strongly-typed-entity-ids-to-avoid-primitive-obsession/
                 options.ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector<long>>();
 
-                options.AddInterceptors(
-                    new AuditInterceptor(),
-                    new SoftDeleteInterceptor(),
-                    new ConcurrencyInterceptor(),
-                    new AggregatesDomainEventsStorageInterceptor(
-                        sp.GetRequiredService<IAggregatesDomainEventsRequestStorage>()
-                    )
-                );
+                var interceptors = sp.GetServices<IInterceptor>().ToList();
+                if (interceptors.Count != 0)
+                {
+                    options.AddInterceptors(interceptors);
+                }
 
                 dbContextBuilder?.Invoke(options);
             }

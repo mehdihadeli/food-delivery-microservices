@@ -18,7 +18,9 @@ public class ConcurrencyInterceptor : SaveChangesInterceptor
 
         foreach (var entry in eventData.Context.ChangeTracker.Entries<IAggregateBase>())
         {
-            // Ref: http://www.kamilgrzybek.com/design/handling-concurrency-aggregate-pattern-and-ef-core/
+            // https://dateo-software.de/blog/concurrency-entity-framework
+            // https://learn.microsoft.com/en-us/ef/core/saving/concurrency?tabs=data-annotations#application-managed-concurrency-tokens
+            // application managed concurrency token, and it should use with `IsConcurrencyToken = true` which use for application level concurrency token handling
             var events = entry.Entity.GetUncommittedDomainEvents();
             if (events.Any())
             {

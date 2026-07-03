@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <ApiVersioningVersion>8.1.0</ApiVersioningVersion>
+    <MicorosoftExtensionsVersion>9.7.0</MicorosoftExtensionsVersion>
+    <AspireToolKitVersion>9.7.0</AspireToolKitVersion>
+    <AspireVersion>9.4.0</AspireVersion>
+	<TickerQVersion>2.4.4</TickerQVersion>
+    <AspirePreReleaseVersion>9.4.0-preview.1.25378.8</AspirePreReleaseVersion>
+  </PropertyGroup>
+</Project>

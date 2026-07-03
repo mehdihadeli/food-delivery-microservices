@@ -1005,20 +1005,6 @@
         "reveal": "always",
         "panel": "new"
       }
-    },
-    {
-      "type": "npm",
-      "script": "prepare",
-      "problemMatcher": [],
-      "label": "npm: prepare",
-      "detail": "husky install && dotnet tool restore"
-    },
-    {
-      "type": "npm",
-      "script": "install",
-      "problemMatcher": [],
-      "label": "npm: install dependencies",
-      "detail": "install dependencies from package"
     }
   ]
 }

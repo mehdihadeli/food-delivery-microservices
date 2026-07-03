@@ -1,10 +1,9 @@
 namespace BuildingBlocks.Core.Messages;
 
 using BuildingBlocks.Abstractions.Messages;
-using MassTransit;
 
 public abstract record Message : IMessage
 {
-    public Guid MessageId => NewId.NextGuid();
+    public Guid MessageId => Guid.CreateVersion7();
     public DateTime Created { get; } = DateTime.Now;
 }

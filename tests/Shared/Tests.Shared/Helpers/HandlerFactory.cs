@@ -1,7 +1,6 @@
 using BuildingBlocks.Abstractions.Messages;
 using BuildingBlocks.Core.Types.Extensions;
 using Hypothesist;
-using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Tests.Shared.Helpers;
@@ -12,22 +11,6 @@ public static class HandlerFactory
         where T : class, IMessage
     {
         return new SimpleMessageConsumer<T>(hypothesis);
-    }
-
-    public static IConsumer<T> AsConsumer<T>(this Observer<T> hypothesis)
-        where T : class, IMessage
-    {
-        return new MassTransitSimpleMessageConsumer<T>(hypothesis);
-    }
-
-    public static IConsumer<TMessage> AsConsumer<TMessage, TConsumer>(
-        this Observer<TMessage> hypothesis,
-        IServiceProvider serviceProvider
-    )
-        where TMessage : class, IMessage
-        where TConsumer : IConsumer<TMessage>
-    {
-        return new MassTransitConsumer<TMessage>(hypothesis, serviceProvider, typeof(TConsumer));
     }
 
     public static IMessageHandler<TMessage> AsMessageHandler<TMessage, TMessageHandler>(
@@ -104,33 +87,5 @@ internal class SimpleMessageEnvelopeConsumer<T>(Observer<T> observer) : IMessage
     public async Task Handle(IMessageEnvelope<T> messageEnvelope, CancellationToken cancellationToken = default)
     {
         await observer.Add(messageEnvelope.Message, cancellationToken);
-    }
-}
-
-internal class MassTransitConsumer<T>(Observer<T> observer, IServiceProvider serviceProvider, Type internalHandler)
-    : IConsumer<T>
-    where T : class, IMessage
-{
-    public async Task Consume(ConsumeContext<T> context)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var handler = scope.ServiceProvider.GetService(internalHandler);
-        if (handler is null)
-        {
-            await observer.Add(null!);
-            return;
-        }
-
-        await handler.InvokeMethodWithoutResultAsync("Consume", context);
-        await observer.Add(context.Message);
-    }
-}
-
-internal class MassTransitSimpleMessageConsumer<TMessage>(Observer<TMessage> observer) : IConsumer<TMessage>
-    where TMessage : class, IMessage
-{
-    public Task Consume(ConsumeContext<TMessage> context)
-    {
-        return observer.Add(context.Message);
     }
 }

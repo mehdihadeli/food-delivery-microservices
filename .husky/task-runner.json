@@ -1,0 +1,83 @@
+{
+	"$schema": "https://alirezanet.github.io/Husky.Net/schema.json",
+	"tasks": [
+		{
+			"name": "format",
+			"group": "pre-commit",
+			"command": "dotnet",
+			"args": ["tool", "run", "dotnet-csharpier", "--", "."],
+			"include": [
+				"**/*.cs",
+				"**/*.csproj",
+				"**/*.props",
+				"**/*.targets",
+				"**/*.editorconfig",
+				"**/*.sln",
+				"**/*.slnx",
+				"mise.toml"
+			]
+		},
+		{
+			"name": "style",
+			"group": "pre-commit",
+			"command": "dotnet",
+			"args": [
+				"format",
+				"style",
+				"food-delivery-microservices.slnx",
+				"--verify-no-changes",
+				"--severity",
+				"error",
+				"--verbosity",
+				"diagnostic"
+			],
+			"include": ["**/*.cs", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.editorconfig", "**/*.sln", "**/*.slnx"]
+		},
+		{
+			"name": "analyzers",
+			"group": "pre-commit",
+			"command": "dotnet",
+			"args": [
+				"format",
+				"analyzers",
+				"food-delivery-microservices.slnx",
+				"--verify-no-changes",
+				"--severity",
+				"error",
+				"--verbosity",
+				"diagnostic"
+			],
+			"include": ["**/*.cs", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.editorconfig", "**/*.sln", "**/*.slnx"]
+		},
+		{
+			"name": "build",
+			"group": "pre-push",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"food-delivery-microservices.slnx",
+				"--no-restore",
+				"--configuration",
+				"Release",
+				"/warnaserror"
+			],
+			"include": ["**/*.cs", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.editorconfig", "**/*.sln", "**/*.slnx"]
+		},
+		{
+			"name": "gitleaks",
+			"group": "pre-push",
+			"command": "sh",
+			"args": [
+				"-c",
+				"if ! command -v docker >/dev/null 2>&1; then echo \"Docker is required for the local Gitleaks pre-push scan. Install Docker Desktop or bypass the hook intentionally with git push --no-verify.\"; exit 1; fi; docker info >/dev/null 2>&1 || { echo \"Docker is installed but the daemon is not running. Start Docker Desktop, then push again.\"; exit 1; }; repo_root=\"$(git rev-parse --show-toplevel)\" && MSYS_NO_PATHCONV=1 docker run --rm -v \"$repo_root:/repo\" -w /repo zricethezav/gitleaks:latest dir --config .gitleaks.toml --no-banner --redact --verbose ."
+			]
+		},
+		{
+			"name": "test",
+			"group": "pre-push",
+			"command": "sh",
+			"args": ["scripts/run-tests.sh"],
+			"include": ["src/**/*", "tests/**/*", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.sln", "**/*.slnx"]
+		}
+	]
+}

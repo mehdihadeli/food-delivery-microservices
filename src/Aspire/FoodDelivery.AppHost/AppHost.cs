@@ -116,13 +116,10 @@ var rabbitmq = builder.AddAspireRabbitmq(
 
 var eventstore = builder.AddAspireEventStore(AspireResources.EventStore, logPath: "eventstore_logs");
 
+// https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/networking-overview#launch-profiles
+// https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/launch-profiles#control-launch-profile-selection
 var catalogsApi = builder
-    .AddProject<Projects.FoodDelivery_Services_Catalogs_Api>(
-        AspireApplicationResources.Api.Catalogs,
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/networking-overview#launch-profiles
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/launch-profiles#control-launch-profile-selection
-        ProfileConstants.HttpsProfile
-    )
+    .AddProject<Projects.FoodDelivery_Services_Catalogs_Api>(AspireApplicationResources.Api.Catalogs)
     .WithReplicas(builder.ExecutionContext.IsRunMode ? 1 : 2)
     .WithReference(catalogsPostgres)
     .WaitFor(catalogsPostgres)
@@ -161,12 +158,7 @@ var catalogsApi = builder
     );
 
 var customerApi = builder
-    .AddProject<Projects.FoodDelivery_Services_Customers_Api>(
-        AspireApplicationResources.Api.Customers,
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/networking-overview#launch-profiles
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/launch-profiles#control-launch-profile-selection
-        ProfileConstants.HttpsProfile
-    )
+    .AddProject<Projects.FoodDelivery_Services_Customers_Api>(AspireApplicationResources.Api.Customers)
     .WithReplicas(builder.ExecutionContext.IsRunMode ? 1 : 2)
     .WithReference(customersPostgres)
     .WaitFor(customersPostgres)
@@ -238,12 +230,7 @@ var identityApi = builder
     );
 
 var ordersApi = builder
-    .AddProject<Projects.FoodDelivery_Services_Orders_Api>(
-        AspireApplicationResources.Api.Orders,
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/networking-overview#launch-profiles
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/launch-profiles#control-launch-profile-selection
-        ProfileConstants.HttpsProfile
-    )
+    .AddProject<Projects.FoodDelivery_Services_Orders_Api>(AspireApplicationResources.Api.Orders)
     .WithReplicas(builder.ExecutionContext.IsRunMode ? 1 : 2)
     .WithReference(ordersPostgres)
     .WaitFor(ordersPostgres)
@@ -280,12 +267,7 @@ var ordersApi = builder
     );
 
 var apiBff = builder
-    .AddProject<Projects.FoodDelivery_Api_Bff>(
-        AspireApplicationResources.Api.ApiBff,
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/networking-overview#launch-profiles
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/launch-profiles#control-launch-profile-selection
-        ProfileConstants.HttpsProfile
-    )
+    .AddProject<Projects.FoodDelivery_Api_Bff>(AspireApplicationResources.Api.ApiBff)
     .WaitFor(catalogsApi)
     .WaitFor(customerApi)
     .WaitFor(identityApi)
@@ -304,12 +286,7 @@ var spaBff = builder
     .WaitFor(ordersApi);
 
 var gateway = builder
-    .AddProject<Projects.FoodDelivery_ApiGateway>(
-        AspireApplicationResources.Api.Gateway,
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/networking-overview#launch-profiles
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/launch-profiles#control-launch-profile-selection
-        ProfileConstants.HttpsProfile
-    )
+    .AddProject<Projects.FoodDelivery_ApiGateway>(AspireApplicationResources.Api.Gateway)
     .WithExternalHttpEndpoints()
     .WaitFor(apiBff)
     .WaitFor(spaBff)
@@ -328,12 +305,7 @@ var gateway = builder
     );
 
 var blazorUI = builder
-    .AddProject<Projects.FoodDelivery_BlazorWebApp>(
-        AspireApplicationResources.Ui.Blazor,
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/networking-overview#launch-profiles
-        // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/launch-profiles#control-launch-profile-selection
-        ProfileConstants.HttpsProfile
-    )
+    .AddProject<Projects.FoodDelivery_BlazorWebApp>(AspireApplicationResources.Ui.Blazor)
     .WithExternalHttpEndpoints()
     .WithReference(gateway)
     .WaitFor(gateway);
@@ -341,7 +313,11 @@ var blazorUI = builder
 // https://learn.microsoft.com/en-us/dotnet/aspire/get-started/build-aspire-apps-with-nodejs
 // https://github.com/dotnet/aspire-samples/tree/main/samples/AspireWithJavaScript
 var readctUI = builder
-    .AddNpmApp(AspireApplicationResources.Ui.React, "../../UIs/Spa/react-food-delivery")
+    .AddNpmApp(
+        name: AspireApplicationResources.Ui.React,
+        workingDirectory: "../../UIs/Spa/react-food-delivery",
+        scriptName: "start"
+    )
     .WithReference(gateway)
     .WaitFor(gateway)
     .WithEnvironment("BROWSER", "none")
@@ -397,7 +373,7 @@ if (builder.ExecutionContext.IsRunMode)
         .AddScalarApiReference(options =>
         {
             options
-                .WithTheme(ScalarTheme.Default)
+                .WithTheme(ScalarTheme.BluePlanet)
                 .WithTestRequestButton()
                 .WithSidebar()
                 .WithDefaultFonts(false)

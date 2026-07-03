@@ -1,3 +1,4 @@
+using BuildingBlocks.Core.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 
@@ -7,6 +8,11 @@ public static class WebApplicationExtensions
 {
     public static WebApplication MapDefaultOpenTelemetry(this WebApplication app)
     {
+        if (app.Environment.IsTest())
+        {
+            return app;
+        }
+
         var options = app.Services.GetRequiredService<IOptions<OpenTelemetryOptions>>().Value;
 
         if (options.UsePrometheusExporter)

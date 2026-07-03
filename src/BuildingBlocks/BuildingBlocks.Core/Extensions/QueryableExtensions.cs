@@ -48,7 +48,7 @@ public static class QueryableExtensions
 
         var projectedQuery = projectionFunc(result);
 
-        var items = await projectedQuery.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
+        var items = projectedQuery.ToList();
 
         return PageList<TResult>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
     }
@@ -82,7 +82,7 @@ public static class QueryableExtensions
         var total = result.Count();
         result = sieveProcessor.Apply(sieveModel, queryable, applyFiltering: false, applySorting: false);
 
-        var items = await result.ToAsyncEnumerable().ToListAsync(cancellationToken: cancellationToken);
+        var items = result.ToList();
 
         return PageList<TEntity>.Create(items.AsReadOnly(), pageRequest.PageNumber, pageRequest.PageSize, total);
     }

@@ -249,7 +249,7 @@ public class MessagePersistenceService(
             return;
         }
 
-        // we should pass an object type message or explicit our message type, not cast to IMessage (data is IMessage integrationEvent) because masstransit doesn't work with IMessage cast.
+        // We pass the concrete message type instead of casting to IMessage so transport-specific metadata is preserved.
         await busDirectPublisher.PublishAsync(eventEnvelope, cancellationToken).ConfigureAwait(false);
 
         await MarkAsDeliveredAsync(persistMessage.MessageId, cancellationToken).ConfigureAwait(false);

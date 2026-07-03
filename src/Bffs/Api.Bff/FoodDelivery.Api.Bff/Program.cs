@@ -95,7 +95,7 @@ var app = builder.Build();
 // Ensures the application sees the original client IP, protocol (HTTP/HTTPS), and host rather than the proxy's information and set them on Context.Request, but we can access to original values through Request.Headers and `X-Original-Host`, `X-Original-For`
 app.UseForwardedHeaders();
 
-app.MapDefaultEndpoints();
+app.UseDefaultServices();
 
 app.UseHttpsRedirection();
 

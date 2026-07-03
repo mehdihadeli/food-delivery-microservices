@@ -39,7 +39,12 @@ public class EventStoreDbEventStore(EventStoreClient grpcClient) : IEventStore
             cancellationToken: cancellationToken
         );
 
-        var resolvedEvents = await readResult.ToListAsync(cancellationToken);
+        var resolvedEvents = new List<ResolvedEvent>();
+
+        await foreach (var resolvedEvent in readResult.WithCancellation(cancellationToken))
+        {
+            resolvedEvents.Add(resolvedEvent);
+        }
 
         return resolvedEvents.ToStreamEvents();
     }
@@ -156,17 +161,13 @@ public class EventStoreDbEventStore(EventStoreClient grpcClient) : IEventStore
             return null;
 
         // var streamEvents = (await GetStreamEventsAsync(streamId, fromVersion, int.MaxValue, cancellationToken)).Select(x => x.Data);
-        return await readResult
-            .Select(@event => @event.DeserializeData()!)
-            .AggregateAsync(
-                defaultAggregateState,
-                (agg, @event) =>
-                {
-                    fold(@event);
-                    return agg;
-                },
-                cancellationToken
-            );
+        await foreach (var @event in readResult.WithCancellation(cancellationToken))
+        {
+            var data = @event.DeserializeData()!;
+            fold(data);
+        }
+
+        return defaultAggregateState;
     }
 
     public Task<TAggregate?> AggregateStreamAsync<TAggregate, TId>(

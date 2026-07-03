@@ -38,7 +38,6 @@
     <PackageReference Include="Riok.Mapperly" />
     <PackageReference Include="FluentValidation.AspNetCore" />
     <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" />
-    <PackageReference Include="MassTransit.Abstractions" />
     <PackageReference Include="Open.ChannelExtensions" />
     <PackageReference Include="EFCore.NamingConventions" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />

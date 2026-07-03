@@ -31,7 +31,7 @@ upgrade-packages:
 
 # Check C# formatting
 check-format:
-	dotnet csharpier $(PROJECT_PATH) --check
+	dotnet csharpier check $(PROJECT_PATH)
 
 # Check C# style rules
 check-style:
@@ -43,7 +43,7 @@ check-analyzers:
 
 # Fix formatting and stage changes
 fix-format:
-	dotnet csharpier $(PROJECT_PATH)
+	dotnet csharpier format $(PROJECT_PATH)
 
 # Fix style rules for all projects (error level)
 fix-style:

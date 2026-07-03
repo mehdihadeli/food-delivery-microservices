@@ -70,7 +70,7 @@ class WebApplicationFactoryWithHost<TEntryPoint>(
         //     }
         // );
 
-        // create startup with these configs
+        // create a startup with these configs
         builder.ConfigureWebHostDefaults(webBuilder =>
         {
             webBuilder.ConfigureServices(configureServices);

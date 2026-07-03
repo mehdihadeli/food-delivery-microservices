@@ -3,7 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Caching\BuildingBlocks.Caching.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Integration.MassTransit\BuildingBlocks.Integration.MassTransit.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Integration.Wolverine\BuildingBlocks.Integration.Wolverine.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.SerilogLogging\BuildingBlocks.SerilogLogging.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Messaging.Persistence.Postgres\BuildingBlocks.Messaging.Persistence.Postgres.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
@@ -14,14 +14,9 @@
 
   <!-- What xunit NuGet Packages Should I Use? - https://xunit.net/docs/nuget-packages-->
   <ItemGroup Label="XUnit">
+    <PackageReference Include="Shouldly" />
     <PackageReference Include="Testcontainers.Redis" />
-    <PackageReference Include="xunit.v3" />
-  </ItemGroup>
-  
-  <ItemGroup Label="VSTest Runner">
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <!-- https://xunit.net/docs/nuget-packages#xunit.runner.visualstudio-->
-    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="xunit.v3.extensibility.core" />
   </ItemGroup>
   
   <ItemGroup>

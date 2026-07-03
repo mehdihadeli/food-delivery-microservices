@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.HeaderPropagation;
 namespace BuildingBlocks.Core.Messages;
 
 using BuildingBlocks.Abstractions.Messages;
-using MassTransit;
 
 public class MessageMetadataAccessor(HeaderPropagationValues headerPropagationValues) : IMessageMetadataAccessor
 {
@@ -17,7 +16,7 @@ public class MessageMetadataAccessor(HeaderPropagationValues headerPropagationVa
             return (Guid)cid;
         }
 
-        var correlationId = NewId.NextGuid();
+        var correlationId = Guid.CreateVersion7();
         headerPropagationValues.AddCorrelationId(correlationId);
 
         return correlationId;

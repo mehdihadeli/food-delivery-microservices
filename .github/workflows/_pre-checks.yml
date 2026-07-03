@@ -54,7 +54,7 @@ jobs:
       - name: Validate formatting
         if: success()
         shell: bash
-        run: dotnet csharpier check .
+        run: dotnet csharpier --check .
 
       - name: Validate style
         if: success()

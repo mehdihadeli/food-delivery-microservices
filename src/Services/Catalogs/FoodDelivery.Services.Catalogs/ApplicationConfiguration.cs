@@ -25,8 +25,6 @@ public static class ApplicationConfiguration
 
     public static IEndpointRouteBuilder MapApplicationEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/", (HttpContext context) => "Catalogs Service Api.").ExcludeFromDescription();
-
         // Modules
         endpoints.MapProductsModuleEndpoints();
 

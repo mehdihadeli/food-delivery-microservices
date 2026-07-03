@@ -65,4 +65,17 @@ public class IdentityServiceWireMock(WireMockServer wireMockServer, IdentityRest
 
         return (response, endpointPath);
     }
+
+    public string SetupGetUserByEmailNotFound(string email)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(email);
+
+        var endpointPath = $"/{IdentityRestClientOptions.GetUserByEmailEndpoint}/{email}";
+
+        wireMockServer
+            .Given(Request.Create().UsingGet().WithPath(endpointPath))
+            .RespondWith(Response.Create().WithStatusCode(HttpStatusCode.NotFound));
+
+        return endpointPath;
+    }
 }

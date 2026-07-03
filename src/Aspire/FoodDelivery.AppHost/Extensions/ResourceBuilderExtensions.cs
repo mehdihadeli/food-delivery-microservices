@@ -23,12 +23,13 @@ public static class ResourceBuilderExtensions
                 .Urls.Where(url =>
                     url.Endpoint != null
                     && endpoints.Contains(url.Endpoint.EndpointName, StringComparer.OrdinalIgnoreCase)
+                    && url.Endpoint.EndpointName != "healthchecks"
                 )
+                .ToList()
                 .ForEach(url =>
                 {
                     url.DisplayText =
-                        $"{builder.Resource.Name} ({url.Endpoint?.Scheme.ToLowerInvariant() ?? "http".ToLowerInvariant()})";
-                    url.DisplayLocation = UrlDisplayLocation.SummaryAndDetails;
+                        $"{builder.Resource.Name} ({url.Endpoint?.EndpointName.ToLowerInvariant() ?? "http".ToLowerInvariant()})";
                 });
         });
     }

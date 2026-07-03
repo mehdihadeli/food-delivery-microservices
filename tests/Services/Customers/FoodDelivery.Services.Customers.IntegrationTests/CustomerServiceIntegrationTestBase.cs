@@ -1,3 +1,4 @@
+using BuildingBlocks.OpenTelemetry;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
@@ -63,5 +64,29 @@ public class CustomerServiceIntegrationTestBase(
             $"{nameof(CatalogsRestClientOptions)}:{nameof(IdentityRestClientOptions.BaseAddress)}",
             SharedFixture.WireMockServerUrl
         );
+        keyValues.Add(
+            $"{nameof(OpenTelemetryOptions)}:{nameof(OpenTelemetryOptions.OpenTelemetryCollectorOptions)}:{nameof(OpenTelemetryCollectorOptions.Enabled)}",
+            bool.FalseString
+        );
+        keyValues.Add(
+            $"{nameof(OpenTelemetryOptions)}:{nameof(OpenTelemetryOptions.AspireDashboardOTLPOptions)}:{nameof(AspireDashboardOTLPOptions.Enabled)}",
+            bool.FalseString
+        );
+        keyValues.Add(
+            $"{nameof(OpenTelemetryOptions)}:{nameof(OpenTelemetryOptions.UseGrafanaExporter)}",
+            bool.FalseString
+        );
+        keyValues.Add(
+            $"{nameof(OpenTelemetryOptions)}:{nameof(OpenTelemetryOptions.UsePrometheusExporter)}",
+            bool.FalseString
+        );
+    }
+
+    protected override void OverrideEnvKeyValues(IDictionary<string, string> keyValues)
+    {
+        keyValues.Add("OTEL_EXPORTER_OTLP_ENDPOINT", string.Empty);
+        keyValues.Add("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT", string.Empty);
+        keyValues.Add("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT", string.Empty);
+        keyValues.Add("OTEL_EXPORTER_OTLP_LOGS_ENDPOINT", string.Empty);
     }
 }

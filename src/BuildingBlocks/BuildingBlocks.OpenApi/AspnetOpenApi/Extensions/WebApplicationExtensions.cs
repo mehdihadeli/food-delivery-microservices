@@ -1,5 +1,6 @@
 using BuildingBlocks.Core.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Scalar.AspNetCore;
 
@@ -9,13 +10,14 @@ public static class WebApplicationExtensions
 {
     public static WebApplication UseAspnetOpenApi(this WebApplication app)
     {
-        app.MapOpenApi();
-
-        if (OpenApiOptions.IsOpenApiBuild || app.Environment.IsBuild())
-            Environment.Exit(0);
+        // show in both production and development
+        app.MapGet("/", () => $"{app.Environment.ApplicationName} is started.").ExcludeFromDescription();
 
         if (!app.Environment.IsDevelopment())
             return app;
+
+        // we should not see openapi docs in none development mode
+        app.MapOpenApi();
 
         var descriptions = app.DescribeApiVersions();
 

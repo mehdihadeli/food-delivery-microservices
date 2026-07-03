@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using BuildingBlocks.Abstractions.Domain;
 using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Core.Domain.Exceptions;
 using BuildingBlocks.Core.Exception;
 
 namespace BuildingBlocks.Core.Domain;
@@ -13,7 +12,7 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
     private readonly ConcurrentQueue<IDomainEvent> _uncommittedDomainEvents = new();
 
     /// <summary>
-    /// Add the <paramref name="domainEvent"/> to the aggregate pending changes event.
+    /// Add the <paramref name="domainEvent"/> to the aggregate pending changes' event.
     /// </summary>
     /// <param name="domainEvent">The domain event.</param>
     public void AddDomainEvents(IDomainEvent domainEvent)

@@ -1,7 +1,6 @@
 using BuildingBlocks.Email.Options;
 using MailKit.Net.Smtp;
 using MailKit.Security;
-using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;

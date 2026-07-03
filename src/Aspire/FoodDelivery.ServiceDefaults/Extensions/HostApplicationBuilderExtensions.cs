@@ -21,7 +21,11 @@ public static class HostApplicationBuilderExtensions
     // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/service-defaults
     public static IHostApplicationBuilder AddServiceDefaults(this IHostApplicationBuilder builder)
     {
-        builder.AddBasicServiceDefaults();
+        builder.AddDefaultHealthChecks();
+
+        builder.AddDiagnostics(builder.Configuration.GetValue<string>("InstrumentationName") ?? "food-delivery");
+
+        builder.AddDefaultOpenTelemetry();
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/
         builder.Services.AddHttpLogging(o =>
@@ -34,7 +38,7 @@ public static class HostApplicationBuilderExtensions
 
         builder.AddCustomProblemDetails(scanAssemblies: Assembly.GetCallingAssembly().GetReferencingAssemblies());
 
-        builder.AddCustomResiliency(false);
+        builder.AddCustomResiliency();
 
         // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/health-checks#non-development-environments
         builder.Services.AddRequestTimeouts();
@@ -53,17 +57,6 @@ public static class HostApplicationBuilderExtensions
             options.Headers.Add(MessageHeaders.CorrelationId);
             options.Headers.Add(MessageHeaders.CausationId);
         });
-
-        return builder;
-    }
-
-    private static IHostApplicationBuilder AddBasicServiceDefaults(this IHostApplicationBuilder builder)
-    {
-        builder.AddDefaultHealthChecks();
-
-        builder.AddDiagnostics(builder.Configuration.GetValue<string>("InstrumentationName") ?? "food-delivery");
-
-        builder.AddDefaultOpenTelemetry();
 
         return builder;
     }

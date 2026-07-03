@@ -2,7 +2,7 @@ using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
 using BuildingBlocks.Core.Messages.MessagePersistence;
 using BuildingBlocks.Core.Web;
-using BuildingBlocks.Integration.MassTransit;
+using BuildingBlocks.Integration.Wolverine;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Persistence.Mongo;
 using FoodDelivery.Services.Catalogs.Api;
@@ -38,7 +38,7 @@ public class DependencyTests
                     "mongodb://admin:admin@localhost:27017/catalogs?authSource=admin&authMechanism=SCRAM-SHA-256"
                 );
                 keyValues.Add(
-                    $"{nameof(MasstransitOptions)}__{nameof(MasstransitOptions.RabbitMQConnectionString)}",
+                    $"{nameof(WolverineBusOptions)}__{nameof(WolverineBusOptions.RabbitMQConnectionString)}",
                     "amqp://guest:guest@localhost:5672"
                 );
                 keyValues.Add(

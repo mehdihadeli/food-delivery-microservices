@@ -1,1 +1,21 @@
-# npx --no -- commitlint --edit ${1}
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+commit_file="$1"
+header="$(sed -n '1p' "$commit_file" | tr -d '\r')"
+
+if [ -z "$header" ]; then
+	echo "Commit message is empty."
+	exit 1
+fi
+
+pattern='^(feat|fix|refactor|perf|style|test|docs|build|ops|chore)(\([[:alnum:]./ -]+\))?(!)?: [^[:space:]].*[^.]$'
+
+if printf '%s\n' "$header" | grep -Eq "$pattern"; then
+	exit 0
+fi
+
+echo "Invalid commit message header: $header"
+echo "Expected: <type>(<optional scope>)!: <description>"
+echo "Example: feat(catalogs): add inventory filter"
+exit 1

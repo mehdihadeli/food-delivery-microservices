@@ -40,6 +40,10 @@ public abstract class IntegrationTest<TEntryPoint> : IAsyncLifetime
             }
         );
         SharedFixture.WithTestConfiguration(SetupTestConfiguration);
+
+        // - Envs to override should add before Configuration provider built and collect configurations to override
+        // app configurations. After build configuration is completed, configuration elements don't update further via
+        // environment or appsettings.json because configuration providers setup is completed
         SharedFixture.AddOverrideEnvKeyValues(OverrideEnvKeyValues);
         SharedFixture.AddOverrideInMemoryConfig(OverrideInMemoryConfig);
 
@@ -87,6 +91,19 @@ public abstract class IntegrationTestBase<TEntryPoint, TContext>(
     where TContext : DbContext
 {
     public new SharedFixtureWithEfCore<TEntryPoint, TContext> SharedFixture { get; } = sharedFixture;
+
+    public override async ValueTask InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        await SharedFixture.ExecuteEfDbContextAsync(
+            async (sp, dbContext) =>
+            {
+                var seeder = sp.GetRequiredService<IDataSeeder<TContext>>();
+                await seeder.SeedAsync(dbContext);
+            }
+        );
+    }
 }
 
 public abstract class IntegrationTestBase<TEntryPoint, TWContext, TRContext>(

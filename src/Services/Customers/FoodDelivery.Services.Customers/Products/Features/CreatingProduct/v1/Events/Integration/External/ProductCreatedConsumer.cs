@@ -1,14 +1,26 @@
+using BuildingBlocks.Abstractions.Messages.MessagePersistence;
+using BuildingBlocks.Integration.Wolverine;
 using FoodDelivery.Services.Shared.Catalogs.Products.Events.Integration.v1;
-using MassTransit;
+using Microsoft.AspNetCore.HeaderPropagation;
 using Saunter.Attributes;
+using Wolverine;
 
 namespace FoodDelivery.Services.Customers.Products.Features.CreatingProduct.v1.Events.Integration.External;
 
 [AsyncApi]
-public class ProductCreatedConsumer : IConsumer<ProductCreatedV1>
+public class ProductCreatedConsumer(
+    HeaderPropagationValues headerPropagationValues,
+    IMessagePersistenceService messagePersistenceService
+)
 {
-    public Task Consume(ConsumeContext<ProductCreatedV1> context)
+    public Task Handle(ProductCreatedV1 message, Envelope envelope)
     {
-        return Task.CompletedTask;
+        return WolverineConsumerExecutor.ExecuteAsync(
+            message,
+            envelope,
+            headerPropagationValues,
+            messagePersistenceService,
+            _ => Task.CompletedTask
+        );
     }
 }

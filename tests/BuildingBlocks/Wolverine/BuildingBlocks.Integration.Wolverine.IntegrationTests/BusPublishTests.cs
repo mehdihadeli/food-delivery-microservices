@@ -1,0 +1,1 @@
+namespace BuildingBlocks.Integration.Wolverine.IntegrationTests;

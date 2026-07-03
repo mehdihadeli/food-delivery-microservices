@@ -131,6 +131,7 @@ public class CustomWebApplicationFactory<TEntryPoint>(Action<IWebHostBuilder>? w
 
             // TODO: Web could use this in E2E test for running another service during our test
             // https://milestone.topics.it/2021/11/10/http-client-factory-in-integration-testing.html
+            // https://pcholko.com/posts/2021-04-05/wiremock-integration-test/
 
             // add authentication using a fake jwt bearer - we can use SetAdminUser method to set authenticate user to existing HttContextAccessor
             // https://blog.joaograssi.com/posts/2021/asp-net-core-testing-permission-protected-api-endpoints/

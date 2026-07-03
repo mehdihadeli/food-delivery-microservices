@@ -73,7 +73,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
+app.UseDefaultServices();
 
 // CORS must come before YARP
 app.UseCors("ReactApp");

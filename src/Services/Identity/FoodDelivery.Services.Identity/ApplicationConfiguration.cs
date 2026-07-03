@@ -22,8 +22,6 @@ public static class ApplicationConfiguration
 
     public static IEndpointRouteBuilder MapApplicationEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/", (HttpContext context) => "Identity Service Apis.").ExcludeFromDescription();
-
         endpoints.MapIdentityModuleEndpoints();
         endpoints.MapUsersModuleEndpoints();
 

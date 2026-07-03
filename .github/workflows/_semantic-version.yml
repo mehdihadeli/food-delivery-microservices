@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: "Deployment environment (development/staging/production)"
+        description: 'Deployment environment (development/staging/production)'
         required: true
         type: string
       dotnet-version:
@@ -13,25 +13,25 @@ on:
         type: string
     outputs:
       sem-ver:
-        description: "Full semantic version"
+        description: 'Full semantic version'
         value: ${{ jobs.version.outputs.sem-ver }}
       major-minor-patch:
-        description: "Major.Minor.Patch version"
+        description: 'Major.Minor.Patch version'
         value: ${{ jobs.version.outputs.major-minor-patch }}
       assembly-sem-ver:
-        description: "Assembly semantic version"
+        description: 'Assembly semantic version'
         value: ${{ jobs.version.outputs.assembly-sem-ver }}
       informational-version:
-        description: "Informational version"
+        description: 'Informational version'
         value: ${{ jobs.version.outputs.informational-version }}
       short-sha:
-        description: "Short Git SHA"
+        description: 'Short Git SHA'
         value: ${{ jobs.version.outputs.short-sha }}
       branch-name:
-        description: "Git branch name"
+        description: 'Git branch name'
         value: ${{ jobs.version.outputs.branch-name }}
       image-version:
-        description: "Docker image version with suffix"
+        description: 'Docker image version with suffix'
         value: ${{ jobs.version.outputs.image-version }}
 
 jobs:
@@ -60,7 +60,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ inputs.dotnet-version }}
+          global-json-file: global.json
 
       - name: Install GitVersion
         shell: bash

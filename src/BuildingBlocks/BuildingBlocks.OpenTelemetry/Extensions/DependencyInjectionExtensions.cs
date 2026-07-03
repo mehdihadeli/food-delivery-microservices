@@ -4,10 +4,12 @@ using Azure.Monitor.OpenTelemetry.AspNetCore;
 using BuildingBlocks.Core.Diagnostics;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Persistence;
+using BuildingBlocks.Core.Web.Extensions;
 using Grafana.OpenTelemetry;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
@@ -39,6 +41,8 @@ public static class DependencyInjectionExtensions
             ?? "default-instrumentation";
 
         var openTelemetryOptions = builder.Configuration.BindOptions<OpenTelemetryOptions>();
+        builder.Services.AddSingleton(openTelemetryOptions);
+        builder.Services.AddSingleton<IOptions<OpenTelemetryOptions>>(_ => Options.Create(openTelemetryOptions));
 
         var optionsConfigurations = new OpenTelemetryOptionsConfigurator();
         configureOptions?.Invoke(optionsConfigurations);
@@ -190,6 +194,24 @@ public static class DependencyInjectionExtensions
         OpenTelemetryOptions openTelemetryOptions
     )
     {
+        if (builder.Environment.IsTest())
+        {
+            return;
+        }
+
+        // AddProject --> WithProjectDefaults--> WithOtlpExporter: Injects the appropriate environment variables to allow sending telemetry to the dashboard.
+        // It sets the OTLP endpoint (OTEL_EXPORTER_OTLP_ENDPOINT) to the value of the `ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL`
+        // environment variable with a default value of `http://localhost:18889`.
+        // https://github.com/dotnet/aspire/blob/5be4f73b7dfb0d1665d73bd96434295e268a0453/src/Aspire.Hosting/OtlpConfigurationExtensions.cs#L187
+        // https://github.com/dotnet/aspire/blob/5be4f73b7dfb0d1665d73bd96434295e268a0453/src/Aspire.Hosting/ProjectResourceBuilderExtensions.cs#L308
+        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+        if (useOtlpExporter)
+        {
+            // - `OTEL_EXPORTER_OTLP_ENDPOINT` will set by aspire AddProject in AppHost from `ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL` with default value `http://localhost:18889` and
+            // `OTEL_EXPORTER_OTLP_ENDPOINT` is used by OpenTelemtryOptions as default value.
+            meterProviderBuilder.AddOtlpExporter();
+        }
+
         // We don't use `UseOtlpExporter` because we can't define multiple `UseOtlpExporter` and get run time exception `Multiple calls to UseOtlpExporter on the same IServiceCollection are not supported.`
         if (
             openTelemetryOptions.OpenTelemetryCollectorOptions is not null
@@ -217,6 +239,7 @@ public static class DependencyInjectionExtensions
             });
         }
 
+        // uses when we don't have aspire host for setting `OTEL_EXPORTER_OTLP_ENDPOINT` by `AddProject` from `ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL` with default value `http://localhost:18889`
         if (
             openTelemetryOptions.AspireDashboardOTLPOptions is not null
             && !string.IsNullOrWhiteSpace(openTelemetryOptions.AspireDashboardOTLPOptions.OTLPGrpcExporterEndpoint)
@@ -266,6 +289,24 @@ public static class DependencyInjectionExtensions
         OpenTelemetryOptions openTelemetryOptions
     )
     {
+        if (builder.Environment.IsTest())
+        {
+            return;
+        }
+
+        // AddProject --> WithProjectDefaults--> WithOtlpExporter: Injects the appropriate environment variables to allow sending telemetry to the dashboard.
+        // It sets the OTLP endpoint (OTEL_EXPORTER_OTLP_ENDPOINT) to the value of the `ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL`
+        // environment variable with a default value of `http://localhost:18889`.
+        // https://github.com/dotnet/aspire/blob/5be4f73b7dfb0d1665d73bd96434295e268a0453/src/Aspire.Hosting/OtlpConfigurationExtensions.cs#L187
+        // https://github.com/dotnet/aspire/blob/5be4f73b7dfb0d1665d73bd96434295e268a0453/src/Aspire.Hosting/ProjectResourceBuilderExtensions.cs#L308
+        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+        if (useOtlpExporter)
+        {
+            // - `OTEL_EXPORTER_OTLP_ENDPOINT` will set by aspire AddProject in AppHost from `ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL` with default value `http://localhost:18889` and
+            // `OTEL_EXPORTER_OTLP_ENDPOINT` is used by OpenTelemtryOptions as default value.
+            tracerProviderBuilder.AddOtlpExporter();
+        }
+
         // We don't use `UseOtlpExporter` because we can't define multiple `UseOtlpExporter` and get run time exception `Multiple calls to UseOtlpExporter on the same IServiceCollection are not supported.`
         if (
             openTelemetryOptions.OpenTelemetryCollectorOptions is not null
@@ -293,6 +334,7 @@ public static class DependencyInjectionExtensions
             });
         }
 
+        // uses when we don't have aspire host for setting `OTEL_EXPORTER_OTLP_ENDPOINT` by `AddProject` from `ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL` with default value `http://localhost:18889`
         if (
             openTelemetryOptions.AspireDashboardOTLPOptions is not null
             && !string.IsNullOrWhiteSpace(openTelemetryOptions.AspireDashboardOTLPOptions.OTLPGrpcExporterEndpoint)
@@ -363,6 +405,24 @@ public static class DependencyInjectionExtensions
         OpenTelemetryOptions openTelemetryOptions
     )
     {
+        if (builder.Environment.IsTest())
+        {
+            return;
+        }
+
+        // AddProject --> WithProjectDefaults--> WithOtlpExporter: Injects the appropriate environment variables to allow sending telemetry to the dashboard.
+        // It sets the OTLP endpoint (OTEL_EXPORTER_OTLP_ENDPOINT) to the value of the `ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL`
+        // environment variable with a default value of `http://localhost:18889`.
+        // https://github.com/dotnet/aspire/blob/5be4f73b7dfb0d1665d73bd96434295e268a0453/src/Aspire.Hosting/OtlpConfigurationExtensions.cs#L187
+        // https://github.com/dotnet/aspire/blob/5be4f73b7dfb0d1665d73bd96434295e268a0453/src/Aspire.Hosting/ProjectResourceBuilderExtensions.cs#L308
+        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+        if (useOtlpExporter)
+        {
+            // - `OTEL_EXPORTER_OTLP_ENDPOINT` will set by aspire AddProject in AppHost from `ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL` with default value `http://localhost:18889` and
+            // `OTEL_EXPORTER_OTLP_ENDPOINT` is used by OpenTelemtryOptions as default value.
+            openTelemetryLoggerOptions.AddOtlpExporter();
+        }
+
         // We don't use `UseOtlpExporter` because we can't define multiple `UseOtlpExporter` and get run time exception `Multiple calls to UseOtlpExporter on the same IServiceCollection are not supported.`
         if (
             openTelemetryOptions.OpenTelemetryCollectorOptions is not null
@@ -390,6 +450,7 @@ public static class DependencyInjectionExtensions
             });
         }
 
+        // uses when we don't have aspire host for setting `OTEL_EXPORTER_OTLP_ENDPOINT` by `AddProject` from `ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL` with default value `http://localhost:18889`
         if (
             openTelemetryOptions.AspireDashboardOTLPOptions is not null
             && !string.IsNullOrWhiteSpace(openTelemetryOptions.AspireDashboardOTLPOptions.OTLPGrpcExporterEndpoint)
@@ -430,6 +491,11 @@ public static class DependencyInjectionExtensions
     )
         where TBuilder : IHostApplicationBuilder
     {
+        if (builder.Environment.IsTest())
+        {
+            return builder;
+        }
+
         if (
             openTelemetryOptions.OpenTelemetryCollectorOptions is not null
             && !string.IsNullOrWhiteSpace(openTelemetryOptions.OpenTelemetryCollectorOptions.OTLPGrpcExporterEndpoint)

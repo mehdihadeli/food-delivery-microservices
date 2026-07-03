@@ -1,32 +1,57 @@
 {
-  "git.autofetch": true,
-  "files.autoSave": "onFocusChange",
-  "editor.formatOnSave": true,
-  "editor.suggest.snippetsPreventQuickSuggestions": false,
-  "explorer.autoReveal": true,
-  "resmon.show.cpufreq": false,
-  "dotnet.defaultSolution": "food-delivery.sln",
-  "dotnet.server.startTimeout": 60000,
-  "omnisharp.projectLoadTimeout": 60,
-  "workbench.colorTheme": "Visual Studio Light",
-  "workbench.iconTheme": "material-icon-theme",
-  "editor.minimap.enabled": false,
-  "editor.fontFamily": "'MesloLGM Nerd Font', 'Droid Sans Mono', 'monospace', 'Droid Sans Fallback', 'Consolas'",
-  "editor.fontSize": 14,
-  "explorer.confirmDelete": false,
-  "terminal.integrated.defaultProfile.windows": "PowerShell",
-  "terminal.integrated.defaultProfile.linux": "zsh",
-  "powershell.cwd": "~",
-  "terminal.external.windowsExec": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "editor.smoothScrolling": true,
-  "editor.wordWrap": "on",
-  "editor.guides.bracketPairs": true,
-  "explorer.experimental.fileNesting.enabled": true,
-  "[csharp]": {
-    "editor.defaultFormatter": "csharpier.csharpier-vscode",
-    "editor.formatOnSave": true
-  }
+    "git.autofetch": true,
+    "files.autoSave": "onFocusChange",
+    "editor.formatOnSave": true,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "explorer.autoReveal": true,
+    "resmon.show.cpufreq": false,
+    "dotnet.defaultSolution": "food-delivery.sln",
+    "dotnet.server.startTimeout": 60000,
+    "omnisharp.projectLoadTimeout": 60,
+    "workbench.colorTheme": "Visual Studio Light",
+    "workbench.iconTheme": "material-icon-theme",
+    "editor.minimap.enabled": false,
+    "editor.fontFamily": "'MesloLGM Nerd Font', 'Droid Sans Mono', 'monospace', 'Droid Sans Fallback', 'Consolas'",
+    "editor.fontSize": 14,
+    "explorer.confirmDelete": false,
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "powershell.cwd": "~",
+    "terminal.external.windowsExec": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "editor.smoothScrolling": true,
+    "editor.wordWrap": "on",
+    "editor.guides.bracketPairs": true,
+    "explorer.experimental.fileNesting.enabled": true,
+    "[csharp]": {
+        "editor.defaultFormatter": "csharpier.csharpier-vscode",
+        "editor.formatOnSave": true
+    },
+    "github.copilot.chat.commitMessageGeneration.instructions": [
+        {
+            "file": ".github/instructions/commit.instructions.md"
+        }
+    ],
+    "github.copilot.chat.codeGeneration.instructions": [],
+    "github.copilot.chat.reviewSelection.enabled": true,
+    "chat.promptFiles": true,
+    "chat.promptFilesLocations": {
+        ".github/prompts": true,
+        ".vscode/prompts": true
+    },
+    "chat.instructionsFilesLocations": {
+        ".github/instructions": true,
+        ".vscode/instructions": true
+    },
+    "chat.modeFilesLocations": {
+        "chatmodes": true
+    },
+    "github.copilot.chat.testGeneration.instructions": [
+        {
+            "file": ".github/instructions/tests-instructions.md"
+        }
+    ],
+	  "github.copilot.chat.reviewSelection.instructions": []
 }

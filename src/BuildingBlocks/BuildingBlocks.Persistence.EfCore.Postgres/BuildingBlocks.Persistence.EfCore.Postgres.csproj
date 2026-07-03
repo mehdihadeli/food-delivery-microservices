@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-
     <PackageReference Include="Dapper" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="SqlKata" />

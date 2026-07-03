@@ -1,0 +1,99 @@
+{
+	"$schema": "https://alirezanet.github.io/Husky.Net/schema.json",
+	"tasks": [
+		{
+			"name": "format",
+			"group": "pre-commit",
+			"command": "dotnet",
+			"args": ["tool", "run", "dotnet-csharpier", "--", "."],
+			"include": [
+				"**/*.cs",
+				"**/*.csproj",
+				"**/*.props",
+				"**/*.targets",
+				"**/*.editorconfig",
+				"**/*.sln",
+				"**/*.slnx",
+				"mise.toml"
+			]
+		},
+		{
+			"name": "style",
+			"group": "pre-commit",
+			"command": "dotnet",
+			"args": [
+				"format",
+				"style",
+				"food-delivery-microservices.slnx",
+				"--verify-no-changes",
+				"--severity",
+				"error",
+				"--verbosity",
+				"diagnostic"
+			],
+			"include": ["**/*.cs", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.editorconfig", "**/*.sln", "**/*.slnx"]
+		},
+		{
+			"name": "analyzers",
+			"group": "pre-commit",
+			"command": "dotnet",
+			"args": [
+				"format",
+				"analyzers",
+				"food-delivery-microservices.slnx",
+				"--verify-no-changes",
+				"--severity",
+				"error",
+				"--verbosity",
+				"diagnostic"
+			],
+			"include": ["**/*.cs", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.editorconfig", "**/*.sln", "**/*.slnx"]
+		},
+		{
+			"name": "setup-tools-restore",
+			"command": "dotnet",
+			"args": ["tool", "restore"]
+		},
+		{
+			"name": "setup-husky-install",
+			"command": "dotnet",
+			"args": ["tool", "run", "husky", "--", "install"]
+		},
+		{
+			"name": "setup-solution-restore",
+			"command": "dotnet",
+			"args": ["restore", "food-delivery-microservices.slnx"]
+		},
+		{
+			"name": "build",
+			"group": "pre-push",
+			"command": "dotnet",
+			"args": ["build", "food-delivery-microservices.slnx", "--configuration", "Release"],
+			"include": ["**/*.cs", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.editorconfig", "**/*.sln", "**/*.slnx"]
+		},
+		{
+			"name": "build-ci",
+			"group": "ci",
+			"command": "dotnet",
+			"args": ["build", "food-delivery-microservices.slnx", "--no-restore", "--configuration", "Release"],
+			"include": ["**/*.cs", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.editorconfig", "**/*.sln", "**/*.slnx"]
+		},
+		{
+			"name": "gitleaks",
+			"group": "pre-push",
+			"command": "pwsh",
+			"args": [
+				"-NoLogo",
+				"-NoProfile",
+				"-Command",
+				"if (-not (Get-Command docker -ErrorAction SilentlyContinue)) { Write-Host 'Docker is required for the local Gitleaks pre-push scan. Install Docker Desktop or bypass the hook intentionally with git push --no-verify.'; exit 1 }; docker info *> $null; if ($LASTEXITCODE -ne 0) { Write-Host 'Docker is installed but the daemon is not running. Start Docker Desktop, then push again.'; exit 1 }; $repoRoot = (Get-Location).Path; docker run --rm -v \"${repoRoot}:/repo\" -w /repo zricethezav/gitleaks:latest dir --no-banner --redact --verbose ."
+			]
+		},
+		{
+			"name": "test",
+			"command": "bash",
+			"args": ["scripts/run-tests.sh"],
+			"include": ["src/**/*", "tests/**/*", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.sln", "**/*.slnx"]
+		}
+	]
+}

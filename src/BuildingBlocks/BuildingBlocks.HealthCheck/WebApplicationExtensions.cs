@@ -36,7 +36,6 @@ public static class WebApplicationExtensions
             {
                 // Ensure that the HealthChecksUI endpoint is only accessible from configured hosts, e.g. localhost:12345, hub.docker.internal, etc.
                 // as it contains more detailed information about the health of the app including the types of dependencies it has.
-
                 healthChecks
                     .MapHealthChecks(path, new() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse })
                     // This ensures that the HealthChecksUI endpoint is only accessible from the configured health checks URLs.

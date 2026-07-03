@@ -105,9 +105,9 @@ public static class DependencyInjectionExtensions
         // add redis distributed lock
         builder.Services.AddSingleton<IDistributedLockProvider>(sp =>
         {
-            var redisConnection = CreateConnection(sp, redisConnectionString);
+            var multiplexer = sp.GetRequiredService<IConnectionMultiplexer>();
 
-            return new RedisDistributedSynchronizationProvider(redisConnection.GetDatabase());
+            return new RedisDistributedSynchronizationProvider(multiplexer.GetDatabase());
         });
     }
 

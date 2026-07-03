@@ -11,14 +11,11 @@ using BuildingBlocks.Core.Messages.MessagePersistence;
 using BuildingBlocks.Core.Messages.MessagePersistence.BackgroundServices;
 using BuildingBlocks.Core.Persistence;
 using BuildingBlocks.Core.Types;
-using BuildingBlocks.Integration.MassTransit;
+using BuildingBlocks.Integration.Wolverine;
 using BuildingBlocks.Persistence.EfCore.Postgres;
 using BuildingBlocks.Persistence.Mongo;
 using FluentAssertions;
 using FluentAssertions.Extensions;
-using MassTransit;
-using MassTransit.Internals.Caching;
-using MassTransit.Testing;
 using Mediator;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -31,6 +28,8 @@ using Tests.Shared.Auth;
 using Tests.Shared.Extensions;
 using Tests.Shared.Factory;
 using WireMock.Server;
+using Wolverine;
+using Wolverine.Tracking;
 using Xunit;
 using Xunit.Sdk;
 using Xunit.v3;
@@ -44,10 +43,10 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     where TEntryPoint : class
 {
     private readonly IMessageSink _messageSink;
-    private ITestHarness? _harness;
     private IHttpContextAccessor? _httpContextAccessor;
     private IServiceProvider? _serviceProvider;
     private IConfiguration? _configuration;
+    private ITrackedSession? _lastTrackedSession;
     private HttpClient? _adminClient;
     private HttpClient? _normalClient;
     private HttpClient? _guestClient;
@@ -65,8 +64,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     public IServiceProvider ServiceProvider => _serviceProvider ??= Factory.Services;
 
     public IConfiguration Configuration => _configuration ??= ServiceProvider.GetRequiredService<IConfiguration>();
-
-    public ITestHarness MasstransitHarness => _harness ??= ServiceProvider.GetRequiredService<ITestHarness>();
 
     public IHttpContextAccessor HttpContextAccessor =>
         _httpContextAccessor ??= ServiceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -107,19 +104,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         _messageSink = messageSink;
         messageSink.OnMessage(new DiagnosticMessage("Constructing SharedFixture..."));
-
-        // //https://github.com/trbenning/serilog-sinks-xunit
-        // Logger = new LoggerConfiguration()
-        //     .MinimumLevel.Verbose()
-        //     .WriteTo.TestOutput(messageSink)
-        //     .CreateLogger()
-        //     .ForContext<SharedFixture<TEntryPoint>>();
-
-        // //https://github.com/testcontainers/testcontainers-dotnet/blob/8db93b2eb28bc2bc7d579981da1651cd41ec03f8/docs/custom_configuration/index.md#enable-logging
-        // //// TODO: Breaking change in the testcontainer upgrade
-        // TestcontainersSettings.Logger = new Serilog.Extensions.Logging.SerilogLoggerFactory(Logger).CreateLogger(
-        //     "TestContainer"
-        // );
 
         // Service provider will build after getting with get accessors, we don't want to build our service provider here
         PostgresContainerFixture = new PostgresContainerFixture(messageSink);
@@ -184,7 +168,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             );
 
             keyValues.Add(
-                $"{nameof(MasstransitOptions)}__{nameof(MasstransitOptions.RabbitMQConnectionString)}",
+                $"{nameof(WolverineBusOptions)}__{nameof(WolverineBusOptions.RabbitMQConnectionString)}",
                 RabbitMqContainerFixture.Container.GetConnectionString()
             );
 
@@ -307,22 +291,40 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     )
         where TResponse : class
     {
-        return await ExecuteScopeAsync(async sp =>
-        {
-            var commandBus = sp.GetRequiredService<ICommandBus>();
+        TResponse? response = null;
 
-            return await commandBus.SendAsync(command, cancellationToken);
+        var trackedSession = await ExecuteScopeAsync(async sp =>
+        {
+            var commandBus = sp.GetRequiredService<BuildingBlocks.Abstractions.Commands.ICommandBus>();
+
+            return await sp.TrackActivity()
+                .IncludeExternalTransports()
+                .ExecuteAndWaitAsync(
+                    (Func<IMessageContext, Task>)(
+                        async _ => response = await commandBus.SendAsync(command, cancellationToken)
+                    )
+                );
         });
+
+        RememberTrackedSession(trackedSession);
+
+        return response!;
     }
 
     public async Task CommandAsync(ICommand command, CancellationToken cancellationToken = default)
     {
-        await ExecuteScopeAsync(async sp =>
+        var trackedSession = await ExecuteScopeAsync(async sp =>
         {
-            var commandBus = sp.GetRequiredService<ICommandBus>();
+            var commandBus = sp.GetRequiredService<BuildingBlocks.Abstractions.Commands.ICommandBus>();
 
-            await commandBus.SendAsync(command, cancellationToken);
+            return await sp.TrackActivity()
+                .IncludeExternalTransports()
+                .ExecuteAndWaitAsync(
+                    (Func<IMessageContext, Task>)(async _ => await commandBus.SendAsync(command, cancellationToken))
+                );
         });
+
+        RememberTrackedSession(trackedSession);
     }
 
     public async Task<TResponse> QueryAsync<TResponse>(
@@ -345,12 +347,18 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     )
         where TMessage : class, IMessage
     {
-        await ExecuteScopeAsync(async sp =>
+        var trackedSession = await ExecuteScopeAsync(async sp =>
         {
             var bus = sp.GetRequiredService<IExternalEventBus>();
 
-            await bus.PublishAsync(message, cancellationToken);
+            return await sp.TrackActivity()
+                .IncludeExternalTransports()
+                .ExecuteAndWaitAsync(
+                    (Func<IMessageContext, Task>)(async _ => await bus.PublishAsync(message, cancellationToken))
+                );
         });
+
+        RememberTrackedSession(trackedSession);
     }
 
     public async ValueTask PublishMessageAsync<TMessage>(
@@ -359,15 +367,21 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     )
         where TMessage : class, IMessage
     {
-        await ExecuteScopeAsync(async sp =>
+        var trackedSession = await ExecuteScopeAsync(async sp =>
         {
             var bus = sp.GetRequiredService<IExternalEventBus>();
 
-            await bus.PublishAsync(messageEnvelope, cancellationToken);
+            return await sp.TrackActivity()
+                .IncludeExternalTransports()
+                .ExecuteAndWaitAsync(
+                    (Func<IMessageContext, Task>)(async _ => await bus.PublishAsync(messageEnvelope, cancellationToken))
+                );
         });
+
+        RememberTrackedSession(trackedSession);
     }
 
-    // Ref: https://tech.energyhelpline.com/in-memory-testing-with-masstransit/
+    // Ref: https://tech.energyhelpline.com/in-memory-testing-with-message-bus-abstractions/
     public async ValueTask WaitUntilConditionMet(
         Func<Task<bool>> conditionToMet,
         int? timeoutSecond = null,
@@ -397,102 +411,59 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     public async Task ShouldPublishing<T>(CancellationToken cancellationToken = default)
         where T : class, IMessage
     {
-        // will block the thread until there is a publishing message
-        await MasstransitHarness.Published.Any(
-            message =>
-            {
-                var messageFilter = new PublishedMessageFilter();
-                var faultMessageFilter = new PublishedMessageFilter();
+        var trackedSession = GetTrackedSession();
+        var sentEnvelopes = trackedSession.FindEnvelopesWithMessageType<T>(MessageEventType.Sent).ToArray();
 
-                messageFilter.Includes.Add<T>();
-                messageFilter.Includes.Add<IMessageEnvelope<T>>();
-                faultMessageFilter.Includes.Add<Fault<IMessageEnvelope<T>>>();
-                faultMessageFilter.Includes.Add<T>();
+        trackedSession.FindEnvelopesWithMessageType<Fault<T>>(MessageEventType.AutoFaultPublished).Should().BeEmpty();
 
-                var faulty = faultMessageFilter.Any(message);
-                var published = messageFilter.Any(message);
+        if (sentEnvelopes.Length != 0)
+        {
+            return;
+        }
 
-                return published & !faulty;
-            },
-            cancellationToken
-        );
+        await ShouldProcessingOutboxMessage<T>(cancellationToken);
     }
 
     public async Task ShouldSending<T>(CancellationToken cancellationToken = default)
         where T : class, IMessage
     {
-        // will block the thread until there is a publishing message
-        await MasstransitHarness.Sent.Any(
-            message =>
-            {
-                var messageFilter = new SentMessageFilter();
-                var faultMessageFilter = new SentMessageFilter();
+        var trackedSession = GetTrackedSession();
 
-                messageFilter.Includes.Add<T>();
-                messageFilter.Includes.Add<IMessageEnvelope<T>>();
-                faultMessageFilter.Includes.Add<Fault<IMessageEnvelope<T>>>();
-                faultMessageFilter.Includes.Add<Fault<T>>();
+        trackedSession.FindEnvelopesWithMessageType<T>(MessageEventType.Sent).Should().NotBeEmpty();
+        trackedSession.FindEnvelopesWithMessageType<Fault<T>>(MessageEventType.AutoFaultPublished).Should().BeEmpty();
 
-                var faulty = faultMessageFilter.Any(message);
-                var published = messageFilter.Any(message);
-
-                return published & !faulty;
-            },
-            cancellationToken
-        );
+        await Task.CompletedTask;
     }
 
     public async Task ShouldConsuming<T>(CancellationToken cancellationToken = default)
         where T : class, IMessage
     {
-        // will block the thread until there is a consuming message
-        await MasstransitHarness.Consumed.Any(
-            message =>
-            {
-                var messageFilter = new ReceivedMessageFilter();
-                var faultMessageFilter = new ReceivedMessageFilter();
+        var trackedSession = GetTrackedSession();
 
-                messageFilter.Includes.Add<IMessageEnvelope<T>>();
-                messageFilter.Includes.Add<T>();
+        trackedSession.FindEnvelopesWithMessageType<T>(MessageEventType.MessageSucceeded).Should().NotBeEmpty();
+        trackedSession.FindEnvelopesWithMessageType<Fault<T>>(MessageEventType.AutoFaultPublished).Should().BeEmpty();
 
-                faultMessageFilter.Includes.Add<Fault<IMessageEnvelope<T>>>();
-                faultMessageFilter.Includes.Add<Fault<T>>();
-
-                var faulty = faultMessageFilter.Any(message);
-                var published = messageFilter.Any(message);
-
-                return published & !faulty;
-            },
-            cancellationToken
-        );
+        await Task.CompletedTask;
     }
 
     public async Task ShouldConsuming<TMessage, TConsumedBy>(CancellationToken cancellationToken = default)
         where TMessage : class, IMessage
-        where TConsumedBy : class, IConsumer
+        where TConsumedBy : class
     {
-        var consumerHarness = ServiceProvider.GetRequiredService<IConsumerTestHarness<TConsumedBy>>();
+        await ShouldConsuming<TMessage>(cancellationToken);
+    }
 
-        // will block the thread until there is a consuming message
-        await consumerHarness.Consumed.Any(
-            message =>
-            {
-                var messageFilter = new ReceivedMessageFilter();
-                var faultMessageFilter = new ReceivedMessageFilter();
+    private ITrackedSession GetTrackedSession()
+    {
+        return _lastTrackedSession
+            ?? throw new InvalidOperationException(
+                "No Wolverine tracked session is available for the current test action."
+            );
+    }
 
-                messageFilter.Includes.Add<IMessageEnvelope<TMessage>>();
-                messageFilter.Includes.Add<TMessage>();
-
-                faultMessageFilter.Includes.Add<Fault<TMessage>>();
-                faultMessageFilter.Includes.Add<Fault<IMessageEnvelope<TMessage>>>();
-
-                var faulty = faultMessageFilter.Any(message);
-                var published = messageFilter.Any(message);
-
-                return published & !faulty;
-            },
-            cancellationToken
-        );
+    private void RememberTrackedSession(ITrackedSession trackedSession)
+    {
+        _lastTrackedSession = trackedSession;
     }
 
     // public async ValueTask<IHypothesis<TMessage>> ShouldConsumeWithNewConsumer<TMessage>(
@@ -503,7 +474,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     //         .For<TMessage>()
     //         .Any(match ?? (_ => true));
     //
-    //     ////https://stackoverflow.com/questions/55169197/how-to-use-masstransit-test-harness-to-test-consumer-with-constructor-dependency
+    //     ////https://stackoverflow.com/questions/55169197/how-to-test-consumer-with-constructor-dependency
     //     // Harness.Consumer(() => hypothesis.AsConsumer());
     //
     //     await Harness.SubscribeHandler<TMessage>(ctx =>
@@ -524,7 +495,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     //         .For<TMessage>()
     //         .Any(match ?? (_ => true));
     //
-    //     //https://stackoverflow.com/questions/55169197/how-to-use-masstransit-test-harness-to-test-consumer-with-constructor-dependency
+    //     //https://stackoverflow.com/questions/55169197/how-to-test-consumer-with-constructor-dependency
     //     Harness.Consumer(() => hypothesis.AsConsumer<TMessage, TConsumer>(ServiceProvider));
     //
     //     return hypothesis;

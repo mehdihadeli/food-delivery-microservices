@@ -27,8 +27,8 @@
     // https://github.com/devcontainers/features/tree/main/src/dotnet#dotnet-cli-dotnet
     "ghcr.io/devcontainers/features/dotnet:2": {
       // this version should be matched with global.json .net version for working vscode IntelliSense correctly
-      "version": "9.0.201",
-      "additionalVersions": "latest, 9.0.201",
+      "version": "9.0.303",
+      "additionalVersions": "latest, 9.0.303",
       "aspNetCoreRuntimeVersions": "latest, 9.0.3"
     },
     // https://github.com/Azure-Samples/aks-store-demo/blob/main/.devcontainer/devcontainer.json
@@ -107,33 +107,37 @@
         }
       },
       "extensions": [
-        "streetsidesoftware.code-spell-checker",
+        // Angular development
+        "angular.ng-template",
+        // .NET development
         "ms-dotnettools.csdevkit",
-        "mutantdino.resourcemonitor",
-        "humao.rest-client",
-        "dzhavat.bracket-pair-toggler",
-        "ms-azuretools.vscode-docker",
-        "vivaxy.vscode-conventional-commits",
-        "emmanuelbeziat.vscode-great-icons",
-        "ms-vscode.vs-keybindings",
-        "GitHub.vscode-github-actions",
-        "PKief.material-icon-theme",
-        "EditorConfig.EditorConfig",
-        "DavidAnson.vscode-markdownlint",
-        "IBM.output-colorizer", // Colorize your output/test logs
-        "emmanuelbeziat.vscode-great-icons",
+        // Testing frameworks
+        "vitest.explorer",
+        "ms-playwright.playwright",
+        // Formatting and linting
         "esbenp.prettier-vscode",
-        "vscode-icons-team.vscode-icons",
+        "dbaeumer.vscode-eslint",
         "csharpier.csharpier-vscode",
+        "EditorConfig.EditorConfig",
+        // Additional  extensions
+        "ms-azuretools.vscode-containers",
+        "github.vscode-github-actions",
+        "GitHub.vscode-pull-request-github",
+        "dzhavat.bracket-pair-toggler",
+        "streetsidesoftware.code-spell-checker",
+        "emmanuelbeziat.vscode-great-icons",
+        "PKief.material-icon-theme",
         "DavidAnson.vscode-markdownlint",
+        "IBM.output-colorizer",
+        "humao.rest-client",
+        "mads-hartmann.bash-ide-vscode",
         "redhat.vscode-yaml",
         "kennylong.kubernetes-yaml-formatter",
-        "sonarsource.sonarlint-vscode",
-        "ms-vscode.makefile-tools"
+        "ms-vscode.makefile-tools",
+        "jetbrains.resharper-code"
       ]
     }
   },
-
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [5000, 5001],
   // "portsAttributes": {

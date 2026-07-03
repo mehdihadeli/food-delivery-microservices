@@ -1,0 +1,36 @@
+title = "Food Delivery Microservices Gitleaks Config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "custom-dotnet-hardcoded-secret"
+description = "Detect simple hardcoded secret assignments in .NET-style config or code"
+regex = '''(?i)(password|pwd|token|secret|api[_-]?key)\s*[:=]\s*['"][A-Za-z0-9@#$%^&+=._-]{6,}['"]'''
+keywords = [
+  "password",
+  "pwd",
+  "token",
+  "secret",
+  "apiKey",
+  "api-key"
+]
+
+[[allowlists]]
+description = "Ignore generated build, test, and scan outputs"
+paths = [
+  '''(^|/)(artifacts|TestResults)(/|$)''',
+  '''(^|/)(bin|obj)(/|$)''',
+  '''(^|/)coverage[^/]*\.(xml|json|info)$'''
+]
+
+[[allowlists]]
+description = "Ignore local IDE request history and known false-positive source paths"
+paths = [
+  '''(^|/)\.idea(/|$)''',
+  '''^src/Aspire/FoodDelivery\.ServiceDefaults/Clients/DevToolBackendClient\.cs$''',
+  '''^src/BuildingBlocks/BuildingBlocks\.Core/Security/ClaimsType\.cs$''',
+  '''^src/Services/Identity/FoodDelivery\.Services\.Identity\.Api/Pages/ServerSideSessions/Index\.cshtml$''',
+  '''^tests/Shared/Tests\.Shared/Auth/LoginRequestBuilder\.cs$''',
+  '''^tests/Shared/Tests\.Shared/Constants\.cs$'''
+]

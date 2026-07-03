@@ -1,3 +1,4 @@
+using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
 using BuildingBlocks.Web.Cors;
 using BuildingBlocks.Web.Minimal.Extensions;
 
@@ -7,6 +8,8 @@ public static class WebApplicationExtensions
 {
     public static void UseInfrastructure(this WebApplication app)
     {
+        app.UseAspnetOpenApi();
+
         app.UseStaticFiles();
 
         app.UseDefaultCors();

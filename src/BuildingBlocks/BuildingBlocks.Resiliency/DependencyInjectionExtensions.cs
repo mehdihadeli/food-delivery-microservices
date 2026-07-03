@@ -5,6 +5,7 @@ using BuildingBlocks.Resiliency.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.ServiceDiscovery;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Retry;
@@ -22,6 +23,9 @@ public static class DependencyInjectionExtensions
     {
         builder.Services.AddServiceDiscovery();
 
+        // https://learn.microsoft.com/en-us/dotnet/core/extensions/service-discovery?tabs=dotnet-cli#scheme-selection-when-resolving-https-endpoints
+        builder.Services.Configure<ServiceDiscoveryOptions>(options => options.AllowAllSchemes = true);
+
         AddResiliencyCore(builder);
 
         if (globalHttpClientResiliency)
@@ -30,6 +34,10 @@ public static class DependencyInjectionExtensions
             // set resiliency globally on clients
             builder.Services.ConfigureHttpClientDefaults(httpClientBuilder =>
             {
+                // https://learn.microsoft.com/en-us/dotnet/core/extensions/service-discovery?tabs=dotnet-cli#example-usage
+                // Turn on service discovery by default on all http clients
+                httpClientBuilder.AddServiceDiscovery();
+
                 // Turn on resilience by default
                 httpClientBuilder
                     .AddStandardResilienceHandler()

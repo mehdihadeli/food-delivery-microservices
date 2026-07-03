@@ -29,15 +29,19 @@ on:
         type: string
       coverage-exclude:
         description: Coverage exclude filter
-        default: "[BuildingBlocks.*]*%2c[FoodDelivery.Services.Shared]*"
+        default: '[BuildingBlocks.*]*%2c[FoodDelivery.Services.Shared]*'
         type: string
       unit-test-filter:
         description: Unit tests filter
-        default: "(Category=Unit)"
+        default: '/[Category=Unit]'
         type: string
       integration-test-filter:
         description: Integration tests filter
-        default: "(Category=Integration)|(Category=EndToEnd)"
+        default: '/[Category=Integration]'
+        type: string
+      end-to-end-test-filter:
+        description: End-to-end tests filter
+        default: '/[Category=EndToEnd]'
         type: string
       project-path:
         description: Project path
@@ -85,7 +89,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ inputs.dotnet-version }}
+          global-json-file: global.json
 
       # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
       # https://devblogs.microsoft.com/dotnet/dotnet-loves-github-actions/
@@ -157,34 +161,133 @@ jobs:
         # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
         # https://octopus.com/blog/githubactions-running-unit-tests
         run: |
-          for file in $(find . -name "*.csproj" -type f); do
+          find . -name "*UnitTests.csproj" -type f -print0 | while IFS= read -r -d '' file; do
             echo "🧪 Running Unit Test project $file, in folder: ${{ inputs.tests-path }}"
+            project_dir="$(dirname "$file")"
+            has_test_source='false'
+            while IFS= read -r -d '' source_file; do
+              if grep -Eq '\[(Fact|Theory)(\(|])' "$source_file"; then
+                has_test_source='true'
+                break
+              fi
+            done < <(find "$project_dir" -name "*.cs" -type f -print0)
+
+            if [ "$has_test_source" != 'true' ]; then
+              echo "  ⏭️ Skipping $file because no test methods were found in $project_dir"
+              continue
+            fi
+
+            results_dir="$(dirname "$file")/TestResults"
+            trx_name="$(basename "$file" .csproj)-unit.trx"
             if [ ${{ inputs.no-restore }} == 'true' ]; then
               echo "  🟡 Mode: no-restore"
-              dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+              dotnet test "$file" -c Release --no-restore --no-build --results-directory "$results_dir" -- --coverage --coverage-output-format cobertura --report-trx --report-trx-filename "$trx_name" --filter-query "${{ inputs.unit-test-filter }}" || true
             else
               echo "  🟢 Mode: with restore"
-              dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.unit-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+              dotnet test "$file" -c Release --no-build --results-directory "$results_dir" -- --coverage --coverage-output-format cobertura --report-trx --report-trx-filename "$trx_name" --filter-query "${{ inputs.unit-test-filter }}" || true
             fi
           done
 
-      - name: Run Integration And EndToEnd Tests
+      - name: Run Dependency Tests
+        shell: bash
+        id: dependency-test-step
+        working-directory: ${{ inputs.tests-path }}
+        run: |
+          find . -name "*DependencyTests.csproj" -type f -print0 | while IFS= read -r -d '' file; do
+            echo "🧪 Running Dependency Test project $file, in folder: ${{ inputs.tests-path }}"
+            results_dir="$(dirname "$file")/TestResults"
+            trx_name="$(basename "$file" .csproj)-dependency.trx"
+            if [ ${{ inputs.no-restore }} == 'true' ]; then
+              echo "  🟡 Mode: no-restore"
+              dotnet test "$file" -c Release --no-restore --no-build --results-directory "$results_dir" -- --coverage --coverage-output-format cobertura --report-trx --report-trx-filename "$trx_name" || true
+            else
+              echo "  🟢 Mode: with restore"
+              dotnet test "$file" -c Release --no-build --results-directory "$results_dir" -- --coverage --coverage-output-format cobertura --report-trx --report-trx-filename "$trx_name" || true
+            fi
+          done
+
+      - name: Run Integration Tests
         shell: bash
         id: integration-test-step
         working-directory: ${{ inputs.tests-path }}
         # https://stackoverflow.com/questions/3779701/msbuild-error-msb1008-only-one-project-can-be-specified
         # https://octopus.com/blog/githubactions-running-unit-tests
         run: |
-          for file in $(find . -name "*.csproj" -type f); do
-            echo "🧪 Running Integration Or End-To-End Test project $file, in folder: ${{ inputs.tests-path }}"
+          find . -name "*IntegrationTests.csproj" -type f -print0 | while IFS= read -r -d '' file; do
+            echo "🧪 Running Integration Test project $file, in folder: ${{ inputs.tests-path }}"
+            project_dir="$(dirname "$file")"
+            has_test_source='false'
+            while IFS= read -r -d '' source_file; do
+              if grep -Eq '\[(Fact|Theory)(\(|])' "$source_file"; then
+                has_test_source='true'
+                break
+              fi
+            done < <(find "$project_dir" -name "*.cs" -type f -print0)
+
+            if [ "$has_test_source" != 'true' ]; then
+              echo "  ⏭️ Skipping $file because no test methods were found in $project_dir"
+              continue
+            fi
+
+            results_dir="$(dirname "$file")/TestResults"
+            trx_name="$(basename "$file" .csproj)-integration.trx"
             if [ ${{ inputs.no-restore }} == 'true' ]; then
-                echo "  🟡 Mode: no-restore"
-                dotnet test "$file" -c Release --no-restore --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+              echo "  🟡 Mode: no-restore"
+              dotnet test "$file" -c Release --no-restore --no-build --results-directory "$results_dir" -- --coverage --coverage-output-format cobertura --report-trx --report-trx-filename "$trx_name" --filter-query "${{ inputs.integration-test-filter }}" || true
             else
-                echo "  🟢 Mode: with restore"
-                dotnet test "$file" -c Release --no-build -p:Exclude="${{ inputs.coverage-exclude }}" -p:CollectCoverage=true -p:CoverletOutputFormat="cobertura%2clcov" -p:SkipAutoProps=true --filter "${{ inputs.integration-test-filter }}" --logger "trx;LogFileName=test-results.trx" || true
+              echo "  🟢 Mode: with restore"
+              dotnet test "$file" -c Release --no-build --results-directory "$results_dir" -- --coverage --coverage-output-format cobertura --report-trx --report-trx-filename "$trx_name" --filter-query "${{ inputs.integration-test-filter }}" || true
             fi
           done
+
+      - name: Run EndToEnd Tests
+        shell: bash
+        id: end-to-end-test-step
+        working-directory: ${{ inputs.tests-path }}
+        run: |
+          find . -name "*EndToEndTests.csproj" -type f -print0 | while IFS= read -r -d '' file; do
+            echo "🧪 Running End-To-End Test project $file, in folder: ${{ inputs.tests-path }}"
+            project_dir="$(dirname "$file")"
+            has_test_source='false'
+            while IFS= read -r -d '' source_file; do
+              if grep -Eq '\[(Fact|Theory)(\(|])' "$source_file"; then
+                has_test_source='true'
+                break
+              fi
+            done < <(find "$project_dir" -name "*.cs" -type f -print0)
+
+            if [ "$has_test_source" != 'true' ]; then
+              echo "  ⏭️ Skipping $file because no test methods were found in $project_dir"
+              continue
+            fi
+
+            results_dir="$(dirname "$file")/TestResults"
+            trx_name="$(basename "$file" .csproj)-e2e.trx"
+            if [ ${{ inputs.no-restore }} == 'true' ]; then
+              echo "  🟡 Mode: no-restore"
+              dotnet test "$file" -c Release --no-restore --no-build --results-directory "$results_dir" -- --coverage --coverage-output-format cobertura --report-trx --report-trx-filename "$trx_name" --filter-query "${{ inputs.end-to-end-test-filter }}" || true
+            else
+              echo "  🟢 Mode: with restore"
+              dotnet test "$file" -c Release --no-build --results-directory "$results_dir" -- --coverage --coverage-output-format cobertura --report-trx --report-trx-filename "$trx_name" --filter-query "${{ inputs.end-to-end-test-filter }}" || true
+            fi
+          done
+
+      - name: Detect Reportable Test Results
+        id: detect-reportable-test-results
+        if: always()
+        shell: bash
+        working-directory: ${{ inputs.tests-path }}
+        run: |
+          reportable_trx_count="$(find . -type f \( -name '*-unit.trx' -o -name '*-integration.trx' -o -name '*-e2e.trx' \) | wc -l | xargs)"
+          echo "reportable_trx_count=$reportable_trx_count" >> "$GITHUB_OUTPUT"
+
+          if [ "$reportable_trx_count" -gt 0 ]; then
+            echo "has_reportable_trx=true" >> "$GITHUB_OUTPUT"
+            echo "✅ Found $reportable_trx_count reportable TRX file(s)."
+          else
+            echo "has_reportable_trx=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️ No unit, integration, or end-to-end TRX files were produced."
+          fi
 
       # GitHub Api call permissions problem here
       # https://github.com/dorny/test-reporter/issues/168
@@ -194,14 +297,19 @@ jobs:
       - name: Test Results
         uses: phoenix-actions/test-reporting@v15
         id: test-report
-        if: always()
+        if: always() && steps.detect-reportable-test-results.outputs.has_reportable_trx == 'true'
         with:
           name: ${{ inputs.service-name }} Test Reports
           reporter: dotnet-trx
           token: ${{ secrets.ci-github-token }}
           # only-summary: 'true'
-          output-to: "step-summary"
-          path: "**/test-results.trx"
+          output-to: 'step-summary'
+          # Dependency test TRX files are still published below, but phoenix-actions/test-reporting
+          # currently fails to parse their single-test xUnit v3 output in this workflow.
+          path: |
+            **/*-unit.trx
+            **/*-integration.trx
+            **/*-e2e.trx
           # Set action as failed if test report contains any failed test
           fail-on-error: true
           ## https://github.com/dorny/test-reporter#recommended-setup-for-public-repositories
@@ -214,13 +322,13 @@ jobs:
         if: always()
         with:
           files: |
-            **/test-results.trx
+            **/*.trx
           comment_mode: off
           ignore_runs: true
           github_token: ${{ secrets.ci-github-token }}
           # https://github.com/EnricoMi/publish-unit-test-result-action#configuration
           # Configures the state of the created test result check run. With "test failures" it fails if any test fails or test errors occur
-          fail_on: "test failures"
+          fail_on: 'test failures'
           action_fail: true
 
       # https://github.com/danielpalme/ReportGenerator
@@ -236,7 +344,7 @@ jobs:
         with:
           reports: ${{ github.workspace }}/**/*.cobertura.xml
           targetdir: ${{ github.workspace }}/output/test-results
-          reporttypes: "Cobertura;lcov;MarkdownSummaryGithub;Html;"
+          reporttypes: 'Cobertura;lcov;MarkdownSummaryGithub;Html;'
 
         # https://unix.stackexchange.com/questions/57013/zip-all-files-in-directory
         # https://limeii.github.io/2022/11/deploy-to-azure-appservice-with-github-actions/
@@ -280,8 +388,8 @@ jobs:
           badge: true
           hide_complexity: true
           indicators: true
-          format: "markdown"
-          output: "both"
+          format: 'markdown'
+          output: 'both'
 
       # - name: Add Coverage PR Comment
       #   uses: marocchino/sticky-pull-request-comment@v2
@@ -305,7 +413,7 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.ci-github-token }}
-          path-to-lcov: "output/test-results/lcov.info"
+          path-to-lcov: 'output/test-results/lcov.info'
 
       - name: Dotnet Publish
         shell: bash

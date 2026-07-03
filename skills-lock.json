@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "azure-diagrams": {
+      "source": "eraserlabs/eraser-io",
+      "sourceType": "github",
+      "skillPath": "skills/azure-diagrams/SKILL.md",
+      "computedHash": "be2782f621f1cee306819a8ffa331f888f32d4887440c6f8e60f097336f34b3c"
+    },
+    "bicep-diagrams": {
+      "source": "eraserlabs/eraser-io",
+      "sourceType": "github",
+      "skillPath": "skills/bicep-diagrams/SKILL.md",
+      "computedHash": "f2ce1bc30a08fa3bc16788bdfdffb122b99d69eb01cab63a4f87cad99fc29289"
+    },
+    "eraser-diagrams": {
+      "source": "eraserlabs/eraser-io",
+      "sourceType": "github",
+      "skillPath": "skills/eraser-diagrams/SKILL.md",
+      "computedHash": "91b1d3f574d293b3ebef11a7612c55e6382c264047653be35b2773245e1d234c"
+    },
+    "terraform-diagrams": {
+      "source": "eraserlabs/eraser-io",
+      "sourceType": "github",
+      "skillPath": "skills/terraform-diagrams/SKILL.md",
+      "computedHash": "a67e937dd08fa76f876b88064ea5b97de21b4f565602c33c6d9328341aae00db"
+    }
+  }
+}

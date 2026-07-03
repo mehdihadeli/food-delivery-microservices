@@ -18,8 +18,6 @@ public static class ApplicationConfigurations
 
     public static IEndpointRouteBuilder MapApplicationEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/", (HttpContext context) => "Orders Service Api.").ExcludeFromDescription();
-
         // Modules
         return endpoints;
     }

@@ -6,7 +6,7 @@ using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Pipelines;
 using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Email;
-using BuildingBlocks.Integration.MassTransit.Extensions;
+using BuildingBlocks.Integration.Wolverine.Extensions;
 using BuildingBlocks.Messaging.Persistence.Postgres;
 using BuildingBlocks.OpenApi;
 using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
@@ -49,12 +49,12 @@ public static partial class WebApplicationBuilderExtensions
         builder.AddCustomAuthentication();
         builder.AddCustomAuthorization();
 
-        builder.AddMasstransitEventBus(
-            (_, busFactoryConfigurator) =>
+        builder.AddWolverineEventBus(
+            options =>
             {
-                busFactoryConfigurator.ConfigureProductPublishMessagesTopology();
+                options.ConfigureProductPublishMessagesTopology();
             },
-            configureMasstransitOptions: msgCfg =>
+            configureWolverineBusOptions: msgCfg =>
             {
                 msgCfg.AutoConfigMessagesTopology = false;
             },

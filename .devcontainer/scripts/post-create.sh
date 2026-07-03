@@ -18,6 +18,11 @@ dotnet tool install -g aspirate --prerelease
 # https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.4#-aspire-cli-is-generally-available
 dotnet tool install -g Aspire.Cli
 
+# https://xunit.net/docs/getting-started/v3/getting-started#install-the-net-sdk-templates
+dotnet new install xunit.v3.templates
+
+npm install -g @devcontainers/cli
+
 # Update npm to latest version
 echo "📦 Updating npm to latest version..."
 if command -v npm >/dev/null 2>&1; then

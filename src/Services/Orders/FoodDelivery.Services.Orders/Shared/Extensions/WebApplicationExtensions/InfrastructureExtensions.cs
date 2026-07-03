@@ -1,3 +1,4 @@
+using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
 using BuildingBlocks.Web.Cors;
 using BuildingBlocks.Web.Minimal.Extensions;
 
@@ -7,6 +8,8 @@ public static partial class WebApplicationExtensions
 {
     public static void UseInfrastructure(this WebApplication app)
     {
+        app.UseAspnetOpenApi();
+
         app.UseDefaultCors();
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security

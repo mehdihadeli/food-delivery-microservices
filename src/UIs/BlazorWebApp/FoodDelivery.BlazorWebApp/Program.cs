@@ -38,7 +38,7 @@ builder.AddCustomAuthorization();
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
+app.UseDefaultServices();
 
 app.UseHttpsRedirection();
 app.UseAntiforgery();

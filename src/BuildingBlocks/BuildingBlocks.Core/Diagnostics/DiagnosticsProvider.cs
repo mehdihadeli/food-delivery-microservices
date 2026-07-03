@@ -3,6 +3,7 @@ using System.Diagnostics.Metrics;
 using System.Reflection;
 using BuildingBlocks.Abstractions.Core.Diagnostics;
 using BuildingBlocks.Core.Extensions;
+using OpenTelemetry.Trace;
 
 namespace BuildingBlocks.Core.Diagnostics;
 
@@ -15,6 +16,10 @@ public class DiagnosticsProvider(IMeterFactory meterFactory, string instrumentat
     private Meter? _meter;
 
     public string InstrumentationName { get; } = instrumentationName.NotBeEmptyOrNull();
+
+    // https://opentelemetry.io/docs/languages/dotnet/instrumentation/#initialize-tracing
+    // https://opentelemetry.io/docs/languages/dotnet/instrumentation/#setting-up-an-activitysource
+    // It’s generally recommended to define ActivitySource once per app/service that is been instrumented, but you can instantiate several ActivitySources if that suits your scenario.
     public ActivitySource ActivitySource => _activitySource ??= new ActivitySource(InstrumentationName, _version);
 
     public Meter Meter => _meter ??= meterFactory.Create(InstrumentationName, _version);

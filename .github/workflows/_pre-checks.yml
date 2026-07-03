@@ -1,11 +1,11 @@
-name: Pre Checks
+name: Quality Checks
 on:
   workflow_call:
     inputs:
       sln-path:
         description: Project path
         type: string
-        default: "."
+        default: '.'
       dotnet-version:
         description: .Net Version
         required: true
@@ -15,11 +15,20 @@ on:
         required: true
 
 jobs:
-  pre-checks:
+  quality-check:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+      HUSKY: 0
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Conventional Commits Check
         uses: amannn/action-semantic-pull-request@v5
         # Only run on pull request events
@@ -28,50 +37,47 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ci-github-token }}
 
-      - name: Job Info
-        if: success()
-        shell: bash
-        run: |
-          echo "pre-check is successful."
-          echo environment is: ${{ github.workspace }}
-          echo "is workflow_dispatch event? ${{ github.event_name == 'workflow_dispatch' }}"
-          echo "is push event? ${{ github.event_name == 'push' }}"
-          echo "is pull request event? ${{ github.event_name == 'pull_request' }}"
-          echo "pull_request.head.ref is: ${{ github.event.pull_request.head.ref }}"
-          echo "github.ref_name is: ${{ github.ref_name }}"
-          echo "github.ref is: ${{ github.ref }}"
-          echo "github.head_ref is: ${{ github.head_ref }}"
-          echo "should publish in dispatch mode? ${{ github.event.inputs.should-publish }}"
-
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ inputs.dotnet-version }}
+          global-json-file: global.json
+
+      - name: Cache NuGet Packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-dotnet-nuget-${{ hashFiles('**/*.csproj', '**/*.props', '**/*.targets', '.config/dotnet-tools.json', 'global.json') }}
 
       # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
       - name: Restore .NET Tools
         shell: bash
         run: dotnet tool restore
 
-      - name: Run Analyzers Task
+      - name: Validate formatting
         if: success()
         shell: bash
-        run: |
-          echo "📂 Running analyzers for solution file: ${{ inputs.sln-path }}"
-          make check-analyzers ${{ inputs.sln-path }}
+        run: dotnet csharpier --check .
 
-      - name: Run Format Task
+      - name: Validate style
         if: success()
         shell: bash
-        id: format
-        run: |
-          echo "🧹 Checking format for solution file: ${{ inputs.sln-path }}"
-          make check-format ${{ inputs.sln-path }}
+        run: dotnet format style food-delivery-microservices.slnx --verify-no-changes --severity error --verbosity diagnostic
 
-      - name: Run Style Task
-        id: style
-        shell: bash
+      - name: Run analyzers
         if: success()
-        run: |
-          echo "🎨 Checking style for solution file: ${{ inputs.sln-path }}"
-          make check-style ${{ inputs.sln-path }}
+        shell: bash
+        # `dotnet format analyzers` fails workspace loading on NuGet vulnerability audit warnings and
+        # cannot resolve the Aspire AppHost generated `Projects` types during this pre-check run.
+        run: NuGetAudit=false dotnet format analyzers food-delivery-microservices.slnx --verify-no-changes --severity error --verbosity diagnostic --exclude src/Aspire/FoodDelivery.AppHost
+
+      - name: Run Gitleaks secret scan
+        if: success()
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e
+        env:
+          GITHUB_TOKEN: ${{ secrets.ci-github-token }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+      - name: Lint Dockerfiles
+        if: success()
+        shell: bash
+        run: sh scripts/lint-dockerfiles.sh

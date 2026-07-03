@@ -1,7 +1,7 @@
 # Using the base image of the Dockerfile for debugging can be more efficient because you don't need to build the entire application from scratch. Instead, you can reuse the already-built layers and add debugging tools and configurations as needed. This can save time and resources, especially if your application is large or complex.
 # On the other hand, doing a full build for debugging can ensure that the debugging environment is identical to the production environment. This can help catch issues that may not surface in a modified version of the image, and provide a more accurate representation of the production environment. However, this approach can be slower and require more resources.
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 #https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
 #https://swimburger.net/blog/dotnet/how-to-get-aspdotnet-core-server-urls
@@ -21,7 +21,7 @@ ENV ASPNETCORE_ENVIRONMENT docker
 # RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 # USER appuser
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # path are related to build context, here for us build context is root folder
@@ -34,6 +34,7 @@ COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
+COPY ./src/Versions.props ./
 COPY ./src/Services/Orders/Directory.Build.props ./Services/Orders/
 
 # TODO: Using wildcard to copy all files in the directory.
@@ -45,13 +46,14 @@ COPY ./src/BuildingBlocks/BuildingBlocks.Resiliency/BuildingBlocks.Resiliency.cs
 COPY ./src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj ./BuildingBlocks/BuildingBlocks.Web/
 COPY ./src/BuildingBlocks/BuildingBlocks.Caching/BuildingBlocks.Caching.csproj ./BuildingBlocks/BuildingBlocks.Caching/
 COPY ./src/BuildingBlocks/BuildingBlocks.Email/BuildingBlocks.Email.csproj ./BuildingBlocks/BuildingBlocks.Email/
-COPY ./src/BuildingBlocks/BuildingBlocks.Integration.MassTransit/BuildingBlocks.Integration.MassTransit.csproj ./BuildingBlocks/BuildingBlocks.Integration.MassTransit/
+COPY ./src/BuildingBlocks/BuildingBlocks.Integration.Wolverine/BuildingBlocks.Integration.Wolverine.csproj ./BuildingBlocks/BuildingBlocks.Integration.Wolverine/
 COPY ./src/BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/BuildingBlocks.Messaging.Persistence.Postgres.csproj ./BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/
 COPY ./src/BuildingBlocks/BuildingBlocks.OpenApi/BuildingBlocks.OpenApi.csproj ./BuildingBlocks/BuildingBlocks.OpenApi/
 COPY ./src/BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/BuildingBlocks.Persistence.EfCore.Postgres.csproj ./BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/
 COPY ./src/BuildingBlocks/BuildingBlocks.Persistence.Mongo/BuildingBlocks.Persistence.Mongo.csproj ./BuildingBlocks/BuildingBlocks.Persistence.Mongo/
 COPY ./src/BuildingBlocks/BuildingBlocks.SerilogLogging/BuildingBlocks.SerilogLogging.csproj ./BuildingBlocks/BuildingBlocks.SerilogLogging/
 COPY ./src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj ./BuildingBlocks/BuildingBlocks.Validation/
+COPY ./src/Aspire/FoodDelivery.ServiceDefaults/FoodDelivery.ServiceDefaults.csproj ./Aspire/FoodDelivery.ServiceDefaults/
 
 COPY ./src/Services/Orders/FoodDelivery.Services.Orders/FoodDelivery.Services.Orders.csproj ./Services/Orders/FoodDelivery.Services.Orders/
 COPY ./src/Services/Orders/FoodDelivery.Services.Orders.Api/FoodDelivery.Services.Orders.Api.csproj ./Services/Orders/FoodDelivery.Services.Orders.Api/
@@ -73,6 +75,7 @@ RUN dotnet restore ./Services/Orders/FoodDelivery.Services.Orders.Api/FoodDelive
 
 # Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
+COPY ./src/Aspire/FoodDelivery.ServiceDefaults/ ./Aspire/FoodDelivery.ServiceDefaults/
 COPY ./src/Services/Orders/FoodDelivery.Services.Orders.Api/  ./Services/Orders/FoodDelivery.Services.Orders.Api/
 COPY ./src/Services/Orders/FoodDelivery.Services.Orders/  ./Services/Orders/FoodDelivery.Services.Orders/
 COPY ./src/Services/Shared/  ./Services/Shared/

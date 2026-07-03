@@ -4,7 +4,7 @@
 
 <!-- https://raw.githubusercontent.com/progfay/shields-with-icon/master/README.md -->
 
-> Food Delivery Microservices is a practical and cloud-native food delivery microservices built with **.NET Aspire**, **.Net Core** and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with using rabbitmq on top of [MassTransit](https://github.com/MassTransit/MassTransit) library, and sometimes we use synchronous communication for real-time communications with using REST and gRPC calls.
+> Food Delivery Microservices is a practical and cloud-native food delivery microservices built with **.NET Aspire**, **.Net Core** and different software architecture and technologies like **Microservices Architecture**, **Vertical Slice Architecture** , **CQRS Pattern**, **Domain Driven Design (DDD)**, **Event Driven Architecture**. For communication between independent services, we use asynchronous messaging with RabbitMQ and Wolverine, and sometimes we use synchronous communication for real-time communications with REST and gRPC calls.
 
 💡 This application is not business oriented and my focus is mostly on technical part, I just want to implement a sample with using different technologies, software architecture design, principles and all the thing we need for creating a microservices app.
 
@@ -58,7 +58,7 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
 ## Features
 
 - ✅ Using `Microservices` and `Vertical Slice Architecture` as a high level architecture
-- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and MassTransit library
+- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and Wolverine
 - ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
 - ✅ Using `Event Sourcing` and `EventStoreDB` in `Audit Based` services like Orders, Payment
 - ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
@@ -88,7 +88,7 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
 ## Technologies - Libraries
 
 - ✔️ **[`.NET 9`](https://dotnet.microsoft.com/download)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core
-- ✔️ **[`MassTransit`](https://github.com/MassTransit/MassTransit)** - Distributed Application Framework for .NET
+- ✔️ **[`Wolverine`](https://wolverinefx.io/)** - Message bus and transactional messaging framework for .NET
 - ✔️ **[`StackExchange.Redis`](https://github.com/StackExchange/StackExchange.Redis)** - General purpose redis client
 - ✔️ **[`Npgsql Entity Framework Core Provider`](https://www.npgsql.org/efcore/)** - Npgsql has an Entity Framework (EF) Core provider. It behaves like other EF Core providers (e.g. SQL Server), so the general EF Core docs apply here as well
 - ✔️ **[`EventStore-Client-Dotnet`](https://github.com/EventStore/EventStore-Client-Dotnet)** - Dotnet Client SDK for the Event Store gRPC Client API written in C#
@@ -145,7 +145,7 @@ For handling [Idempotency](https://www.enterpriseintegrationpatterns.com/pattern
 
 This pattern is similar to Outbox Pattern. It’s used to handle incoming messages (e.g. from a queue) for `unique processing` of `a single message` only `once` (even with executing multiple time). Accordingly, we have a table in which we’re storing incoming messages. Contrary to outbox pattern, we first save the messages in the database, then we’re returning ACK to queue. If save succeeded, but we didn’t return ACK to queue, then delivery will be retried. That’s why we have at-least-once delivery again. After that, an `inbox background process` runs and will process the inbox messages that not processed yet. also we can prevent executing a message with specific `MessgaeId`multiple times. after executing our inbox message for example with calling our subscribed event handlers we send a ACK to the queue when they succeeded. (Inbox part of the system is in progress, I will cover this part soon as possible)
 
-Also here I used `RabbitMQ` as my `Message Broker` for my async communication between the microservices with using eventually consistency mechanism, for now I used [MassTransit](https://github.com/MassTransit/MassTransit) tools for doing broker communications. beside of this eventually consistency we have a synchronous call with using `REST` (in future I will use gRpc) for our immediate consistency needs.
+Also here I used `RabbitMQ` as my `Message Broker` for my async communication between the microservices with using eventually consistency mechanism, and Wolverine for broker communications. beside of this eventually consistency we have a synchronous call with using `REST` (in future I will use gRpc) for our immediate consistency needs.
 
 We use a `Api Gateway` and here I used [YARP](https://microsoft.github.io/reverse-proxy/articles/getting-started.html) that is microsoft reverse proxy (we could use envoy, traefik, Ocelot, ...), in front of our services, we could also have multiple Api Gateway for reaching [BFF pattern](https://blog.bitsrc.io/bff-pattern-backend-for-frontend-an-introduction-e4fa965128bf). for example one Gateway for mobile apps, One Gateway for web apps and etc.
 With using api Gateway our internal microservices are transparent and user can not access them directly and all requests will serve through this Gateway.
@@ -266,10 +266,10 @@ npm pkg set scripts.install-dev-cert-bash="curl -sSL https://aka.ms/getvsdbgsh |
 
 ```json
 {
-  "scripts": {
-    "prepare": "husky && dotnet tool restore",
-    "install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
-  }
+	"scripts": {
+		"prepare": "husky && dotnet tool restore",
+		"install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
+	}
 }
 ```
 

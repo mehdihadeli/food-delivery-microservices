@@ -86,17 +86,6 @@ public static class JaegerBuilderExtensions
     /// - When proxyEnabled: Proxy port (null for auto-assigned)
     /// - When !proxyEnabled: Host port (null for auto-assigned)
     /// </param>
-    /// <param name="proxyOrContainerHostOtlpGrpcPort">
-    /// Port for OTLP gRPC receiver (4317). Behavior depends on proxyEnabled:
-    /// - When proxyEnabled: Proxy port (null for auto-assigned)
-    /// - When !proxyEnabled: Host port (null for auto-assigned)
-    /// </param>
-    /// <param name="proxyOrContainerHostOtlpHttpPort">
-    /// Port for OTLP HTTP receiver (4318). Behavior depends on proxyEnabled:
-    /// - When proxyEnabled: Proxy port (null for auto-assigned)
-    /// - When !proxyEnabled: Host port (null for auto-assigned)
-    /// </param>
-    /// <returns>An IResourceBuilder for the configured Jaeger resource</returns>
     public static IResourceBuilder<IResourceWithConnectionString> AddAspireJaeger(
         this IDistributedApplicationBuilder builder,
         [ResourceName] string nameOrConnectionStringName,
@@ -105,9 +94,7 @@ public static class JaegerBuilderExtensions
         bool persistenceEnabled = false,
         int? proxyOrContainerHostHttpPort = JaegerResource.ProxyOrContainerHostQueryHttpPort,
         int? proxyOrContainerHostAgentPort = JaegerResource.ProxyOrContainerHostAgentPort,
-        int? proxyOrContainerHostCollectorPort = JaegerResource.ProxyOrContainerHostCollectorPort,
-        int? proxyOrContainerHostOtlpGrpcPort = JaegerResource.ProxyOrContainerHostOtlpGrpcPort,
-        int? proxyOrContainerHostOtlpHttpPort = JaegerResource.ProxyOrContainerHostOtlpHttpPort
+        int? proxyOrContainerHostCollectorPort = JaegerResource.ProxyOrContainerHostCollectorPort
     )
     {
         ArgumentNullException.ThrowIfNull(builder);
@@ -178,18 +165,22 @@ public static class JaegerBuilderExtensions
             )
             // OTLP endpoints
             .WithEndpoint(
-                port: proxyOrContainerHostOtlpGrpcPort,
+                // set null for preventing conflict with otel-collector `4317` host port it is better we generate a random host port using `port: null` when we don't care about host port, and we just use container port, and in aspire to publish for docker it doesn't expose the host port because of `isExternal: false`.
+                port: null,
                 targetPort: JaegerResource.OtlpGrpcContainerPort,
                 name: JaegerResource.OtlpGrpcEndpointName,
                 isProxied: proxyEnabled,
                 isExternal: false,
                 scheme: "tcp"
             )
-            .WithHttpEndpoint(
-                port: proxyOrContainerHostOtlpHttpPort,
+            .WithEndpoint(
+                // set null for preventing conflict with otel-collector `4318` host port it is better we generate a random host port using `port: null` when we don't care about host port, and we just use container port, and in aspire to publish for docker it doesn't expose the host port because of `isExternal: false`.
+                port: null,
                 targetPort: JaegerResource.OtlpHttpContainerPort,
                 name: JaegerResource.OtlpHttpEndpointName,
-                isProxied: proxyEnabled
+                isProxied: proxyEnabled,
+                isExternal: false,
+                scheme: "tcp"
             )
             .WithEnvironment(context =>
             {

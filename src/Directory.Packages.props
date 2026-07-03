@@ -27,32 +27,32 @@
   <ItemGroup Label="ASP.NET Core - Microsoft">
     <!-- Entity Framework Core -->
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.2" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageVersion Include="EFCore.NamingConventions" Version="10.0.0" />
     <!-- Microsoft Extensions -->
     <PackageVersion Include="Microsoft.Extensions.Compliance.Redaction" Version="9.7.0" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Telemetry" Version="9.7.0" />
     <PackageVersion Include="Microsoft.Extensions.Telemetry.Abstractions" Version="9.7.0" />
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Polly" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Polly" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.7.0" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Resilience" Version="9.7.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.4.0" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="9.7.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.2" />
     <!-- AspNetCore -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.1" />
@@ -121,6 +121,8 @@
   </ItemGroup>
   <ItemGroup Label="Messaging - Eventing">
     <PackageVersion Include="WolverineFx" Version="6.2.0" />
+    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="6.2.0" />
+    <PackageVersion Include="WolverineFx.PostgreSQL" Version="6.2.0" />
     <PackageVersion Include="WolverineFx.RabbitMQ" Version="6.2.0" />
     <PackageVersion Include="WolverineFx.RuntimeCompilation" Version="6.2.0" />
   </ItemGroup>

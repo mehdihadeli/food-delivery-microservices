@@ -33,7 +33,17 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldConsuming<UserRegisteredV1>(TestContext.Current.CancellationToken);
+        await SharedFixture.WaitUntilConditionMet(async () =>
+        {
+            var existsCustomer = await SharedFixture.ExecuteEfDbContextAsync(async ctx =>
+            {
+                var res = ctx.Customers.Any(x => x.Email.Value == _userRegistered.Email);
+
+                return res;
+            });
+
+            return existsCustomer;
+        });
     }
 
     // [Fact]
@@ -58,9 +68,7 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
         await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldConsuming<UserRegisteredV1, UserRegisteredConsumer>(
-            TestContext.Current.CancellationToken
-        );
+        await SharedFixture.ShouldPublishing<CustomerCreatedV1>(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -86,13 +94,23 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
 
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
-    public async Task should_save_mongo_customer_read_model_in_internal_persistence_message_after_consuming_message()
+    public async Task should_schedule_mongo_customer_read_model_processing_after_consuming_message()
     {
         // Act
         await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldProcessingInternalCommand<CreateCustomerRead>(TestContext.Current.CancellationToken);
+        await SharedFixture.WaitUntilConditionMet(async () =>
+        {
+            var existsCustomer = await SharedFixture.ExecuteMongoDbContextAsync(async ctx =>
+            {
+                var res = ctx.Customers.AsQueryable().Any(x => x.Email == _userRegistered.Email);
+
+                return res;
+            });
+
+            return existsCustomer;
+        });
     }
 
     [Fact]
@@ -118,13 +136,13 @@ public class UserRegisteredTests : CustomerServiceIntegrationTestBase
 
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
-    public async Task should_save_customer_created_integration_event_in_the_outbox_after_consuming_message()
+    public async Task should_schedule_customer_created_integration_event_for_delivery_after_consuming_message()
     {
         // Act
         await SharedFixture.PublishMessageAsync(_userRegistered, cancellationToken: CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldProcessingOutboxMessage<CustomerCreatedV1>(TestContext.Current.CancellationToken);
+        await SharedFixture.ShouldPublishing<CustomerCreatedV1>(TestContext.Current.CancellationToken);
     }
 
     [Fact]

@@ -1,5 +1,4 @@
 using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Integration.Wolverine;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Shared;
@@ -12,11 +11,7 @@ using ICommandBus = BuildingBlocks.Abstractions.Commands.ICommandBus;
 namespace FoodDelivery.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
 
 [AsyncApi]
-public class UserRegisteredConsumer(
-    ICommandBus commandBus,
-    HeaderPropagationValues headerPropagationValues,
-    IMessagePersistenceService messagePersistenceService
-)
+public class UserRegisteredConsumer(ICommandBus commandBus, HeaderPropagationValues headerPropagationValues)
 {
     public async Task Handle(UserRegisteredV1 message, Envelope envelope)
     {
@@ -24,7 +19,6 @@ public class UserRegisteredConsumer(
             message,
             envelope,
             headerPropagationValues,
-            messagePersistenceService,
             async userRegistered =>
             {
                 if (userRegistered.Roles is null || !userRegistered.Roles.Contains(Authorization.Roles.User))

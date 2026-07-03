@@ -80,7 +80,7 @@ public class CreateCustomerTests(
 
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
-    public async Task can_save_mongo_customer_read_model_in_internal_persistence_message()
+    public async Task can_schedule_mongo_customer_read_model_processing()
     {
         // Arrange
         var fakeIdentityUser = IdentityServiceWireMock.SetupGetUserByEmail().Response.UserIdentity;
@@ -90,7 +90,7 @@ public class CreateCustomerTests(
         await SharedFixture.CommandAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldProcessingInternalCommand<CreateCustomerRead>(TestContext.Current.CancellationToken);
+        await SharedFixture.ShouldSendingInternalCommand<CreateCustomerRead>(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class CreateCustomerTests(
 
     [Fact]
     [CategoryTrait(TestCategory.Integration)]
-    public async Task can_save_customer_created_integration_event_in_the_outbox()
+    public async Task can_schedule_customer_created_integration_event_for_delivery()
     {
         // Arrange
         var fakeIdentityUser = IdentityServiceWireMock.SetupGetUserByEmail().Response.UserIdentity;
@@ -145,6 +145,6 @@ public class CreateCustomerTests(
         var _ = await SharedFixture.CommandAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
-        await SharedFixture.ShouldProcessingOutboxMessage<CustomerCreatedV1>(TestContext.Current.CancellationToken);
+        await SharedFixture.ShouldPublishing<CustomerCreatedV1>(TestContext.Current.CancellationToken);
     }
 }

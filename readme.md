@@ -64,8 +64,8 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
 - ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
 - ✅ Using `CQRS Pattern` on top of `MediatR` library and spliting `read models` and `write models`
 - ✅ Using `OpenTelemetry Collector` to receive, process, and export telemetry data to various backends, including Jaeger and Tempo for tracing, Loki and Kibana for logs, and Prometheus for metrics.
-- ✅ Using `Outbox Pattern` for all microservices for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/GuaranteedMessaging.html) or [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)
-- ✅ Using `Inbox Pattern` for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in reciver side and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/)
+- ✅ Using Wolverine durable messaging with PostgreSQL persistence for `Outbox`, `Inbox`, and durable local processing in a transactional boundary with EF Core
+- ✅ Using Wolverine durable inbox for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in receiver side and practical exactly-once processing semantics per message id
 - ✅ Using `UnitTests` and `NSubstitute` for mocking dependencies
 - ✅ Using `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) library for cleanup our test enviroment through docker containers
 - ✅ Using `Minimal APIs` for handling requests
@@ -124,26 +124,46 @@ In this architecture we use [CQRS Pattern](https://www.kurrent.io/cqrs-pattern) 
 
 Here I have a write model that uses a postgres database for handling better `Consistency` and `ACID Transaction` guaranty. beside o this write side I use a read side model that uses MongoDB for better performance of our read side without any joins with suing some nested document, also better scalability with some good scaling features in MongoDB.
 
+## Wolverine Transactional Messaging
+
+This repository now uses `Wolverine` as the single durable messaging runtime for broker publishing, inbound idempotency, and internal asynchronous processing. The old custom polling outbox and inbox implementation is replaced in the active Wolverine-based services by Wolverine durability primitives.
+
+### What Wolverine Handles
+
+- `Outbox`: integration events are written through Wolverine using PostgreSQL durability and flushed in the same application transaction boundary as EF Core changes.
+- `Inbox`: RabbitMQ consumers use Wolverine durable inbox so duplicate deliveries are detected and skipped by Wolverine instead of our own inbox table and background worker.
+- `Internal processor`: internal commands and domain notifications are sent to durable local queues, so asynchronous in-process work is persisted and retried by Wolverine.
+- `Broker transport`: Wolverine continues to own RabbitMQ publishing and consuming with the same message contracts.
+
+### Transaction Boundary
+
+For command handling we keep the existing EF Core transactional pipeline and enroll the active `DbContext` into Wolverine's EF Core outbox support. That means one logical unit of work covers:
+
+1. domain state changes in PostgreSQL
+2. durable storage of outgoing integration events
+3. durable storage of internal commands and notifications
+
+If the transaction fails, none of those messages are committed. If the transaction succeeds, Wolverine owns delivery and retries. This keeps messaging code smaller while preserving the same reliability goal as the custom outbox/inbox implementation.
+
 For syncing our read side and write side we have 2 options with using Event Driven Architecture (without using events streams in event sourcing):
 
-- If our `Read Sides` are in `Same Service`, during saving data in write side I save a [Internal Command](https://github.com/kgrzybek/modular-monolith-with-ddd#38-internal-processing) record in my `Command Processor` storage (like something we do in outbox pattern) and after committing write side, our `command processor manager` reads unsent commands and sends them to their `Command Handlers` in same corresponding service and this handlers could save their read models in our MongoDb database as a read side.
+- If our `Read Sides` are in `Same Service`, during saving data in write side I enqueue a durable local message with Wolverine. After committing write side, Wolverine dispatches that internal command or notification to its handler in same service and that handler can update MongoDB read models.
 
-- If our `Read Sides` are in `Another Services` we publish an integration event (with saving this message in the outbox) after committing our write side and all of our `Subscribers` could get this event and save it in their read models (MongoDB).
+- If our `Read Sides` are in `Another Services` we publish an integration event through Wolverine durable messaging after committing our write side and all of our `Subscribers` could get this event and save it in their read models (MongoDB).
 
 All of this is optional in the application and it is possible to only use what that the service needs. Eg. if the service does not want to Use DDD because of business is very simple and it is mostly `CRUD` we can use `Data Centric` Architecture or If our application is not `Task based` instead of CQRS and separating read side and write side again we can just use a simple `CRUD` based application.
 
-Here I used [Outbox](http://www.kamilgrzybek.com/design/the-outbox-pattern/) for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/patterns/messaging/GuaranteedMessaging.html) and can be used as a landing zone for integration events before they are published to the message broker .
+Here I used [Outbox](http://www.kamilgrzybek.com/design/the-outbox-pattern/) for [Guaranteed Delivery](https://www.enterpriseintegrationpatterns.com/patterns/messaging/GuaranteedMessaging.html), but the implementation is now Wolverine durability instead of a custom message persistence worker.
 
-[Outbox pattern](https://event-driven.io/en/outbox_inbox_patterns_and_delivery_guarantees_explained/) ensures that a message was sent (e.g. to a queue) successfully at least once. With this pattern, instead of directly publishing a message to the queue, we put it in the temporary storage (e.g. database table) for preventing missing any message and some retry mechanism in any failure ([At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/)). For example When we save data as part of one transaction in our service, we also save messages (Integration Events) that we later want to process in another microservices as part of the same transaction. The list of messages to be processed is called a [StoreMessage](./src/BuildingBlocks/BuildingBlocks.Abstractions/Messaging/PersistMessage/StoreMessage.cs) with [Message Delivery Type](./src/BuildingBlocks/BuildingBlocks.Abstractions/Messaging/PersistMessage/MessageDeliveryType.cs) `Outbox` that are part of our [MessagePersistence](./src/BuildingBlocks/BuildingBlocks.Core/Messaging/MessagePersistence/InMemory/InMemoryMessagePersistenceService.cs) service. This infrastructure also supports `Inbox` Message Delivery Type and `Internal` Message Delivery Type (Internal Processing).
+[Outbox pattern](https://event-driven.io/en/outbox_inbox_patterns_and_delivery_guarantees_explained/) ensures that a message is stored durably as part of same transaction as business data changes and then delivered to the broker with retries. In this repository Wolverine persists those outgoing messages in PostgreSQL and flushes them after the EF Core transaction commits. We still get [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/), but we no longer need our own polling `MessagePersistenceBackgroundService` to push records to RabbitMQ.
 
-Also we have a background service [MessagePersistenceBackgroundService](./src/BuildingBlocks/BuildingBlocks.Core/Messaging/BackgroundServices/MessagePersistenceBackgroundService.cs) that periodically checks the our [StoreMessages](./src/BuildingBlocks/BuildingBlocks.Abstractions/Messaging/PersistMessage/StoreMessage.cs) in the database and try to send the messages to the broker with using our [MessagePersistenceService](./src/BuildingBlocks/BuildingBlocks.Core/Messaging/MessagePersistence/InMemory/InMemoryMessagePersistenceService.cs) service. After it gets confirmation of publishing (e.g. ACK from the broker) it marks the message as processed to `avoid resending`.
-However, it is possible that we will not be able to mark the message as processed due to communication error, for example `broker` is `unavailable`. In this case our [MessagePersistenceBackgroundService](./src/BuildingBlocks/BuildingBlocks.Core/Messaging/BackgroundServices/MessagePersistenceBackgroundService.cs) try to resend the messages that not processed and it is actually [ At-Least-Once delivery](http://www.cloudcomputingpatterns.org/at_least_once_delivery/). We can be sure that message will be sent `once`, but can be sent `multiple times` too! That’s why another name for this approach is Once-Or-More delivery. We should remember this and try to design receivers of our messages as [Idempotents](https://www.enterpriseintegrationpatterns.com/patterns/messaging/IdempotentReceiver.html), which means:
+We should remember this and try to design receivers of our messages as [Idempotents](https://www.enterpriseintegrationpatterns.com/patterns/messaging/IdempotentReceiver.html), which means:
 
 > In Messaging this concepts translates into a message that has the same effect whether it is received once or multiple times. This means that a message can safely be resent without causing any problems even if the receiver receives duplicates of the same message.
 
-For handling [Idempotency](https://www.enterpriseintegrationpatterns.com/patterns/messaging/IdempotentReceiver.html) and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/) in receiver side, we could use [Inbox Pattern](https://event-driven.io/en/outbox_inbox_patterns_and_delivery_guarantees_explained/).
+For handling [Idempotency](https://www.enterpriseintegrationpatterns.com/patterns/messaging/IdempotentReceiver.html) and [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/) in receiver side, we use Wolverine durable inbox.
 
-This pattern is similar to Outbox Pattern. It’s used to handle incoming messages (e.g. from a queue) for `unique processing` of `a single message` only `once` (even with executing multiple time). Accordingly, we have a table in which we’re storing incoming messages. Contrary to outbox pattern, we first save the messages in the database, then we’re returning ACK to queue. If save succeeded, but we didn’t return ACK to queue, then delivery will be retried. That’s why we have at-least-once delivery again. After that, an `inbox background process` runs and will process the inbox messages that not processed yet. also we can prevent executing a message with specific `MessgaeId`multiple times. after executing our inbox message for example with calling our subscribed event handlers we send a ACK to the queue when they succeeded. (Inbox part of the system is in progress, I will cover this part soon as possible)
+This pattern is similar to Outbox Pattern. It’s used to handle incoming messages (e.g. from a queue) for `unique processing` of `a single message` only `once` even when RabbitMQ redelivers the same message. Wolverine stores and checks message identity for us, retries failures, and acknowledges successful processing back to the broker. That keeps consumer code focused on business handling instead of custom deduplication infrastructure.
 
 Also here I used `RabbitMQ` as my `Message Broker` for my async communication between the microservices with using eventually consistency mechanism, and Wolverine for broker communications. beside of this eventually consistency we have a synchronous call with using `REST` (in future I will use gRpc) for our immediate consistency needs.
 

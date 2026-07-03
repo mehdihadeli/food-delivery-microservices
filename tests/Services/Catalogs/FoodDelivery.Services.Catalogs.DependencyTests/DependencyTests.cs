@@ -1,6 +1,5 @@
 using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
-using BuildingBlocks.Core.Messages.MessagePersistence;
 using BuildingBlocks.Core.Web;
 using BuildingBlocks.Integration.Wolverine;
 using BuildingBlocks.Persistence.EfCore.Postgres;
@@ -27,10 +26,6 @@ public class DependencyTests
             {
                 keyValues.Add(
                     $"{nameof(PostgresOptions)}__{nameof(PostgresOptions.ConnectionString)}",
-                    "Server=localhost;Port=5432;Database=catalogs;User Id=postgres;Password=postgres;Include Error Detail=true"
-                );
-                keyValues.Add(
-                    $"{nameof(MessagePersistenceOptions)}__{nameof(PostgresOptions.ConnectionString)}",
                     "Server=localhost;Port=5432;Database=catalogs;User Id=postgres;Password=postgres;Include Error Detail=true"
                 );
                 keyValues.Add(

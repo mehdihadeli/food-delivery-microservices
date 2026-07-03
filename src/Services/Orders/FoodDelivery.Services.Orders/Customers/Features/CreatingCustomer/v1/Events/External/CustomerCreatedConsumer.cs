@@ -1,4 +1,3 @@
-using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Integration.Wolverine;
 using FoodDelivery.Services.Shared.Customers.Customers.Events.Integration.v1;
 using Microsoft.AspNetCore.HeaderPropagation;
@@ -8,10 +7,7 @@ using Wolverine;
 namespace FoodDelivery.Services.Orders.Customers.Features.CreatingCustomer.v1.Events.External;
 
 [AsyncApi]
-public class CustomerCreatedConsumer(
-    HeaderPropagationValues headerPropagationValues,
-    IMessagePersistenceService messagePersistenceService
-)
+public class CustomerCreatedConsumer(HeaderPropagationValues headerPropagationValues)
 {
     public Task Handle(CustomerCreatedV1 message, Envelope envelope)
     {
@@ -19,7 +15,6 @@ public class CustomerCreatedConsumer(
             message,
             envelope,
             headerPropagationValues,
-            messagePersistenceService,
             _ => Task.CompletedTask
         );
     }

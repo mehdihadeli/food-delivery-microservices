@@ -4,9 +4,6 @@ using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Abstractions.Persistence.EventStore;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
-using BuildingBlocks.Core.Messages.MessagePersistence;
-using BuildingBlocks.Core.Messages.MessagePersistence.BackgroundServices;
-using BuildingBlocks.Core.Messages.MessagePersistence.InMemory;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Scrutor;
 
@@ -33,15 +30,7 @@ public static class DependencyInjectionExtensions
 
     private static void AddPersistenceMessage(IServiceCollection services)
     {
-        services.TryAddScoped<IMessagePersistenceService, MessagePersistenceService>();
-        services.AddHostedService<MessagePersistenceBackgroundService>();
-        services.AddValidationOptions<MessagePersistenceOptions>();
-        services.AddInMemoryMessagePersistence();
-    }
-
-    private static void AddInMemoryMessagePersistence(this IServiceCollection services)
-    {
-        services.AddScoped<IMessagePersistenceRepository, InMemoryMessagePersistenceRepository>();
+        services.TryAddScoped<IMessagePersistenceService, NullMessagePersistenceService>();
     }
 
     private static void AddMessageHandler(IServiceCollection services, Assembly[] assemblies)

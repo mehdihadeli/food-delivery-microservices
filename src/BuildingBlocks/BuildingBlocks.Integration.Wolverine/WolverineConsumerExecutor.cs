@@ -1,5 +1,4 @@
 using BuildingBlocks.Abstractions.Messages;
-using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Core.Messages;
 using BuildingBlocks.Core.Web.Extensions;
 using Microsoft.AspNetCore.HeaderPropagation;
@@ -15,7 +14,6 @@ public static class WolverineConsumerExecutor
         TMessage message,
         Envelope transportEnvelope,
         HeaderPropagationValues headerPropagationValues,
-        IMessagePersistenceService messagePersistenceService,
         Func<TMessage, Task> dispatch,
         ILogger? logger = null,
         CancellationToken cancellationToken = default
@@ -63,9 +61,7 @@ public static class WolverineConsumerExecutor
             messageEnvelope = MessageEnvelopeFactory.From(message, metadata);
         }
 
-        await messagePersistenceService
-            .AddReceivedMessageAsync<TMessage>(messageEnvelope, _ => dispatch(message), cancellationToken)
-            .ConfigureAwait(false);
+        await dispatch(message).ConfigureAwait(false);
 
         logger?.LogInformation("Message with ID {MessageId} processed and marked as delivered.", messageIdValue);
     }

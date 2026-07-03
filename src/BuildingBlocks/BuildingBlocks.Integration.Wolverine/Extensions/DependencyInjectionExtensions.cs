@@ -1,5 +1,6 @@
 using System.Reflection;
 using BuildingBlocks.Abstractions.Messages;
+using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Extensions.HostApplicationBuilderExtensions;
 using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
@@ -10,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using Wolverine;
+using Wolverine.EntityFrameworkCore;
+using Wolverine.Postgresql;
 using Wolverine.RabbitMQ;
 using Constants = BuildingBlocks.Core.Constants;
 
@@ -22,6 +25,7 @@ public static class DependencyInjectionExtensions
         Action<WolverineOptions>? configureMessagesTopologies = null,
         Action<WolverineOptions>? configureBusRegistration = null,
         Action<WolverineBusOptions>? configureWolverineBusOptions = null,
+        string? durabilityConnectionStringName = null,
         Assembly[]? assemblies = null
     )
     {
@@ -60,6 +64,9 @@ public static class DependencyInjectionExtensions
         // will override default null messaging types - we should not use `TryAddTransient` to replace null types
         builder.Services.Replace(ServiceDescriptor.Transient<IExternalEventBus, WolverineEventBus>());
         builder.Services.Replace(ServiceDescriptor.Transient<IBusDirectPublisher, WolverineDirectPublisher>());
+        builder.Services.Replace(
+            ServiceDescriptor.Scoped<IMessagePersistenceService, WolverineMessagePersistenceService>()
+        );
 
         ConfigureInstrumentation(builder, wolverineBusOptions, connectionString);
 
@@ -75,12 +82,50 @@ public static class DependencyInjectionExtensions
 
             configureBusRegistration?.Invoke(options);
 
+            ConfigureDurability(builder, options, wolverineBusOptions, durabilityConnectionStringName);
+
             options.UseRabbitMq(connectionString);
 
             configureMessagesTopologies?.Invoke(options);
         });
 
         return builder;
+    }
+
+    private static void ConfigureDurability(
+        IHostApplicationBuilder builder,
+        WolverineOptions options,
+        WolverineBusOptions wolverineBusOptions,
+        string? durabilityConnectionStringName
+    )
+    {
+        if (!wolverineBusOptions.EnableDurability)
+        {
+            return;
+        }
+
+        var connectionString = !string.IsNullOrWhiteSpace(durabilityConnectionStringName)
+            ? builder.Configuration.GetConnectionString(durabilityConnectionStringName)
+            : null;
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException(
+                $"Connection string '{durabilityConnectionStringName}' is required when Wolverine durability is enabled."
+            );
+        }
+
+        options.PersistMessagesWithPostgresql(connectionString);
+
+        if (wolverineBusOptions.UseEntityFrameworkCoreTransactions)
+        {
+            options.UseEntityFrameworkCoreTransactions();
+        }
+
+        if (wolverineBusOptions.UseDurableLocalQueues)
+        {
+            options.Policies.UseDurableLocalQueues();
+        }
     }
 
     private static void ConfigureInstrumentation(

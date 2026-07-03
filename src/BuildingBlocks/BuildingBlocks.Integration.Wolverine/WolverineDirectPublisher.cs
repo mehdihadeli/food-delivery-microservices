@@ -1,7 +1,5 @@
-using System.Globalization;
 using System.Reflection;
 using BuildingBlocks.Abstractions.Messages;
-using BuildingBlocks.Core.Messages;
 using Humanizer;
 using Microsoft.Extensions.Options;
 using Wolverine;
@@ -23,7 +21,8 @@ public class WolverineDirectPublisher(IMessageBus bus, IOptions<WolverineBusOpti
     )
         where TMessage : class, BuildingMessage
     {
-        await bus.PublishAsync(messageEnvelope.Message, BuildDeliveryOptions(messageEnvelope)).ConfigureAwait(false);
+        await bus.PublishAsync(messageEnvelope.Message, WolverineDeliveryOptionsFactory.Build(messageEnvelope))
+            .ConfigureAwait(false);
     }
 
     public Task PublishAsync(IMessageEnvelopeBase messageEnvelope, CancellationToken cancellationToken = default)
@@ -62,7 +61,7 @@ public class WolverineDirectPublisher(IMessageBus bus, IOptions<WolverineBusOpti
         );
 
         await bus.EndpointFor(endpointAddress)
-            .SendAsync(messageEnvelope.Message, BuildDeliveryOptions(messageEnvelope))
+            .SendAsync(messageEnvelope.Message, WolverineDeliveryOptionsFactory.Build(messageEnvelope))
             .ConfigureAwait(false);
     }
 
@@ -89,43 +88,13 @@ public class WolverineDirectPublisher(IMessageBus bus, IOptions<WolverineBusOpti
         return publishTask!;
     }
 
-    private static DeliveryOptions BuildDeliveryOptions<TMessage>(IMessageEnvelope<TMessage> messageEnvelope)
-        where TMessage : class, BuildingMessage
-    {
-        var deliveryOptions = new DeliveryOptions
-        {
-            CorrelationId = messageEnvelope.Metadata.CorrelationId.ToString(),
-            CausationId = messageEnvelope.Metadata.CausationId?.ToString(),
-        };
-
-        deliveryOptions.WithHeader(MessageHeaders.MessageId, messageEnvelope.Metadata.MessageId.ToString());
-        deliveryOptions.WithHeader(MessageHeaders.Type, messageEnvelope.Metadata.MessageType);
-        deliveryOptions.WithHeader(MessageHeaders.Name, messageEnvelope.Metadata.Name);
-        deliveryOptions.WithHeader(MessageHeaders.CausationId, messageEnvelope.Metadata.CausationId.ToString());
-        deliveryOptions.WithHeader(MessageHeaders.CorrelationId, messageEnvelope.Metadata.CorrelationId.ToString());
-        deliveryOptions.WithHeader(
-            MessageHeaders.Created,
-            messageEnvelope.Metadata.Created.ToString(CultureInfo.InvariantCulture)
-        );
-
-        foreach (var header in messageEnvelope.Metadata.Headers)
-        {
-            if (header.Value is not null)
-            {
-                deliveryOptions.WithHeader(header.Key, header.Value.ToString()!);
-            }
-        }
-
-        return deliveryOptions;
-    }
-
     private Uri GetEndpointAddress(string exchangeOrTopic, string? queue, string routingKey)
     {
-        if (!_wolverineBusOptions.ConfigureConsumeTopology || !string.IsNullOrWhiteSpace(queue))
-        {
-            return RabbitMqEndpointUri.Routing(exchangeOrTopic, queue ?? routingKey);
-        }
-
-        return RabbitMqEndpointUri.Exchange(exchangeOrTopic);
+        return WolverineEndpointAddressFactory.Get(
+            exchangeOrTopic,
+            queue,
+            routingKey,
+            _wolverineBusOptions.ConfigureConsumeTopology
+        );
     }
 }

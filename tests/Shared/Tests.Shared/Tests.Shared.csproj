@@ -5,7 +5,6 @@
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Integration.Wolverine\BuildingBlocks.Integration.Wolverine.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.SerilogLogging\BuildingBlocks.SerilogLogging.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Messaging.Persistence.Postgres\BuildingBlocks.Messaging.Persistence.Postgres.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.Mongo\BuildingBlocks.Persistence.Mongo.csproj" />
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Security\BuildingBlocks.Security.csproj" />

@@ -50,8 +50,30 @@
 			"include": ["**/*.cs", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.editorconfig", "**/*.sln", "**/*.slnx"]
 		},
 		{
+			"name": "setup-tools-restore",
+			"command": "dotnet",
+			"args": ["tool", "restore"]
+		},
+		{
+			"name": "setup-husky-install",
+			"command": "dotnet",
+			"args": ["tool", "run", "husky", "--", "install"]
+		},
+		{
+			"name": "setup-solution-restore",
+			"command": "dotnet",
+			"args": ["restore", "food-delivery-microservices.slnx"]
+		},
+		{
 			"name": "build",
 			"group": "pre-push",
+			"command": "dotnet",
+			"args": ["build", "food-delivery-microservices.slnx", "--configuration", "Release", "/warnaserror"],
+			"include": ["**/*.cs", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.editorconfig", "**/*.sln", "**/*.slnx"]
+		},
+		{
+			"name": "build-ci",
+			"group": "ci",
 			"command": "dotnet",
 			"args": [
 				"build",

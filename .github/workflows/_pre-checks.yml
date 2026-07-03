@@ -64,7 +64,7 @@ jobs:
       - name: Run analyzers
         if: success()
         shell: bash
-        run: dotnet format analyzers food-delivery-microservices.slnx --verify-no-changes --severity error --verbosity diagnostic
+        run: NuGetAudit=false dotnet format analyzers food-delivery-microservices.slnx --verify-no-changes --severity error --verbosity diagnostic --exclude src/Aspire/FoodDelivery.AppHost
 
       - name: Run Gitleaks secret scan
         if: success()

@@ -166,7 +166,7 @@ jobs:
             project_dir="$(dirname "$file")"
             has_test_source='false'
             while IFS= read -r -d '' source_file; do
-              if grep -Eq '\[(Fact|Theory)(\(|\])' "$source_file"; then
+              if grep -Eq '\[(Fact|Theory)(\(|])' "$source_file"; then
                 has_test_source='true'
                 break
               fi
@@ -218,7 +218,7 @@ jobs:
             project_dir="$(dirname "$file")"
             has_test_source='false'
             while IFS= read -r -d '' source_file; do
-              if grep -Eq '\[(Fact|Theory)(\(|\])' "$source_file"; then
+              if grep -Eq '\[(Fact|Theory)(\(|])' "$source_file"; then
                 has_test_source='true'
                 break
               fi
@@ -250,7 +250,7 @@ jobs:
             project_dir="$(dirname "$file")"
             has_test_source='false'
             while IFS= read -r -d '' source_file; do
-              if grep -Eq '\[(Fact|Theory)(\(|\])' "$source_file"; then
+              if grep -Eq '\[(Fact|Theory)(\(|])' "$source_file"; then
                 has_test_source='true'
                 break
               fi

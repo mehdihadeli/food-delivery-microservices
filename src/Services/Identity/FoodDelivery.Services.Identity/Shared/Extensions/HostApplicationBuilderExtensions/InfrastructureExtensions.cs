@@ -1,8 +1,12 @@
 using BuildingBlocks.Caching.Behaviors;
+using BuildingBlocks.Caching.Extensions;
+using BuildingBlocks.Core.Constants;
 using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Pipelines;
 using BuildingBlocks.Email;
+using BuildingBlocks.Integration.Wolverine.Extensions;
+using BuildingBlocks.Messaging.Persistence.Postgres;
 using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
 using BuildingBlocks.SerilogLogging;
 using BuildingBlocks.Validation;
@@ -11,6 +15,8 @@ using BuildingBlocks.Web.Cors;
 using BuildingBlocks.Web.Extensions;
 using BuildingBlocks.Web.Minimal.Extensions;
 using BuildingBlocks.Web.RateLimit;
+using FoodDelivery.Services.Identity.Users;
+using FoodDelivery.Services.Shared.Constants;
 using Mediator;
 
 namespace FoodDelivery.Services.Identity.Shared.Extensions.HostApplicationBuilderExtensions;
@@ -40,8 +46,22 @@ public static partial class HostApplicationBuilderExtensions
         builder.AddCustomAuthentication();
         builder.AddCustomAuthorization();
 
+        builder.AddWolverineEventBus(
+            configureMessagesTopologies: options =>
+            {
+                options.ConfigureUserPublishMessagesTopology();
+            },
+            configureWolverineBusOptions: msgCfg =>
+            {
+                msgCfg.AutoConfigMessagesTopology = false;
+            },
+            assemblies: [typeof(IdentityMetadata).Assembly]
+        );
+
         // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
         builder.AddCustomRateLimit();
+
+        builder.AddCustomCaching(redisConnectionStringName: AspireResources.Redis);
 
         builder.Services.AddEmailService(builder.Configuration);
 
@@ -61,6 +81,10 @@ public static partial class HostApplicationBuilderExtensions
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(InvalidateCachingBehavior<,>));
 
         builder.Services.AddCustomValidators(typeof(IdentityMetadata).Assembly);
+
+        builder.AddPostgresMessagePersistence(
+            connectionStringName: AspireApplicationResources.PostgresDatabase.Identity
+        );
 
         builder.AddCustomIdentity();
 

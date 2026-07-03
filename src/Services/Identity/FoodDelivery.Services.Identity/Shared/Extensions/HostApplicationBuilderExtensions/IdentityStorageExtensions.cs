@@ -30,7 +30,7 @@ public static partial class HostApplicationBuilderExtensions
                 connectionStringName: AspireApplicationResources.PostgresDatabase.Identity,
                 action: app =>
                 {
-                    if (app.Environment.IsDevelopment() || app.Environment.IsAspireRun())
+                    if (app.Environment.IsDevelopment() || app.Environment.IsAspireRun() || app.Environment.IsTest())
                     {
                         // apply migration and seed data for dev environment
                         app.AddMigration<IdentityContext, IdentityDataSeeder>();

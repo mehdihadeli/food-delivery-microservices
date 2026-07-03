@@ -91,6 +91,19 @@ public abstract class IntegrationTestBase<TEntryPoint, TContext>(
     where TContext : DbContext
 {
     public new SharedFixtureWithEfCore<TEntryPoint, TContext> SharedFixture { get; } = sharedFixture;
+
+    public override async ValueTask InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        await SharedFixture.ExecuteEfDbContextAsync(
+            async (sp, dbContext) =>
+            {
+                var seeder = sp.GetRequiredService<IDataSeeder<TContext>>();
+                await seeder.SeedAsync(dbContext);
+            }
+        );
+    }
 }
 
 public abstract class IntegrationTestBase<TEntryPoint, TWContext, TRContext>(

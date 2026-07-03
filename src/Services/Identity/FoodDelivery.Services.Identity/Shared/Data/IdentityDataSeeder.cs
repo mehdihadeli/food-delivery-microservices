@@ -26,7 +26,7 @@ public class IdentityDataSeeder(UserManager<ApplicationUser> userManager, RoleMa
             var adminRole = new ApplicationRole
             {
                 Name = Authorization.Roles.Admin,
-                NormalizedName = Authorization.Roles.Admin.ToLower(CultureInfo.InvariantCulture),
+                NormalizedName = Authorization.Roles.Admin.ToUpper(CultureInfo.InvariantCulture),
             };
 
             await roleManager.CreateAsync(adminRole);
@@ -89,7 +89,7 @@ public class IdentityDataSeeder(UserManager<ApplicationUser> userManager, RoleMa
             var userRole = new ApplicationRole
             {
                 Name = Authorization.Roles.User,
-                NormalizedName = Authorization.Roles.User.ToLower(CultureInfo.InvariantCulture),
+                NormalizedName = Authorization.Roles.User.ToUpper(CultureInfo.InvariantCulture),
             };
 
             await roleManager.CreateAsync(userRole);

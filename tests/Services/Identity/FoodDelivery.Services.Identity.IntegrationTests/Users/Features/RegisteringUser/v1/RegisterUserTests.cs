@@ -1,11 +1,11 @@
 using Bogus;
 using FluentAssertions;
 using FoodDelivery.Services.Identity.Api;
+using FoodDelivery.Services.Identity.Shared.Data;
 using FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
 using FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
 using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Tests.Shared.Fixtures;
 using Xunit;
 
@@ -16,7 +16,7 @@ public class RegisterUserTests : IdentityServiceIntegrationTestBase
     private static RegisterUser _registerUser = default!;
 
     public RegisterUserTests(
-        SharedFixtureWithEfCore<IdentityApiMetadata, IdentityDbContext> sharedFixture,
+        SharedFixtureWithEfCore<IdentityApiMetadata, IdentityContext> sharedFixture,
         ITestOutputHelper outputHelper
     )
         : base(sharedFixture, outputHelper)

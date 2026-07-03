@@ -64,6 +64,8 @@ jobs:
       - name: Run analyzers
         if: success()
         shell: bash
+        # `dotnet format analyzers` fails workspace loading on NuGet vulnerability audit warnings and
+        # cannot resolve the Aspire AppHost generated `Projects` types during this pre-check run.
         run: NuGetAudit=false dotnet format analyzers food-delivery-microservices.slnx --verify-no-changes --severity error --verbosity diagnostic --exclude src/Aspire/FoodDelivery.AppHost
 
       - name: Run Gitleaks secret scan

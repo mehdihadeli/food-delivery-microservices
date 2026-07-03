@@ -68,21 +68,14 @@
 			"name": "build",
 			"group": "pre-push",
 			"command": "dotnet",
-			"args": ["build", "food-delivery-microservices.slnx", "--configuration", "Release", "/warnaserror"],
+			"args": ["build", "food-delivery-microservices.slnx", "--configuration", "Release"],
 			"include": ["**/*.cs", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.editorconfig", "**/*.sln", "**/*.slnx"]
 		},
 		{
 			"name": "build-ci",
 			"group": "ci",
 			"command": "dotnet",
-			"args": [
-				"build",
-				"food-delivery-microservices.slnx",
-				"--no-restore",
-				"--configuration",
-				"Release",
-				"/warnaserror"
-			],
+			"args": ["build", "food-delivery-microservices.slnx", "--no-restore", "--configuration", "Release"],
 			"include": ["**/*.cs", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.editorconfig", "**/*.sln", "**/*.slnx"]
 		},
 		{

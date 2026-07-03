@@ -34,6 +34,7 @@ COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
+COPY ./src/Versions.props ./
 COPY ./src/Services/Identity/Directory.Build.props ./Services/Identity/
 
 # TODO: Using wildcard to copy all files in the directory.

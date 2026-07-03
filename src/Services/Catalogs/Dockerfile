@@ -33,6 +33,7 @@ COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
 COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
+COPY ./src/Versions.props ./
 COPY ./src/Services/Catalogs/Directory.Build.props ./Services/Catalogs/
 
 # https://docs.docker.com/build/cache/#order-your-layers

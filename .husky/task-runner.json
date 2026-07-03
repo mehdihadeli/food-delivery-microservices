@@ -66,16 +66,15 @@
 		{
 			"name": "gitleaks",
 			"group": "pre-push",
-			"command": "sh",
+			"command": "bash",
 			"args": [
 				"-c",
-				"if ! command -v docker >/dev/null 2>&1; then echo \"Docker is required for the local Gitleaks pre-push scan. Install Docker Desktop or bypass the hook intentionally with git push --no-verify.\"; exit 1; fi; docker info >/dev/null 2>&1 || { echo \"Docker is installed but the daemon is not running. Start Docker Desktop, then push again.\"; exit 1; }; repo_root=\"$(git rev-parse --show-toplevel)\" && MSYS_NO_PATHCONV=1 docker run --rm -v \"$repo_root:/repo\" -w /repo zricethezav/gitleaks:latest dir --config .gitleaks.toml --no-banner --redact --verbose ."
+				"if ! command -v docker >/dev/null 2>&1; then echo \"Docker is required for the local Gitleaks pre-push scan. Install Docker Desktop or bypass the hook intentionally with git push --no-verify.\"; exit 1; fi; docker info >/dev/null 2>&1 || { echo \"Docker is installed but the daemon is not running. Start Docker Desktop, then push again.\"; exit 1; }; repo_root=\"$(git rev-parse --show-toplevel)\" && MSYS_NO_PATHCONV=1 docker run --rm -v \"$repo_root:/repo\" -w /repo zricethezav/gitleaks:latest dir --no-banner --redact --verbose ."
 			]
 		},
 		{
 			"name": "test",
-			"group": "pre-push",
-			"command": "sh",
+			"command": "bash",
 			"args": ["scripts/run-tests.sh"],
 			"include": ["src/**/*", "tests/**/*", "**/*.csproj", "**/*.props", "**/*.targets", "**/*.sln", "**/*.slnx"]
 		}

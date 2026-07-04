@@ -40,9 +40,7 @@
 
   <ItemGroup Label="Building Blocks Projects">
     <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.AspireIntegrations\BuildingBlocks.AspireIntegrations.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Integration.Wolverine\BuildingBlocks.Integration.Wolverine.csproj" IsAspireProjectResource="false"/>
     <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" IsAspireProjectResource="false" />
-    <ProjectReference 
-            Include="..\..\Services\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\..\Services\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" IsAspireProjectResource="false" />
   </ItemGroup>
 </Project>

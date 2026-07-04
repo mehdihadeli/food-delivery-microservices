@@ -7,29 +7,28 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\Aspire\FoodDelivery.ServiceDefaults\FoodDelivery.ServiceDefaults.csproj" />
-        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Caching\BuildingBlocks.Caching.csproj"/>
-        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Email\BuildingBlocks.Email.csproj"/>
-        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Integration.Wolverine\BuildingBlocks.Integration.Wolverine.csproj"/>
-        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Messaging.Persistence.Postgres\BuildingBlocks.Messaging.Persistence.Postgres.csproj"/>
-        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.OpenApi\BuildingBlocks.OpenApi.csproj"/>
-        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj"/>
-        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Persistence.Mongo\BuildingBlocks.Persistence.Mongo.csproj"/>
-        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.SerilogLogging\BuildingBlocks.SerilogLogging.csproj"/>
-        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Validation\BuildingBlocks.Validation.csproj"/>
-        <ProjectReference Include="..\..\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj"/>
+        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Caching\BuildingBlocks.Caching.csproj" />
+        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Email\BuildingBlocks.Email.csproj" />
+        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Integration.Wolverine\BuildingBlocks.Integration.Wolverine.csproj" />
+        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.OpenApi\BuildingBlocks.OpenApi.csproj" />
+        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
+        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Persistence.Mongo\BuildingBlocks.Persistence.Mongo.csproj" />
+        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.SerilogLogging\BuildingBlocks.SerilogLogging.csproj" />
+        <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Validation\BuildingBlocks.Validation.csproj" />
+        <ProjectReference Include="..\..\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" />
     </ItemGroup>
 
     <!-- Copy appsetings files to test projects for reading from ConfigutationBuilder directly-->
     <!--Set CopyToPublishDirectory to always for ensuring copy to publish directory and prevent to conflict with other appsentigs.json, if don't set this it is possible other refrence project setting ovverid its own settings in publish dir-->
     <ItemGroup>
-        <Content Include="..\FoodDelivery.Services.Catalogs.Api\appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
+        <Content Include="..\FoodDelivery.Services.Catalogs.Api\appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always" />
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="FoodDelivery.Services.Catalogs.IntegrationTests"/>
-        <InternalsVisibleTo Include="FoodDelivery.Services.Catalogs.EndToEndTests"/>
-        <InternalsVisibleTo Include="FoodDelivery.Services.Catalogs.TestShared"/>
-        <InternalsVisibleTo Include="FoodDelivery.Services.Catalogs.UnitTests"/>
+        <InternalsVisibleTo Include="FoodDelivery.Services.Catalogs.IntegrationTests" />
+        <InternalsVisibleTo Include="FoodDelivery.Services.Catalogs.EndToEndTests" />
+        <InternalsVisibleTo Include="FoodDelivery.Services.Catalogs.TestShared" />
+        <InternalsVisibleTo Include="FoodDelivery.Services.Catalogs.UnitTests" />
     </ItemGroup>
 
     <ItemGroup>

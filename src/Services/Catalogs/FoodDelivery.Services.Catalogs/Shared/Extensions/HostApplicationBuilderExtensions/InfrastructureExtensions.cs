@@ -7,7 +7,6 @@ using BuildingBlocks.Core.Pipelines;
 using BuildingBlocks.Core.Web.Extensions;
 using BuildingBlocks.Email;
 using BuildingBlocks.Integration.Wolverine.Extensions;
-using BuildingBlocks.Messaging.Persistence.Postgres;
 using BuildingBlocks.OpenApi;
 using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
 using BuildingBlocks.OpenApi.AsyncApi;
@@ -57,7 +56,9 @@ public static partial class WebApplicationBuilderExtensions
             configureWolverineBusOptions: msgCfg =>
             {
                 msgCfg.AutoConfigMessagesTopology = false;
+                msgCfg.EnableDurability = true;
             },
+            durabilityConnectionStringName: AspireApplicationResources.PostgresDatabase.Catalogs,
             assemblies: [typeof(CatalogsMetadata).Assembly]
         );
 
@@ -84,10 +85,6 @@ public static partial class WebApplicationBuilderExtensions
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(InvalidateCachingBehavior<,>));
 
         builder.Services.AddCustomValidators(typeof(CatalogsMetadata).Assembly);
-
-        builder.AddPostgresMessagePersistence(
-            connectionStringName: AspireApplicationResources.PostgresDatabase.Catalogs
-        );
 
         return builder;
     }

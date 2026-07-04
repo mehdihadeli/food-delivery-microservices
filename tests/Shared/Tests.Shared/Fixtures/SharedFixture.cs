@@ -3,12 +3,9 @@ using System.Security.Claims;
 using AutoBogus;
 using BuildingBlocks.Abstractions.Commands;
 using BuildingBlocks.Abstractions.Messages;
-using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Abstractions.Queries;
 using BuildingBlocks.Caching;
 using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Messages.MessagePersistence;
-using BuildingBlocks.Core.Messages.MessagePersistence.BackgroundServices;
 using BuildingBlocks.Core.Persistence;
 using BuildingBlocks.Core.Types;
 using BuildingBlocks.Integration.Wolverine;
@@ -158,11 +155,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             );
 
             keyValues.Add(
-                $"{nameof(MessagePersistenceOptions)}__{nameof(PostgresOptions.ConnectionString)}",
-                PostgresContainerFixture.PostgresContainer.GetConnectionString()
-            );
-
-            keyValues.Add(
                 $"{nameof(MongoOptions)}__{nameof(MongoOptions.ConnectionString)}",
                 MongoContainerFixture.ConnectionString
             );
@@ -298,7 +290,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             var commandBus = sp.GetRequiredService<BuildingBlocks.Abstractions.Commands.ICommandBus>();
 
             return await sp.TrackActivity()
-                .IncludeExternalTransports()
                 .ExecuteAndWaitAsync(
                     (Func<IMessageContext, Task>)(
                         async _ => response = await commandBus.SendAsync(command, cancellationToken)
@@ -318,7 +309,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             var commandBus = sp.GetRequiredService<BuildingBlocks.Abstractions.Commands.ICommandBus>();
 
             return await sp.TrackActivity()
-                .IncludeExternalTransports()
                 .ExecuteAndWaitAsync(
                     (Func<IMessageContext, Task>)(async _ => await commandBus.SendAsync(command, cancellationToken))
                 );
@@ -352,7 +342,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             var bus = sp.GetRequiredService<IExternalEventBus>();
 
             return await sp.TrackActivity()
-                .IncludeExternalTransports()
                 .ExecuteAndWaitAsync(
                     (Func<IMessageContext, Task>)(async _ => await bus.PublishAsync(message, cancellationToken))
                 );
@@ -372,7 +361,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             var bus = sp.GetRequiredService<IExternalEventBus>();
 
             return await sp.TrackActivity()
-                .IncludeExternalTransports()
                 .ExecuteAndWaitAsync(
                     (Func<IMessageContext, Task>)(async _ => await bus.PublishAsync(messageEnvelope, cancellationToken))
                 );
@@ -420,12 +408,21 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
         {
             return;
         }
-
-        await ShouldProcessingOutboxMessage<T>(cancellationToken);
     }
 
     public async Task ShouldSending<T>(CancellationToken cancellationToken = default)
         where T : class, IMessage
+    {
+        var trackedSession = GetTrackedSession();
+
+        trackedSession.FindEnvelopesWithMessageType<T>(MessageEventType.Sent).Should().NotBeEmpty();
+        trackedSession.FindEnvelopesWithMessageType<Fault<T>>(MessageEventType.AutoFaultPublished).Should().BeEmpty();
+
+        await Task.CompletedTask;
+    }
+
+    public async Task ShouldSendingInternalCommand<T>(CancellationToken cancellationToken = default)
+        where T : class, IInternalCommand
     {
         var trackedSession = GetTrackedSession();
 
@@ -500,56 +497,6 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     //
     //     return hypothesis;
     // }
-
-    public async ValueTask ShouldProcessingOutboxMessage<TMessage>(CancellationToken cancellationToken = default)
-        where TMessage : class, IMessage
-    {
-        await WaitUntilConditionMet(async () =>
-        {
-            return await ExecuteScopeAsync(async sp =>
-            {
-                var messagePersistenceService = sp.GetService<IMessagePersistenceService>();
-                messagePersistenceService.NotBeNull();
-
-                var filter = await messagePersistenceService.GetByFilterAsync(
-                    x =>
-                        x.DeliveryType == MessageDeliveryType.Outbox
-                        && TypeMapper.AddFullTypeName(typeof(TMessage)) == x.DataType,
-                    cancellationToken
-                );
-
-                var res = filter.Any(x => x.MessageStatus == MessageStatus.Delivered);
-
-                return res;
-            });
-        });
-    }
-
-    public async ValueTask ShouldProcessingInternalCommand<TInternalCommand>(
-        CancellationToken cancellationToken = default
-    )
-        where TInternalCommand : class, IInternalCommand
-    {
-        await WaitUntilConditionMet(async () =>
-        {
-            return await ExecuteScopeAsync(async sp =>
-            {
-                var messagePersistenceService = sp.GetService<IMessagePersistenceService>();
-                messagePersistenceService.NotBeNull();
-
-                var filter = await messagePersistenceService.GetByFilterAsync(
-                    x =>
-                        x.DeliveryType == MessageDeliveryType.Internal
-                        && TypeMapper.AddFullTypeName(typeof(TInternalCommand)) == x.DataType,
-                    cancellationToken
-                );
-
-                var res = filter.Any(x => x.MessageStatus == MessageStatus.Delivered);
-
-                return res;
-            });
-        });
-    }
 
     private HttpClient CreateAdminHttpClient()
     {

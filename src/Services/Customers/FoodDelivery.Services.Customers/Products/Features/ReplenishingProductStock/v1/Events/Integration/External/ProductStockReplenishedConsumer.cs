@@ -1,5 +1,4 @@
 using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Integration.Wolverine;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 using FoodDelivery.Services.Shared.Catalogs.Products.Events.Integration.v1;
@@ -14,8 +13,7 @@ namespace FoodDelivery.Services.Customers.Products.Features.ReplenishingProductS
 public class ProductStockReplenishedConsumer(
     ICommandBus commandBus,
     ILogger<ProductStockReplenishedConsumer> logger,
-    HeaderPropagationValues headerPropagationValues,
-    IMessagePersistenceService messagePersistenceService
+    HeaderPropagationValues headerPropagationValues
 )
 {
     // If this handler is called successfully, it will send a ACK to rabbitmq for removing message from the queue and if we have an exception it send an NACK to rabbitmq
@@ -26,7 +24,6 @@ public class ProductStockReplenishedConsumer(
             message,
             envelope,
             headerPropagationValues,
-            messagePersistenceService,
             async productStockReplenished =>
             {
                 await commandBus.SendAsync(

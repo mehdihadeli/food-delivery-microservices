@@ -5,7 +5,6 @@ using BuildingBlocks.Core.Extensions;
 using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Pipelines;
 using BuildingBlocks.Integration.Wolverine.Extensions;
-using BuildingBlocks.Messaging.Persistence.Postgres;
 using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
 using BuildingBlocks.Validation;
 using BuildingBlocks.Validation.Extensions;
@@ -49,7 +48,9 @@ public static partial class HostApplicationBuilderExtensions
             configureWolverineBusOptions: msgCfg =>
             {
                 msgCfg.AutoConfigMessagesTopology = false;
+                msgCfg.EnableDurability = true;
             },
+            durabilityConnectionStringName: AspireApplicationResources.PostgresDatabase.Orders,
             assemblies: [typeof(OrdersMetadata).Assembly]
         );
 
@@ -74,8 +75,6 @@ public static partial class HostApplicationBuilderExtensions
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(InvalidateCachingBehavior<,>));
 
         builder.Services.AddCustomValidators(typeof(OrdersMetadata).Assembly);
-
-        builder.AddPostgresMessagePersistence(connectionStringName: AspireApplicationResources.PostgresDatabase.Orders);
 
         return builder;
     }

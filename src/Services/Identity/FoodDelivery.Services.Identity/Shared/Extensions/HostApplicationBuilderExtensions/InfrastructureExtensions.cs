@@ -6,7 +6,6 @@ using BuildingBlocks.Core.Persistence.EfCore;
 using BuildingBlocks.Core.Pipelines;
 using BuildingBlocks.Email;
 using BuildingBlocks.Integration.Wolverine.Extensions;
-using BuildingBlocks.Messaging.Persistence.Postgres;
 using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
 using BuildingBlocks.SerilogLogging;
 using BuildingBlocks.Validation;
@@ -54,7 +53,9 @@ public static partial class HostApplicationBuilderExtensions
             configureWolverineBusOptions: msgCfg =>
             {
                 msgCfg.AutoConfigMessagesTopology = false;
+                msgCfg.EnableDurability = true;
             },
+            durabilityConnectionStringName: AspireApplicationResources.PostgresDatabase.Identity,
             assemblies: [typeof(IdentityMetadata).Assembly]
         );
 
@@ -81,10 +82,6 @@ public static partial class HostApplicationBuilderExtensions
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(InvalidateCachingBehavior<,>));
 
         builder.Services.AddCustomValidators(typeof(IdentityMetadata).Assembly);
-
-        builder.AddPostgresMessagePersistence(
-            connectionStringName: AspireApplicationResources.PostgresDatabase.Identity
-        );
 
         builder.AddCustomIdentity();
 

@@ -1,4 +1,3 @@
-using BuildingBlocks.Abstractions.Messages.MessagePersistence;
 using BuildingBlocks.Integration.Wolverine;
 using FoodDelivery.Services.Shared.Catalogs.Suppliers.Events.Integration.v1;
 using Microsoft.AspNetCore.HeaderPropagation;
@@ -8,10 +7,7 @@ using Wolverine;
 namespace FoodDelivery.Services.Catalogs.Suppliers.Features.SupplierDeleted.Events.Integration.External;
 
 [AsyncApi]
-public class SupplierDeletedConsumer(
-    HeaderPropagationValues headerPropagationValues,
-    IMessagePersistenceService messagePersistenceService
-)
+public class SupplierDeletedConsumer(HeaderPropagationValues headerPropagationValues)
 {
     public Task Handle(SupplierDeletedV1 message, Envelope envelope)
     {
@@ -19,7 +15,6 @@ public class SupplierDeletedConsumer(
             message,
             envelope,
             headerPropagationValues,
-            messagePersistenceService,
             _ => Task.CompletedTask
         );
     }

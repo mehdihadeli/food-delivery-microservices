@@ -202,18 +202,18 @@
     <File Path="src\ApiGateway\Dockerfile.dev" />
   </Folder>
   <Folder Name="/src/Aspire/">
-    <Project Path="src\Aspire\FoodDelivery.AppHost\FoodDelivery.AppHost.csproj" Type="C#" />
-    <Project Path="src\Aspire\FoodDelivery.ServiceDefaults\FoodDelivery.ServiceDefaults.csproj" Type="C#" />
+    <Project Path="src\Aspire\FoodDelivery.AppHost\FoodDelivery.AppHost.csproj" />
+    <Project Path="src\Aspire\FoodDelivery.ServiceDefaults\FoodDelivery.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/src/Bffs/" />
   <Folder Name="/src/Bffs/Api.Bff/">
-    <Project Path="src\Bffs\Api.Bff\FoodDelivery.Api.Bff\FoodDelivery.Api.Bff.csproj" Type="C#" />
+    <Project Path="src\Bffs\Api.Bff\FoodDelivery.Api.Bff\FoodDelivery.Api.Bff.csproj" />
   </Folder>
   <Folder Name="/src/Bffs/Mobile.Bff/">
-    <Project Path="src\Bffs\Mobile.Bff\FoodDelivery.Mobile.Bff\FoodDelivery.Mobile.Bff.csproj" Type="C#" />
+    <Project Path="src\Bffs\Mobile.Bff\FoodDelivery.Mobile.Bff\FoodDelivery.Mobile.Bff.csproj" />
   </Folder>
   <Folder Name="/src/Bffs/Spa.Bff/">
-    <Project Path="src\Bffs\Spa.Bff\FoodDelivery.Spa.Bff\FoodDelivery.Spa.Bff.csproj" Type="C#" />
+    <Project Path="src\Bffs\Spa.Bff\FoodDelivery.Spa.Bff\FoodDelivery.Spa.Bff.csproj" />
   </Folder>
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj" />
@@ -221,8 +221,6 @@
     <Project Path="src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Email/BuildingBlocks.Email.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.HealthCheck/BuildingBlocks.HealthCheck.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Integration.Wolverine/BuildingBlocks.Integration.Wolverine.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Messaging.Persistence.Postgres/BuildingBlocks.Messaging.Persistence.Postgres.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.OpenApi/BuildingBlocks.OpenApi.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.EventStoreDB/BuildingBlocks.Persistence.EventStoreDB.csproj" />
@@ -234,11 +232,11 @@
     <Project Path="src/BuildingBlocks/BuildingBlocks.SerilogLogging/BuildingBlocks.SerilogLogging.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj" />
-    <Project Path="src\BuildingBlocks\BuildingBlocks.AspireIntegrations\BuildingBlocks.AspireIntegrations.csproj" Type="C#" />
-    <Project Path="src\BuildingBlocks\BuildingBlocks.Caching.AzureRedis\BuildingBlocks.Caching.AzureRedis.csproj" Type="C#" />
+    <Project Path="src\BuildingBlocks\BuildingBlocks.AspireIntegrations\BuildingBlocks.AspireIntegrations.csproj" />
+    <Project Path="src\BuildingBlocks\BuildingBlocks.Caching.AzureRedis\BuildingBlocks.Caching.AzureRedis.csproj" />
     <Project Path="src\BuildingBlocks\BuildingBlocks.OpenTelemetry\BuildingBlocks.OpenTelemetry.csproj" />
-    <Project Path="src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.AzureCosmosDB\BuildingBlocks.Persistence.EfCore.AzureCosmosDB.csproj" Type="C#" />
-    <Project Path="src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.AzurePostgres\BuildingBlocks.Persistence.EfCore.AzurePostgres.csproj" Type="C#" />
+    <Project Path="src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.AzureCosmosDB\BuildingBlocks.Persistence.EfCore.AzureCosmosDB.csproj" />
+    <Project Path="src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.AzurePostgres\BuildingBlocks.Persistence.EfCore.AzurePostgres.csproj" />
     <File Path="src\BuildingBlocks\Directory.Build.props" />
   </Folder>
   <Folder Name="/src/Services/" />
@@ -318,7 +316,7 @@
   </Folder>
   <Folder Name="/src/UIs/" />
   <Folder Name="/src/UIs/BlazorWebApp/">
-    <Project Path="src\UIs\BlazorWebApp\FoodDelivery.BlazorWebApp\FoodDelivery.BlazorWebApp.csproj" Type="C#" />
+    <Project Path="src\UIs\BlazorWebApp\FoodDelivery.BlazorWebApp\FoodDelivery.BlazorWebApp.csproj" />
   </Folder>
   <Folder Name="/src/UIs/Spa/">
     <Project Path="src\UIs\Spa\react-food-delivery\react-food-delivery.esproj">
@@ -330,8 +328,8 @@
     <File Path="tests/Directory.Packages.props" />
   </Folder>
   <Folder Name="/tests/ApiGateway/">
-    <Project Path="tests\ApiGateway\FoodDelivery.ApiGateway.TestShared\FoodDelivery.ApiGateway.TestShared.csproj" Type="C#" />
-    <Project Path="tests\ApiGateway\FoodDelivery.ApiGateway.UnitTests\FoodDelivery.ApiGateway.UnitTests.csproj" Type="C#" />
+    <Project Path="tests\ApiGateway\FoodDelivery.ApiGateway.TestShared\FoodDelivery.ApiGateway.TestShared.csproj" />
+    <Project Path="tests\ApiGateway\FoodDelivery.ApiGateway.UnitTests\FoodDelivery.ApiGateway.UnitTests.csproj" />
   </Folder>
   <Folder Name="/tests/BuildingBlocks/" />
   <Folder Name="/tests/BuildingBlocks/Wolverine/" />

@@ -63,13 +63,15 @@ public static class WolverineMessageTopologyExtensions
                 }
             );
 
-        options.ListenToRabbitQueue(
-            queueName,
-            queue =>
-            {
-                queue.IsDurable = true;
-            }
-        );
+        options
+            .ListenToRabbitQueue(
+                queueName,
+                queue =>
+                {
+                    queue.IsDurable = true;
+                }
+            )
+            .UseDurableInbox();
     }
 
     internal static IReadOnlyCollection<RabbitMqListenerTopology> GetRegisteredListenerTopologies()

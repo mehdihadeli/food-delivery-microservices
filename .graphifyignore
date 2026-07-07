@@ -1,0 +1,15 @@
+*
+!.github/
+!.github/**
+
+!deployments/
+!deployments/**
+
+!scripts/
+!scripts/**
+
+!src/
+!src/**
+
+!tests/
+!tests/**

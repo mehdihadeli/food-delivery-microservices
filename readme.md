@@ -256,74 +256,50 @@ dotnet dev-certs https --trust
 
 ### Conventional Commit
 
-In this app I use [Conventional Commit](https://www.conventionalcommits.org/en/) and for enforcing its rule I use [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) and [typicode/husky](https://github.com/typicode/husky) with a pre-commit hook. For read more about its setup see [commitlint docs](https://github.com/conventional-changelog/commitlint#getting-started) and [this article](https://betterprogramming.pub/how-to-lint-commit-messages-with-husky-and-commitlint-b51d20a5e514) and [this article](https://www.code4it.dev/blog/conventional-commit-with-githooks).
+In this app I use [Conventional Commit](https://www.conventionalcommits.org/en/) and enforce it with [Husky.Net](https://alirezanet.github.io/Husky.Net/) and the repository hook scripts in `.husky`. The commit message validation lives in `.husky/commit-msg`, so there is no npm `husky` or `commitlint` dependency to install.
 
-Here I configured a husky hook for conventional commits:
+Hook setup for contributors:
 
-1. Install NPM:
-
-```bash
-npm init
-```
-
-2. Install Husky:
+1. Restore local .NET tools:
 
 ```bash
-npm install husky --save-dev
+dotnet tool restore
 ```
 
-3. Add `prepare` and `install-dev-cert-bash` commands for installing and activating `husky hooks` and [`dotnet tools`](https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools) in the package.json file:
-
-- Actually [prepare](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts) is a special `life cycle scripts` that runs automatically on `local npm install` without any arguments.
-- The [scripts](https://docs.npmjs.com/cli/v10/using-npm/scripts) property of your package.json file supports a number of built-in scripts and their preset life cycle events as well as arbitrary scripts. These all can be executed by running `npm run-script <stage>` or `npm run <stage>` for short.
-- For working `dotnet tools restore` commands to install and update local packages we should have a valid `nuget.config` file in the root of our project. we can create a `nuget.config` file with using `dotnet new nugetconfig` command.
+1. Install git hooks through Husky.Net:
 
 ```bash
-npm pkg set scripts.prepare="husky && dotnet tool restore"
-
-npm pkg set scripts.install-dev-cert-bash="curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
+dotnet tool run husky -- install
 ```
 
-```json
-{
-	"scripts": {
-		"prepare": "husky && dotnet tool restore",
-		"install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
-	}
-}
-```
-
-4. Install CommitLint:
+1. Optional: use the existing make target to do both in one step:
 
 ```bash
-npm install --save-dev @commitlint/config-conventional @commitlint/cli
+make prepare
 ```
 
-5. Create the `commitlint.config.js` file with this content:
+1. Commit message format enforced by `.husky/commit-msg`:
 
-```js
-module.exports = { extends: '@commitlint/config-conventional']};
+```text
+<type>(<optional scope>)!: <description>
 ```
 
-6. Create the Husky folder:
+Example:
+
+```text
+feat(catalogs): add inventory filter
+```
+
+Available hook groups are defined in `.husky/task-runner.json`:
+
+- `pre-commit`: formatting, style checks, analyzer checks
+- `pre-push`: release build and gitleaks scan
+
+You can run them manually with Husky.Net:
 
 ```bash
-mkdir .husky
-```
-
-7. Link Husky and CommitLint:
-
-```bash
-npx husky add .husky/commit-msg 'npx --no -- commitlint --edit ${1}'
-```
-
-8. Activate and installing all husky hooks with this command:
-
-```bash
-npm run prepare
-
-# this command should run in git-bash on the windows or bash in the linux
-npm run install-dev-cert-bash
+dotnet tool run husky -- run --group pre-commit
+dotnet tool run husky -- run --group pre-push
 ```
 
 ### Formatting
@@ -344,21 +320,9 @@ Disabled all advanced option checkboxes.
 All other values were left default
 ```
 
-Here I configured a husky hook for formatting:
+Here formatting is wired through Husky.Net and the task definitions in `.husky/task-runner.json`.
 
-1. Install NPM:
-
-```bash
-npm init
-```
-
-2. Install Husky:
-
-```bash
-npm install husky --save-dev
-```
-
-3. Install manifest file with `dotnet new tool-manifest` because it doesn't exist at first time and then install our required packages as dependency with [dotnet tool install](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-install), that will add to [dotnet-tools.json](.config/dotnet-tools.json) file in a `.config` directory:
+1. Install manifest file with `dotnet new tool-manifest` because it doesn't exist at first time and then install our required packages as dependency with [dotnet tool install](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-install), that will add to [dotnet-tools.json](.config/dotnet-tools.json) file in a `.config` directory:
 
 ```bash
 dotnet new tool-manifest
@@ -366,29 +330,11 @@ dotnet new tool-manifest
 dotnet tool install csharpier
 ```
 
-4. Add `prepare` command for installing and activating `husky hooks` and `restoring` our [dotnet tools](.config/dotnet-tools.json) in the previous step to the [package.json](package.json) file:
+1. Restore tools and install hooks:
 
 ```bash
-npm pkg set scripts.prepare="husky && dotnet tool restore"
-```
-
-5. Create the Husky folder:
-
-```bash
-mkdir .husky
-```
-
-6. Link Husky and formatting tools:
-
-```bash
-npx husky add .husky/pre-commit "dotnet format --verbosity diagnostic"
-npx husky add .husky/pre-commit "dotnet csharpier . && git add -A ."
-```
-
-7. Activate and installing all husky hooks with this command:
-
-```bash
-npm run prepare
+dotnet tool restore
+dotnet tool run husky -- install
 ```
 
 ### Analizers

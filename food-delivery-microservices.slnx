@@ -44,7 +44,6 @@
     <File Path=".github\workflows\_semantic-version.yml" />
   </Folder>
   <Folder Name="/solution-items/.husky/">
-    <File Path=".husky/commit-msg" />
     <File Path=".husky/pre-commit" />
   </Folder>
   <Folder Name="/solution-items/.vscode/">

@@ -1,0 +1,21 @@
+---
+id: OrdersService
+name: Orders Service
+version: 1.0.0
+summary: Manages orders and order aggregates using event sourcing
+badges:
+  - content: Event-Sourced
+    textColor: orange
+    backgroundColor: orange
+    icon: CircleStackIcon
+receives:
+  - id: CustomerCreatedV1
+    version: 1.0.0
+owners:
+  - mehdihadeli
+repository:
+  language: C#
+  url: "https://github.com/mehdihadeli/food-delivery-microservices"
+---
+
+Orders Service consumes customer creation events to build its customer view.

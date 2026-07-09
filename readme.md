@@ -36,6 +36,9 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
   - [Technologies - Libraries](#technologies---libraries)
   - [The Domain And Bounded Context - Service Boundary](#the-domain-and-bounded-context---service-boundary)
   - [Application Architecture](#application-architecture)
+  - [Wolverine Transactional Messaging](#wolverine-transactional-messaging)
+    - [What Wolverine Handles](#what-wolverine-handles)
+    - [Transaction Boundary](#transaction-boundary)
   - [Application Structure](#application-structure)
     - [High Level Structure](#high-level-structure)
   - [Vertical Slice Flow](#vertical-slice-flow)
@@ -57,26 +60,27 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
 
 ## Features
 
-- ✅ Using `Microservices` and `Vertical Slice Architecture` as a high level architecture
-- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and Wolverine
-- ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
-- ✅ Using `Event Sourcing` and `EventStoreDB` in `Audit Based` services like Orders, Payment
-- ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
-- ✅ Using `CQRS Pattern` on top of `MediatR` library and spliting `read models` and `write models`
-- ✅ Using `OpenTelemetry Collector` to receive, process, and export telemetry data to various backends, including Jaeger and Tempo for tracing, Loki and Kibana for logs, and Prometheus for metrics.
-- ✅ Using Wolverine durable messaging with PostgreSQL persistence for `Outbox`, `Inbox`, and durable local processing in a transactional boundary with EF Core
-- ✅ Using Wolverine durable inbox for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in receiver side and practical exactly-once processing semantics per message id
-- ✅ Using `UnitTests` and `NSubstitute` for mocking dependencies
-- ✅ Using `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) library for cleanup our test enviroment through docker containers
-- ✅ Using `Minimal APIs` for handling requests
-- ✅ Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
-- ✅ Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
-- ✅ Using docker and `docker-compose` for deployment
-- ✅ Using [YARP](https://microsoft.github.io/reverse-proxy/) reverse proxy as API Gateway
-- ✅ Using different type of tests like `Unit Tests`, `Integration Tests`, `End-To-End Tests` and [testcontainers](https://microsoft.github.io/reverse-proxy/) for testing in isolation
-- ✅ Using `OpenTelemetry` for collecting `Metrics` and `Distributed Traces`
-- ✅ Using .NET Aspire for cloud-native application orchestration and enhanced developer experience
-- 🚧 Using `Helm`, `Kubernetes` and `Kustomize` for deployment
+- [x] Using `Microservices` and `Vertical Slice Architecture` as a high level architecture
+- [x] Using `Event Driven Architecture` on top of RabbitMQ Message Broker and Wolverine
+- [x] Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
+- [x] Using `Event Sourcing` and `EventStoreDB` in `Audit Based` services like Orders, Payment
+- [x] Using `Data Centeric Architecture` based on `CRUD` in Identity Service
+- [x] Using `CQRS Pattern` on top of `MediatR` library and spliting `read models` and `write models`
+- [x] Using `OpenTelemetry Collector` to receive, process, and export telemetry data to various backends, including Jaeger and Tempo for tracing, Loki and Kibana for logs, and Prometheus for metrics.
+- [x] Using Wolverine durable messaging with PostgreSQL persistence for `Outbox`, `Inbox`, and durable local processing in a transactional boundary with EF Core
+- [x] Using Wolverine durable inbox for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in receiver side and practical exactly-once processing semantics per message id
+- [x] Using `UnitTests` and `NSubstitute` for mocking dependencies
+- [x] Using `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) library for cleanup our test enviroment through docker containers
+- [x] Using `Minimal APIs` for handling requests
+- [x] Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
+- [x] Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
+- [x] Using docker and `docker-compose` for deployment
+- [x] Using [YARP](https://microsoft.github.io/reverse-proxy/) reverse proxy as API Gateway
+- [x] Using different type of tests like `Unit Tests`, `Integration Tests`, `End-To-End Tests` and [testcontainers](https://microsoft.github.io/reverse-proxy/) for testing in isolation
+- [x] Using `OpenTelemetry` for collecting `Metrics` and `Distributed Traces`
+- [x] Using .NET Aspire for cloud-native application orchestration and enhanced developer experience
+- [ ] Using `Helm`, `Kubernetes` and `Kustomize` for deployment
+- [x] Using [EventCatalog](https://www.eventcatalog.dev/) to document asynchronous messages, domains, and services — [view live catalog](https://mehdihadeli.github.io/food-delivery-microservices/)
 
 ## Plan
 

@@ -1,0 +1,41 @@
+---
+id: fooddelivery
+name: Food Delivery
+summary: Top-level domain for the food delivery microservices platform
+version: 1.0.0
+owners:
+  - mehdihadeli
+  - platform
+domains:
+  - id: catalogs
+  - id: customers
+  - id: identity
+  - id: orders
+  - id: billing
+  - id: carts
+  - id: checkouts
+  - id: pricing
+  - id: recommendations
+  - id: restaurants
+  - id: reviews
+  - id: search
+  - id: shippings
+  - id: stocks
+  - id: grocerystores
+badges:
+  - content: Event-Driven
+    backgroundColor: purple
+    textColor: purple
+    icon: BoltIcon
+  - content: Microservices
+    backgroundColor: blue
+    textColor: blue
+    icon: ServerIcon
+repository:
+  language: C#
+  url: "https://github.com/mehdihadeli/food-delivery-microservices"
+---
+
+The Food Delivery domain covers all bounded contexts required to run a cloud-native food delivery platform.
+
+Asynchronous communication between services is handled by Wolverine on top of RabbitMQ, with PostgreSQL-backed durable outbox/inbox for exactly-once processing semantics.

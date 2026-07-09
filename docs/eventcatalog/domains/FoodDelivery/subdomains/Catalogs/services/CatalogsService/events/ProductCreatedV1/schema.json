@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProductCreatedV1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "messageId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "id": {
+      "type": "integer",
+      "format": "int64"
+    },
+    "name": {
+      "type": "string"
+    },
+    "categoryId": {
+      "type": "integer",
+      "format": "int64"
+    },
+    "categoryName": {
+      "type": "string"
+    },
+    "stock": {
+      "type": "integer",
+      "format": "int32"
+    }
+  },
+  "required": ["messageId", "created", "id", "name", "categoryId", "categoryName", "stock"]
+}

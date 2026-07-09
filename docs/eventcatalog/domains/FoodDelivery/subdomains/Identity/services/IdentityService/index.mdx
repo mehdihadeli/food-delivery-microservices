@@ -1,0 +1,23 @@
+---
+id: IdentityService
+name: Identity Service
+version: 1.0.0
+summary: Manages users, roles, claims, and authentication state
+badges:
+  - content: Event-Driven
+    textColor: purple
+    backgroundColor: purple
+    icon: BoltIcon
+sends:
+  - id: UserRegisteredV1
+    version: 1.0.0
+  - id: UserStateUpdatedV1
+    version: 1.0.0
+owners:
+  - mehdihadeli
+repository:
+  language: C#
+  url: "https://github.com/mehdihadeli/food-delivery-microservices"
+---
+
+Identity Service publishes lifecycle events for user registration and state changes.

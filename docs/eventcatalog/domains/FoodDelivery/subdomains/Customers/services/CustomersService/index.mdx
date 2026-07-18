@@ -1,0 +1,32 @@
+---
+id: CustomersService
+name: Customers Service
+version: 1.0.0
+summary: Manages customers and restock subscriptions
+badges:
+  - content: Event-Driven
+    textColor: purple
+    backgroundColor: purple
+    icon: BoltIcon
+sends:
+  - id: CustomerCreatedV1
+    version: 1.0.0
+  - id: CustomerUpdatedV1
+    version: 1.0.0
+  - id: RestockSubscriptionCreatedV1
+    version: 1.0.0
+receives:
+  - id: UserRegisteredV1
+    version: 1.0.0
+  - id: ProductCreatedV1
+    version: 1.0.0
+  - id: ProductStockReplenishedV1
+    version: 1.0.0
+owners:
+  - mehdihadeli
+repository:
+  language: C#
+  url: "https://github.com/mehdihadeli/food-delivery-microservices"
+---
+
+Customers Service consumes identity and catalog events to maintain customer and product views. It publishes customer and restock-subscription events.

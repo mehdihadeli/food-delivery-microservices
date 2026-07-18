@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CustomerUpdatedV1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "messageId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "id": {
+      "type": "integer",
+      "format": "int64"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "phoneNumber": {
+      "type": "string"
+    },
+    "identityId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "birthDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "nationality": {
+      "type": ["string", "null"]
+    },
+    "address": {
+      "type": ["string", "null"]
+    }
+  },
+  "required": [
+    "messageId",
+    "created",
+    "id",
+    "firstName",
+    "lastName",
+    "email",
+    "phoneNumber",
+    "identityId",
+    "createdAt"
+  ]
+}

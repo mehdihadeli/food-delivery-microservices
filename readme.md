@@ -36,6 +36,9 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
   - [Technologies - Libraries](#technologies---libraries)
   - [The Domain And Bounded Context - Service Boundary](#the-domain-and-bounded-context---service-boundary)
   - [Application Architecture](#application-architecture)
+  - [Wolverine Transactional Messaging](#wolverine-transactional-messaging)
+    - [What Wolverine Handles](#what-wolverine-handles)
+    - [Transaction Boundary](#transaction-boundary)
   - [Application Structure](#application-structure)
     - [High Level Structure](#high-level-structure)
   - [Vertical Slice Flow](#vertical-slice-flow)
@@ -57,26 +60,27 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
 
 ## Features
 
-- ✅ Using `Microservices` and `Vertical Slice Architecture` as a high level architecture
-- ✅ Using `Event Driven Architecture` on top of RabbitMQ Message Broker and Wolverine
-- ✅ Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
-- ✅ Using `Event Sourcing` and `EventStoreDB` in `Audit Based` services like Orders, Payment
-- ✅ Using `Data Centeric Architecture` based on `CRUD` in Identity Service
-- ✅ Using `CQRS Pattern` on top of `MediatR` library and spliting `read models` and `write models`
-- ✅ Using `OpenTelemetry Collector` to receive, process, and export telemetry data to various backends, including Jaeger and Tempo for tracing, Loki and Kibana for logs, and Prometheus for metrics.
-- ✅ Using Wolverine durable messaging with PostgreSQL persistence for `Outbox`, `Inbox`, and durable local processing in a transactional boundary with EF Core
-- ✅ Using Wolverine durable inbox for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in receiver side and practical exactly-once processing semantics per message id
-- ✅ Using `UnitTests` and `NSubstitute` for mocking dependencies
-- ✅ Using `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) library for cleanup our test enviroment through docker containers
-- ✅ Using `Minimal APIs` for handling requests
-- ✅ Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
-- ✅ Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
-- ✅ Using docker and `docker-compose` for deployment
-- ✅ Using [YARP](https://microsoft.github.io/reverse-proxy/) reverse proxy as API Gateway
-- ✅ Using different type of tests like `Unit Tests`, `Integration Tests`, `End-To-End Tests` and [testcontainers](https://microsoft.github.io/reverse-proxy/) for testing in isolation
-- ✅ Using `OpenTelemetry` for collecting `Metrics` and `Distributed Traces`
-- ✅ Using .NET Aspire for cloud-native application orchestration and enhanced developer experience
-- 🚧 Using `Helm`, `Kubernetes` and `Kustomize` for deployment
+- [x] Using `Microservices` and `Vertical Slice Architecture` as a high level architecture
+- [x] Using `Event Driven Architecture` on top of RabbitMQ Message Broker and Wolverine
+- [x] Using `Domain Driven Design`in most of services like Customers, Catalogs, ...
+- [x] Using `Event Sourcing` and `EventStoreDB` in `Audit Based` services like Orders, Payment
+- [x] Using `Data Centeric Architecture` based on `CRUD` in Identity Service
+- [x] Using `CQRS Pattern` on top of `MediatR` library and spliting `read models` and `write models`
+- [x] Using `OpenTelemetry Collector` to receive, process, and export telemetry data to various backends, including Jaeger and Tempo for tracing, Loki and Kibana for logs, and Prometheus for metrics.
+- [x] Using Wolverine durable messaging with PostgreSQL persistence for `Outbox`, `Inbox`, and durable local processing in a transactional boundary with EF Core
+- [x] Using Wolverine durable inbox for handling [Idempotency](https://www.cloudcomputingpatterns.org/idempotent_processor/) in receiver side and practical exactly-once processing semantics per message id
+- [x] Using `UnitTests` and `NSubstitute` for mocking dependencies
+- [x] Using `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) library for cleanup our test enviroment through docker containers
+- [x] Using `Minimal APIs` for handling requests
+- [x] Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
+- [x] Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
+- [x] Using docker and `docker-compose` for deployment
+- [x] Using [YARP](https://microsoft.github.io/reverse-proxy/) reverse proxy as API Gateway
+- [x] Using different type of tests like `Unit Tests`, `Integration Tests`, `End-To-End Tests` and [testcontainers](https://microsoft.github.io/reverse-proxy/) for testing in isolation
+- [x] Using `OpenTelemetry` for collecting `Metrics` and `Distributed Traces`
+- [x] Using .NET Aspire for cloud-native application orchestration and enhanced developer experience
+- [ ] Using `Helm`, `Kubernetes` and `Kustomize` for deployment
+- [x] Using [EventCatalog](https://www.eventcatalog.dev/) to document asynchronous messages, domains, and services — [view live catalog](https://mehdihadeli.github.io/food-delivery-microservices/)
 
 ## Plan
 
@@ -256,74 +260,50 @@ dotnet dev-certs https --trust
 
 ### Conventional Commit
 
-In this app I use [Conventional Commit](https://www.conventionalcommits.org/en/) and for enforcing its rule I use [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) and [typicode/husky](https://github.com/typicode/husky) with a pre-commit hook. For read more about its setup see [commitlint docs](https://github.com/conventional-changelog/commitlint#getting-started) and [this article](https://betterprogramming.pub/how-to-lint-commit-messages-with-husky-and-commitlint-b51d20a5e514) and [this article](https://www.code4it.dev/blog/conventional-commit-with-githooks).
+In this app I use [Conventional Commit](https://www.conventionalcommits.org/en/) and enforce it with [Husky.Net](https://alirezanet.github.io/Husky.Net/) and the repository hook scripts in `.husky`. The commit message validation lives in `.husky/commit-msg`, so there is no npm `husky` or `commitlint` dependency to install.
 
-Here I configured a husky hook for conventional commits:
+Hook setup for contributors:
 
-1. Install NPM:
-
-```bash
-npm init
-```
-
-2. Install Husky:
+1. Restore local .NET tools:
 
 ```bash
-npm install husky --save-dev
+dotnet tool restore
 ```
 
-3. Add `prepare` and `install-dev-cert-bash` commands for installing and activating `husky hooks` and [`dotnet tools`](https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools) in the package.json file:
-
-- Actually [prepare](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts) is a special `life cycle scripts` that runs automatically on `local npm install` without any arguments.
-- The [scripts](https://docs.npmjs.com/cli/v10/using-npm/scripts) property of your package.json file supports a number of built-in scripts and their preset life cycle events as well as arbitrary scripts. These all can be executed by running `npm run-script <stage>` or `npm run <stage>` for short.
-- For working `dotnet tools restore` commands to install and update local packages we should have a valid `nuget.config` file in the root of our project. we can create a `nuget.config` file with using `dotnet new nugetconfig` command.
+1. Install git hooks through Husky.Net:
 
 ```bash
-npm pkg set scripts.prepare="husky && dotnet tool restore"
-
-npm pkg set scripts.install-dev-cert-bash="curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
+dotnet tool run husky -- install
 ```
 
-```json
-{
-	"scripts": {
-		"prepare": "husky && dotnet tool restore",
-		"install-dev-cert-bash": "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v vs2019 -l ~/vsdbg"
-	}
-}
-```
-
-4. Install CommitLint:
+1. Optional: use the existing make target to do both in one step:
 
 ```bash
-npm install --save-dev @commitlint/config-conventional @commitlint/cli
+make prepare
 ```
 
-5. Create the `commitlint.config.js` file with this content:
+1. Commit message format enforced by `.husky/commit-msg`:
 
-```js
-module.exports = { extends: '@commitlint/config-conventional']};
+```text
+<type>(<optional scope>)!: <description>
 ```
 
-6. Create the Husky folder:
+Example:
+
+```text
+feat(catalogs): add inventory filter
+```
+
+Available hook groups are defined in `.husky/task-runner.json`:
+
+- `pre-commit`: formatting, style checks, analyzer checks
+- `pre-push`: release build and gitleaks scan
+
+You can run them manually with Husky.Net:
 
 ```bash
-mkdir .husky
-```
-
-7. Link Husky and CommitLint:
-
-```bash
-npx husky add .husky/commit-msg 'npx --no -- commitlint --edit ${1}'
-```
-
-8. Activate and installing all husky hooks with this command:
-
-```bash
-npm run prepare
-
-# this command should run in git-bash on the windows or bash in the linux
-npm run install-dev-cert-bash
+dotnet tool run husky -- run --group pre-commit
+dotnet tool run husky -- run --group pre-push
 ```
 
 ### Formatting
@@ -344,21 +324,9 @@ Disabled all advanced option checkboxes.
 All other values were left default
 ```
 
-Here I configured a husky hook for formatting:
+Here formatting is wired through Husky.Net and the task definitions in `.husky/task-runner.json`.
 
-1. Install NPM:
-
-```bash
-npm init
-```
-
-2. Install Husky:
-
-```bash
-npm install husky --save-dev
-```
-
-3. Install manifest file with `dotnet new tool-manifest` because it doesn't exist at first time and then install our required packages as dependency with [dotnet tool install](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-install), that will add to [dotnet-tools.json](.config/dotnet-tools.json) file in a `.config` directory:
+1. Install manifest file with `dotnet new tool-manifest` because it doesn't exist at first time and then install our required packages as dependency with [dotnet tool install](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-install), that will add to [dotnet-tools.json](.config/dotnet-tools.json) file in a `.config` directory:
 
 ```bash
 dotnet new tool-manifest
@@ -366,29 +334,11 @@ dotnet new tool-manifest
 dotnet tool install csharpier
 ```
 
-4. Add `prepare` command for installing and activating `husky hooks` and `restoring` our [dotnet tools](.config/dotnet-tools.json) in the previous step to the [package.json](package.json) file:
+1. Restore tools and install hooks:
 
 ```bash
-npm pkg set scripts.prepare="husky && dotnet tool restore"
-```
-
-5. Create the Husky folder:
-
-```bash
-mkdir .husky
-```
-
-6. Link Husky and formatting tools:
-
-```bash
-npx husky add .husky/pre-commit "dotnet format --verbosity diagnostic"
-npx husky add .husky/pre-commit "dotnet csharpier . && git add -A ."
-```
-
-7. Activate and installing all husky hooks with this command:
-
-```bash
-npm run prepare
+dotnet tool restore
+dotnet tool run husky -- install
 ```
 
 ### Analizers

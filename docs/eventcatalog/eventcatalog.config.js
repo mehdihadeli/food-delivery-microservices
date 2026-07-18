@@ -1,0 +1,20 @@
+/** @type {import('@eventcatalog/core/bin/eventcatalog.config').Config} */
+export default {
+  cId: "11111111-1111-1111-1111-111111111111",
+  title: "Food Delivery Microservices",
+  tagline: "Event-driven architecture catalog for the Food Delivery Microservices system",
+  organizationName: "Food Delivery",
+  homepageLink: "https://mehdihadeli.github.io/food-delivery-microservices",
+  repositoryUrl: "https://github.com/mehdihadeli/food-delivery-microservices",
+  editUrl: "https://github.com/mehdihadeli/food-delivery-microservices/edit/main/docs/eventcatalog",
+  theme: "sapphire",
+  trailingSlash: false,
+  base: process.env.BASE || "/",
+  mdxOptimize: true,
+  mermaid: { iconPacks: ["logos"] },
+  logo: { alt: "Food Delivery", src: "/logo.svg", text: "Food Delivery" },
+  rss: { enabled: true, limit: 20 },
+  api: { fullCatalogAPIEnabled: true },
+  visualiser: { channels: { renderMode: "flat" } },
+  llmsTxt: { enabled: true },
+};

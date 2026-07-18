@@ -4,10 +4,10 @@
 
 PROJECT_PATH ?= "."
 
-# Install Husky and .NET tools
+# Install Husky.Net hooks and restore .NET tools
 prepare:
-	husky
 	dotnet tool restore
+	dotnet tool run husky -- install
 
 # Install dev cert (Bash)
 install-dev-cert:
@@ -78,7 +78,7 @@ fix-all: fix-analyzers fix-format fix-style
 # Show help
 help:
 	@echo "Available targets:"
-	@echo "  prepare            - Install Husky and .NET tools"
+	@echo "  prepare            - Install Husky.Net hooks and restore .NET tools"
 	@echo "  install-dev-cert   - Install dev cert (Bash)"
 	@echo "  upgrade-packages   - Upgrade .NET packages"
 	@echo "  check-format       - Check C# formatting"

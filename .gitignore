@@ -275,6 +275,10 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# EventCatalog build output
+docs/eventcatalog/dist/
+docs/eventcatalog/.eventcatalog/
+
 # Visual Studio 6 build log
 *.plg
 
@@ -384,3 +388,5 @@ keys/
 
 .junie
 .aiassistant
+
+graphify-out

@@ -55,3 +55,23 @@ depends = ["restore", "hook"]
 [tasks.run]
 description = "Run the Aspire app host"
 run = "aspire run --project src/Aspire/FoodDelivery.AppHost/FoodDelivery.AppHost.csproj"
+
+[tasks."format:eventcatalog"]
+description = "Format EventCatalog documentation"
+run = "bun run format"
+dir = "docs/eventcatalog"
+
+[tasks."check:eventcatalog"]
+description = "Check EventCatalog lint and formatting"
+run = "bun run check"
+dir = "docs/eventcatalog"
+
+[tasks."build:eventcatalog"]
+description = "Build EventCatalog static site"
+run = "bun run build"
+dir = "docs/eventcatalog"
+
+[tasks."dev:eventcatalog"]
+description = "Run EventCatalog development server"
+run = "bun run dev"
+dir = "docs/eventcatalog"

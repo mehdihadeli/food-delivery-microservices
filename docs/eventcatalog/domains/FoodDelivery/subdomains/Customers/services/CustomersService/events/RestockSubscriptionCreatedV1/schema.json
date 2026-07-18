@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RestockSubscriptionCreatedV1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "messageId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "customerId": {
+      "type": "integer",
+      "format": "int64"
+    },
+    "email": {
+      "type": ["string", "null"]
+    }
+  },
+  "required": ["messageId", "created", "customerId"]
+}

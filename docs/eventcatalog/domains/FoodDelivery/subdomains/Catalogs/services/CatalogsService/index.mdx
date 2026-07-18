@@ -1,0 +1,34 @@
+---
+id: CatalogsService
+name: Catalogs Service
+version: 1.0.0
+summary: Manages products, suppliers, and stock in the catalog subdomain
+badges:
+  - content: Event-Driven
+    textColor: purple
+    backgroundColor: purple
+    icon: BoltIcon
+sends:
+  - id: ProductCreatedV1
+    version: 1.0.0
+  - id: ProductUpdatedV1
+    version: 1.0.0
+  - id: ProductStockDebitedV1
+    version: 1.0.0
+  - id: ProductStockReplenishedV1
+    version: 1.0.0
+receives:
+  - id: SupplierCreatedV1
+    version: 1.0.0
+  - id: SupplierUpdatedV1
+    version: 1.0.0
+  - id: SupplierDeletedV1
+    version: 1.0.0
+owners:
+  - mehdihadeli
+repository:
+  language: C#
+  url: "https://github.com/mehdihadeli/food-delivery-microservices"
+---
+
+Catalogs Service publishes product lifecycle and stock change events. It also consumes supplier events from the shared contracts.

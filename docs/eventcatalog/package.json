@@ -1,0 +1,22 @@
+{
+  "name": "@fooddelivery/eventcatalog",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "eventcatalog dev",
+    "build": "eventcatalog build",
+    "start": "eventcatalog start",
+    "preview": "eventcatalog preview",
+    "generate": "eventcatalog generate",
+    "lint": "eventcatalog-linter",
+    "format": "prettier --write .",
+    "check": "eventcatalog-linter && prettier --check ."
+  },
+  "dependencies": {
+    "@eventcatalog/core": "latest"
+  },
+  "devDependencies": {
+    "@eventcatalog/linter": "^1.1.1",
+    "prettier": "^3.8.4"
+  }
+}

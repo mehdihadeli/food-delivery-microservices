@@ -1,0 +1,5 @@
+node_modules
+.eventcatalog-core
+dist
+*.lock
+package-lock.json

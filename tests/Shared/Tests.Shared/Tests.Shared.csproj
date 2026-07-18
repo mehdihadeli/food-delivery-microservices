@@ -11,10 +11,8 @@
     <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
   </ItemGroup>
 
-  <!-- What xunit NuGet Packages Should I Use? - https://xunit.net/docs/nuget-packages-->
   <ItemGroup Label="XUnit">
-    <PackageReference Include="Shouldly" />
-    <PackageReference Include="Testcontainers.Redis" />
+    <PackageReference Include="xunit.v3.assert" />
     <PackageReference Include="xunit.v3.extensibility.core" />
   </ItemGroup>
   
@@ -29,6 +27,7 @@
     <PackageReference Include="Testcontainers.MsSql" />
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="Testcontainers.RabbitMq" />
+    <PackageReference Include="Testcontainers.Redis" />
     <PackageReference Include="WebMotions.Fake.Authentication.JwtBearer" />
     <PackageReference Include="WireMock.Net" />
     <PackageReference Include="Respawn" />

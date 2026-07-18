@@ -26,20 +26,16 @@
 
   <PropertyGroup Label="Testing Platform" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests'))">
     <OutputType>Exe</OutputType>
-    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
   </PropertyGroup>
 
   <ItemGroup Label="Testing Platform Packages" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests'))">
     <PackageReference Include="xunit.v3.mtp-v2" />
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
     <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
+    <PackageReference Include="Shouldly" />
   </ItemGroup>
 
-<!-- https://codyanhorn.tech/blog/excluding-your-net-test-project-from-code-coverage -->
-    <ItemGroup>
-        <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
-    </ItemGroup>
-  
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" PrivateAssets="all" Condition="'$(SkipVersion)' != 'true' AND $(MSBuildProjectExtension) == '.csproj'">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -49,12 +45,6 @@
     <ItemGroup Label="Testing Imports" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests'))">
         <Using Include="Xunit"/>
         <Using Include="Shouldly"/>
-    </ItemGroup>
-
-    <ItemGroup Label="Legacy Test Runner Cleanup" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests')) Or $([System.String]::Copy('$(MSBuildProjectName)').EndsWith('TestShared')) Or '$(MSBuildProjectName)' == 'Tests.Shared'">
-      <PackageReference Remove="Microsoft.NET.Test.Sdk" />
-      <PackageReference Remove="coverlet.msbuild" />
-      <PackageReference Remove="xunit.runner.visualstudio" />
     </ItemGroup>
 	
 </Project>

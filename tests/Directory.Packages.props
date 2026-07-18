@@ -43,10 +43,9 @@
     <PackageVersion Include="Testcontainers.RabbitMq" Version="4.6.0" />
     <PackageVersion Include="Testcontainers.Redis" Version="4.6.0" />
     <PackageVersion Include="WebMotions.Fake.Authentication.JwtBearer" Version="9.0.0" />
-    <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.v3.extensibility.core" Version="3.2.2" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
-    <PackageVersion Include="XunitContext" Version="3.3.2" />
+    <PackageVersion Include="xunit.v3.assert" Version="3.2.2" />
     <PackageVersion Include="WireMock.NET" Version="1.5.13" />
     <PackageVersion Include="Thinkcode.RabbitMQ.OpenAPI" Version="1.0.8" />
     <PackageVersion Include="AnyOf" Version="0.3.0" />
@@ -54,6 +53,7 @@
     <PackageVersion Include="Microsoft.Kiota.Bundle" Version="1.16.1" />
     <PackageVersion Include="Hypothesist" Version="3.0.97" />
     <PackageVersion Include="Meziantou.Extensions.Logging.InMemory" Version="1.2.6" />
+    <PackageVersion Include="XunitContext" Version="3.3.2" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="GitVersion.MsBuild" Version="6.3.0" />

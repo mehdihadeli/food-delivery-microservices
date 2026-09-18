@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Commands;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Commands;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using Mediator;
@@ -21,7 +21,7 @@ public record CreateMongoRestockSubscriptionReadModels(
 }
 
 internal class CreateRestockSubscriptionReadModelHandler(ICustomersReadUnitOfWork unitOfWork)
-    : BuildingBlocks.Abstractions.Commands.ICommandHandler<CreateMongoRestockSubscriptionReadModels>
+    : CloudNativeKit.Abstractions.Commands.ICommandHandler<CreateMongoRestockSubscriptionReadModels>
 {
     public async ValueTask<Unit> Handle(
         CreateMongoRestockSubscriptionReadModels command,

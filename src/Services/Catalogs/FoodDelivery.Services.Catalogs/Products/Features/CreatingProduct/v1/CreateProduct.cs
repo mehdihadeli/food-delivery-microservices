@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Core.IdsGenerator;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Core.IdsGenerator;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;

@@ -1,6 +1,6 @@
-using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Persistence.Mongo;
+using CloudNativeKit.Abstractions.Persistence;
+using CloudNativeKit.Persistence.EfCore.Postgres;
+using CloudNativeKit.Persistence.Mongo;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

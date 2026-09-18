@@ -1,0 +1,13 @@
+<Project>
+  <Import Project="src/BuildingBlocks/Directory.Packages.props" />
+  <PropertyGroup>
+    <AspireVersion>9.4</AspireVersion>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <EnablePackageVersionOverride>true</EnablePackageVersionOverride>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IsPublishable>false</IsPublishable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+</Project>

@@ -1,14 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Caching\BuildingBlocks.Caching.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Integration.Wolverine\BuildingBlocks.Integration.Wolverine.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.SerilogLogging\BuildingBlocks.SerilogLogging.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.Mongo\BuildingBlocks.Persistence.Mongo.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Security\BuildingBlocks.Security.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Caching\CloudNativeKit.Caching.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Core\CloudNativeKit.Core.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Integration.Wolverine\CloudNativeKit.Integration.Wolverine.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.SerilogLogging\CloudNativeKit.SerilogLogging.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Persistence.EfCore.Postgres\CloudNativeKit.Persistence.EfCore.Postgres.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Persistence.Mongo\CloudNativeKit.Persistence.Mongo.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Security\CloudNativeKit.Security.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Web\CloudNativeKit.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup Label="XUnit">

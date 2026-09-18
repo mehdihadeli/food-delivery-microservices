@@ -1,6 +1,6 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Core.Commands;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Core.Commands;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using Unit = Mediator.Unit;

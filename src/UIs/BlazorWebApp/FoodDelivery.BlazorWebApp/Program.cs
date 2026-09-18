@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.BlazorWebApp;
 using FoodDelivery.BlazorWebApp.Components;
 using FoodDelivery.BlazorWebApp.Contracts;

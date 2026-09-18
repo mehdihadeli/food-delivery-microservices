@@ -1,10 +1,10 @@
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Extensions;
 using LinqKit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
-using OAuthOptions = BuildingBlocks.Core.Security.OAuthOptions;
+using OAuthOptions = CloudNativeKit.Core.Security.OAuthOptions;
 
 namespace FoodDelivery.BlazorWebApp.Extensions.WebApplicationBuilderExtensions;
 

@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Events.Internal;
+using CloudNativeKit.Core.Events.Internal;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 

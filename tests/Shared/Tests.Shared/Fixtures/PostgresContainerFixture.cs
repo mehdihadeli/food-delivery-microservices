@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Extensions;
 using Dapper;
 using Npgsql;
 using Respawn;

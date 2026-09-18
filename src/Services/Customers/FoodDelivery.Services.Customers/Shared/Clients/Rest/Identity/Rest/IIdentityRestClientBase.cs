@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
-using BuildingBlocks.Core.Exception;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extensions;
+using CloudNativeKit.Core.Exception;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Core.Web.Extensions;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Dtos;
 using FoodDelivery.Services.Customers.Users.Model;
 using Microsoft.Extensions.Options;

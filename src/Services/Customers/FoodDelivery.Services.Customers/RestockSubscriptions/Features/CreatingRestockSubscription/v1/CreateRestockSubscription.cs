@@ -1,8 +1,8 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Core.Domain.ValueObjects;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.IdsGenerator;
-using BuildingBlocks.Validation.Extensions;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Core.Domain.ValueObjects;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Core.IdsGenerator;
+using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;

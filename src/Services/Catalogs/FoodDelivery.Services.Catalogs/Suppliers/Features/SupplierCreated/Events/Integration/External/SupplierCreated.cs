@@ -1,4 +1,4 @@
-using BuildingBlocks.Integration.Wolverine;
+using CloudNativeKit.Integration.Wolverine;
 using FoodDelivery.Services.Shared.Catalogs.Suppliers.Events.Integration.v1;
 using Microsoft.AspNetCore.HeaderPropagation;
 using Saunter.Attributes;

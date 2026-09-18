@@ -1,9 +1,9 @@
 using System.Reflection;
-using BuildingBlocks.Caching;
-using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
-using BuildingBlocks.Integration.Wolverine;
-using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Persistence.Mongo;
+using CloudNativeKit.Caching;
+using CloudNativeKit.Core.Extensions.ServiceCollectionExtensions;
+using CloudNativeKit.Integration.Wolverine;
+using CloudNativeKit.Persistence.EfCore.Postgres;
+using CloudNativeKit.Persistence.Mongo;
 using FoodDelivery.Services.Customers.Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Tests.Shared.Factory;
-using Environments = BuildingBlocks.Core.Web.Environments;
+using Environments = CloudNativeKit.Core.Web.Environments;
 
 namespace FoodDelivery.Services.Customers.DependencyTests;
 

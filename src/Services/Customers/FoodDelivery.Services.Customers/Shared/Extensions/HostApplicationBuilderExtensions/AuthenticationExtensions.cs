@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Security;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Core.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 

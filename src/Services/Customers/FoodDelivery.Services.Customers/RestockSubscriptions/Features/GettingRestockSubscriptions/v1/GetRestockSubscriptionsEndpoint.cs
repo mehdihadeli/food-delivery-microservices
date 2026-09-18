@@ -1,8 +1,8 @@
-using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.Queries;
-using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Core.Paging;
-using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using CloudNativeKit.Abstractions.Core.Paging;
+using CloudNativeKit.Abstractions.Queries;
+using CloudNativeKit.Abstractions.Web.MinimalApi;
+using CloudNativeKit.Core.Paging;
+using CloudNativeKit.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;

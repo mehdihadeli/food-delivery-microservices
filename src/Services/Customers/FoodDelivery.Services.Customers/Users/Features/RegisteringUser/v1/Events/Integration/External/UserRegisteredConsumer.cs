@@ -1,12 +1,12 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Integration.Wolverine;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Integration.Wolverine;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Microsoft.AspNetCore.HeaderPropagation;
 using Saunter.Attributes;
 using Wolverine;
-using ICommandBus = BuildingBlocks.Abstractions.Commands.ICommandBus;
+using ICommandBus = CloudNativeKit.Abstractions.Commands.ICommandBus;
 
 namespace FoodDelivery.Services.Customers.Users.Features.RegisteringUser.v1.Events.Integration.External;
 

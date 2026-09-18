@@ -1,7 +1,7 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Core.Events.Internal;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Abstractions.Events;
+using CloudNativeKit.Core.Events.Internal;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 

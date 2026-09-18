@@ -43,9 +43,7 @@
     <File Path=".github\workflows\_pre-checks.yml" />
     <File Path=".github\workflows\_semantic-version.yml" />
   </Folder>
-  <Folder Name="/solution-items/.husky/">
-    <File Path=".husky/pre-commit" />
-  </Folder>
+  <Folder Name="/solution-items/.husky/" />
   <Folder Name="/solution-items/.vscode/">
     <File Path=".vscode/launch.json" />
     <File Path=".vscode/settings.json" />
@@ -191,9 +189,7 @@
   </Folder>
   <Folder Name="/solution-items/_httpclients/orders/" />
   <Folder Name="/src/">
-    <File Path="src/Directory.Build.props" />
     <File Path="src/Directory.Build.targets" />
-    <File Path="src/Directory.Packages.props" />
   </Folder>
   <Folder Name="/src/ApiGateway/">
     <Project Path="src/ApiGateway/FoodDelivery.ApiGateway/FoodDelivery.ApiGateway.csproj" />
@@ -215,28 +211,31 @@
     <Project Path="src\Bffs\Spa.Bff\FoodDelivery.Spa.Bff\FoodDelivery.Spa.Bff.csproj" />
   </Folder>
   <Folder Name="/src/BuildingBlocks/">
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Caching/BuildingBlocks.Caching.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Email/BuildingBlocks.Email.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.HealthCheck/BuildingBlocks.HealthCheck.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.OpenApi/BuildingBlocks.OpenApi.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.EventStoreDB/BuildingBlocks.Persistence.EventStoreDB.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.Marten/BuildingBlocks.Persistence.Marten.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Persistence.Mongo/BuildingBlocks.Persistence.Mongo.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Resiliency/BuildingBlocks.Resiliency.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Security/BuildingBlocks.Security.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Serialization/BuildingBlocks.Serialization.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.SerilogLogging/BuildingBlocks.SerilogLogging.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj" />
-    <Project Path="src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj" />
-    <Project Path="src\BuildingBlocks\BuildingBlocks.AspireIntegrations\BuildingBlocks.AspireIntegrations.csproj" />
-    <Project Path="src\BuildingBlocks\BuildingBlocks.Caching.AzureRedis\BuildingBlocks.Caching.AzureRedis.csproj" />
-    <Project Path="src\BuildingBlocks\BuildingBlocks.OpenTelemetry\BuildingBlocks.OpenTelemetry.csproj" />
-    <Project Path="src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.AzureCosmosDB\BuildingBlocks.Persistence.EfCore.AzureCosmosDB.csproj" />
-    <Project Path="src\BuildingBlocks\BuildingBlocks.Persistence.EfCore.AzurePostgres\BuildingBlocks.Persistence.EfCore.AzurePostgres.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Abstractions/CloudNativeKit.Abstractions.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Caching/CloudNativeKit.Caching.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Core/CloudNativeKit.Core.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Email/CloudNativeKit.Email.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.HealthCheck/CloudNativeKit.HealthCheck.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.OpenApi/CloudNativeKit.OpenApi.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Persistence.EfCore.Postgres/CloudNativeKit.Persistence.EfCore.Postgres.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Persistence.EventStoreDB/CloudNativeKit.Persistence.EventStoreDB.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Persistence.Marten/CloudNativeKit.Persistence.Marten.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Persistence.Mongo/CloudNativeKit.Persistence.Mongo.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Resiliency/CloudNativeKit.Resiliency.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Security/CloudNativeKit.Security.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Serialization/CloudNativeKit.Serialization.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.SerilogLogging/CloudNativeKit.SerilogLogging.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Validation/CloudNativeKit.Validation.csproj" />
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Web/CloudNativeKit.Web.csproj" />
+    <Project Path="src\BuildingBlocks\src\CloudNativeKit.AspireIntegrations\CloudNativeKit.AspireIntegrations.csproj" />
+    <Project Path="src\BuildingBlocks\src\CloudNativeKit.Caching.AzureRedis\CloudNativeKit.Caching.AzureRedis.csproj" />
+    <Project Path="src\BuildingBlocks\src\CloudNativeKit.OpenTelemetry\CloudNativeKit.OpenTelemetry.csproj" />
+    <Project Path="src\BuildingBlocks\src\CloudNativeKit.Persistence.EfCore.AzureCosmosDB\CloudNativeKit.Persistence.EfCore.AzureCosmosDB.csproj" />
+    <Project Path="src\BuildingBlocks\src\CloudNativeKit.Persistence.EfCore.AzurePostgres\CloudNativeKit.Persistence.EfCore.AzurePostgres.csproj" />
     <File Path="src\BuildingBlocks\Directory.Build.props" />
+  </Folder>
+  <Folder Name="/src/BuildingBlocks/src/">
+    <Project Path="src/BuildingBlocks/src/CloudNativeKit.Integration.Wolverine/CloudNativeKit.Integration.Wolverine.csproj" />
   </Folder>
   <Folder Name="/src/Services/" />
   <Folder Name="/src/Services/Billing/">
@@ -322,10 +321,7 @@
       <Configuration Solution="Release|Any CPU" Project="Debug|Any CPU" />
     </Project>
   </Folder>
-  <Folder Name="/tests/">
-    <File Path="tests/Directory.Build.props" />
-    <File Path="tests/Directory.Packages.props" />
-  </Folder>
+  <Folder Name="/tests/" />
   <Folder Name="/tests/ApiGateway/">
     <Project Path="tests\ApiGateway\FoodDelivery.ApiGateway.TestShared\FoodDelivery.ApiGateway.TestShared.csproj" />
     <Project Path="tests\ApiGateway\FoodDelivery.ApiGateway.UnitTests\FoodDelivery.ApiGateway.UnitTests.csproj" />

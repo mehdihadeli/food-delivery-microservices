@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Messages;
-using BuildingBlocks.Core.Types.Extensions;
+using CloudNativeKit.Abstractions.Messages;
+using CloudNativeKit.Core.Types.Extensions;
 using Hypothesist;
 using Microsoft.Extensions.DependencyInjection;
 

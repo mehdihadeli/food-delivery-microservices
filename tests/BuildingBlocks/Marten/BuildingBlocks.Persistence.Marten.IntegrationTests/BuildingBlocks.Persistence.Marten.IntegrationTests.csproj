@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.Marten\BuildingBlocks.Persistence.Marten.csproj" />
+    <ProjectReference Include="..\..\..\..\src\BuildingBlocks\src\CloudNativeKit.Persistence.Marten\CloudNativeKit.Persistence.Marten.csproj" />
     <ProjectReference Include="..\..\..\Shared\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
 

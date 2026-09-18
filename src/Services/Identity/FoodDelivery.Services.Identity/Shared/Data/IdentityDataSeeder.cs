@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Security.Claims;
-using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.Security;
+using CloudNativeKit.Abstractions.Persistence;
+using CloudNativeKit.Core.Security;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Shared;
 using Microsoft.AspNetCore.Identity;

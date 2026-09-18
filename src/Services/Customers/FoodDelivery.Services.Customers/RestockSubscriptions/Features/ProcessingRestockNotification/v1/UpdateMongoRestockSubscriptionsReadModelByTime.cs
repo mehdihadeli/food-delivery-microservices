@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Commands;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Commands;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using Mediator;
 
@@ -9,7 +9,7 @@ public record UpdateMongoRestockSubscriptionsReadModelByTime(DateTime? From, Dat
     : InternalCommand;
 
 internal class UpdateMongoRestockSubscriptionsReadModelByTimeHandler(ICustomersReadUnitOfWork unitOfWork)
-    : BuildingBlocks.Abstractions.Commands.ICommandHandler<UpdateMongoRestockSubscriptionsReadModelByTime>
+    : CloudNativeKit.Abstractions.Commands.ICommandHandler<UpdateMongoRestockSubscriptionsReadModelByTime>
 {
     public async ValueTask<Unit> Handle(
         UpdateMongoRestockSubscriptionsReadModelByTime command,

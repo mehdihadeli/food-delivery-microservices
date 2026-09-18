@@ -1,8 +1,8 @@
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extensions;
-using BuildingBlocks.Persistence.EfCore.Postgres;
+using CloudNativeKit.Abstractions.Events;
+using CloudNativeKit.Abstractions.Persistence;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Core.Web.Extensions;
+using CloudNativeKit.Persistence.EfCore.Postgres;
 using FoodDelivery.Services.Identity.Shared.Data;
 using FoodDelivery.Services.Shared.Constants;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

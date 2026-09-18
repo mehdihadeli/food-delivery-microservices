@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Exception;
+using CloudNativeKit.Core.Exception;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;

@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Web.MinimalApi;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Abstractions.Web.MinimalApi;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
 using FoodDelivery.Services.Shared;

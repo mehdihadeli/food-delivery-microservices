@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Domain;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local

@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Messages;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Core.Messages;
 
 namespace FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 

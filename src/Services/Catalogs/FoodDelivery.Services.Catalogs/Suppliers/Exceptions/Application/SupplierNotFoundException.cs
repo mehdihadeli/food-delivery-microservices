@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Exception;
+using CloudNativeKit.Core.Exception;
 
 namespace FoodDelivery.Services.Catalogs.Suppliers.Exceptions.Application;
 

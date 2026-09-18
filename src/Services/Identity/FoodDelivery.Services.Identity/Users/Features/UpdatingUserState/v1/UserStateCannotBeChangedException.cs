@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Exception;
-using BuildingBlocks.Core.Types.Extensions;
+using CloudNativeKit.Core.Exception;
+using CloudNativeKit.Core.Types.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Shared.Identity.Users;
 

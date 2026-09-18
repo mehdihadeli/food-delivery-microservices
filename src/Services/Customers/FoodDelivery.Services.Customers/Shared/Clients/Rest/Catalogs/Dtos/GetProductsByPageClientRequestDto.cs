@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Paging;
+using CloudNativeKit.Core.Paging;
 
 namespace FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
 

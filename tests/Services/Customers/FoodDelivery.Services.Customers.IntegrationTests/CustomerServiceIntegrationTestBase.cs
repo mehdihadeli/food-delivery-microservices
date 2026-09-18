@@ -1,5 +1,5 @@
-using BuildingBlocks.OpenTelemetry;
-using BuildingBlocks.Persistence.EfCore.Postgres;
+using CloudNativeKit.OpenTelemetry;
+using CloudNativeKit.Persistence.EfCore.Postgres;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Rest;

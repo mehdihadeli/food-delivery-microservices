@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
-using BuildingBlocks.Resiliency.HttpClient;
+using CloudNativeKit.Core.Extensions.ServiceCollectionExtensions;
+using CloudNativeKit.Resiliency.HttpClient;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity;

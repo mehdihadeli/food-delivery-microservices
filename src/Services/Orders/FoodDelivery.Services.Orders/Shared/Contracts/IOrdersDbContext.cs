@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Persistence.EfCore;
+using CloudNativeKit.Abstractions.Persistence.EfCore;
 using FoodDelivery.Services.Orders.Orders.Models;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,6 +1,6 @@
-using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
-using BuildingBlocks.Web.Cors;
-using BuildingBlocks.Web.Minimal.Extensions;
+using CloudNativeKit.OpenApi.AspnetOpenApi.Extensions;
+using CloudNativeKit.Web.Cors;
+using CloudNativeKit.Web.Minimal.Extensions;
 
 namespace FoodDelivery.Services.Identity.Shared.Extensions.WebApplicationExtensions;
 

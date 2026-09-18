@@ -1,13 +1,13 @@
-using BuildingBlocks.Core.Domain.ValueObjects;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Validation.Extensions;
+using CloudNativeKit.Core.Domain.ValueObjects;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Mediator;
-using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
+using ICommand = CloudNativeKit.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
 
@@ -76,7 +76,7 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomer>
 }
 
 public class UpdateCustomerHandler(CustomersDbContext customersDbContext, ILogger<UpdateCustomerHandler> logger)
-    : BuildingBlocks.Abstractions.Commands.ICommandHandler<UpdateCustomer>
+    : CloudNativeKit.Abstractions.Commands.ICommandHandler<UpdateCustomer>
 {
     public async ValueTask<Unit> Handle(UpdateCustomer command, CancellationToken cancellationToken)
     {

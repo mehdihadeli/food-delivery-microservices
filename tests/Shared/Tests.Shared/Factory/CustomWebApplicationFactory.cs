@@ -1,6 +1,6 @@
-using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.Web.Extensions;
-using BuildingBlocks.Security.Jwt;
+using CloudNativeKit.Abstractions.Persistence;
+using CloudNativeKit.Core.Web.Extensions;
+using CloudNativeKit.Security.Jwt;
 using Meziantou.Extensions.Logging.InMemory;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using WebMotions.Fake.Authentication.JwtBearer;
 using Xunit;
-using Environments = BuildingBlocks.Core.Web.Environments;
+using Environments = CloudNativeKit.Core.Web.Environments;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Tests.Shared.Factory;

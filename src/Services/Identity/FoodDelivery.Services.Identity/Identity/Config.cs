@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Security;
+using CloudNativeKit.Core.Security;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using FoodDelivery.Services.Shared;

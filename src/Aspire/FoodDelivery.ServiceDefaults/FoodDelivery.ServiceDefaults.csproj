@@ -5,11 +5,11 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
-    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.HealthCheck\BuildingBlocks.HealthCheck.csproj" />
-    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.OpenTelemetry\BuildingBlocks.OpenTelemetry.csproj" />
-    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Resiliency\BuildingBlocks.Resiliency.csproj" />
-    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\src\CloudNativeKit.Core\CloudNativeKit.Core.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\src\CloudNativeKit.HealthCheck\CloudNativeKit.HealthCheck.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\src\CloudNativeKit.OpenTelemetry\CloudNativeKit.OpenTelemetry.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\src\CloudNativeKit.Resiliency\CloudNativeKit.Resiliency.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\src\CloudNativeKit.Web\CloudNativeKit.Web.csproj" />
   </ItemGroup>
 
 </Project>

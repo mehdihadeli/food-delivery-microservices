@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Web;
+using CloudNativeKit.Core.Web;
 using Tests.Shared;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests;

@@ -1,6 +1,6 @@
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Core.Events.Internal;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Abstractions.Events;
+using CloudNativeKit.Core.Events.Internal;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;

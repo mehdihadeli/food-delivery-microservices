@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Persistence;
+using CloudNativeKit.Abstractions.Persistence;
 
 namespace FoodDelivery.Services.Customers.Shared.Data;
 

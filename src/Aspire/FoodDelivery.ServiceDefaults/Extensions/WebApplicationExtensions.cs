@@ -1,5 +1,5 @@
-using BuildingBlocks.HealthCheck;
-using BuildingBlocks.OpenTelemetry.Extensions;
+using CloudNativeKit.HealthCheck;
+using CloudNativeKit.OpenTelemetry.Extensions;
 using Microsoft.AspNetCore.Builder;
 
 namespace FoodDelivery.ServiceDefaults.Extensions;

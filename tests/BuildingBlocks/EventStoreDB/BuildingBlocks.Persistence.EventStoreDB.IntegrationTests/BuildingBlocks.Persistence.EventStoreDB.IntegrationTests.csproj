@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\BuildingBlocks\BuildingBlocks.Persistence.EventStoreDB\BuildingBlocks.Persistence.EventStoreDB.csproj" />
+    <ProjectReference Include="..\..\..\..\src\BuildingBlocks\src\CloudNativeKit.Persistence.EventStoreDB\CloudNativeKit.Persistence.EventStoreDB.csproj" />
     <ProjectReference Include="..\..\..\Shared\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
 

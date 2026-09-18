@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Core.Paging;
+using CloudNativeKit.Abstractions.Core.Paging;
 using FoodDelivery.Services.Customers.Products.Models;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
 

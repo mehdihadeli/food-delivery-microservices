@@ -3,7 +3,7 @@ using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Domain;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using Tests.Shared.XunitCategories;
-using ValidationException = BuildingBlocks.Core.Exception.ValidationException;
+using ValidationException = CloudNativeKit.Core.Exception.ValidationException;
 
 namespace FoodDelivery.Services.Customers.UnitTests.Customers.ValueObjects;
 

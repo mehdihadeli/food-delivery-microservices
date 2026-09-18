@@ -1,1 +1,1 @@
-namespace BuildingBlocks.Integration.Wolverine.IntegrationTests;
+namespace CloudNativeKit.Integration.Wolverine.IntegrationTests;

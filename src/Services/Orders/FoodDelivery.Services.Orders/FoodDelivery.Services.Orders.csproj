@@ -6,14 +6,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Aspire\FoodDelivery.ServiceDefaults\FoodDelivery.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Caching\BuildingBlocks.Caching.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Email\BuildingBlocks.Email.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Integration.Wolverine\BuildingBlocks.Integration.Wolverine.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.OpenApi\BuildingBlocks.OpenApi.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Persistence.Mongo\BuildingBlocks.Persistence.Mongo.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.SerilogLogging\BuildingBlocks.SerilogLogging.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Validation\BuildingBlocks.Validation.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Caching\CloudNativeKit.Caching.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Email\CloudNativeKit.Email.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Integration.Wolverine\CloudNativeKit.Integration.Wolverine.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.OpenApi\CloudNativeKit.OpenApi.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Persistence.EfCore.Postgres\CloudNativeKit.Persistence.EfCore.Postgres.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Persistence.Mongo\CloudNativeKit.Persistence.Mongo.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.SerilogLogging\CloudNativeKit.SerilogLogging.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Validation\CloudNativeKit.Validation.csproj" />
     <ProjectReference Include="..\..\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Categories.ValueObjects;
 

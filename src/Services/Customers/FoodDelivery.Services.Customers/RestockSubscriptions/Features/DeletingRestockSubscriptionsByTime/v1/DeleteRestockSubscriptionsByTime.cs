@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Domain;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
@@ -14,7 +14,7 @@ public class DeleteRestockSubscriptionsByTimeHandler(
     CustomersDbContext customersDbContext,
     ICommandBus commandBus,
     ILogger<DeleteRestockSubscriptionsByTimeHandler> logger
-) : BuildingBlocks.Abstractions.Commands.ICommandHandler<DeleteRestockSubscriptionsByTime>
+) : CloudNativeKit.Abstractions.Commands.ICommandHandler<DeleteRestockSubscriptionsByTime>
 {
     public async ValueTask<Unit> Handle(DeleteRestockSubscriptionsByTime command, CancellationToken cancellationToken)
     {

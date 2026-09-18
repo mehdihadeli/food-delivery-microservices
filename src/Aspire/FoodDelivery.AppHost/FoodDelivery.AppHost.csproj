@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!--  https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/dotnet-aspire-sdk-->
-  <Sdk Name="Aspire.AppHost.Sdk" Version="$(AspireVersion)" />
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.4" />
   
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -39,8 +39,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Building Blocks Projects">
-    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.AspireIntegrations\BuildingBlocks.AspireIntegrations.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Persistence.EfCore.Postgres\BuildingBlocks.Persistence.EfCore.Postgres.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\..\BuildingBlocks\src\CloudNativeKit.AspireIntegrations\CloudNativeKit.AspireIntegrations.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\..\BuildingBlocks\src\CloudNativeKit.Persistence.EfCore.Postgres\CloudNativeKit.Persistence.EfCore.Postgres.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\..\Services\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" IsAspireProjectResource="false" />
   </ItemGroup>
 </Project>

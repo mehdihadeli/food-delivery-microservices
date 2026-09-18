@@ -1,8 +1,8 @@
-using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.Commands;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Email;
-using BuildingBlocks.Email.Options;
+using CloudNativeKit.Abstractions.Persistence;
+using CloudNativeKit.Core.Commands;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Email;
+using CloudNativeKit.Email.Options;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Mediator;
@@ -28,7 +28,7 @@ public class SendRestockNotificationHandler(
     IEmailSender emailSender,
     IOptions<EmailOptions> emailConfig,
     ILogger<SendRestockNotificationHandler> logger
-) : BuildingBlocks.Abstractions.Commands.ICommandHandler<SendRestockNotification>
+) : CloudNativeKit.Abstractions.Commands.ICommandHandler<SendRestockNotification>
 {
     private readonly EmailOptions _emailConfig = emailConfig.Value;
 

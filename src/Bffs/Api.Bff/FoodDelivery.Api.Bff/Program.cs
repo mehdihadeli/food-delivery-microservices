@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.ServiceDefaults.Extensions;
 using FoodDelivery.WebApp.Bff;
 using FoodDelivery.WebApp.Bff.Clients;

@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
+using CloudNativeKit.Core.Extensions.ServiceCollectionExtensions;
 using FoodDelivery.Services.Identity.Shared.Data;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;

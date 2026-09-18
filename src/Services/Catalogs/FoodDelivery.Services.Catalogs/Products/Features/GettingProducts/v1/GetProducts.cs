@@ -1,9 +1,9 @@
-using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Abstractions.Queries;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Paging;
-using BuildingBlocks.Core.Queries;
-using BuildingBlocks.Validation.Extensions;
+using CloudNativeKit.Abstractions.Core.Paging;
+using CloudNativeKit.Abstractions.Queries;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Core.Paging;
+using CloudNativeKit.Core.Queries;
+using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;

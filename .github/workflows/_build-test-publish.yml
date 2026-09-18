@@ -29,7 +29,7 @@ on:
         type: string
       coverage-exclude:
         description: Coverage exclude filter
-        default: '[BuildingBlocks.*]*%2c[FoodDelivery.Services.Shared]*'
+        default: '[CloudNativeKit.*]*%2c[FoodDelivery.Services.Shared]*'
         type: string
       unit-test-filter:
         description: Unit tests filter

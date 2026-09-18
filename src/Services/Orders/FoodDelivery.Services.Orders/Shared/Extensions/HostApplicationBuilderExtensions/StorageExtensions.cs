@@ -1,9 +1,9 @@
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Web.Extensions;
-using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Persistence.Mongo.Extensions;
+using CloudNativeKit.Abstractions.Events;
+using CloudNativeKit.Abstractions.Persistence;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Core.Web.Extensions;
+using CloudNativeKit.Persistence.EfCore.Postgres;
+using CloudNativeKit.Persistence.Mongo.Extensions;
 using FoodDelivery.Services.Orders.Shared.Contracts;
 using FoodDelivery.Services.Orders.Shared.Data;
 using FoodDelivery.Services.Shared.Constants;

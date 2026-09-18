@@ -1,8 +1,8 @@
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.ApiGateway;
 using FoodDelivery.ServiceDefaults.Extensions;
 using Yarp.ReverseProxy.Transforms;
-using static BuildingBlocks.Core.Messages.MessageHeaders;
+using static CloudNativeKit.Core.Messages.MessageHeaders;
 
 var builder = WebApplication.CreateBuilder(args);
 

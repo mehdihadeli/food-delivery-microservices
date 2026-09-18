@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using BuildingBlocks.Core.Domain;
+using CloudNativeKit.Core.Domain;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Domain;
 
 namespace FoodDelivery.Services.Customers.Customers.Models.ValueObjects;

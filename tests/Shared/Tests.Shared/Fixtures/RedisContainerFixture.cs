@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Extensions;
 using StackExchange.Redis;
 using Testcontainers.Redis;
 using Tests.Shared.Helpers;

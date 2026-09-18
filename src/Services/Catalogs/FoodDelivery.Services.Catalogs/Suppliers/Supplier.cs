@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Domain;
+using CloudNativeKit.Core.Domain;
 
 namespace FoodDelivery.Services.Catalogs.Suppliers;
 

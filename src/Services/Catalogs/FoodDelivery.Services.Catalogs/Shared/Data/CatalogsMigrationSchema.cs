@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Persistence;
+using CloudNativeKit.Abstractions.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Data;

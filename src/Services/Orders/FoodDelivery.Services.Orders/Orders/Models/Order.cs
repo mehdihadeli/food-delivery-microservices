@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Domain;
+using CloudNativeKit.Core.Domain;
 using FoodDelivery.Services.Orders.Orders.ValueObjects;
 
 namespace FoodDelivery.Services.Orders.Orders.Models;

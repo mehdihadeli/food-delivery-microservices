@@ -1,8 +1,8 @@
-using BuildingBlocks.Core.Domain.Events.Internal;
-using BuildingBlocks.Core.Types;
+using CloudNativeKit.Core.Domain.Events.Internal;
+using CloudNativeKit.Core.Types;
 using FluentAssertions;
 
-namespace BuildingBlocks.Core.UnitTests;
+namespace CloudNativeKit.Core.UnitTests;
 
 public class TypeMapperTests
 {

@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Exception;
+using CloudNativeKit.Core.Exception;
 
 namespace FoodDelivery.Services.Identity.Shared.Exceptions;
 

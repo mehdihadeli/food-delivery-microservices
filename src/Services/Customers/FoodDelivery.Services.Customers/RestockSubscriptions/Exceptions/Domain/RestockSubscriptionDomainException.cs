@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Domain.Exceptions;
-using BuildingBlocks.Core.Exception;
+using CloudNativeKit.Core.Domain.Exceptions;
+using CloudNativeKit.Core.Exception;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Domain;
 

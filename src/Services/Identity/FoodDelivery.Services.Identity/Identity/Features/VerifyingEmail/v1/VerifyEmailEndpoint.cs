@@ -1,7 +1,7 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.ProblemDetail.HttpResults;
 using Cassandra.Mapping;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Abstractions.Web.MinimalApi;
+using CloudNativeKit.Web.ProblemDetail.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 

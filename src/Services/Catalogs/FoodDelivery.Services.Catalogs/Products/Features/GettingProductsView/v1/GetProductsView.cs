@@ -1,7 +1,7 @@
-using BuildingBlocks.Abstractions.Persistence;
-using BuildingBlocks.Core.Paging;
-using BuildingBlocks.Core.Queries;
-using BuildingBlocks.Validation.Extensions;
+using CloudNativeKit.Abstractions.Persistence;
+using CloudNativeKit.Core.Paging;
+using CloudNativeKit.Core.Queries;
+using CloudNativeKit.Validation.Extensions;
 using Dapper;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
@@ -43,7 +43,7 @@ public class GetProductsViewValidator : AbstractValidator<GetProductsView>
 }
 
 public class GetProductsViewHandler(IDbFacadeResolver facadeResolver)
-    : BuildingBlocks.Abstractions.Queries.IQueryHandler<GetProductsView, GetProductsViewResult>
+    : CloudNativeKit.Abstractions.Queries.IQueryHandler<GetProductsView, GetProductsViewResult>
 {
     public async ValueTask<GetProductsViewResult> Handle(GetProductsView query, CancellationToken cancellationToken)
     {

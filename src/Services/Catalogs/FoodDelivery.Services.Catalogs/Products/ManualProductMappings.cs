@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Domain;
-using BuildingBlocks.Core.IdsGenerator;
+using CloudNativeKit.Abstractions.Domain;
+using CloudNativeKit.Core.IdsGenerator;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Categories.Contracts;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;

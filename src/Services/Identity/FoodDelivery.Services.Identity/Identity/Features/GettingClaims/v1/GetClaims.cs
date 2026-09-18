@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Queries;
+using CloudNativeKit.Abstractions.Queries;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.GettingClaims.v1;
 

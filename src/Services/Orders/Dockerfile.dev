@@ -37,20 +37,20 @@ COPY ./src/Packages.props ./
 COPY ./src/Services/Orders/Directory.Build.props ./Services/Orders/
 
 # TODO: Using wildcard to copy all files in the directory.
-COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
-COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
-COPY ./src/BuildingBlocks/BuildingBlocks.HealthCheck/BuildingBlocks.HealthCheck.csproj ./BuildingBlocks/BuildingBlocks.HealthCheck/
-COPY ./src/BuildingBlocks/BuildingBlocks.OpenTelemetry/BuildingBlocks.OpenTelemetry.csproj ./BuildingBlocks/BuildingBlocks.OpenTelemetry/
-COPY ./src/BuildingBlocks/BuildingBlocks.Resiliency/BuildingBlocks.Resiliency.csproj ./BuildingBlocks/BuildingBlocks.Resiliency/
-COPY ./src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj ./BuildingBlocks/BuildingBlocks.Web/
-COPY ./src/BuildingBlocks/BuildingBlocks.Caching/BuildingBlocks.Caching.csproj ./BuildingBlocks/BuildingBlocks.Caching/
-COPY ./src/BuildingBlocks/BuildingBlocks.Email/BuildingBlocks.Email.csproj ./BuildingBlocks/BuildingBlocks.Email/
-COPY ./src/BuildingBlocks/BuildingBlocks.Integration.Wolverine/BuildingBlocks.Integration.Wolverine.csproj ./BuildingBlocks/BuildingBlocks.Integration.Wolverine/
-COPY ./src/BuildingBlocks/BuildingBlocks.OpenApi/BuildingBlocks.OpenApi.csproj ./BuildingBlocks/BuildingBlocks.OpenApi/
-COPY ./src/BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/BuildingBlocks.Persistence.EfCore.Postgres.csproj ./BuildingBlocks/BuildingBlocks.Persistence.EfCore.Postgres/
-COPY ./src/BuildingBlocks/BuildingBlocks.Persistence.Mongo/BuildingBlocks.Persistence.Mongo.csproj ./BuildingBlocks/BuildingBlocks.Persistence.Mongo/
-COPY ./src/BuildingBlocks/BuildingBlocks.SerilogLogging/BuildingBlocks.SerilogLogging.csproj ./BuildingBlocks/BuildingBlocks.SerilogLogging/
-COPY ./src/BuildingBlocks/BuildingBlocks.Validation/BuildingBlocks.Validation.csproj ./BuildingBlocks/BuildingBlocks.Validation/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Abstractions/CloudNativeKit.Abstractions.csproj ./BuildingBlocks/src/CloudNativeKit.Abstractions/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Core/CloudNativeKit.Core.csproj ./BuildingBlocks/src/CloudNativeKit.Core/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.HealthCheck/CloudNativeKit.HealthCheck.csproj ./BuildingBlocks/src/CloudNativeKit.HealthCheck/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.OpenTelemetry/CloudNativeKit.OpenTelemetry.csproj ./BuildingBlocks/src/CloudNativeKit.OpenTelemetry/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Resiliency/CloudNativeKit.Resiliency.csproj ./BuildingBlocks/src/CloudNativeKit.Resiliency/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Web/CloudNativeKit.Web.csproj ./BuildingBlocks/src/CloudNativeKit.Web/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Caching/CloudNativeKit.Caching.csproj ./BuildingBlocks/src/CloudNativeKit.Caching/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Email/CloudNativeKit.Email.csproj ./BuildingBlocks/src/CloudNativeKit.Email/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Integration.Wolverine/CloudNativeKit.Integration.Wolverine.csproj ./BuildingBlocks/src/CloudNativeKit.Integration.Wolverine/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.OpenApi/CloudNativeKit.OpenApi.csproj ./BuildingBlocks/src/CloudNativeKit.OpenApi/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Persistence.EfCore.Postgres/CloudNativeKit.Persistence.EfCore.Postgres.csproj ./BuildingBlocks/src/CloudNativeKit.Persistence.EfCore.Postgres/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Persistence.Mongo/CloudNativeKit.Persistence.Mongo.csproj ./BuildingBlocks/src/CloudNativeKit.Persistence.Mongo/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.SerilogLogging/CloudNativeKit.SerilogLogging.csproj ./BuildingBlocks/src/CloudNativeKit.SerilogLogging/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Validation/CloudNativeKit.Validation.csproj ./BuildingBlocks/src/CloudNativeKit.Validation/
 
 COPY ./src/Services/Orders/FoodDelivery.Services.Orders/FoodDelivery.Services.Orders.csproj ./Services/Orders/FoodDelivery.Services.Orders/
 COPY ./src/Services/Orders/FoodDelivery.Services.Orders.Api/FoodDelivery.Services.Orders.Api.csproj ./Services/Orders/FoodDelivery.Services.Orders.Api/

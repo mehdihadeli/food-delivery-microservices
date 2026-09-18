@@ -1,8 +1,8 @@
 using System.Security.Claims;
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Messages;
-using BuildingBlocks.Core.Security;
-using BuildingBlocks.Validation.Extensions;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Abstractions.Messages;
+using CloudNativeKit.Core.Security;
+using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;

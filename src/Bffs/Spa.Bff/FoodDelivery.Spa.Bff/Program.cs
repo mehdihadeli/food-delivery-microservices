@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Web.Cors;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Web.Cors;
 using Duende.Bff.Yarp;
 using FoodDelivery.ServiceDefaults.Extensions;
 using FoodDelivery.Spa.Bff.Clients;

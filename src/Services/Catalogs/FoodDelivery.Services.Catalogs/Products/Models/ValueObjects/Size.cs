@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 

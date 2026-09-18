@@ -1,29 +1,29 @@
 // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/integrations-overview#hosting-integrations
 // Hosting integrations configure applications by provisioning resources (like containers or cloud resources) or pointing to existing instances (such as a local SQL server)
 
-using BuildingBlocks.AspireIntegrations.AspireDashBoard;
-using BuildingBlocks.AspireIntegrations.ElasticSearch;
-using BuildingBlocks.AspireIntegrations.EventStore;
-using BuildingBlocks.AspireIntegrations.Grafana;
-using BuildingBlocks.AspireIntegrations.HealthChecksUI;
-using BuildingBlocks.AspireIntegrations.Jaeger;
-using BuildingBlocks.AspireIntegrations.Kibana;
-using BuildingBlocks.AspireIntegrations.Loki;
-using BuildingBlocks.AspireIntegrations.Mongo;
-using BuildingBlocks.AspireIntegrations.OpenTelemetryCollector;
-using BuildingBlocks.AspireIntegrations.Postgres;
-using BuildingBlocks.AspireIntegrations.Prometheus;
-using BuildingBlocks.AspireIntegrations.RabbitMQ;
-using BuildingBlocks.AspireIntegrations.Redis;
-using BuildingBlocks.AspireIntegrations.Tempo;
-using BuildingBlocks.AspireIntegrations.Zipkin;
-using BuildingBlocks.Core.Constants;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.AspireIntegrations.AspireDashBoard;
+using CloudNativeKit.AspireIntegrations.ElasticSearch;
+using CloudNativeKit.AspireIntegrations.EventStore;
+using CloudNativeKit.AspireIntegrations.Grafana;
+using CloudNativeKit.AspireIntegrations.HealthChecksUI;
+using CloudNativeKit.AspireIntegrations.Jaeger;
+using CloudNativeKit.AspireIntegrations.Kibana;
+using CloudNativeKit.AspireIntegrations.Loki;
+using CloudNativeKit.AspireIntegrations.Mongo;
+using CloudNativeKit.AspireIntegrations.OpenTelemetryCollector;
+using CloudNativeKit.AspireIntegrations.Postgres;
+using CloudNativeKit.AspireIntegrations.Prometheus;
+using CloudNativeKit.AspireIntegrations.RabbitMQ;
+using CloudNativeKit.AspireIntegrations.Redis;
+using CloudNativeKit.AspireIntegrations.Tempo;
+using CloudNativeKit.AspireIntegrations.Zipkin;
+using CloudNativeKit.Core.Constants;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.AppHost.Extensions;
 using FoodDelivery.Services.Shared.Constants;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Scalar.Aspire;
-using OAuthOptions = BuildingBlocks.Core.Security.OAuthOptions;
+using OAuthOptions = CloudNativeKit.Core.Security.OAuthOptions;
 
 var builder = DistributedApplication.CreateBuilder(args);
 

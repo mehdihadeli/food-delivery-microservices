@@ -1,6 +1,6 @@
-using BuildingBlocks.Core.Domain;
-using BuildingBlocks.Core.Domain.ValueObjects;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Domain;
+using CloudNativeKit.Core.Domain.ValueObjects;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;

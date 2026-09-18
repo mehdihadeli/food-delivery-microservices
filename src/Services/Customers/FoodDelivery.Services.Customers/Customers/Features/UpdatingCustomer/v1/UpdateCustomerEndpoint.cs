@@ -1,6 +1,6 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.Minimal.Extensions;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Abstractions.Web.MinimalApi;
+using CloudNativeKit.Web.Minimal.Extensions;
 using Humanizer;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;

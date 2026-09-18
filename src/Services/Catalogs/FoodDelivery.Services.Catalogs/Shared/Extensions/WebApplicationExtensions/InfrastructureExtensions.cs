@@ -1,7 +1,7 @@
-using BuildingBlocks.OpenApi.AspnetOpenApi.Extensions;
-using BuildingBlocks.OpenApi.AsyncApi;
-using BuildingBlocks.Web.Cors;
-using BuildingBlocks.Web.Minimal.Extensions;
+using CloudNativeKit.OpenApi.AspnetOpenApi.Extensions;
+using CloudNativeKit.OpenApi.AsyncApi;
+using CloudNativeKit.Web.Cors;
+using CloudNativeKit.Web.Minimal.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Extensions.WebApplicationExtensions;
 

@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Domain;
 
 namespace FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;

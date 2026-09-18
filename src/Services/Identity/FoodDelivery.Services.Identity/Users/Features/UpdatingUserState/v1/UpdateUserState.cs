@@ -1,7 +1,7 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Messages;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Validation.Extensions;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Abstractions.Messages;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
@@ -40,7 +40,7 @@ public class UpdateUserStateHandler(
     IExternalEventBus bus,
     UserManager<ApplicationUser> userManager,
     ILogger<UpdateUserStateHandler> logger
-) : BuildingBlocks.Abstractions.Commands.ICommandHandler<UpdateUserState>
+) : CloudNativeKit.Abstractions.Commands.ICommandHandler<UpdateUserState>
 {
     public async ValueTask<Unit> Handle(UpdateUserState request, CancellationToken cancellationToken)
     {

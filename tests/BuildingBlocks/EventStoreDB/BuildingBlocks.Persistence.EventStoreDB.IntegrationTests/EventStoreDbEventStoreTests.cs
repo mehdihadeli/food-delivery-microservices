@@ -1,13 +1,13 @@
 using System.Collections.Immutable;
-using BuildingBlocks.Abstractions.Persistence.EventStore;
-using BuildingBlocks.Core.Domain;
-using BuildingBlocks.Core.Domain.Events.Internal;
-using BuildingBlocks.Core.Domain.EventSourcing;
-using BuildingBlocks.Core.Persistence.EventStore;
-using BuildingBlocks.Persistence.EventStoreDB.IntegrationTests.Fixtures;
+using CloudNativeKit.Abstractions.Persistence.EventStore;
+using CloudNativeKit.Core.Domain;
+using CloudNativeKit.Core.Domain.Events.Internal;
+using CloudNativeKit.Core.Domain.EventSourcing;
+using CloudNativeKit.Core.Persistence.EventStore;
+using CloudNativeKit.Persistence.EventStoreDB.IntegrationTests.Fixtures;
 using FluentAssertions;
 
-namespace BuildingBlocks.Persistence.EventStoreDB.IntegrationTests;
+namespace CloudNativeKit.Persistence.EventStoreDB.IntegrationTests;
 
 public class EventStoreDbEventStoreTests : IClassFixture<IntegrationFixture>
 {

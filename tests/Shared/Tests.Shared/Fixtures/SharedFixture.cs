@@ -1,16 +1,16 @@
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using AutoBogus;
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Messages;
-using BuildingBlocks.Abstractions.Queries;
-using BuildingBlocks.Caching;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Persistence;
-using BuildingBlocks.Core.Types;
-using BuildingBlocks.Integration.Wolverine;
-using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Persistence.Mongo;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Abstractions.Messages;
+using CloudNativeKit.Abstractions.Queries;
+using CloudNativeKit.Caching;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Core.Persistence;
+using CloudNativeKit.Core.Types;
+using CloudNativeKit.Integration.Wolverine;
+using CloudNativeKit.Persistence.EfCore.Postgres;
+using CloudNativeKit.Persistence.Mongo;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using Mediator;
@@ -30,9 +30,9 @@ using Wolverine.Tracking;
 using Xunit;
 using Xunit.Sdk;
 using Xunit.v3;
-using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
-using IExternalEventBus = BuildingBlocks.Abstractions.Messages.IExternalEventBus;
-using IMessage = BuildingBlocks.Abstractions.Messages.IMessage;
+using ICommand = CloudNativeKit.Abstractions.Commands.ICommand;
+using IExternalEventBus = CloudNativeKit.Abstractions.Messages.IExternalEventBus;
+using IMessage = CloudNativeKit.Abstractions.Messages.IMessage;
 
 namespace Tests.Shared.Fixtures;
 
@@ -165,7 +165,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             );
 
             keyValues.Add(
-                $"{nameof(BuildingBlocks.Caching.CacheOptions)}__{nameof(RedisDistributedCacheOptions)}__{nameof(RedisDistributedCacheOptions.ConnectionString)}",
+                $"{nameof(CloudNativeKit.Caching.CacheOptions)}__{nameof(RedisDistributedCacheOptions)}__{nameof(RedisDistributedCacheOptions.ConnectionString)}",
                 RedisContainerFixture.Container.GetConnectionString()
             );
         });
@@ -278,7 +278,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     }
 
     public async Task<TResponse> CommandAsync<TResponse>(
-        BuildingBlocks.Abstractions.Commands.ICommand<TResponse> command,
+        CloudNativeKit.Abstractions.Commands.ICommand<TResponse> command,
         CancellationToken cancellationToken = default
     )
         where TResponse : class
@@ -287,7 +287,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
         var trackedSession = await ExecuteScopeAsync(async sp =>
         {
-            var commandBus = sp.GetRequiredService<BuildingBlocks.Abstractions.Commands.ICommandBus>();
+            var commandBus = sp.GetRequiredService<CloudNativeKit.Abstractions.Commands.ICommandBus>();
 
             return await sp.TrackActivity()
                 .ExecuteAndWaitAsync(
@@ -306,7 +306,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         var trackedSession = await ExecuteScopeAsync(async sp =>
         {
-            var commandBus = sp.GetRequiredService<BuildingBlocks.Abstractions.Commands.ICommandBus>();
+            var commandBus = sp.GetRequiredService<CloudNativeKit.Abstractions.Commands.ICommandBus>();
 
             return await sp.TrackActivity()
                 .ExecuteAndWaitAsync(
@@ -318,7 +318,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     }
 
     public async Task<TResponse> QueryAsync<TResponse>(
-        BuildingBlocks.Abstractions.Queries.IQuery<TResponse> query,
+        CloudNativeKit.Abstractions.Queries.IQuery<TResponse> query,
         CancellationToken cancellationToken = default
     )
         where TResponse : class

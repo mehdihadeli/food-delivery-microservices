@@ -1,4 +1,4 @@
-using BuildingBlocks.Persistence.Mongo;
+using CloudNativeKit.Persistence.Mongo;
 using Microsoft.EntityFrameworkCore;
 using Tests.Shared.Fixtures;
 

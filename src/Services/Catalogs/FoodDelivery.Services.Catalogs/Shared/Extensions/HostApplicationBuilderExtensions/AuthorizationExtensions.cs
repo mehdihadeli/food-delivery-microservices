@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Security;
+using CloudNativeKit.Core.Security;
 using FoodDelivery.Services.Shared;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Extensions.HostApplicationBuilderExtensions;

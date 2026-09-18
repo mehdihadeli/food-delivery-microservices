@@ -1,10 +1,10 @@
-using BuildingBlocks.Core.Exception;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Email;
+using CloudNativeKit.Core.Exception;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Email;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Mediator;
 using Microsoft.AspNetCore.Identity;
-using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
+using ICommand = CloudNativeKit.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.SendingEmailVerificationCode.v1;
 
@@ -17,7 +17,7 @@ public class SendEmailVerificationCodeCommandHandler(
     UserManager<ApplicationUser> userManager,
     IEmailSender emailSender,
     ILogger<SendEmailVerificationCodeCommandHandler> logger
-) : BuildingBlocks.Abstractions.Commands.ICommandHandler<SendEmailVerificationCode>
+) : CloudNativeKit.Abstractions.Commands.ICommandHandler<SendEmailVerificationCode>
 {
     public async ValueTask<Unit> Handle(SendEmailVerificationCode command, CancellationToken cancellationToken)
     {

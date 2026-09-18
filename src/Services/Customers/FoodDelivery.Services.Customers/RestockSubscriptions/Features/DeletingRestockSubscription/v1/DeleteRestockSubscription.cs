@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Core.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
 using FoodDelivery.Services.Customers.Shared.Data;
@@ -28,7 +28,7 @@ public class DeleteRestockSubscriptionValidator : AbstractValidator<DeleteRestoc
 public class DeleteRestockSubscriptionHandler(
     CustomersDbContext customersDbContext,
     ILogger<DeleteRestockSubscriptionHandler> logger
-) : BuildingBlocks.Abstractions.Commands.ICommandHandler<DeleteRestockSubscription>
+) : CloudNativeKit.Abstractions.Commands.ICommandHandler<DeleteRestockSubscription>
 {
     public async ValueTask<Unit> Handle(DeleteRestockSubscription command, CancellationToken cancellationToken)
     {

@@ -44,6 +44,7 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
   - [Vertical Slice Flow](#vertical-slice-flow)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
+    - [CloudNativeKit BuildingBlocks Submodule](#cloudnativekit-buildingblocks-submodule)
     - [Dev Certificate](#dev-certificate)
     - [Conventional Commit](#conventional-commit)
     - [Formatting](#formatting)
@@ -72,7 +73,7 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
 - [x] Using `UnitTests` and `NSubstitute` for mocking dependencies
 - [x] Using `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) library for cleanup our test enviroment through docker containers
 - [x] Using `Minimal APIs` for handling requests
-- [x] Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/BuildingBlocks.Validation/RequestValidationBehavior.cs) on top of MediatR
+- [x] Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/src/CloudNativeKit.Validation/RequestValidationBehavior.cs) on top of MediatR
 - [x] Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
 - [x] Using docker and `docker-compose` for deployment
 - [x] Using [YARP](https://microsoft.github.io/reverse-proxy/) reverse proxy as API Gateway
@@ -235,6 +236,46 @@ TODO
 9. Open [food-delivery-microservices.sln](./food-delivery-microservices.sln) solution.
 
 ## Setup
+
+### CloudNativeKit BuildingBlocks Submodule
+
+The reusable building blocks are maintained in the separate [CloudNativeKit](https://github.com/mehdihadeli/CloudNativeKit) repository and included here as a Git submodule. The submodule keeps the CloudNativeKit source code available under `src/BuildingBlocks`, so you can read and debug the implementation directly while working on this application. The parent projects use local project references to this source instead of requiring CloudNativeKit NuGet packages.
+
+For a fresh clone, initialize the repository and its submodules together:
+
+```bash
+git clone --recurse-submodules https://github.com/mehdihadeli/food-delivery-microservices.git
+cd food-delivery-microservices
+```
+
+If you already cloned the repository without submodules, initialize them with:
+
+```bash
+git submodule update --init --recursive
+```
+
+After initialization, CloudNativeKit projects are available under:
+
+```text
+src/BuildingBlocks/src/CloudNativeKit.*
+```
+
+When the parent repository updates its pinned CloudNativeKit commit, pull the recorded version with:
+
+```bash
+git pull
+git submodule update --init --recursive
+```
+
+To test a newer CloudNativeKit commit locally, update the submodule and then build the parent repository:
+
+```bash
+cd src/BuildingBlocks
+git fetch origin
+git checkout <commit-or-tag>
+cd ../..
+dotnet build food-delivery-microservices.slnx
+```
 
 ### Dev Certificate
 

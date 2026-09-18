@@ -1,6 +1,6 @@
 using System.Data;
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Abstractions.Persistence;
+using CloudNativeKit.Abstractions.Events;
+using CloudNativeKit.Abstractions.Persistence;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Humanizer;
 using Microsoft.AspNetCore.Identity;

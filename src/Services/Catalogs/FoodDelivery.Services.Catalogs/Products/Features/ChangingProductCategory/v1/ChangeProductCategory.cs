@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Commands;
+using CloudNativeKit.Abstractions.Commands;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductCategory.v1;
 

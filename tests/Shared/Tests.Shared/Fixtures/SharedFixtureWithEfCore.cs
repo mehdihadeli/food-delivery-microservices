@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Queries;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Abstractions.Queries;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

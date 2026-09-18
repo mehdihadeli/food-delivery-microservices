@@ -8,7 +8,7 @@ using Serilog;
 using Serilog.Events;
 using Tests.Shared.Extensions;
 using Xunit;
-using Environments = BuildingBlocks.Core.Web.Environments;
+using Environments = CloudNativeKit.Core.Web.Environments;
 
 namespace Tests.Shared.Factory;
 

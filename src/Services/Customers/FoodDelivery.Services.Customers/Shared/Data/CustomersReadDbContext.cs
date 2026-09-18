@@ -1,4 +1,4 @@
-using BuildingBlocks.Persistence.Mongo;
+using CloudNativeKit.Persistence.Mongo;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Read;
 using MongoDB.Driver;

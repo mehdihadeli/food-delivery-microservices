@@ -1,4 +1,4 @@
-using BuildingBlocks.Integration.Wolverine;
+using CloudNativeKit.Integration.Wolverine;
 using FoodDelivery.Services.Shared.Catalogs.Products.Events.Integration.v1;
 using Wolverine;
 

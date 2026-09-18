@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Core.Paging;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Abstractions.Core.Paging;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

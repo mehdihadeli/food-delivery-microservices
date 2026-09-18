@@ -1,5 +1,5 @@
 using Bogus;
-using BuildingBlocks.Core.Domain.ValueObjects;
+using CloudNativeKit.Core.Domain.ValueObjects;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using FoodDelivery.Services.Customers.Products;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Models;

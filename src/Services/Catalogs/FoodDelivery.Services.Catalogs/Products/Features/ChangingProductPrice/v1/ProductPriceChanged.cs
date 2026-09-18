@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Events.Internal;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Events.Internal;
+using CloudNativeKit.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductPrice.v1;
 

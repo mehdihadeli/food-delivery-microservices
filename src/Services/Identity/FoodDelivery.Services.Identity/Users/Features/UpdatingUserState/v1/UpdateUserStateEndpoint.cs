@@ -1,6 +1,6 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Abstractions.Web.MinimalApi;
+using CloudNativeKit.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Identity.Users;
 using Humanizer;

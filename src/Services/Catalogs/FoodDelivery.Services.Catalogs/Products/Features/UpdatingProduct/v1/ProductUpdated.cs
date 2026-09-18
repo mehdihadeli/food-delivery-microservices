@@ -1,7 +1,7 @@
-using BuildingBlocks.Abstractions.Events;
-using BuildingBlocks.Core.Events.Internal;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Validation.Extensions;
+using CloudNativeKit.Abstractions.Events;
+using CloudNativeKit.Core.Events.Internal;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;

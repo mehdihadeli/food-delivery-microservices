@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Domain;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Abstractions.Domain;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.Exceptions.Domain;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;

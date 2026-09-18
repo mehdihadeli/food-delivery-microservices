@@ -29,7 +29,7 @@ description = "Ignore local IDE request history and known false-positive source 
 paths = [
   '''(^|/)\.idea(/|$)''',
   '''^src/Aspire/FoodDelivery\.ServiceDefaults/Clients/DevToolBackendClient\.cs$''',
-  '''^src/BuildingBlocks/BuildingBlocks\.Core/Security/ClaimsType\.cs$''',
+  '''^src/BuildingBlocks/src/CloudNativeKit\.Core/Security/ClaimsType\.cs$''',
   '''^src/Services/Identity/FoodDelivery\.Services\.Identity\.Api/Pages/ServerSideSessions/Index\.cshtml$''',
   '''^tests/Shared/Tests\.Shared/Auth/LoginRequestBuilder\.cs$''',
   '''^tests/Shared/Tests\.Shared/Constants\.cs$'''

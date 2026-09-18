@@ -1,12 +1,12 @@
-using BuildingBlocks.Core.Registrations;
-using BuildingBlocks.Persistence.EventStoreDB.Extensions;
+using CloudNativeKit.Core.Registrations;
+using CloudNativeKit.Persistence.EventStoreDB.Extensions;
 using EventStore.Client;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Tests.Shared.Helpers;
 
-namespace BuildingBlocks.Persistence.EventStoreDB.IntegrationTests;
+namespace CloudNativeKit.Persistence.EventStoreDB.IntegrationTests;
 
 public class DependencyInjectionsTests
 {

@@ -1,4 +1,4 @@
-using BuildingBlocks.Persistence.EfCore.Postgres;
+using CloudNativeKit.Persistence.EfCore.Postgres;
 
 namespace FoodDelivery.Services.Customers.Shared.Data;
 

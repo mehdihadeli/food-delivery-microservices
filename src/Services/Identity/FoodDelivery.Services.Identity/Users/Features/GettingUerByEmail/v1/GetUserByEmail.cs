@@ -1,6 +1,6 @@
-using BuildingBlocks.Abstractions.Queries;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Validation.Extensions;
+using CloudNativeKit.Abstractions.Queries;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;

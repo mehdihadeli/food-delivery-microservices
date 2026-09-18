@@ -149,7 +149,7 @@ As the system evolves, every new cross-service integration event **must** be doc
 - Use `schema.json` for every event; do not rely only on prose descriptions.
 - Update both `sends` (producer) and `receives` (consumer) service frontmatter so EventCatalog can render accurate flow diagrams.
 - Use consistent naming: event class names end with `V1`, `V2`, etc., and channel exchanges follow the pattern `<event_name_underscore>.primary_exchange`.
-- Add channels for every published event, matching the topology created by `BuildingBlocks.Integration.Wolverine`.
+- Add channels for every published event, matching the topology created by `CloudNativeKit.Integration.Wolverine`.
 - Run `npm run check` in pull requests to catch schema validation and formatting issues early.
 - When a service starts consuming a new event, duplicate or reference the event documentation under the consumer service so the relationship is visible.
 
@@ -184,4 +184,4 @@ If you use a custom domain instead of the default `https://mehdihadeli.github.io
 - 🌐 [Live Catalog](https://fooddelivery-dev.netlify.app)
 - 📚 [Main Repository](https://github.com/mehdihadeli/food-delivery-microservices)
 - 📘 [EventCatalog Docs](https://www.eventcatalog.dev/docs)
-- 🐰 [RabbitMQ Topologies](https://github.com/mehdihadeli/food-delivery-microservices/tree/main/src/BuildingBlocks/BuildingBlocks.Integration.Wolverine)
+- 🐰 [RabbitMQ Topologies](https://github.com/mehdihadeli/food-delivery-microservices/tree/main/src/BuildingBlocks/src/CloudNativeKit.Integration.Wolverine)

@@ -1,4 +1,4 @@
-using BuildingBlocks.Resiliency.Options;
+using CloudNativeKit.Resiliency.Options;
 
 namespace FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
 

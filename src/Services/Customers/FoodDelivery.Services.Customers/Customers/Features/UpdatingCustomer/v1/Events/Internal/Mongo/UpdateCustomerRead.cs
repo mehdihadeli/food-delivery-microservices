@@ -1,6 +1,6 @@
-using BuildingBlocks.Core.Commands;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Validation.Extensions;
+using CloudNativeKit.Core.Commands;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
@@ -79,7 +79,7 @@ public class UpdateCustomerReadValidator : AbstractValidator<UpdateCustomerRead>
 }
 
 public class UpdateCustomerReadHandler(ICustomersReadUnitOfWork customersReadUnitOfWork)
-    : BuildingBlocks.Abstractions.Commands.ICommandHandler<UpdateCustomerRead>
+    : CloudNativeKit.Abstractions.Commands.ICommandHandler<UpdateCustomerRead>
 {
     public async ValueTask<Unit> Handle(UpdateCustomerRead command, CancellationToken cancellationToken)
     {

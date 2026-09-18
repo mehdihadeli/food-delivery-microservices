@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Domain.ValueObjects;
-using BuildingBlocks.Core.Persistence.EfCore;
+using CloudNativeKit.Core.Domain.ValueObjects;
+using CloudNativeKit.Core.Persistence.EfCore;
 using FoodDelivery.Services.Customers.Customers.Models;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Humanizer;

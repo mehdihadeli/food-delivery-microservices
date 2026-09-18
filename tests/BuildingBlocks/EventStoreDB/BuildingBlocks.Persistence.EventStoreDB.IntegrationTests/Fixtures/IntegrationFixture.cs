@@ -1,11 +1,11 @@
-using BuildingBlocks.Abstractions.Persistence.EventStore;
-using BuildingBlocks.Core.Registrations;
-using BuildingBlocks.Persistence.EventStoreDB.Extensions;
+using CloudNativeKit.Abstractions.Persistence.EventStore;
+using CloudNativeKit.Core.Registrations;
+using CloudNativeKit.Persistence.EventStoreDB.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tests.Shared.Helpers;
 
-namespace BuildingBlocks.Persistence.EventStoreDB.IntegrationTests.Fixtures;
+namespace CloudNativeKit.Persistence.EventStoreDB.IntegrationTests.Fixtures;
 
 public class IntegrationFixture : IAsyncLifetime
 {

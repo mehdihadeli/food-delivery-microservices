@@ -27,12 +27,12 @@ COPY ./src/Packages.props ./
 COPY ./src/Versions.props ./
 COPY ./src/ApiGateway/Directory.Build.props ./ApiGateway/
 
-COPY ./src/BuildingBlocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj ./BuildingBlocks/BuildingBlocks.Abstractions/
-COPY ./src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj ./BuildingBlocks/BuildingBlocks.Core/
-COPY ./src/BuildingBlocks/BuildingBlocks.HealthCheck/BuildingBlocks.HealthCheck.csproj ./BuildingBlocks/BuildingBlocks.HealthCheck/
-COPY ./src/BuildingBlocks/BuildingBlocks.OpenTelemetry/BuildingBlocks.OpenTelemetry.csproj ./BuildingBlocks/BuildingBlocks.OpenTelemetry/
-COPY ./src/BuildingBlocks/BuildingBlocks.Resiliency/BuildingBlocks.Resiliency.csproj ./BuildingBlocks/BuildingBlocks.Resiliency/
-COPY ./src/BuildingBlocks/BuildingBlocks.Web/BuildingBlocks.Web.csproj ./BuildingBlocks/BuildingBlocks.Web/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Abstractions/CloudNativeKit.Abstractions.csproj ./BuildingBlocks/src/CloudNativeKit.Abstractions/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Core/CloudNativeKit.Core.csproj ./BuildingBlocks/src/CloudNativeKit.Core/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.HealthCheck/CloudNativeKit.HealthCheck.csproj ./BuildingBlocks/src/CloudNativeKit.HealthCheck/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.OpenTelemetry/CloudNativeKit.OpenTelemetry.csproj ./BuildingBlocks/src/CloudNativeKit.OpenTelemetry/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Resiliency/CloudNativeKit.Resiliency.csproj ./BuildingBlocks/src/CloudNativeKit.Resiliency/
+COPY ./src/BuildingBlocks/src/CloudNativeKit.Web/CloudNativeKit.Web.csproj ./BuildingBlocks/src/CloudNativeKit.Web/
 COPY ./src/Aspire/FoodDelivery.ServiceDefaults/FoodDelivery.ServiceDefaults.csproj ./Aspire/FoodDelivery.ServiceDefaults/
 
 # https://docs.docker.com/build/cache/#order-your-layers

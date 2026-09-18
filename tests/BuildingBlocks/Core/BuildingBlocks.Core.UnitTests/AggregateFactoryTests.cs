@@ -1,8 +1,8 @@
-using BuildingBlocks.Core.Domain;
-using BuildingBlocks.Core.Domain.EventSourcing;
+using CloudNativeKit.Core.Domain;
+using CloudNativeKit.Core.Domain.EventSourcing;
 using FluentAssertions;
 
-namespace BuildingBlocks.Core.UnitTests;
+namespace CloudNativeKit.Core.UnitTests;
 
 public class AggregateFactoryTests
 {

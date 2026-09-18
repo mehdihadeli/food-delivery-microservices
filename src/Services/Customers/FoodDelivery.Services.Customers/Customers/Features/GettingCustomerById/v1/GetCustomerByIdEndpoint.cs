@@ -1,6 +1,6 @@
-using BuildingBlocks.Abstractions.Queries;
-using BuildingBlocks.Abstractions.Web.MinimalApi;
-using BuildingBlocks.Web.ProblemDetail.HttpResults;
+using CloudNativeKit.Abstractions.Queries;
+using CloudNativeKit.Abstractions.Web.MinimalApi;
+using CloudNativeKit.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;

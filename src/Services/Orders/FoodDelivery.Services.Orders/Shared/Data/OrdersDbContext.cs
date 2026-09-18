@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Persistence.EfCore;
+using CloudNativeKit.Core.Persistence.EfCore;
 using FoodDelivery.Services.Orders.Orders.Models;
 using FoodDelivery.Services.Orders.Shared.Contracts;
 using Microsoft.EntityFrameworkCore;

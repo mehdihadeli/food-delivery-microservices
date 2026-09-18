@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Domain;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Domain;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.Brands;

@@ -1,6 +1,6 @@
-using BuildingBlocks.Core.Commands;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Validation.Extensions;
+using CloudNativeKit.Core.Commands;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using Mediator;
@@ -76,7 +76,7 @@ public class CreateCustomerReadValidator : AbstractValidator<CreateCustomerRead>
 }
 
 public class CreateCustomerReadHandler(ICustomersReadUnitOfWork unitOfWork)
-    : BuildingBlocks.Abstractions.Commands.ICommandHandler<CreateCustomerRead>
+    : CloudNativeKit.Abstractions.Commands.ICommandHandler<CreateCustomerRead>
 {
     public async ValueTask<Unit> Handle(CreateCustomerRead command, CancellationToken cancellationToken)
     {

@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Persistence.EfCore.Postgres;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Persistence.EfCore.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Testcontainers.PostgreSql;

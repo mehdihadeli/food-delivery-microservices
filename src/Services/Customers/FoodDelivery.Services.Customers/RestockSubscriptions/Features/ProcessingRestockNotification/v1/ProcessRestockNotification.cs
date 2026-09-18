@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Core.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
@@ -33,7 +33,7 @@ public class ProcessRestockNotificationHandler(
     CustomersDbContext customersDbContext,
     ICommandBus commandBus,
     ILogger<ProcessRestockNotificationHandler> logger
-) : BuildingBlocks.Abstractions.Commands.ICommandHandler<ProcessRestockNotification>
+) : CloudNativeKit.Abstractions.Commands.ICommandHandler<ProcessRestockNotification>
 {
     public async ValueTask<Unit> Handle(ProcessRestockNotification command, CancellationToken cancellationToken)
     {

@@ -1,5 +1,5 @@
 using Bogus;
-using BuildingBlocks.Abstractions.Domain;
+using CloudNativeKit.Abstractions.Domain;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Categories.ValueObjects;
 using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;

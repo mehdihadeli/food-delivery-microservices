@@ -1,4 +1,4 @@
-using BuildingBlocks.Abstractions.Domain;
+using CloudNativeKit.Abstractions.Domain;
 
 namespace FoodDelivery.Services.Customers.Customers.Models.Reads;
 

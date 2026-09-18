@@ -1,6 +1,6 @@
 using Bogus;
-using BuildingBlocks.Abstractions.Domain;
-using BuildingBlocks.Abstractions.Persistence;
+using CloudNativeKit.Abstractions.Domain;
+using CloudNativeKit.Abstractions.Persistence;
 using FoodDelivery.Services.Catalogs.Brands;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;

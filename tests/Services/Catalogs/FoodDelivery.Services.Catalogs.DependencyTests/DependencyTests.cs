@@ -1,9 +1,9 @@
-using BuildingBlocks.Caching;
-using BuildingBlocks.Core.Extensions.ServiceCollectionExtensions;
-using BuildingBlocks.Core.Web;
-using BuildingBlocks.Integration.Wolverine;
-using BuildingBlocks.Persistence.EfCore.Postgres;
-using BuildingBlocks.Persistence.Mongo;
+using CloudNativeKit.Caching;
+using CloudNativeKit.Core.Extensions.ServiceCollectionExtensions;
+using CloudNativeKit.Core.Web;
+using CloudNativeKit.Integration.Wolverine;
+using CloudNativeKit.Persistence.EfCore.Postgres;
+using CloudNativeKit.Persistence.Mongo;
 using FoodDelivery.Services.Catalogs.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -1,5 +1,5 @@
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Core.Security;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Core.Security;
 using LinqKit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;

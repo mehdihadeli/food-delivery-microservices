@@ -1,5 +1,5 @@
-using BuildingBlocks.Abstractions.Domain;
-using BuildingBlocks.Core.Domain;
+using CloudNativeKit.Abstractions.Domain;
+using CloudNativeKit.Core.Domain;
 
 namespace FoodDelivery.Services.Catalogs.Categories;
 

@@ -1,8 +1,8 @@
-using BuildingBlocks.Core.Domain.EventSourcing;
-using BuildingBlocks.Core.Persistence.EventStore;
+using CloudNativeKit.Core.Domain.EventSourcing;
+using CloudNativeKit.Core.Persistence.EventStore;
 using FluentAssertions;
 
-namespace BuildingBlocks.Core.UnitTests;
+namespace CloudNativeKit.Core.UnitTests;
 
 public class StreamNameTests
 {

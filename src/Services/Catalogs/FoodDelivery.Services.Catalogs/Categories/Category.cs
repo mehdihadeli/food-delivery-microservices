@@ -1,7 +1,7 @@
-using BuildingBlocks.Core.Domain;
-using BuildingBlocks.Core.Domain.Exceptions;
-using BuildingBlocks.Core.Exception;
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Domain;
+using CloudNativeKit.Core.Domain.Exceptions;
+using CloudNativeKit.Core.Exception;
+using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Categories.ValueObjects;
 using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 

@@ -1,33 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build -->
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
+  <Import Project="..\Directory.Build.props" />
+
   <PropertyGroup Label="Framework">
-    <TargetFramework>net10.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
     <NoWarn>CS1587,CS1591,CS1998,NU5105</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Label="Build">
-    <AnalysisLevel>latest-All</AnalysisLevel>
-    <AnalysisMode>All</AnalysisMode>
-    <AnalysisModeGlobalization>None</AnalysisModeGlobalization>
-    <AnalysisModeSecurity>All</AnalysisModeSecurity>
-    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
-    <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
   <PropertyGroup Label="Testing Platform" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests'))">
     <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
   </PropertyGroup>
+
+  <ItemGroup Label="Test Framework">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+  </ItemGroup>
 
   <ItemGroup Label="Testing Platform Packages" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests'))">
     <PackageReference Include="xunit.v3.mtp-v2" />
@@ -36,15 +25,14 @@
     <PackageReference Include="Shouldly" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" PrivateAssets="all" Condition="'$(SkipVersion)' != 'true' AND $(MSBuildProjectExtension) == '.csproj'">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+  <ItemGroup Label="Testing Imports" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests'))">
+    <Using Include="Xunit" />
+    <Using Include="Shouldly" />
   </ItemGroup>
 
-    <ItemGroup Label="Testing Imports" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests'))">
-        <Using Include="Xunit"/>
-        <Using Include="Shouldly"/>
-    </ItemGroup>
-	
+  <ItemGroup Label="Legacy Test Runner Cleanup" Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('Tests')) Or $([System.String]::Copy('$(MSBuildProjectName)').EndsWith('TestShared')) Or '$(MSBuildProjectName)' == 'Tests.Shared'">
+    <PackageReference Remove="Microsoft.NET.Test.Sdk" />
+    <PackageReference Remove="coverlet.msbuild" />
+    <PackageReference Remove="xunit.runner.visualstudio" />
+  </ItemGroup>
 </Project>

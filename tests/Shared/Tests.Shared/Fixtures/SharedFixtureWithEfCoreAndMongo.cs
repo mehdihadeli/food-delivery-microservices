@@ -1,6 +1,6 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Abstractions.Queries;
-using BuildingBlocks.Persistence.Mongo;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Abstractions.Queries;
+using CloudNativeKit.Persistence.Mongo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Sdk;

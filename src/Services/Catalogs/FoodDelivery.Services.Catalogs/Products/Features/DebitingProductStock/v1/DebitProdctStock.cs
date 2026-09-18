@@ -1,12 +1,12 @@
-using BuildingBlocks.Abstractions.Commands;
-using BuildingBlocks.Core.Extensions;
-using BuildingBlocks.Validation.Extensions;
+using CloudNativeKit.Abstractions.Commands;
+using CloudNativeKit.Core.Extensions;
+using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
-using ICommand = BuildingBlocks.Abstractions.Commands.ICommand;
+using ICommand = CloudNativeKit.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1;
 
@@ -35,7 +35,7 @@ public class DebitProductStockValidator : AbstractValidator<DebitProductStock>
 }
 
 public class DebitProductStockHandler(ICatalogDbContext catalogDbContext)
-    : BuildingBlocks.Abstractions.Commands.ICommandHandler<DebitProductStock>
+    : CloudNativeKit.Abstractions.Commands.ICommandHandler<DebitProductStock>
 {
     public async ValueTask<Unit> Handle(DebitProductStock request, CancellationToken cancellationToken)
     {

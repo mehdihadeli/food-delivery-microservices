@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Extensions;
+using CloudNativeKit.Core.Extensions;
 using MongoDB.Driver;
 using Testcontainers.MongoDb;
 using Tests.Shared.Helpers;

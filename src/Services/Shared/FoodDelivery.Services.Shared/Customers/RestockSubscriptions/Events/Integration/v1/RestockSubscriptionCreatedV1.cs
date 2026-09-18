@@ -1,4 +1,4 @@
-using BuildingBlocks.Core.Messages;
+using CloudNativeKit.Core.Messages;
 
 namespace FoodDelivery.Services.Shared.Customers.RestockSubscriptions.Events.Integration.v1;
 

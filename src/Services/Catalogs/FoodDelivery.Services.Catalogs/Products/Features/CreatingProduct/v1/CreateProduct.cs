@@ -46,6 +46,9 @@ public class CreateProductValidation : AbstractValidator<CreateProduct>
         RuleFor(x => x.Id).NotNull();
         RuleFor(x => x.Name).NotNull();
         RuleFor(x => x.Price).NotNull();
+        RuleFor(x => x.Price)
+            .Must(p => p != null && p.Value > 0)
+            .WithMessage("Price must be greater than zero.");
         RuleFor(x => x.Stock).NotNull();
         RuleFor(x => x.Dimensions).NotNull();
         RuleFor(x => x.Size).NotNull();
@@ -79,7 +82,7 @@ public class CreateProductHandler(
             .Include(x => x.Supplier)
             .SingleOrDefaultAsync(x => x.Id == product.Id, cancellationToken: cancellationToken);
 
-        logger.LogInformation("Product a with ID: '{ProductId} created.'", created!.Id);
+        logger.LogInformation("Product with ID: '{ProductId}' created.", created!.Id);
 
         return new CreateProductResult(created.Id);
     }

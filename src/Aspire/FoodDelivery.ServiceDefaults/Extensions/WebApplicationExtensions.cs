@@ -1,5 +1,5 @@
-using CloudNativeKit.HealthCheck;
-using CloudNativeKit.OpenTelemetry.Extensions;
+using Squirrel.HealthCheck;
+using Squirrel.OpenTelemetry.Extensions;
 using Microsoft.AspNetCore.Builder;
 
 namespace FoodDelivery.ServiceDefaults.Extensions;

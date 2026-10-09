@@ -1,9 +1,9 @@
-using CloudNativeKit.Abstractions.Events;
-using CloudNativeKit.Abstractions.Persistence;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Core.Web.Extensions;
-using CloudNativeKit.Persistence.EfCore.Postgres;
-using CloudNativeKit.Persistence.Mongo.Extensions;
+using Squirrel.Abstractions.Events;
+using Squirrel.Abstractions.Persistence;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Web.Extensions;
+using Squirrel.Persistence.EfCore.Postgres;
+using Squirrel.Persistence.Mongo.Extensions;
 using FoodDelivery.Services.Customers.Customers.Data.Repositories.Mongo;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Data.Repositories.Mongo;

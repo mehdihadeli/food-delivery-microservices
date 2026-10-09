@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Exception;
+using Squirrel.Core.Exception;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;

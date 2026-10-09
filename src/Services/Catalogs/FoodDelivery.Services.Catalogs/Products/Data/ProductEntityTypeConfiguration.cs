@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Persistence.EfCore;
+using Squirrel.Core.Persistence.EfCore;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Shared.Data;
 using Humanizer;

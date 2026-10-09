@@ -1,4 +1,4 @@
-using CloudNativeKit.Abstractions.Commands;
+using Squirrel.Abstractions.Commands;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductSupplier.v1;
 

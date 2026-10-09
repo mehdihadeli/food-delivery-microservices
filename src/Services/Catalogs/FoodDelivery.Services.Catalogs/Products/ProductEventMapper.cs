@@ -1,6 +1,6 @@
-using CloudNativeKit.Abstractions.Events;
-using CloudNativeKit.Abstractions.Messages;
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Abstractions.Events;
+using Squirrel.Abstractions.Messages;
+using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Domain;
 using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Notification;
 using FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1.Events.Domain;

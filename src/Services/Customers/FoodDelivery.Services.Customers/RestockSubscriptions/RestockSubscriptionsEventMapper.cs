@@ -1,5 +1,5 @@
-using CloudNativeKit.Abstractions.Events;
-using CloudNativeKit.Abstractions.Messages;
+using Squirrel.Abstractions.Events;
+using Squirrel.Abstractions.Messages;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Events.Domain;
 using FoodDelivery.Services.Shared.Customers.RestockSubscriptions.Events.Integration.v1;
 

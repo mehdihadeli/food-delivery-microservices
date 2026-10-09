@@ -1,7 +1,7 @@
-using CloudNativeKit.Abstractions.Queries;
-using CloudNativeKit.Caching;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Validation.Extensions;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Caching;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;

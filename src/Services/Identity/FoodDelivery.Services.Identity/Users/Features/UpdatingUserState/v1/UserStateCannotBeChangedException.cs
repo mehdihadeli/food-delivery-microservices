@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Exception;
-using CloudNativeKit.Core.Types.Extensions;
+using Squirrel.Core.Exception;
+using Squirrel.Core.Types.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Shared.Identity.Users;
 

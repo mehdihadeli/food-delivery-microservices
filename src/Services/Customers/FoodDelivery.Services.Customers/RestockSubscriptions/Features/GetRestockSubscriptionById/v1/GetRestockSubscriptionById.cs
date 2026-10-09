@@ -1,5 +1,5 @@
-using CloudNativeKit.Abstractions.Queries;
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Core.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;

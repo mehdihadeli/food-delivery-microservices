@@ -1,9 +1,9 @@
-using CloudNativeKit.Core.Domain;
-using CloudNativeKit.Core.Domain.Events.Internal;
-using CloudNativeKit.Core.Domain.EventSourcing;
+using Squirrel.Core.Domain;
+using Squirrel.Core.Domain.Events.Internal;
+using Squirrel.Core.Domain.EventSourcing;
 using FluentAssertions;
 
-namespace CloudNativeKit.Core.UnitTests;
+namespace Squirrel.Core.UnitTests;
 
 public class EventSourcedAggregateTests
 {

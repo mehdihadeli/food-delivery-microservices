@@ -1,5 +1,5 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Core.IdsGenerator;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Core.IdsGenerator;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;

@@ -1,6 +1,6 @@
-using CloudNativeKit.Abstractions.Events;
-using CloudNativeKit.Core.Events.Internal;
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Abstractions.Events;
+using Squirrel.Core.Events.Internal;
+using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1.Events.Domain;

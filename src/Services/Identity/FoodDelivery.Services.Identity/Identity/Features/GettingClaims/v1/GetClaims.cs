@@ -1,4 +1,4 @@
-using CloudNativeKit.Abstractions.Queries;
+using Squirrel.Abstractions.Queries;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.GettingClaims.v1;
 

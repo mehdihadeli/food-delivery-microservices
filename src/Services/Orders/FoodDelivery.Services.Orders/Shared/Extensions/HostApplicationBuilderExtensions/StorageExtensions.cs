@@ -1,9 +1,9 @@
-using CloudNativeKit.Abstractions.Events;
-using CloudNativeKit.Abstractions.Persistence;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Core.Web.Extensions;
-using CloudNativeKit.Persistence.EfCore.Postgres;
-using CloudNativeKit.Persistence.Mongo.Extensions;
+using Squirrel.Abstractions.Events;
+using Squirrel.Abstractions.Persistence;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Web.Extensions;
+using Squirrel.Persistence.EfCore.Postgres;
+using Squirrel.Persistence.Mongo.Extensions;
 using FoodDelivery.Services.Orders.Shared.Contracts;
 using FoodDelivery.Services.Orders.Shared.Data;
 using FoodDelivery.Services.Shared.Constants;

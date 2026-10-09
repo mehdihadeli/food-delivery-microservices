@@ -106,7 +106,7 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
 
             modelBuilder.Entity("FoodDelivery.Services.Customers.Customers.Models.Customer", b =>
                 {
-                    b.OwnsOne("CloudNativeKit.Core.Domain.ValueObjects.Address", "Address", b1 =>
+                    b.OwnsOne("Squirrel.Core.Domain.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<long>("CustomerId")
                                 .HasColumnType("bigint")
@@ -143,7 +143,7 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
                                 .HasConstraintName("fk_customers_customers_id");
                         });
 
-                    b.OwnsOne("CloudNativeKit.Core.Domain.ValueObjects.BirthDate", "BirthDate", b1 =>
+                    b.OwnsOne("Squirrel.Core.Domain.ValueObjects.BirthDate", "BirthDate", b1 =>
                         {
                             b1.Property<long>("CustomerId")
                                 .HasColumnType("bigint")
@@ -162,7 +162,7 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
                                 .HasConstraintName("fk_customers_customers_id");
                         });
 
-                    b.OwnsOne("CloudNativeKit.Core.Domain.ValueObjects.PhoneNumber", "PhoneNumber", b1 =>
+                    b.OwnsOne("Squirrel.Core.Domain.ValueObjects.PhoneNumber", "PhoneNumber", b1 =>
                         {
                             b1.Property<long>("CustomerId")
                                 .HasColumnType("bigint")
@@ -187,7 +187,7 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
                                 .HasConstraintName("fk_customers_customers_id");
                         });
 
-                    b.OwnsOne("CloudNativeKit.Core.Domain.ValueObjects.Email", "Email", b1 =>
+                    b.OwnsOne("Squirrel.Core.Domain.ValueObjects.Email", "Email", b1 =>
                         {
                             b1.Property<long>("CustomerId")
                                 .HasColumnType("bigint")
@@ -283,7 +283,7 @@ namespace FoodDelivery.Services.Customers.Shared.Data.Migrations.Customers
                         .IsRequired()
                         .HasConstraintName("fk_restock_subscriptions_customers_customer_id");
 
-                    b.OwnsOne("CloudNativeKit.Core.Domain.ValueObjects.Email", "Email", b1 =>
+                    b.OwnsOne("Squirrel.Core.Domain.ValueObjects.Email", "Email", b1 =>
                         {
                             b1.Property<long>("RestockSubscriptionId")
                                 .HasColumnType("bigint")

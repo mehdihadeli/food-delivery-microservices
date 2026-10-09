@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Net.Http.Json;
-using CloudNativeKit.Abstractions.Core.Paging;
-using CloudNativeKit.Core.Exception;
+using Squirrel.Abstractions.Core.Paging;
+using Squirrel.Core.Exception;
 using FoodDelivery.Services.Customers.Products.Models;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
 using Microsoft.AspNetCore.Http.Extensions;

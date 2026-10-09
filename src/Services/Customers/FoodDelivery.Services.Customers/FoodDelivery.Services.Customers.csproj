@@ -7,14 +7,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Aspire\FoodDelivery.ServiceDefaults\FoodDelivery.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Caching\CloudNativeKit.Caching.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Email\CloudNativeKit.Email.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Integration.Wolverine\CloudNativeKit.Integration.Wolverine.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.OpenApi\CloudNativeKit.OpenApi.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Persistence.EfCore.Postgres\CloudNativeKit.Persistence.EfCore.Postgres.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Persistence.Mongo\CloudNativeKit.Persistence.Mongo.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.SerilogLogging\CloudNativeKit.SerilogLogging.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Validation\CloudNativeKit.Validation.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.Caching\Squirrel.Caching.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.Email\Squirrel.Email.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.Integration.Wolverine\Squirrel.Integration.Wolverine.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.OpenApi\Squirrel.OpenApi.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.Persistence.EfCore.Postgres\Squirrel.Persistence.EfCore.Postgres.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.Persistence.Mongo\Squirrel.Persistence.Mongo.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.SerilogLogging\Squirrel.SerilogLogging.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.Validation\Squirrel.Validation.csproj" />
     <ProjectReference Include="..\..\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" />
   </ItemGroup>
 

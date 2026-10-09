@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Caching\CloudNativeKit.Caching.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Core\CloudNativeKit.Core.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Integration.Wolverine\CloudNativeKit.Integration.Wolverine.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.SerilogLogging\CloudNativeKit.SerilogLogging.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Persistence.EfCore.Postgres\CloudNativeKit.Persistence.EfCore.Postgres.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Persistence.Mongo\CloudNativeKit.Persistence.Mongo.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Security\CloudNativeKit.Security.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\CloudNativeKit.Web\CloudNativeKit.Web.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\Squirrel.Caching\Squirrel.Caching.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\Squirrel.Core\Squirrel.Core.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\Squirrel.Integration.Wolverine\Squirrel.Integration.Wolverine.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\Squirrel.SerilogLogging\Squirrel.SerilogLogging.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\Squirrel.Persistence.EfCore.Postgres\Squirrel.Persistence.EfCore.Postgres.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\Squirrel.Persistence.Mongo\Squirrel.Persistence.Mongo.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\Squirrel.Security\Squirrel.Security.csproj" />
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\src\Squirrel.Web\Squirrel.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup Label="XUnit">

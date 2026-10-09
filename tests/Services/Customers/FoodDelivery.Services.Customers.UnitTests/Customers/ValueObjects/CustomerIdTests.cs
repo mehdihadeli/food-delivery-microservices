@@ -2,7 +2,7 @@ using Bogus;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using Tests.Shared.XunitCategories;
-using ValidationException = CloudNativeKit.Core.Exception.ValidationException;
+using ValidationException = Squirrel.Core.Exception.ValidationException;
 
 namespace FoodDelivery.Services.Customers.UnitTests.Customers.ValueObjects;
 

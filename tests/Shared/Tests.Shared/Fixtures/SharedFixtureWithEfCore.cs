@@ -1,5 +1,5 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Abstractions.Queries;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Queries;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

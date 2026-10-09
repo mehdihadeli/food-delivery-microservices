@@ -1,4 +1,4 @@
-using CloudNativeKit.Resiliency.Options;
+using Squirrel.Resiliency.Options;
 
 namespace FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
 

@@ -1,4 +1,4 @@
-using CloudNativeKit.Integration.Wolverine;
+using Squirrel.Integration.Wolverine;
 using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Wolverine;
 

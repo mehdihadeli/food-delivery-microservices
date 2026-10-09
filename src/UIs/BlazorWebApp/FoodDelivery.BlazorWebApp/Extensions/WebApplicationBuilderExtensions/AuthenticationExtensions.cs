@@ -1,10 +1,10 @@
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Core.Extensions;
 using LinqKit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
-using OAuthOptions = CloudNativeKit.Core.Security.OAuthOptions;
+using OAuthOptions = Squirrel.Core.Security.OAuthOptions;
 
 namespace FoodDelivery.BlazorWebApp.Extensions.WebApplicationBuilderExtensions;
 

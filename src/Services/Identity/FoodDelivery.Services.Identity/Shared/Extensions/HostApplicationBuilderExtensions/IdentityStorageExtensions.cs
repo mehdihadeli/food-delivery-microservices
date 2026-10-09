@@ -1,8 +1,8 @@
-using CloudNativeKit.Abstractions.Events;
-using CloudNativeKit.Abstractions.Persistence;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Core.Web.Extensions;
-using CloudNativeKit.Persistence.EfCore.Postgres;
+using Squirrel.Abstractions.Events;
+using Squirrel.Abstractions.Persistence;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Web.Extensions;
+using Squirrel.Persistence.EfCore.Postgres;
 using FoodDelivery.Services.Identity.Shared.Data;
 using FoodDelivery.Services.Shared.Constants;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

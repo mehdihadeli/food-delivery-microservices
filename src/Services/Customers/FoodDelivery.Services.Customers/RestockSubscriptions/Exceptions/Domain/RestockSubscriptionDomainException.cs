@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Domain.Exceptions;
-using CloudNativeKit.Core.Exception;
+using Squirrel.Core.Domain.Exceptions;
+using Squirrel.Core.Exception;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Domain;
 

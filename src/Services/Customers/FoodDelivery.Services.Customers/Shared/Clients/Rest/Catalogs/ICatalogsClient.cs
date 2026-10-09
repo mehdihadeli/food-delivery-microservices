@@ -1,4 +1,4 @@
-using CloudNativeKit.Abstractions.Core.Paging;
+using Squirrel.Abstractions.Core.Paging;
 using FoodDelivery.Services.Customers.Products.Models;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
 

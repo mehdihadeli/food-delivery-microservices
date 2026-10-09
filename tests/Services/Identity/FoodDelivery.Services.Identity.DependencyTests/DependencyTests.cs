@@ -1,9 +1,9 @@
-using CloudNativeKit.Caching;
-using CloudNativeKit.Core.Extensions.ServiceCollectionExtensions;
-using CloudNativeKit.Core.Web;
-using CloudNativeKit.Integration.Wolverine;
-using CloudNativeKit.Persistence.EfCore.Postgres;
-using CloudNativeKit.Persistence.Mongo;
+using Squirrel.Caching;
+using Squirrel.Core.Extensions.ServiceCollectionExtensions;
+using Squirrel.Core.Web;
+using Squirrel.Integration.Wolverine;
+using Squirrel.Persistence.EfCore.Postgres;
+using Squirrel.Persistence.Mongo;
 using FoodDelivery.Services.Identity.Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

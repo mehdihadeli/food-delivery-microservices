@@ -1,4 +1,4 @@
-using CloudNativeKit.Persistence.Mongo;
+using Squirrel.Persistence.Mongo;
 using Microsoft.EntityFrameworkCore;
 using Tests.Shared.Fixtures;
 

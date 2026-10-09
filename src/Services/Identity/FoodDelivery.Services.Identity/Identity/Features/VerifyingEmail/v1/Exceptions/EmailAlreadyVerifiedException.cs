@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Exception;
+using Squirrel.Core.Exception;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1.Exceptions;
 

@@ -1,7 +1,7 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Abstractions.Messages;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Validation.Extensions;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Messages;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
@@ -40,7 +40,7 @@ public class UpdateUserStateHandler(
     IExternalEventBus bus,
     UserManager<ApplicationUser> userManager,
     ILogger<UpdateUserStateHandler> logger
-) : CloudNativeKit.Abstractions.Commands.ICommandHandler<UpdateUserState>
+) : Squirrel.Abstractions.Commands.ICommandHandler<UpdateUserState>
 {
     public async ValueTask<Unit> Handle(UpdateUserState request, CancellationToken cancellationToken)
     {

@@ -1,4 +1,4 @@
-using CloudNativeKit.Persistence.Mongo;
+using Squirrel.Persistence.Mongo;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using FoodDelivery.Services.Customers.Shared.Data;

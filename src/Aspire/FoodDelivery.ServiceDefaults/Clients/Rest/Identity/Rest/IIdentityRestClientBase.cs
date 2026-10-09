@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
-using CloudNativeKit.Core.Exception;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Core.Web.Extensions;
+using Squirrel.Core.Exception;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Web.Extensions;
 using FoodDelivery.ServiceDefaults.Clients.Rest.Identity.Dtos;
 using Microsoft.Extensions.Options;
 using Polly.Wrap;

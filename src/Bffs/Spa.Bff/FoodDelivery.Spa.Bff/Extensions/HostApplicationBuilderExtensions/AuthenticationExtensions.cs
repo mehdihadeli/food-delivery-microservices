@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Core.Security;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Security;
 using LinqKit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;

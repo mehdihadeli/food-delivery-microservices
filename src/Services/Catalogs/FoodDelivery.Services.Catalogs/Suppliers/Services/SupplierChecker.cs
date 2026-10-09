@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Extensions;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;

@@ -39,8 +39,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Building Blocks Projects">
-    <ProjectReference Include="..\..\BuildingBlocks\src\CloudNativeKit.AspireIntegrations\CloudNativeKit.AspireIntegrations.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\..\BuildingBlocks\src\CloudNativeKit.Persistence.EfCore.Postgres\CloudNativeKit.Persistence.EfCore.Postgres.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\..\BuildingBlocks\src\Squirrel.AspireIntegrations\Squirrel.AspireIntegrations.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\..\BuildingBlocks\src\Squirrel.Persistence.EfCore.Postgres\Squirrel.Persistence.EfCore.Postgres.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\..\Services\Shared\FoodDelivery.Services.Shared\FoodDelivery.Services.Shared.csproj" IsAspireProjectResource="false" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
-using CloudNativeKit.OpenApi.AspnetOpenApi.Extensions;
-using CloudNativeKit.Web.Cors;
-using CloudNativeKit.Web.Minimal.Extensions;
+using Squirrel.OpenApi.AspnetOpenApi.Extensions;
+using Squirrel.Web.Cors;
+using Squirrel.Web.Minimal.Extensions;
 
 namespace FoodDelivery.Services.Identity.Shared.Extensions.WebApplicationExtensions;
 

@@ -1,4 +1,4 @@
-using CloudNativeKit.Abstractions.Persistence;
+using Squirrel.Abstractions.Persistence;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 
 namespace FoodDelivery.Services.Customers.Shared.Contracts;

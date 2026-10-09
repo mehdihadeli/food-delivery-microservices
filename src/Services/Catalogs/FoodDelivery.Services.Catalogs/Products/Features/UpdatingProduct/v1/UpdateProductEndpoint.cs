@@ -1,7 +1,7 @@
 using Cassandra.Mapping;
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Abstractions.Web.MinimalApi;
-using CloudNativeKit.Web.ProblemDetail.HttpResults;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Web.MinimalApi;
+using Squirrel.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Models;

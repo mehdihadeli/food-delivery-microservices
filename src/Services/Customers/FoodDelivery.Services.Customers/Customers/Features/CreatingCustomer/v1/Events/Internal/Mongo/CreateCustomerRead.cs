@@ -1,6 +1,6 @@
-using CloudNativeKit.Core.Commands;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Validation.Extensions;
+using Squirrel.Core.Commands;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using Mediator;
@@ -76,7 +76,7 @@ public class CreateCustomerReadValidator : AbstractValidator<CreateCustomerRead>
 }
 
 public class CreateCustomerReadHandler(ICustomersReadUnitOfWork unitOfWork)
-    : CloudNativeKit.Abstractions.Commands.ICommandHandler<CreateCustomerRead>
+    : Squirrel.Abstractions.Commands.ICommandHandler<CreateCustomerRead>
 {
     public async ValueTask<Unit> Handle(CreateCustomerRead command, CancellationToken cancellationToken)
     {

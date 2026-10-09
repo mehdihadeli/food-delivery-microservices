@@ -1,8 +1,8 @@
 using System.Net;
 using Bogus;
-using CloudNativeKit.Core.Web.Extensions;
-using CloudNativeKit.OpenApi.AspnetOpenApi.Extensions;
-using CloudNativeKit.OpenApi.AsyncApi;
+using Squirrel.Core.Web.Extensions;
+using Squirrel.OpenApi.AspnetOpenApi.Extensions;
+using Squirrel.OpenApi.AsyncApi;
 using FoodDelivery.ServiceDefaults.Extensions;
 using FoodDelivery.Services.Catalogs;
 using FoodDelivery.Services.Catalogs.Shared.Extensions.HostApplicationBuilderExtensions;

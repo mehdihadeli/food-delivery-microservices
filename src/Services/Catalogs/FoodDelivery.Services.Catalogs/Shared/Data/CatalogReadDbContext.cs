@@ -1,4 +1,4 @@
-using CloudNativeKit.Persistence.Mongo;
+using Squirrel.Persistence.Mongo;
 using FoodDelivery.Services.Catalogs.Products.Models.Read;
 using Humanizer;
 using MongoDB.Driver;

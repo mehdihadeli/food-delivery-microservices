@@ -1,4 +1,4 @@
-using CloudNativeKit.Abstractions.Domain;
+using Squirrel.Abstractions.Domain;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Models.Read;
 

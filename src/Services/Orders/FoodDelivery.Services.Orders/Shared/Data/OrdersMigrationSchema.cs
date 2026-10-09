@@ -1,4 +1,4 @@
-using CloudNativeKit.Abstractions.Persistence;
+using Squirrel.Abstractions.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Orders.Shared.Data;

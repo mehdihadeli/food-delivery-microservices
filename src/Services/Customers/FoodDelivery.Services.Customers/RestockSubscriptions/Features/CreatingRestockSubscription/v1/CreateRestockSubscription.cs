@@ -1,8 +1,8 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Core.Domain.ValueObjects;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Core.IdsGenerator;
-using CloudNativeKit.Validation.Extensions;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Core.Domain.ValueObjects;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.IdsGenerator;
+using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;

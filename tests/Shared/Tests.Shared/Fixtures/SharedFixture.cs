@@ -1,16 +1,16 @@
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using AutoBogus;
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Abstractions.Messages;
-using CloudNativeKit.Abstractions.Queries;
-using CloudNativeKit.Caching;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Core.Persistence;
-using CloudNativeKit.Core.Types;
-using CloudNativeKit.Integration.Wolverine;
-using CloudNativeKit.Persistence.EfCore.Postgres;
-using CloudNativeKit.Persistence.Mongo;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Messages;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Caching;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Persistence;
+using Squirrel.Core.Types;
+using Squirrel.Integration.Wolverine;
+using Squirrel.Persistence.EfCore.Postgres;
+using Squirrel.Persistence.Mongo;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using Mediator;
@@ -30,9 +30,9 @@ using Wolverine.Tracking;
 using Xunit;
 using Xunit.Sdk;
 using Xunit.v3;
-using ICommand = CloudNativeKit.Abstractions.Commands.ICommand;
-using IExternalEventBus = CloudNativeKit.Abstractions.Messages.IExternalEventBus;
-using IMessage = CloudNativeKit.Abstractions.Messages.IMessage;
+using ICommand = Squirrel.Abstractions.Commands.ICommand;
+using IExternalEventBus = Squirrel.Abstractions.Messages.IExternalEventBus;
+using IMessage = Squirrel.Abstractions.Messages.IMessage;
 
 namespace Tests.Shared.Fixtures;
 
@@ -165,7 +165,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
             );
 
             keyValues.Add(
-                $"{nameof(CloudNativeKit.Caching.CacheOptions)}__{nameof(RedisDistributedCacheOptions)}__{nameof(RedisDistributedCacheOptions.ConnectionString)}",
+                $"{nameof(Squirrel.Caching.CacheOptions)}__{nameof(RedisDistributedCacheOptions)}__{nameof(RedisDistributedCacheOptions.ConnectionString)}",
                 RedisContainerFixture.Container.GetConnectionString()
             );
         });
@@ -278,7 +278,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     }
 
     public async Task<TResponse> CommandAsync<TResponse>(
-        CloudNativeKit.Abstractions.Commands.ICommand<TResponse> command,
+        Squirrel.Abstractions.Commands.ICommand<TResponse> command,
         CancellationToken cancellationToken = default
     )
         where TResponse : class
@@ -287,7 +287,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
 
         var trackedSession = await ExecuteScopeAsync(async sp =>
         {
-            var commandBus = sp.GetRequiredService<CloudNativeKit.Abstractions.Commands.ICommandBus>();
+            var commandBus = sp.GetRequiredService<Squirrel.Abstractions.Commands.ICommandBus>();
 
             return await sp.TrackActivity()
                 .ExecuteAndWaitAsync(
@@ -306,7 +306,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     {
         var trackedSession = await ExecuteScopeAsync(async sp =>
         {
-            var commandBus = sp.GetRequiredService<CloudNativeKit.Abstractions.Commands.ICommandBus>();
+            var commandBus = sp.GetRequiredService<Squirrel.Abstractions.Commands.ICommandBus>();
 
             return await sp.TrackActivity()
                 .ExecuteAndWaitAsync(
@@ -318,7 +318,7 @@ public class SharedFixture<TEntryPoint> : IAsyncLifetime
     }
 
     public async Task<TResponse> QueryAsync<TResponse>(
-        CloudNativeKit.Abstractions.Queries.IQuery<TResponse> query,
+        Squirrel.Abstractions.Queries.IQuery<TResponse> query,
         CancellationToken cancellationToken = default
     )
         where TResponse : class

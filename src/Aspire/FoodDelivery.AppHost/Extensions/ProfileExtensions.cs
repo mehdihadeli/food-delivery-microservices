@@ -10,12 +10,12 @@ public static class ProfileExtensions
     public static bool IsHttpLaunchProfile(this IDistributedApplicationBuilder builder)
     {
         return builder.Configuration["DOTNET_LAUNCH_PROFILE"]
-            == CloudNativeKit.Core.Constants.ProfileConstants.HttpProfile;
+            == Squirrel.Core.Constants.ProfileConstants.HttpProfile;
     }
 
     public static bool IsHttpsLaunchProfile(this IDistributedApplicationBuilder builder)
     {
         return builder.Configuration["DOTNET_LAUNCH_PROFILE"]
-            == CloudNativeKit.Core.Constants.ProfileConstants.HttpsProfile;
+            == Squirrel.Core.Constants.ProfileConstants.HttpsProfile;
     }
 }

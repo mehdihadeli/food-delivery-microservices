@@ -1,6 +1,6 @@
-using CloudNativeKit.Abstractions.Queries;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Validation.Extensions;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;

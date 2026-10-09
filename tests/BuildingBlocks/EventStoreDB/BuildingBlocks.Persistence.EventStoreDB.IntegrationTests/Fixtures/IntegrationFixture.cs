@@ -1,11 +1,11 @@
-using CloudNativeKit.Abstractions.Persistence.EventStore;
-using CloudNativeKit.Core.Registrations;
-using CloudNativeKit.Persistence.EventStoreDB.Extensions;
+using Squirrel.Abstractions.Persistence.EventStore;
+using Squirrel.Core.Registrations;
+using Squirrel.Persistence.EventStoreDB.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tests.Shared.Helpers;
 
-namespace CloudNativeKit.Persistence.EventStoreDB.IntegrationTests.Fixtures;
+namespace Squirrel.Persistence.EventStoreDB.IntegrationTests.Fixtures;
 
 public class IntegrationFixture : IAsyncLifetime
 {

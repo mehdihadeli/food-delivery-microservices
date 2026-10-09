@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Commands;
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Core.Commands;
+using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using Mediator;
 
@@ -9,7 +9,7 @@ public record UpdateMongoRestockSubscriptionsReadModelByTime(DateTime? From, Dat
     : InternalCommand;
 
 internal class UpdateMongoRestockSubscriptionsReadModelByTimeHandler(ICustomersReadUnitOfWork unitOfWork)
-    : CloudNativeKit.Abstractions.Commands.ICommandHandler<UpdateMongoRestockSubscriptionsReadModelByTime>
+    : Squirrel.Abstractions.Commands.ICommandHandler<UpdateMongoRestockSubscriptionsReadModelByTime>
 {
     public async ValueTask<Unit> Handle(
         UpdateMongoRestockSubscriptionsReadModelByTime command,

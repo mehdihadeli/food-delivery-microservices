@@ -1,5 +1,5 @@
-using CloudNativeKit.Abstractions.Core.Paging;
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Abstractions.Core.Paging;
+using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

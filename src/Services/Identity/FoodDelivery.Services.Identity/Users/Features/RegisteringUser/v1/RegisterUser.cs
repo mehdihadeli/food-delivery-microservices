@@ -1,8 +1,8 @@
 using System.Security.Claims;
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Abstractions.Messages;
-using CloudNativeKit.Core.Security;
-using CloudNativeKit.Validation.Extensions;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Messages;
+using Squirrel.Core.Security;
+using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;

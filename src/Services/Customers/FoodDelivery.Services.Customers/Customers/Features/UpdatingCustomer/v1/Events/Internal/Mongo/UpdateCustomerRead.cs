@@ -1,6 +1,6 @@
-using CloudNativeKit.Core.Commands;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Validation.Extensions;
+using Squirrel.Core.Commands;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
@@ -79,7 +79,7 @@ public class UpdateCustomerReadValidator : AbstractValidator<UpdateCustomerRead>
 }
 
 public class UpdateCustomerReadHandler(ICustomersReadUnitOfWork customersReadUnitOfWork)
-    : CloudNativeKit.Abstractions.Commands.ICommandHandler<UpdateCustomerRead>
+    : Squirrel.Abstractions.Commands.ICommandHandler<UpdateCustomerRead>
 {
     public async ValueTask<Unit> Handle(UpdateCustomerRead command, CancellationToken cancellationToken)
     {

@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Exception;
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Core.Exception;
+using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Data;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
@@ -8,7 +8,7 @@ using FoodDelivery.Services.Shared.Identity.Users;
 using Mediator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ICommand = CloudNativeKit.Abstractions.Commands.ICommand;
+using ICommand = Squirrel.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1;
 
@@ -28,7 +28,7 @@ public class VerifyEmailHandler(
     UserManager<ApplicationUser> userManager,
     IdentityContext dbContext,
     ILogger<VerifyEmailHandler> logger
-) : CloudNativeKit.Abstractions.Commands.ICommandHandler<VerifyEmail>
+) : Squirrel.Abstractions.Commands.ICommandHandler<VerifyEmail>
 {
     public async ValueTask<Unit> Handle(VerifyEmail command, CancellationToken cancellationToken)
     {

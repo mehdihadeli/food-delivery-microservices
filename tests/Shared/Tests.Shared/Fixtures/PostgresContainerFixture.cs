@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Core.Extensions;
 using Dapper;
 using Npgsql;
 using Respawn;

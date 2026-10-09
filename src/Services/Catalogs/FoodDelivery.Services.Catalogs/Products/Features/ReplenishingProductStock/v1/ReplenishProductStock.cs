@@ -1,6 +1,6 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Validation.Extensions;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
@@ -35,7 +35,7 @@ public class ReplenishingProductStockValidator : AbstractValidator<ReplenishProd
 }
 
 public class ReplenishingProductStockHandler(ICatalogDbContext catalogDbContext)
-    : CloudNativeKit.Abstractions.Commands.ICommandHandler<ReplenishProductStock>
+    : Squirrel.Abstractions.Commands.ICommandHandler<ReplenishProductStock>
 {
     public async ValueTask<Unit> Handle(ReplenishProductStock command, CancellationToken cancellationToken)
     {

@@ -1,8 +1,8 @@
-using CloudNativeKit.Abstractions.Core.Paging;
-using CloudNativeKit.Abstractions.Queries;
-using CloudNativeKit.Core.Paging;
-using CloudNativeKit.Core.Queries;
-using CloudNativeKit.Validation.Extensions;
+using Squirrel.Abstractions.Core.Paging;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Core.Paging;
+using Squirrel.Core.Queries;
+using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;

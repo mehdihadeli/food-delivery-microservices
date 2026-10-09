@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Security;
+using Squirrel.Core.Security;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using FoodDelivery.Services.Shared;

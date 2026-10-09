@@ -1,8 +1,8 @@
-using CloudNativeKit.Core.Domain.EventSourcing;
-using CloudNativeKit.Core.Persistence.EventStore;
+using Squirrel.Core.Domain.EventSourcing;
+using Squirrel.Core.Persistence.EventStore;
 using FluentAssertions;
 
-namespace CloudNativeKit.Core.UnitTests;
+namespace Squirrel.Core.UnitTests;
 
 public class StreamNameTests
 {

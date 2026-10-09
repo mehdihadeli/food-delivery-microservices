@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Paging;
+using Squirrel.Core.Paging;
 
 namespace FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
 

@@ -1,5 +1,5 @@
-using CloudNativeKit.Abstractions.Messages;
-using CloudNativeKit.Core.Types.Extensions;
+using Squirrel.Abstractions.Messages;
+using Squirrel.Core.Types.Extensions;
 using Hypothesist;
 using Microsoft.Extensions.DependencyInjection;
 

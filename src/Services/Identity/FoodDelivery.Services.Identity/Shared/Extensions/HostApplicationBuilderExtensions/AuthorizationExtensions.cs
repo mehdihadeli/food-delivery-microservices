@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Security;
+using Squirrel.Core.Security;
 using FoodDelivery.Services.Shared;
 
 namespace FoodDelivery.Services.Identity.Shared.Extensions.HostApplicationBuilderExtensions;

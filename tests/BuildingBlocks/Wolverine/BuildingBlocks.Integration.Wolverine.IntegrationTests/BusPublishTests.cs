@@ -1,1 +1,1 @@
-namespace CloudNativeKit.Integration.Wolverine.IntegrationTests;
+namespace Squirrel.Integration.Wolverine.IntegrationTests;

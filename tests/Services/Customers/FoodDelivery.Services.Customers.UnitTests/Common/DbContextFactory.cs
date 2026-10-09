@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Persistence.EfCore;
-using CloudNativeKit.Core.Persistence.EfCore.Interceptors;
+using Squirrel.Core.Persistence.EfCore;
+using Squirrel.Core.Persistence.EfCore.Interceptors;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;

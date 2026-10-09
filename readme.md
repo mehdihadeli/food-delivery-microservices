@@ -44,7 +44,7 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
   - [Vertical Slice Flow](#vertical-slice-flow)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
-    - [CloudNativeKit BuildingBlocks Submodule](#cloudnativekit-buildingblocks-submodule)
+    - [Squirrel BuildingBlocks Submodule](#squirrel-buildingblocks-submodule)
     - [Dev Certificate](#dev-certificate)
     - [Conventional Commit](#conventional-commit)
     - [Formatting](#formatting)
@@ -73,7 +73,7 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
 - [x] Using `UnitTests` and `NSubstitute` for mocking dependencies
 - [x] Using `Integration Tests` and `End To End Tests` on top of [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet) library for cleanup our test enviroment through docker containers
 - [x] Using `Minimal APIs` for handling requests
-- [x] Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/src/CloudNativeKit.Validation/RequestValidationBehavior.cs) on top of MediatR
+- [x] Using `Fluent Validation` and a [Validation Pipeline Behaviour](./src/BuildingBlocks/src/Squirrel.Validation/RequestValidationBehavior.cs) on top of MediatR
 - [x] Using `Postgres` for write database as relational DB and `MongoDB` and `Elasric Search` for read database
 - [x] Using docker and `docker-compose` for deployment
 - [x] Using [YARP](https://microsoft.github.io/reverse-proxy/) reverse proxy as API Gateway
@@ -231,51 +231,21 @@ TODO
 4. Install Visual Studio, Rider or VSCode.
 5. Install docker - [https://docs.docker.com/docker-for-windows/install/](https://docs.docker.com/docker-for-windows/install/).
 6. Make sure that you have ~10GB disk space.
-7. Clone Project [https://github.com/mehdihadeli/food-delivery-microservices](https://github.com/mehdihadeli/food-delivery-microservices), make sure that's compiling
+7. Clone the project with its submodules:
+
+  ```bash
+  git clone --recurse-submodules https://github.com/mehdihadeli/food-delivery-microservices.git
+  ```
+
+  This clones the Squirrel BuildingBlocks source into `src/BuildingBlocks`. No separate Squirrel clone or additional submodule setup is required.
 8. Run the [docker-compose.infrastructure.yaml](deployments/docker-compose/docker-compose.infrastructure.yaml) file, for running prerequisites infrastructures with `docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d` command.
 9. Open [food-delivery-microservices.sln](./food-delivery-microservices.sln) solution.
 
 ## Setup
 
-### CloudNativeKit BuildingBlocks Submodule
+### Squirrel BuildingBlocks Submodule
 
-The reusable building blocks are maintained in the separate [CloudNativeKit](https://github.com/mehdihadeli/CloudNativeKit) repository and included here as a Git submodule. The submodule keeps the CloudNativeKit source code available under `src/BuildingBlocks`, so you can read and debug the implementation directly while working on this application. The parent projects use local project references to this source instead of requiring CloudNativeKit NuGet packages.
-
-For a fresh clone, initialize the repository and its submodules together:
-
-```bash
-git clone --recurse-submodules https://github.com/mehdihadeli/food-delivery-microservices.git
-cd food-delivery-microservices
-```
-
-If you already cloned the repository without submodules, initialize them with:
-
-```bash
-git submodule update --init --recursive
-```
-
-After initialization, CloudNativeKit projects are available under:
-
-```text
-src/BuildingBlocks/src/CloudNativeKit.*
-```
-
-When the parent repository updates its pinned CloudNativeKit commit, pull the recorded version with:
-
-```bash
-git pull
-git submodule update --init --recursive
-```
-
-To test a newer CloudNativeKit commit locally, update the submodule and then build the parent repository:
-
-```bash
-cd src/BuildingBlocks
-git fetch origin
-git checkout <commit-or-tag>
-cd ../..
-dotnet build food-delivery-microservices.slnx
-```
+The reusable building blocks come from the [Squirrel](https://github.com/mehdihadeli/Squirrel) repository and are included automatically when you clone this project with `--recurse-submodules`. The source is placed under `src/BuildingBlocks` and is ready to use; you do not need to clone Squirrel separately or run any additional submodule commands.
 
 ### Dev Certificate
 

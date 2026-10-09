@@ -1,5 +1,5 @@
 using Bogus;
-using CloudNativeKit.Core.Domain.ValueObjects;
+using Squirrel.Core.Domain.ValueObjects;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using FoodDelivery.Services.Customers.Products;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Models;

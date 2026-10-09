@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Exception;
+using Squirrel.Core.Exception;
 
 namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
 

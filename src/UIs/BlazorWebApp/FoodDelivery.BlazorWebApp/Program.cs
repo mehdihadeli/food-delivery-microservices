@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Core.Extensions;
 using FoodDelivery.BlazorWebApp;
 using FoodDelivery.BlazorWebApp.Components;
 using FoodDelivery.BlazorWebApp.Contracts;

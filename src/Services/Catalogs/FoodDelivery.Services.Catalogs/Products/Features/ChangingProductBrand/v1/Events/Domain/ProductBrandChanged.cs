@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Events.Internal;
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Core.Events.Internal;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ChangingProductBrand.v1.Events.Domain;
 

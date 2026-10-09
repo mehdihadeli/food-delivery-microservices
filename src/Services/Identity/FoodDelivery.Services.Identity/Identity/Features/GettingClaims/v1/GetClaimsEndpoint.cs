@@ -1,6 +1,6 @@
-using CloudNativeKit.Abstractions.Queries;
-using CloudNativeKit.Abstractions.Web.MinimalApi;
-using CloudNativeKit.Web.ProblemDetail.HttpResults;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Abstractions.Web.MinimalApi;
+using Squirrel.Web.ProblemDetail.HttpResults;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 

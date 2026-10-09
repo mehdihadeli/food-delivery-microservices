@@ -1,5 +1,5 @@
-using CloudNativeKit.Abstractions.Domain;
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Abstractions.Domain;
+using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 

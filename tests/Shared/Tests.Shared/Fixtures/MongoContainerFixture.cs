@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Core.Extensions;
 using MongoDB.Driver;
 using Testcontainers.MongoDb;
 using Tests.Shared.Helpers;

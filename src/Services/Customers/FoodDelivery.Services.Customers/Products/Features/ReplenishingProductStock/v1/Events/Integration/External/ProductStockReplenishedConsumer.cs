@@ -1,11 +1,11 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Integration.Wolverine;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Integration.Wolverine;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 using FoodDelivery.Services.Shared.Catalogs.Products.Events.Integration.v1;
 using Microsoft.AspNetCore.HeaderPropagation;
 using Saunter.Attributes;
 using Wolverine;
-using ICommandBus = CloudNativeKit.Abstractions.Commands.ICommandBus;
+using ICommandBus = Squirrel.Abstractions.Commands.ICommandBus;
 
 namespace FoodDelivery.Services.Customers.Products.Features.ReplenishingProductStock.v1.Events.Integration.External;
 

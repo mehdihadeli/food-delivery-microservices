@@ -1,4 +1,4 @@
-using CloudNativeKit.Persistence.EfCore.Postgres;
+using Squirrel.Persistence.EfCore.Postgres;
 
 namespace FoodDelivery.Services.Customers.Shared.Data;
 

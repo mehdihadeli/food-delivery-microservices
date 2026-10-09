@@ -1,13 +1,13 @@
-using CloudNativeKit.Core.Domain.ValueObjects;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Validation.Extensions;
+using Squirrel.Core.Domain.ValueObjects;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Mediator;
-using ICommand = CloudNativeKit.Abstractions.Commands.ICommand;
+using ICommand = Squirrel.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
 
@@ -76,7 +76,7 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomer>
 }
 
 public class UpdateCustomerHandler(CustomersDbContext customersDbContext, ILogger<UpdateCustomerHandler> logger)
-    : CloudNativeKit.Abstractions.Commands.ICommandHandler<UpdateCustomer>
+    : Squirrel.Abstractions.Commands.ICommandHandler<UpdateCustomer>
 {
     public async ValueTask<Unit> Handle(UpdateCustomer command, CancellationToken cancellationToken)
     {

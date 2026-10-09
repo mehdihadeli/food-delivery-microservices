@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Domain;
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Core.Domain;
+using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.Brands;

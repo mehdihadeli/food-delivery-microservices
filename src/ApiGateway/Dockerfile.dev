@@ -26,12 +26,12 @@ COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
 COPY ./src/ApiGateway/Directory.Build.props ./ApiGateway/
 
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Abstractions/CloudNativeKit.Abstractions.csproj ./BuildingBlocks/src/CloudNativeKit.Abstractions/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Core/CloudNativeKit.Core.csproj ./BuildingBlocks/src/CloudNativeKit.Core/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.HealthCheck/CloudNativeKit.HealthCheck.csproj ./BuildingBlocks/src/CloudNativeKit.HealthCheck/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.OpenTelemetry/CloudNativeKit.OpenTelemetry.csproj ./BuildingBlocks/src/CloudNativeKit.OpenTelemetry/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Resiliency/CloudNativeKit.Resiliency.csproj ./BuildingBlocks/src/CloudNativeKit.Resiliency/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Web/CloudNativeKit.Web.csproj ./BuildingBlocks/src/CloudNativeKit.Web/
+COPY ./src/BuildingBlocks/src/Squirrel.Abstractions/Squirrel.Abstractions.csproj ./BuildingBlocks/src/Squirrel.Abstractions/
+COPY ./src/BuildingBlocks/src/Squirrel.Core/Squirrel.Core.csproj ./BuildingBlocks/src/Squirrel.Core/
+COPY ./src/BuildingBlocks/src/Squirrel.HealthCheck/Squirrel.HealthCheck.csproj ./BuildingBlocks/src/Squirrel.HealthCheck/
+COPY ./src/BuildingBlocks/src/Squirrel.OpenTelemetry/Squirrel.OpenTelemetry.csproj ./BuildingBlocks/src/Squirrel.OpenTelemetry/
+COPY ./src/BuildingBlocks/src/Squirrel.Resiliency/Squirrel.Resiliency.csproj ./BuildingBlocks/src/Squirrel.Resiliency/
+COPY ./src/BuildingBlocks/src/Squirrel.Web/Squirrel.Web.csproj ./BuildingBlocks/src/Squirrel.Web/
 
 # https://docs.docker.com/build/cache/#order-your-layers
 # with any changes in csproj files all downstream layer will rebuil, so dotnet restore will execute again

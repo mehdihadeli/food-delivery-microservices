@@ -1,5 +1,5 @@
 using System.Net.Http.Json;
-using CloudNativeKit.Core.Web.Extensions;
+using Squirrel.Core.Web.Extensions;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;

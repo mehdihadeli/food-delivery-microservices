@@ -1,11 +1,11 @@
 using System.Net;
 using System.Net.Http.Json;
-using Squirrel.Core.Exception;
-using Squirrel.Core.Extensions;
-using Squirrel.Core.Web.Extensions;
 using FoodDelivery.ServiceDefaults.Clients.Rest.Identity.Dtos;
 using Microsoft.Extensions.Options;
 using Polly.Wrap;
+using Squirrel.Core.Exception;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Web.Extensions;
 
 namespace FoodDelivery.ServiceDefaults.Clients.Rest.Identity.Rest;
 

@@ -1,6 +1,10 @@
 // https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/integrations-overview#hosting-integrations
 // Hosting integrations configure applications by provisioning resources (like containers or cloud resources) or pointing to existing instances (such as a local SQL server)
 
+using FoodDelivery.AppHost.Extensions;
+using FoodDelivery.Services.Shared.Constants;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Scalar.Aspire;
 using Squirrel.AspireIntegrations.AspireDashBoard;
 using Squirrel.AspireIntegrations.ElasticSearch;
 using Squirrel.AspireIntegrations.EventStore;
@@ -19,10 +23,6 @@ using Squirrel.AspireIntegrations.Tempo;
 using Squirrel.AspireIntegrations.Zipkin;
 using Squirrel.Core.Constants;
 using Squirrel.Core.Extensions;
-using FoodDelivery.AppHost.Extensions;
-using FoodDelivery.Services.Shared.Constants;
-using Microsoft.AspNetCore.Authentication.OAuth;
-using Scalar.Aspire;
 using OAuthOptions = Squirrel.Core.Security.OAuthOptions;
 
 var builder = DistributedApplication.CreateBuilder(args);

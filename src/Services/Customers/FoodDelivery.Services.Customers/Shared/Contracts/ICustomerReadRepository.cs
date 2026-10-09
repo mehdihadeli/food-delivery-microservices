@@ -1,5 +1,5 @@
-using Squirrel.Abstractions.Persistence;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
+using Squirrel.Abstractions.Persistence;
 
 namespace FoodDelivery.Services.Customers.Shared.Contracts;
 

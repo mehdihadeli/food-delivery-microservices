@@ -1,9 +1,9 @@
+using FoodDelivery.Services.Catalogs.Categories.ValueObjects;
+using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 using Squirrel.Core.Domain;
 using Squirrel.Core.Domain.Exceptions;
 using Squirrel.Core.Exception;
 using Squirrel.Core.Extensions;
-using FoodDelivery.Services.Catalogs.Categories.ValueObjects;
-using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.Categories;
 

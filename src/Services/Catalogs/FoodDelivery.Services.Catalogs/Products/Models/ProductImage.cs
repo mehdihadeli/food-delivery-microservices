@@ -1,6 +1,6 @@
+using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 using Squirrel.Abstractions.Domain;
 using Squirrel.Core.Domain;
-using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.Products.Models;
 

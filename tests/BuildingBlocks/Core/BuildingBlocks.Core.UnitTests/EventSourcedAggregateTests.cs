@@ -1,7 +1,7 @@
+using FluentAssertions;
 using Squirrel.Core.Domain;
 using Squirrel.Core.Domain.Events.Internal;
 using Squirrel.Core.Domain.EventSourcing;
-using FluentAssertions;
 
 namespace Squirrel.Core.UnitTests;
 

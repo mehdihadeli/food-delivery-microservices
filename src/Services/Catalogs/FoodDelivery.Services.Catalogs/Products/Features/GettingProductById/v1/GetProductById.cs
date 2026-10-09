@@ -1,13 +1,13 @@
-using Squirrel.Abstractions.Queries;
-using Squirrel.Caching;
-using Squirrel.Core.Extensions;
-using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Extensions;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Caching;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductById.v1;
 

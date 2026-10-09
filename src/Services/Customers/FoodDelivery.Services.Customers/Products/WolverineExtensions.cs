@@ -1,5 +1,5 @@
-using Squirrel.Integration.Wolverine;
 using FoodDelivery.Services.Shared.Catalogs.Products.Events.Integration.v1;
+using Squirrel.Integration.Wolverine;
 using Wolverine;
 
 namespace FoodDelivery.Services.Customers.Products;

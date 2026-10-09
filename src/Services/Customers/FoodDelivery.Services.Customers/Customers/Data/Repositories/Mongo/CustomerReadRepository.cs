@@ -1,8 +1,8 @@
-using Squirrel.Persistence.Mongo;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Sieve.Services;
+using Squirrel.Persistence.Mongo;
 
 namespace FoodDelivery.Services.Customers.Customers.Data.Repositories.Mongo;
 

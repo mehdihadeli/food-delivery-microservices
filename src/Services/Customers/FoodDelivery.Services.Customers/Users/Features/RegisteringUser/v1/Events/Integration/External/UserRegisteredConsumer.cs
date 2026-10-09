@@ -1,10 +1,10 @@
-using Squirrel.Abstractions.Commands;
-using Squirrel.Integration.Wolverine;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Microsoft.AspNetCore.HeaderPropagation;
 using Saunter.Attributes;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Integration.Wolverine;
 using Wolverine;
 using ICommandBus = Squirrel.Abstractions.Commands.ICommandBus;
 

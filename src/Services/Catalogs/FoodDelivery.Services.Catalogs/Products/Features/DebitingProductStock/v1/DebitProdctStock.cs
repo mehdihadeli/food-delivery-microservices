@@ -1,11 +1,11 @@
-using Squirrel.Abstractions.Commands;
-using Squirrel.Core.Extensions;
-using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 using ICommand = Squirrel.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1;

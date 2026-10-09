@@ -1,7 +1,3 @@
-using Squirrel.Abstractions.Commands;
-using Squirrel.Abstractions.Messages;
-using Squirrel.Core.Extensions;
-using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
@@ -10,6 +6,10 @@ using FoodDelivery.Services.Shared.Identity.Users;
 using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Mediator;
 using Microsoft.AspNetCore.Identity;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Messages;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.v1;
 

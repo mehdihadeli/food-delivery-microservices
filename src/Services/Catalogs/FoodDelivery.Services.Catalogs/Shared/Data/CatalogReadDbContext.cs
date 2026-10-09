@@ -1,7 +1,7 @@
-using Squirrel.Persistence.Mongo;
 using FoodDelivery.Services.Catalogs.Products.Models.Read;
 using Humanizer;
 using MongoDB.Driver;
+using Squirrel.Persistence.Mongo;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Data;
 

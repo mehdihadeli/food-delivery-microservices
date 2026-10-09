@@ -1,9 +1,9 @@
-using Squirrel.Core.Domain;
-using Squirrel.Core.Domain.ValueObjects;
-using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
+using Squirrel.Core.Domain;
+using Squirrel.Core.Domain.ValueObjects;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Customers.Customers.Models;
 

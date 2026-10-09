@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Http.Headers;
-using Squirrel.Core.Extensions;
 using FoodDelivery.ServiceDefaults.Extensions;
 using FoodDelivery.WebApp.Bff;
 using FoodDelivery.WebApp.Bff.Clients;
@@ -8,6 +7,7 @@ using FoodDelivery.WebApp.Bff.Contracts;
 using FoodDelivery.WebApp.Bff.Extensions;
 using FoodDelivery.WebApp.Bff.Extensions.HostApplicationBuilderExtensions;
 using Microsoft.AspNetCore.HttpOverrides;
+using Squirrel.Core.Extensions;
 using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);

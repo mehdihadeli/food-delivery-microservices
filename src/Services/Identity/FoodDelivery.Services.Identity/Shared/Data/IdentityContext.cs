@@ -1,12 +1,12 @@
 using System.Data;
-using Squirrel.Abstractions.Events;
-using Squirrel.Abstractions.Persistence;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Humanizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Squirrel.Abstractions.Events;
+using Squirrel.Abstractions.Persistence;
 
 namespace FoodDelivery.Services.Identity.Shared.Data;
 

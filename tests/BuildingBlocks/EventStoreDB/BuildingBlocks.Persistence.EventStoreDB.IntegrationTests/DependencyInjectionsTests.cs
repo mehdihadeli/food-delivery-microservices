@@ -1,9 +1,9 @@
-using Squirrel.Core.Registrations;
-using Squirrel.Persistence.EventStoreDB.Extensions;
 using EventStore.Client;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Squirrel.Core.Registrations;
+using Squirrel.Persistence.EventStoreDB.Extensions;
 using Tests.Shared.Helpers;
 
 namespace Squirrel.Persistence.EventStoreDB.IntegrationTests;

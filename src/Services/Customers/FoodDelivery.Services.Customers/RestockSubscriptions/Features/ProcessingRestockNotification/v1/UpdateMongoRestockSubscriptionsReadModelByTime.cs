@@ -1,7 +1,7 @@
-using Squirrel.Core.Commands;
-using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using Mediator;
+using Squirrel.Core.Commands;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 

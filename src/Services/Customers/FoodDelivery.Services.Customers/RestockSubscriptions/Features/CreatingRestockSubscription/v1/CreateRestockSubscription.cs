@@ -1,8 +1,3 @@
-using Squirrel.Abstractions.Commands;
-using Squirrel.Core.Domain.ValueObjects;
-using Squirrel.Core.Extensions;
-using Squirrel.Core.IdsGenerator;
-using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
@@ -15,6 +10,11 @@ using FoodDelivery.Services.Customers.RestockSubscriptions.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Core.Domain.ValueObjects;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.IdsGenerator;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 

@@ -1,12 +1,12 @@
-using Squirrel.Abstractions.Commands;
-using Squirrel.Core.Extensions;
-using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Extensions;
 using Mediator;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1;
 

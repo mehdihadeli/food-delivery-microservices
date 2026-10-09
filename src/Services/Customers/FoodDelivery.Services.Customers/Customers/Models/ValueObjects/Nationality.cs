@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Domain;
+using Squirrel.Core.Extensions;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 namespace FoodDelivery.Services.Customers.Customers.Models.ValueObjects;

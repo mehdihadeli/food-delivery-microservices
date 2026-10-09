@@ -1,11 +1,11 @@
 using System.Collections.Immutable;
+using FluentAssertions;
 using Squirrel.Abstractions.Persistence.EventStore;
 using Squirrel.Core.Domain;
 using Squirrel.Core.Domain.Events.Internal;
 using Squirrel.Core.Domain.EventSourcing;
 using Squirrel.Core.Persistence.EventStore;
 using Squirrel.Persistence.EventStoreDB.IntegrationTests.Fixtures;
-using FluentAssertions;
 
 namespace Squirrel.Persistence.EventStoreDB.IntegrationTests;
 

@@ -1,7 +1,7 @@
-using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Extensions;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Suppliers.Services;
 

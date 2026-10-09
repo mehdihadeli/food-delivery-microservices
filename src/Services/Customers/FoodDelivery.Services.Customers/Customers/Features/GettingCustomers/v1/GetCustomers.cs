@@ -1,12 +1,12 @@
+using FluentValidation;
+using FoodDelivery.Services.Customers.Customers.Dtos.v1;
+using FoodDelivery.Services.Customers.Shared.Contracts;
+using Sieve.Services;
 using Squirrel.Abstractions.Core.Paging;
 using Squirrel.Abstractions.Queries;
 using Squirrel.Core.Paging;
 using Squirrel.Core.Queries;
 using Squirrel.Validation.Extensions;
-using FluentValidation;
-using FoodDelivery.Services.Customers.Customers.Dtos.v1;
-using FoodDelivery.Services.Customers.Shared.Contracts;
-using Sieve.Services;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomers.v1;
 

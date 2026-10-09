@@ -1,3 +1,6 @@
+using FoodDelivery.Services.Identity.Users;
+using FoodDelivery.Services.Shared.Constants;
+using Mediator;
 using Squirrel.Caching.Behaviors;
 using Squirrel.Caching.Extensions;
 using Squirrel.Core.Constants;
@@ -14,9 +17,6 @@ using Squirrel.Web.Cors;
 using Squirrel.Web.Extensions;
 using Squirrel.Web.Minimal.Extensions;
 using Squirrel.Web.RateLimit;
-using FoodDelivery.Services.Identity.Users;
-using FoodDelivery.Services.Shared.Constants;
-using Mediator;
 
 namespace FoodDelivery.Services.Identity.Shared.Extensions.HostApplicationBuilderExtensions;
 

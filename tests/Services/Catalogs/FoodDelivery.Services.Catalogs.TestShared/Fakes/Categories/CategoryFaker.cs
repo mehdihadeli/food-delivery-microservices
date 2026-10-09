@@ -1,8 +1,8 @@
 using Bogus;
-using Squirrel.Abstractions.Domain;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Categories.ValueObjects;
 using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
+using Squirrel.Abstractions.Domain;
 
 namespace FoodDelivery.Services.Catalogs.TestShared.Fakes.Categories;
 

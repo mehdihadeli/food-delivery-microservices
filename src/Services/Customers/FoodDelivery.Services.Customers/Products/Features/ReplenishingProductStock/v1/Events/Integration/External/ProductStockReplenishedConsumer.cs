@@ -1,9 +1,9 @@
-using Squirrel.Abstractions.Commands;
-using Squirrel.Integration.Wolverine;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 using FoodDelivery.Services.Shared.Catalogs.Products.Events.Integration.v1;
 using Microsoft.AspNetCore.HeaderPropagation;
 using Saunter.Attributes;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Integration.Wolverine;
 using Wolverine;
 using ICommandBus = Squirrel.Abstractions.Commands.ICommandBus;
 

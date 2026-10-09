@@ -1,13 +1,13 @@
-using Squirrel.Abstractions.Persistence;
-using Squirrel.Core.Commands;
-using Squirrel.Core.Extensions;
-using Squirrel.Email;
-using Squirrel.Email.Options;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Squirrel.Abstractions.Persistence;
+using Squirrel.Core.Commands;
+using Squirrel.Core.Extensions;
+using Squirrel.Email;
+using Squirrel.Email.Options;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification.v1;
 

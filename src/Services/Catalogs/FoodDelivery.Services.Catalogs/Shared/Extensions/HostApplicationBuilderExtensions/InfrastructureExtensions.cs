@@ -1,3 +1,7 @@
+using FoodDelivery.Services.Catalogs.Products;
+using FoodDelivery.Services.Shared.Constants;
+using Mediator;
+using Microsoft.AspNetCore.HttpOverrides;
 using Squirrel.Caching.Behaviors;
 using Squirrel.Caching.Extensions;
 using Squirrel.Core.Constants;
@@ -18,10 +22,6 @@ using Squirrel.Web.Cors;
 using Squirrel.Web.Extensions;
 using Squirrel.Web.Minimal.Extensions;
 using Squirrel.Web.RateLimit;
-using FoodDelivery.Services.Catalogs.Products;
-using FoodDelivery.Services.Shared.Constants;
-using Mediator;
-using Microsoft.AspNetCore.HttpOverrides;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Extensions.HostApplicationBuilderExtensions;
 

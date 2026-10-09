@@ -1,4 +1,3 @@
-using Squirrel.Core.Exception;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
@@ -8,6 +7,7 @@ using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models.Read;
 using Microsoft.AspNetCore.Mvc;
+using Squirrel.Core.Exception;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
 using Guid = System.Guid;

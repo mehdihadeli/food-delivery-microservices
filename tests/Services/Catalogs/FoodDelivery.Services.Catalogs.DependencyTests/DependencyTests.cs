@@ -1,12 +1,12 @@
+using FoodDelivery.Services.Catalogs.Api;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Squirrel.Caching;
 using Squirrel.Core.Extensions.ServiceCollectionExtensions;
 using Squirrel.Core.Web;
 using Squirrel.Integration.Wolverine;
 using Squirrel.Persistence.EfCore.Postgres;
 using Squirrel.Persistence.Mongo;
-using FoodDelivery.Services.Catalogs.Api;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Tests.Shared.Factory;
 
 namespace FoodDelivery.Services.Catalogs.DependencyTests;

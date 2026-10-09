@@ -1,5 +1,5 @@
-using Squirrel.Core.Domain;
 using FoodDelivery.Services.Orders.Orders.ValueObjects;
+using Squirrel.Core.Domain;
 
 namespace FoodDelivery.Services.Orders.Orders.Models;
 

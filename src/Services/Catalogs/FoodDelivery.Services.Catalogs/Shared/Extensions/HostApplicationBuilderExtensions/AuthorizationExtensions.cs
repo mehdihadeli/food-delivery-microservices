@@ -1,5 +1,5 @@
-using Squirrel.Core.Security;
 using FoodDelivery.Services.Shared;
+using Squirrel.Core.Security;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Extensions.HostApplicationBuilderExtensions;
 

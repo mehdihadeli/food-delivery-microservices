@@ -1,12 +1,12 @@
-using Squirrel.Core.Domain.ValueObjects;
-using Squirrel.Core.Extensions;
-using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Mediator;
+using Squirrel.Core.Domain.ValueObjects;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 using ICommand = Squirrel.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;

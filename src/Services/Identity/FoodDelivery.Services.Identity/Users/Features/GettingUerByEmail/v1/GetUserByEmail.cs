@@ -1,11 +1,11 @@
-using Squirrel.Abstractions.Queries;
-using Squirrel.Core.Extensions;
-using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Exceptions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using Microsoft.AspNetCore.Identity;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Identity.Users.Features.GettingUerByEmail.v1;
 

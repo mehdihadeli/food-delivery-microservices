@@ -1,13 +1,13 @@
+using FoodDelivery.Services.Orders.Shared.Contracts;
+using FoodDelivery.Services.Orders.Shared.Data;
+using FoodDelivery.Services.Shared.Constants;
+using Microsoft.EntityFrameworkCore;
 using Squirrel.Abstractions.Events;
 using Squirrel.Abstractions.Persistence;
 using Squirrel.Core.Extensions;
 using Squirrel.Core.Web.Extensions;
 using Squirrel.Persistence.EfCore.Postgres;
 using Squirrel.Persistence.Mongo.Extensions;
-using FoodDelivery.Services.Orders.Shared.Contracts;
-using FoodDelivery.Services.Orders.Shared.Data;
-using FoodDelivery.Services.Shared.Constants;
-using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Orders.Shared.Extensions.HostApplicationBuilderExtensions;
 

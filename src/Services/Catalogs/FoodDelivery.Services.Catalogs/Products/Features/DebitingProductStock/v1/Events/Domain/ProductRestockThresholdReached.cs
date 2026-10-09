@@ -1,7 +1,7 @@
+using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using Squirrel.Abstractions.Events;
 using Squirrel.Core.Events.Internal;
 using Squirrel.Core.Extensions;
-using FoodDelivery.Services.Catalogs.Shared.Contracts;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1.Events.Domain;
 

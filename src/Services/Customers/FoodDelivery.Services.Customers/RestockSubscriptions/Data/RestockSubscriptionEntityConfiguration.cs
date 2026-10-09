@@ -1,10 +1,10 @@
-using Squirrel.Core.Persistence.EfCore;
 using FoodDelivery.Services.Customers.Customers.Models;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Models;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Squirrel.Core.Persistence.EfCore;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Data;
 

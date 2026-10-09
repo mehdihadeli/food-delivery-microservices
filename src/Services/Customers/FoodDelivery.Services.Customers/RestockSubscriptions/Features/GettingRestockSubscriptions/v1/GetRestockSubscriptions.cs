@@ -1,11 +1,11 @@
+using FluentValidation;
+using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
+using FoodDelivery.Services.Customers.Shared.Contracts;
 using Squirrel.Abstractions.Core.Paging;
 using Squirrel.Abstractions.Queries;
 using Squirrel.Core.Paging;
 using Squirrel.Core.Queries;
 using Squirrel.Validation.Extensions;
-using FluentValidation;
-using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
-using FoodDelivery.Services.Customers.Shared.Contracts;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptions.v1;
 

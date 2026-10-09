@@ -1,8 +1,8 @@
-using Squirrel.Abstractions.Domain;
-using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Categories.Contracts;
 using FoodDelivery.Services.Catalogs.Categories.Exceptions.Domain;
+using Squirrel.Abstractions.Domain;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Rules;
 

@@ -1,10 +1,10 @@
-using Squirrel.Abstractions.Queries;
-using Squirrel.Abstractions.Web.MinimalApi;
-using Squirrel.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Abstractions.Web.MinimalApi;
+using Squirrel.Web.ProblemDetail.HttpResults;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionBySubscriptionId.v1;
 

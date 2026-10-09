@@ -1,7 +1,4 @@
 using Cassandra.Mapping;
-using Squirrel.Abstractions.Commands;
-using Squirrel.Abstractions.Web.MinimalApi;
-using Squirrel.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Models;
@@ -10,6 +7,9 @@ using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Web.MinimalApi;
+using Squirrel.Web.ProblemDetail.HttpResults;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 

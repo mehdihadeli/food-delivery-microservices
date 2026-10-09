@@ -1,5 +1,5 @@
-using Squirrel.Abstractions.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Persistence;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Data;
 

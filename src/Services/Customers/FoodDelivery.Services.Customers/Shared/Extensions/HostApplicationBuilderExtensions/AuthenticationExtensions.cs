@@ -1,7 +1,7 @@
-using Squirrel.Core.Extensions;
-using Squirrel.Core.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Security;
 
 namespace FoodDelivery.Services.Customers.Shared.Extensions.HostApplicationBuilderExtensions;
 

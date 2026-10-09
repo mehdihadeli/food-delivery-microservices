@@ -1,14 +1,14 @@
 using System.Net;
 using Bogus;
-using Squirrel.Core.Web.Extensions;
-using Squirrel.OpenApi.AspnetOpenApi.Extensions;
-using Squirrel.OpenApi.AsyncApi;
 using FoodDelivery.ServiceDefaults.Extensions;
 using FoodDelivery.Services.Catalogs;
 using FoodDelivery.Services.Catalogs.Shared.Extensions.HostApplicationBuilderExtensions;
 using FoodDelivery.Services.Catalogs.Shared.Extensions.WebApplicationExtensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using Spectre.Console;
+using Squirrel.Core.Web.Extensions;
+using Squirrel.OpenApi.AspnetOpenApi.Extensions;
+using Squirrel.OpenApi.AsyncApi;
 
 AnsiConsole.Write(new FigletText("Catalogs Service").Centered().Color(Color.FromInt32(new Faker().Random.Int(1, 255))));
 

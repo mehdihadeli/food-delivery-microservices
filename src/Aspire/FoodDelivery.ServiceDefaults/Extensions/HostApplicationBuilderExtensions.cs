@@ -1,4 +1,8 @@
 using System.Reflection;
+using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Squirrel.Core.Diagnostics.Extensions;
 using Squirrel.Core.Extensions;
 using Squirrel.Core.Extensions.ServiceCollectionExtensions;
@@ -9,10 +13,6 @@ using Squirrel.OpenTelemetry.Extensions;
 using Squirrel.Resiliency;
 using Squirrel.Web.Extensions;
 using Squirrel.Web.ProblemDetail;
-using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace FoodDelivery.ServiceDefaults.Extensions;
 

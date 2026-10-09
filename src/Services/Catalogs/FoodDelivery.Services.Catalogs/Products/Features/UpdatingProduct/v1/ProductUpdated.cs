@@ -1,13 +1,13 @@
-using Squirrel.Abstractions.Events;
-using Squirrel.Core.Events.Internal;
-using Squirrel.Core.Extensions;
-using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Application;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Shared.Data;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Events;
+using Squirrel.Core.Events.Internal;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 

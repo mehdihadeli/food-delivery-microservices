@@ -1,6 +1,6 @@
-using Squirrel.Persistence.Mongo;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using FoodDelivery.Services.Customers.Shared.Data;
+using Squirrel.Persistence.Mongo;
 
 namespace FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 

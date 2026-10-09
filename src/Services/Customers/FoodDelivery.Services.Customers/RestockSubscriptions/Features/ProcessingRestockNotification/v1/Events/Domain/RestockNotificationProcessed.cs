@@ -1,9 +1,9 @@
+using FoodDelivery.Services.Customers.Shared.Data;
+using Microsoft.EntityFrameworkCore;
 using Squirrel.Abstractions.Commands;
 using Squirrel.Abstractions.Events;
 using Squirrel.Core.Events.Internal;
 using Squirrel.Core.Extensions;
-using FoodDelivery.Services.Customers.Shared.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1.Events.Domain;
 

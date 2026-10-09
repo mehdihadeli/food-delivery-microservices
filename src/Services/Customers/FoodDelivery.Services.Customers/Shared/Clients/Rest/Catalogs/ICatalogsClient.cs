@@ -1,6 +1,6 @@
-using Squirrel.Abstractions.Core.Paging;
 using FoodDelivery.Services.Customers.Products.Models;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
+using Squirrel.Abstractions.Core.Paging;
 
 namespace FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs;
 

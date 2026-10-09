@@ -1,7 +1,7 @@
-using Squirrel.Integration.Wolverine;
 using FoodDelivery.Services.Shared.Catalogs.Suppliers.Events.Integration.v1;
 using Microsoft.AspNetCore.HeaderPropagation;
 using Saunter.Attributes;
+using Squirrel.Integration.Wolverine;
 using Wolverine;
 
 namespace FoodDelivery.Services.Catalogs.Suppliers.Features.SupplierCreated.Events.Integration.External;

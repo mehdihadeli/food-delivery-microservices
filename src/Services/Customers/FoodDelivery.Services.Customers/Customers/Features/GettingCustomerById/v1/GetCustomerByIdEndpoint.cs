@@ -1,9 +1,9 @@
-using Squirrel.Abstractions.Queries;
-using Squirrel.Abstractions.Web.MinimalApi;
-using Squirrel.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Abstractions.Web.MinimalApi;
+using Squirrel.Web.ProblemDetail.HttpResults;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomerById.v1;
 

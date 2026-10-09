@@ -1,12 +1,12 @@
 using System.Globalization;
 using System.Net.Http.Json;
-using Squirrel.Abstractions.Core.Paging;
-using Squirrel.Core.Exception;
 using FoodDelivery.Services.Customers.Products.Models;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Options;
 using Polly.Wrap;
+using Squirrel.Abstractions.Core.Paging;
+using Squirrel.Core.Exception;
 
 namespace FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
 

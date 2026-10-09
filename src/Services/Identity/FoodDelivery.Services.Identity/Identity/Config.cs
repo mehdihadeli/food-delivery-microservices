@@ -1,8 +1,8 @@
-using Squirrel.Core.Security;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using FoodDelivery.Services.Shared;
 using IdentityModel;
+using Squirrel.Core.Security;
 
 namespace FoodDelivery.Services.Identity.Identity;
 

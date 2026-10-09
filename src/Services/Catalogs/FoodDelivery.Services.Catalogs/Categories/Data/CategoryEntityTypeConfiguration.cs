@@ -1,8 +1,8 @@
-using Squirrel.Core.Persistence.EfCore;
 using FoodDelivery.Services.Catalogs.Shared.Data;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Squirrel.Core.Persistence.EfCore;
 
 namespace FoodDelivery.Services.Catalogs.Categories.Data;
 

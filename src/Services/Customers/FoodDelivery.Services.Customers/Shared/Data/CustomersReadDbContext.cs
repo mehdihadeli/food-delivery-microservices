@@ -1,7 +1,7 @@
-using Squirrel.Persistence.Mongo;
 using FoodDelivery.Services.Customers.Customers.Models.Reads;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Models.Read;
 using MongoDB.Driver;
+using Squirrel.Persistence.Mongo;
 
 namespace FoodDelivery.Services.Customers.Shared.Data;
 

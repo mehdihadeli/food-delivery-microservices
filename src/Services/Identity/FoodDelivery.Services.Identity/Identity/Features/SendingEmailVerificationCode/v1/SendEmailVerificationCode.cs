@@ -1,9 +1,9 @@
-using Squirrel.Core.Exception;
-using Squirrel.Core.Extensions;
-using Squirrel.Email;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Mediator;
 using Microsoft.AspNetCore.Identity;
+using Squirrel.Core.Exception;
+using Squirrel.Core.Extensions;
+using Squirrel.Email;
 using ICommand = Squirrel.Abstractions.Commands.ICommand;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.SendingEmailVerificationCode.v1;

@@ -1,6 +1,3 @@
-using Squirrel.Abstractions.Events;
-using Squirrel.Core.Events.Internal;
-using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
@@ -10,6 +7,9 @@ using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Data;
 using FoodDelivery.Services.Catalogs.Suppliers;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Events;
+using Squirrel.Core.Events.Internal;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Domain;
 

@@ -1,11 +1,11 @@
-using Squirrel.Abstractions.Commands;
-using Squirrel.Abstractions.Events;
-using Squirrel.Core.Events.Internal;
-using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Data;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Events;
+using Squirrel.Core.Events.Internal;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Events.Domain;
 

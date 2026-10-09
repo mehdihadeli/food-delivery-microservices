@@ -1,6 +1,4 @@
 using Bogus;
-using Squirrel.Abstractions.Domain;
-using Squirrel.Abstractions.Persistence;
 using FoodDelivery.Services.Catalogs.Brands;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
@@ -13,6 +11,8 @@ using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
+using Squirrel.Abstractions.Domain;
+using Squirrel.Abstractions.Persistence;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Data;
 

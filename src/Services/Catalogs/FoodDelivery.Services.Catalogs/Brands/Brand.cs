@@ -1,6 +1,6 @@
+using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using Squirrel.Core.Domain;
 using Squirrel.Core.Extensions;
-using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 
 namespace FoodDelivery.Services.Catalogs.Brands;
 

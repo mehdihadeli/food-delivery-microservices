@@ -9,13 +9,11 @@ public static class ProfileExtensions
 
     public static bool IsHttpLaunchProfile(this IDistributedApplicationBuilder builder)
     {
-        return builder.Configuration["DOTNET_LAUNCH_PROFILE"]
-            == Squirrel.Core.Constants.ProfileConstants.HttpProfile;
+        return builder.Configuration["DOTNET_LAUNCH_PROFILE"] == Squirrel.Core.Constants.ProfileConstants.HttpProfile;
     }
 
     public static bool IsHttpsLaunchProfile(this IDistributedApplicationBuilder builder)
     {
-        return builder.Configuration["DOTNET_LAUNCH_PROFILE"]
-            == Squirrel.Core.Constants.ProfileConstants.HttpsProfile;
+        return builder.Configuration["DOTNET_LAUNCH_PROFILE"] == Squirrel.Core.Constants.ProfileConstants.HttpsProfile;
     }
 }

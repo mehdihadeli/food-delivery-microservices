@@ -1,12 +1,12 @@
+using FoodDelivery.Services.Identity.Shared.Data;
+using FoodDelivery.Services.Shared.Constants;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Squirrel.Abstractions.Events;
 using Squirrel.Abstractions.Persistence;
 using Squirrel.Core.Extensions;
 using Squirrel.Core.Web.Extensions;
 using Squirrel.Persistence.EfCore.Postgres;
-using FoodDelivery.Services.Identity.Shared.Data;
-using FoodDelivery.Services.Shared.Constants;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Identity.Shared.Extensions.HostApplicationBuilderExtensions;
 

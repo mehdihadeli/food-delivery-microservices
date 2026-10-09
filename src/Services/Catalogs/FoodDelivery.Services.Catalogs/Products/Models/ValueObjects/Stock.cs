@@ -1,5 +1,5 @@
-using Squirrel.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Products.Exceptions.Domain;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 

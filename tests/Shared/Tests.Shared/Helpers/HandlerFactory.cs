@@ -1,7 +1,7 @@
-using Squirrel.Abstractions.Messages;
-using Squirrel.Core.Types.Extensions;
 using Hypothesist;
 using Microsoft.Extensions.DependencyInjection;
+using Squirrel.Abstractions.Messages;
+using Squirrel.Core.Types.Extensions;
 
 namespace Tests.Shared.Helpers;
 

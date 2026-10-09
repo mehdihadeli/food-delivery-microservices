@@ -1,8 +1,8 @@
 using System.Net.Http.Json;
-using Squirrel.Core.Web.Extensions;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Dtos;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
+using Squirrel.Core.Web.Extensions;
 using Tests.Shared.Helpers;
 using Tests.Shared.XunitCategories;
 using WireMock.Server;

@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using Squirrel.Core.Domain;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Domain;
+using Squirrel.Core.Domain;
 
 namespace FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 

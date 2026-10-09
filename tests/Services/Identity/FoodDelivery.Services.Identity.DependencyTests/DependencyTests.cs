@@ -1,15 +1,15 @@
-using Squirrel.Caching;
-using Squirrel.Core.Extensions.ServiceCollectionExtensions;
-using Squirrel.Core.Web;
-using Squirrel.Integration.Wolverine;
-using Squirrel.Persistence.EfCore.Postgres;
-using Squirrel.Persistence.Mongo;
 using FoodDelivery.Services.Identity.Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Squirrel.Caching;
+using Squirrel.Core.Extensions.ServiceCollectionExtensions;
+using Squirrel.Core.Web;
+using Squirrel.Integration.Wolverine;
+using Squirrel.Persistence.EfCore.Postgres;
+using Squirrel.Persistence.Mongo;
 using Tests.Shared.Factory;
 using Xunit;
 

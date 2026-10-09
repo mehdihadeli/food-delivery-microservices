@@ -1,6 +1,3 @@
-using Squirrel.Abstractions.Commands;
-using Squirrel.Caching;
-using Squirrel.Core.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.Exceptions.Application;
@@ -18,6 +15,9 @@ using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 using FoodDelivery.Services.Catalogs.Suppliers.Exceptions.Application;
 using Mediator;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Caching;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 

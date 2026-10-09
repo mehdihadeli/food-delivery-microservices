@@ -1,12 +1,12 @@
+using FoodDelivery.Services.Identity.Users.Dtos.v1;
+using FoodDelivery.Services.Shared;
+using Humanizer;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Squirrel.Abstractions.Core.Paging;
 using Squirrel.Abstractions.Queries;
 using Squirrel.Abstractions.Web.MinimalApi;
 using Squirrel.Core.Paging;
 using Squirrel.Web.ProblemDetail.HttpResults;
-using FoodDelivery.Services.Identity.Users.Dtos.v1;
-using FoodDelivery.Services.Shared;
-using Humanizer;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FoodDelivery.Services.Identity.Users.Features.GettingUsers.v1;
 

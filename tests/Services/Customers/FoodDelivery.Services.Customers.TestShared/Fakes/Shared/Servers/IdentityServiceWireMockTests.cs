@@ -1,9 +1,9 @@
 using System.Net.Http.Json;
-using Squirrel.Core.Web.Extensions;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Dtos;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Rest;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Events;
+using Squirrel.Core.Web.Extensions;
 using Tests.Shared.Helpers;
 using Tests.Shared.XunitCategories;
 using WireMock.Server;

@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Builder;
 using Squirrel.HealthCheck;
 using Squirrel.OpenTelemetry.Extensions;
-using Microsoft.AspNetCore.Builder;
 
 namespace FoodDelivery.ServiceDefaults.Extensions;
 

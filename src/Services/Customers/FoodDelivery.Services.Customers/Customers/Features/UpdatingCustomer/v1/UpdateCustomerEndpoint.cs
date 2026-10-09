@@ -1,7 +1,7 @@
+using Humanizer;
 using Squirrel.Abstractions.Commands;
 using Squirrel.Abstractions.Web.MinimalApi;
 using Squirrel.Web.Minimal.Extensions;
-using Humanizer;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1;
 

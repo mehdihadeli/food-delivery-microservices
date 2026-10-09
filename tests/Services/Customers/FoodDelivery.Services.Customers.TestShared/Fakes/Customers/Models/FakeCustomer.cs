@@ -1,7 +1,7 @@
 using Bogus;
-using Squirrel.Core.Domain.ValueObjects;
 using FoodDelivery.Services.Customers.Customers.Models;
 using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
+using Squirrel.Core.Domain.ValueObjects;
 
 namespace FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models;
 

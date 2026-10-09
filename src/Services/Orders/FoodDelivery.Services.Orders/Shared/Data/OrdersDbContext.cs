@@ -1,7 +1,7 @@
-using Squirrel.Core.Persistence.EfCore;
 using FoodDelivery.Services.Orders.Orders.Models;
 using FoodDelivery.Services.Orders.Shared.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Core.Persistence.EfCore;
 
 namespace FoodDelivery.Services.Orders.Shared.Data;
 

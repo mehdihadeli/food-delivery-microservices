@@ -1,12 +1,12 @@
-using Squirrel.Abstractions.Persistence;
-using Squirrel.Core.Paging;
-using Squirrel.Core.Queries;
-using Squirrel.Validation.Extensions;
 using Dapper;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Persistence;
+using Squirrel.Core.Paging;
+using Squirrel.Core.Queries;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.v1;
 

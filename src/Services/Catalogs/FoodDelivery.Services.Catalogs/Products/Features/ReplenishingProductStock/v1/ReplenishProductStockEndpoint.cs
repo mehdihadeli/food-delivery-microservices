@@ -1,10 +1,10 @@
 using Cassandra.Mapping;
-using Squirrel.Abstractions.Commands;
-using Squirrel.Abstractions.Web.MinimalApi;
-using Squirrel.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Web.MinimalApi;
+using Squirrel.Web.ProblemDetail.HttpResults;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.ReplenishingProductStock.v1;
 

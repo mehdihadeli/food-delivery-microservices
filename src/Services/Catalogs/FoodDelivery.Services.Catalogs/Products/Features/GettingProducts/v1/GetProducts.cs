@@ -1,15 +1,15 @@
-using Squirrel.Abstractions.Core.Paging;
-using Squirrel.Abstractions.Queries;
-using Squirrel.Core.Extensions;
-using Squirrel.Core.Paging;
-using Squirrel.Core.Queries;
-using Squirrel.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Sieve.Services;
+using Squirrel.Abstractions.Core.Paging;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Paging;
+using Squirrel.Core.Queries;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProducts.v1;
 

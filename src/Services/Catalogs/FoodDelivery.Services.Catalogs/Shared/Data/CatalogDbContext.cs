@@ -1,10 +1,10 @@
-using Squirrel.Core.Persistence.EfCore;
 using FoodDelivery.Services.Catalogs.Brands;
 using FoodDelivery.Services.Catalogs.Categories;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Suppliers;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Core.Persistence.EfCore;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Data;
 

@@ -1,6 +1,6 @@
+using FluentAssertions;
 using Squirrel.Core.Domain.EventSourcing;
 using Squirrel.Core.Persistence.EventStore;
-using FluentAssertions;
 
 namespace Squirrel.Core.UnitTests;
 

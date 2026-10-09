@@ -1,4 +1,3 @@
-using Squirrel.Core.Exception;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
@@ -8,6 +7,7 @@ using FoodDelivery.Services.Shared.Customers.Customers.Events.Integration.v1;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using Squirrel.Core.Exception;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;
 

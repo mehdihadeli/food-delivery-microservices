@@ -1,9 +1,9 @@
 using Cassandra.Mapping;
+using Humanizer;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Squirrel.Abstractions.Commands;
 using Squirrel.Abstractions.Web.MinimalApi;
 using Squirrel.Web.ProblemDetail.HttpResults;
-using Humanizer;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FoodDelivery.Services.Identity.Identity.Features.VerifyingEmail.v1;
 

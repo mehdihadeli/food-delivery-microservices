@@ -337,6 +337,12 @@ All other values were left default
 
 Here formatting is wired through Husky.Net and the task definitions in `.husky/task-runner.json`.
 
+The CI formatting check applies to this repository's projects and excludes the Squirrel git submodule at `src/BuildingBlocks`, whose formatting is maintained in the upstream [Squirrel repository](https://github.com/mehdihadeli/Squirrel). To run the same parent-repository check locally:
+
+```bash
+dotnet format style food-delivery-microservices.slnx --verify-no-changes --severity error --verbosity diagnostic --exclude src/BuildingBlocks
+```
+
 1. Install manifest file with `dotnet new tool-manifest` because it doesn't exist at first time and then install our required packages as dependency with [dotnet tool install](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-install), that will add to [dotnet-tools.json](.config/dotnet-tools.json) file in a `.config` directory:
 
 ```bash

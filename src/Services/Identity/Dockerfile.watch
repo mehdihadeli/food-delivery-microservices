@@ -1,7 +1,10 @@
+# Learn about building .NET container images:
+# https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md
 
-#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 as builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS builder
+
+ARG TARGETARCH
 
 WORKDIR /src
 
@@ -15,7 +18,6 @@ COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
 COPY ./src/Services/Identity/Directory.Build.props ./Services/Identity/
 
-# TODO: Using wildcard to copy all files in the directory.
 COPY ./src/BuildingBlocks/src/Squirrel.Abstractions/Squirrel.Abstractions.csproj ./BuildingBlocks/src/Squirrel.Abstractions/
 COPY ./src/BuildingBlocks/src/Squirrel.Core/Squirrel.Core.csproj ./BuildingBlocks/src/Squirrel.Core/
 COPY ./src/BuildingBlocks/src/Squirrel.HealthCheck/Squirrel.HealthCheck.csproj ./BuildingBlocks/src/Squirrel.HealthCheck/
@@ -32,7 +34,6 @@ COPY ./src/BuildingBlocks/src/Squirrel.SerilogLogging/Squirrel.SerilogLogging.cs
 COPY ./src/BuildingBlocks/src/Squirrel.Validation/Squirrel.Validation.csproj ./BuildingBlocks/src/Squirrel.Validation/
 
 
-# Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
 COPY ./src/Services/Identity/FoodDelivery.Services.Identity.Api/  ./Services/Identity/FoodDelivery.Services.Identity.Api/
 COPY ./src/Services/Identity/FoodDelivery.Services.Identity/  ./Services/Identity/FoodDelivery.Services.Identity/
@@ -40,11 +41,6 @@ COPY ./src/Services/Shared/  ./Services/Shared/
 
 WORKDIR /src/Services/Identity/FoodDelivery.Services.Identity.Api/
 
-# https://learn.microsoft.com/en-us/aspnet/core/tutorials/dotnet-watch?view=aspnetcore-7.0#dotnet-watch-configuration
-# https://learn.microsoft.com/en-us/aspnet/core/fundamentals/file-providers?view=aspnetcore-3.1#watch-for-changes
-# https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch?WT.mc_id=DOP-MVP-5001942#environment-variables
-# Some file systems, such as Docker containers and network shares, may not reliably send change notifications. Set the DOTNET_USE_POLLING_FILE_WATCHER environment variable to 1 or true to poll the file system for changes every four seconds
-# If set to "1" or "true", dotnet watch uses a polling file watcher instead of CoreFx's FileSystemWatcher. Used when watching files on network shares or Docker mounted volumes.
-ENV DOTNET_USE_POLLING_FILE_WATCHER 1
+ENV DOTNET_USE_POLLING_FILE_WATCHER=1
 
 RUN dotnet watch run  FoodDelivery.Services.Identity.Api.csproj --launch-profile Identity.Api.LiveRecompilation -p:SkipVersion=true

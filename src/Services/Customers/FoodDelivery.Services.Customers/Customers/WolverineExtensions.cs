@@ -1,5 +1,5 @@
-using CloudNativeKit.Integration.Wolverine;
 using FoodDelivery.Services.Shared.Customers.Customers.Events.Integration.v1;
+using Squirrel.Integration.Wolverine;
 using Wolverine;
 
 namespace FoodDelivery.Services.Customers.Customers;

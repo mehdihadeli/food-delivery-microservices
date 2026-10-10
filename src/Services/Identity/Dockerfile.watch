@@ -1,7 +1,10 @@
+# Learn about building .NET container images:
+# https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md
 
-#https://tymisko.hashnode.dev/developing-aspnet-core-apps-in-docker-live-recompilation
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 as builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS builder
+
+ARG TARGETARCH
 
 WORKDIR /src
 
@@ -15,24 +18,22 @@ COPY ./src/Directory.Packages.props ./
 COPY ./src/Packages.props ./
 COPY ./src/Services/Identity/Directory.Build.props ./Services/Identity/
 
-# TODO: Using wildcard to copy all files in the directory.
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Abstractions/CloudNativeKit.Abstractions.csproj ./BuildingBlocks/src/CloudNativeKit.Abstractions/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Core/CloudNativeKit.Core.csproj ./BuildingBlocks/src/CloudNativeKit.Core/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.HealthCheck/CloudNativeKit.HealthCheck.csproj ./BuildingBlocks/src/CloudNativeKit.HealthCheck/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.OpenTelemetry/CloudNativeKit.OpenTelemetry.csproj ./BuildingBlocks/src/CloudNativeKit.OpenTelemetry/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Resiliency/CloudNativeKit.Resiliency.csproj ./BuildingBlocks/src/CloudNativeKit.Resiliency/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Web/CloudNativeKit.Web.csproj ./BuildingBlocks/src/CloudNativeKit.Web/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Caching/CloudNativeKit.Caching.csproj ./BuildingBlocks/src/CloudNativeKit.Caching/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Email/CloudNativeKit.Email.csproj ./BuildingBlocks/src/CloudNativeKit.Email/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Integration.Wolverine/CloudNativeKit.Integration.Wolverine.csproj ./BuildingBlocks/src/CloudNativeKit.Integration.Wolverine/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.OpenApi/CloudNativeKit.OpenApi.csproj ./BuildingBlocks/src/CloudNativeKit.OpenApi/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Persistence.EfCore.Postgres/CloudNativeKit.Persistence.EfCore.Postgres.csproj ./BuildingBlocks/src/CloudNativeKit.Persistence.EfCore.Postgres/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Persistence.Mongo/CloudNativeKit.Persistence.Mongo.csproj ./BuildingBlocks/src/CloudNativeKit.Persistence.Mongo/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.SerilogLogging/CloudNativeKit.SerilogLogging.csproj ./BuildingBlocks/src/CloudNativeKit.SerilogLogging/
-COPY ./src/BuildingBlocks/src/CloudNativeKit.Validation/CloudNativeKit.Validation.csproj ./BuildingBlocks/src/CloudNativeKit.Validation/
+COPY ./src/BuildingBlocks/src/Squirrel.Abstractions/Squirrel.Abstractions.csproj ./BuildingBlocks/src/Squirrel.Abstractions/
+COPY ./src/BuildingBlocks/src/Squirrel.Core/Squirrel.Core.csproj ./BuildingBlocks/src/Squirrel.Core/
+COPY ./src/BuildingBlocks/src/Squirrel.HealthCheck/Squirrel.HealthCheck.csproj ./BuildingBlocks/src/Squirrel.HealthCheck/
+COPY ./src/BuildingBlocks/src/Squirrel.OpenTelemetry/Squirrel.OpenTelemetry.csproj ./BuildingBlocks/src/Squirrel.OpenTelemetry/
+COPY ./src/BuildingBlocks/src/Squirrel.Resiliency/Squirrel.Resiliency.csproj ./BuildingBlocks/src/Squirrel.Resiliency/
+COPY ./src/BuildingBlocks/src/Squirrel.Web/Squirrel.Web.csproj ./BuildingBlocks/src/Squirrel.Web/
+COPY ./src/BuildingBlocks/src/Squirrel.Caching/Squirrel.Caching.csproj ./BuildingBlocks/src/Squirrel.Caching/
+COPY ./src/BuildingBlocks/src/Squirrel.Email/Squirrel.Email.csproj ./BuildingBlocks/src/Squirrel.Email/
+COPY ./src/BuildingBlocks/src/Squirrel.Integration.Wolverine/Squirrel.Integration.Wolverine.csproj ./BuildingBlocks/src/Squirrel.Integration.Wolverine/
+COPY ./src/BuildingBlocks/src/Squirrel.OpenApi/Squirrel.OpenApi.csproj ./BuildingBlocks/src/Squirrel.OpenApi/
+COPY ./src/BuildingBlocks/src/Squirrel.Persistence.EfCore.Postgres/Squirrel.Persistence.EfCore.Postgres.csproj ./BuildingBlocks/src/Squirrel.Persistence.EfCore.Postgres/
+COPY ./src/BuildingBlocks/src/Squirrel.Persistence.Mongo/Squirrel.Persistence.Mongo.csproj ./BuildingBlocks/src/Squirrel.Persistence.Mongo/
+COPY ./src/BuildingBlocks/src/Squirrel.SerilogLogging/Squirrel.SerilogLogging.csproj ./BuildingBlocks/src/Squirrel.SerilogLogging/
+COPY ./src/BuildingBlocks/src/Squirrel.Validation/Squirrel.Validation.csproj ./BuildingBlocks/src/Squirrel.Validation/
 
 
-# Copy project files
 COPY ./src/BuildingBlocks/ ./BuildingBlocks/
 COPY ./src/Services/Identity/FoodDelivery.Services.Identity.Api/  ./Services/Identity/FoodDelivery.Services.Identity.Api/
 COPY ./src/Services/Identity/FoodDelivery.Services.Identity/  ./Services/Identity/FoodDelivery.Services.Identity/
@@ -40,11 +41,6 @@ COPY ./src/Services/Shared/  ./Services/Shared/
 
 WORKDIR /src/Services/Identity/FoodDelivery.Services.Identity.Api/
 
-# https://learn.microsoft.com/en-us/aspnet/core/tutorials/dotnet-watch?view=aspnetcore-7.0#dotnet-watch-configuration
-# https://learn.microsoft.com/en-us/aspnet/core/fundamentals/file-providers?view=aspnetcore-3.1#watch-for-changes
-# https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch?WT.mc_id=DOP-MVP-5001942#environment-variables
-# Some file systems, such as Docker containers and network shares, may not reliably send change notifications. Set the DOTNET_USE_POLLING_FILE_WATCHER environment variable to 1 or true to poll the file system for changes every four seconds
-# If set to "1" or "true", dotnet watch uses a polling file watcher instead of CoreFx's FileSystemWatcher. Used when watching files on network shares or Docker mounted volumes.
-ENV DOTNET_USE_POLLING_FILE_WATCHER 1
+ENV DOTNET_USE_POLLING_FILE_WATCHER=1
 
 RUN dotnet watch run  FoodDelivery.Services.Identity.Api.csproj --launch-profile Identity.Api.LiveRecompilation -p:SkipVersion=true

@@ -1,9 +1,9 @@
-using CloudNativeKit.Core.Extensions.ServiceCollectionExtensions;
-using CloudNativeKit.Resiliency.HttpClient;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Catalogs.Rest;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity.Rest;
+using Squirrel.Core.Extensions.ServiceCollectionExtensions;
+using Squirrel.Resiliency.HttpClient;
 
 namespace FoodDelivery.Services.Customers.Shared.Extensions.HostApplicationBuilderExtensions;
 

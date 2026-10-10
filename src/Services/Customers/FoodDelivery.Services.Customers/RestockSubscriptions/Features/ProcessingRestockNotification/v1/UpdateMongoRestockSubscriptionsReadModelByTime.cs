@@ -1,15 +1,15 @@
-using CloudNativeKit.Core.Commands;
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using Mediator;
+using Squirrel.Core.Commands;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 
 public record UpdateMongoRestockSubscriptionsReadModelByTime(DateTime? From, DateTime? To, bool IsDeleted = false)
     : InternalCommand;
 
-internal class UpdateMongoRestockSubscriptionsReadModelByTimeHandler(ICustomersReadUnitOfWork unitOfWork)
-    : CloudNativeKit.Abstractions.Commands.ICommandHandler<UpdateMongoRestockSubscriptionsReadModelByTime>
+public class UpdateMongoRestockSubscriptionsReadModelByTimeHandler(ICustomersReadUnitOfWork unitOfWork)
+    : Squirrel.Abstractions.Commands.ICommandHandler<UpdateMongoRestockSubscriptionsReadModelByTime>
 {
     public async ValueTask<Unit> Handle(
         UpdateMongoRestockSubscriptionsReadModelByTime command,

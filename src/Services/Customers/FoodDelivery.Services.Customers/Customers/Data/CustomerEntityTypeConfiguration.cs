@@ -1,10 +1,10 @@
-using CloudNativeKit.Core.Domain.ValueObjects;
-using CloudNativeKit.Core.Persistence.EfCore;
 using FoodDelivery.Services.Customers.Customers.Models;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Squirrel.Core.Domain.ValueObjects;
+using Squirrel.Core.Persistence.EfCore;
 
 namespace FoodDelivery.Services.Customers.Customers.Data;
 

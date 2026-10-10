@@ -1,13 +1,13 @@
 using System.Net;
 using Bogus;
-using CloudNativeKit.Core.Web.Extensions;
-using CloudNativeKit.OpenApi.AspnetOpenApi.Extensions;
 using FoodDelivery.ServiceDefaults.Extensions;
 using FoodDelivery.Services.Orders;
 using FoodDelivery.Services.Orders.Shared.Extensions.HostApplicationBuilderExtensions;
 using FoodDelivery.Services.Orders.Shared.Extensions.WebApplicationExtensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using Spectre.Console;
+using Squirrel.Core.Web.Extensions;
+using Squirrel.OpenApi.AspnetOpenApi.Extensions;
 
 AnsiConsole.Write(new FigletText("Orders Service").Centered().Color(Color.FromInt32(new Faker().Random.Int(1, 255))));
 

@@ -1,6 +1,3 @@
-using CloudNativeKit.Abstractions.Persistence;
-using CloudNativeKit.Core.Web.Extensions;
-using CloudNativeKit.Security.Jwt;
 using Meziantou.Extensions.Logging.InMemory;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -13,9 +10,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using Squirrel.Abstractions.Persistence;
+using Squirrel.Core.Web.Extensions;
+using Squirrel.Security.Jwt;
 using WebMotions.Fake.Authentication.JwtBearer;
 using Xunit;
-using Environments = CloudNativeKit.Core.Web.Environments;
+using Environments = Squirrel.Core.Web.Environments;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Tests.Shared.Factory;

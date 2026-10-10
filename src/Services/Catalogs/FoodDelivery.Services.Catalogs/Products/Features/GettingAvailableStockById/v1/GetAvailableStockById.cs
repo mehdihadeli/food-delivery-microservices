@@ -1,4 +1,4 @@
-using CloudNativeKit.Abstractions.Queries;
+using Squirrel.Abstractions.Queries;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.GettingAvailableStockById.v1;
 

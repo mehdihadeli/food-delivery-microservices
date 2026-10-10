@@ -1,6 +1,6 @@
-using CloudNativeKit.Abstractions.Persistence.EfCore;
 using FoodDelivery.Services.Orders.Orders.Models;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Persistence.EfCore;
 
 namespace FoodDelivery.Services.Orders.Shared.Contracts;
 

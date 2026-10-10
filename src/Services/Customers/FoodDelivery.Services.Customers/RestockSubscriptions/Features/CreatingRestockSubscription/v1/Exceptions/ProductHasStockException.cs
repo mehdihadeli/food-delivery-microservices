@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Exception;
+using Squirrel.Core.Exception;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1.Exceptions;
 

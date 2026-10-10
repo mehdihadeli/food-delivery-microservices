@@ -1,8 +1,8 @@
-using CloudNativeKit.Core.Domain;
-using CloudNativeKit.Core.Domain.Events.Internal;
 using FluentAssertions;
+using Squirrel.Core.Domain;
+using Squirrel.Core.Domain.Events.Internal;
 
-namespace CloudNativeKit.Core.UnitTests;
+namespace Squirrel.Core.UnitTests;
 
 public class AggregateTests
 {

@@ -1,5 +1,5 @@
-using CloudNativeKit.Persistence.Mongo;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Persistence.Mongo;
 using Tests.Shared.Fixtures;
 
 namespace Tests.Shared.TestBase;

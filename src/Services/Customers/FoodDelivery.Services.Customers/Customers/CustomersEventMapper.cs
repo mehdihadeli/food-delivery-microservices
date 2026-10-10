@@ -1,8 +1,8 @@
-using CloudNativeKit.Abstractions.Events;
-using CloudNativeKit.Abstractions.Messages;
 using FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Customers.Customers.Features.UpdatingCustomer.v1.Events.Domain;
 using FoodDelivery.Services.Shared.Customers.Customers.Events.Integration.v1;
+using Squirrel.Abstractions.Events;
+using Squirrel.Abstractions.Messages;
 
 namespace FoodDelivery.Services.Customers.Customers;
 

@@ -1,11 +1,11 @@
-using CloudNativeKit.Abstractions.Queries;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Dtos.v1;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
 using FoodDelivery.Services.Customers.Shared.Contracts;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.GettingCustomerByCustomerId.v1;
 

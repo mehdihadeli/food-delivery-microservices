@@ -1,10 +1,10 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Abstractions.Web.MinimalApi;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using FoodDelivery.Services.Identity.Users.Features.GettingUserById.v1;
 using FoodDelivery.Services.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Web.MinimalApi;
 
 namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;
 

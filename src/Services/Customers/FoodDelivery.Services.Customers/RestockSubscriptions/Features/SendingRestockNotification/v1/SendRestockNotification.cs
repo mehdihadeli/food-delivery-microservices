@@ -1,13 +1,13 @@
-using CloudNativeKit.Abstractions.Persistence;
-using CloudNativeKit.Core.Commands;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Email;
-using CloudNativeKit.Email.Options;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Squirrel.Abstractions.Persistence;
+using Squirrel.Core.Commands;
+using Squirrel.Core.Extensions;
+using Squirrel.Email;
+using Squirrel.Email.Options;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.SendingRestockNotification.v1;
 
@@ -28,7 +28,7 @@ public class SendRestockNotificationHandler(
     IEmailSender emailSender,
     IOptions<EmailOptions> emailConfig,
     ILogger<SendRestockNotificationHandler> logger
-) : CloudNativeKit.Abstractions.Commands.ICommandHandler<SendRestockNotification>
+) : Squirrel.Abstractions.Commands.ICommandHandler<SendRestockNotification>
 {
     private readonly EmailOptions _emailConfig = emailConfig.Value;
 

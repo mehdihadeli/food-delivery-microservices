@@ -1,7 +1,7 @@
-using CloudNativeKit.Persistence.Mongo;
 using FoodDelivery.Services.Orders.Orders.Models.Reads;
 using Humanizer;
 using MongoDB.Driver;
+using Squirrel.Persistence.Mongo;
 
 namespace FoodDelivery.Services.Orders.Shared.Data;
 

@@ -1,8 +1,8 @@
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.ApiGateway;
 using FoodDelivery.ServiceDefaults.Extensions;
+using Squirrel.Core.Extensions;
 using Yarp.ReverseProxy.Transforms;
-using static CloudNativeKit.Core.Messages.MessageHeaders;
+using static Squirrel.Core.Messages.MessageHeaders;
 
 var builder = WebApplication.CreateBuilder(args);
 

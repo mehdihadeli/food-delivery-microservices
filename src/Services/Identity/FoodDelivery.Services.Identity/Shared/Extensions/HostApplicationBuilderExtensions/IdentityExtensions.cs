@@ -1,7 +1,7 @@
-using CloudNativeKit.Core.Extensions.ServiceCollectionExtensions;
 using FoodDelivery.Services.Identity.Shared.Data;
 using FoodDelivery.Services.Identity.Shared.Models;
 using Microsoft.AspNetCore.Identity;
+using Squirrel.Core.Extensions.ServiceCollectionExtensions;
 
 namespace FoodDelivery.Services.Identity.Shared.Extensions.HostApplicationBuilderExtensions;
 

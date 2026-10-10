@@ -1,4 +1,3 @@
-using CloudNativeKit.Core.Exception;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Api;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
@@ -7,6 +6,7 @@ using FoodDelivery.Services.Customers.Shared.Data;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models;
 using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Requests;
 using Microsoft.AspNetCore.Mvc;
+using Squirrel.Core.Exception;
 using Tests.Shared.Extensions;
 using Tests.Shared.Fixtures;
 using Tests.Shared.XunitCategories;

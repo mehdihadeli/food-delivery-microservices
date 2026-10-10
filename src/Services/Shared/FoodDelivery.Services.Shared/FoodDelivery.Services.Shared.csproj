@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Core\CloudNativeKit.Core.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.HealthCheck\CloudNativeKit.HealthCheck.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.OpenTelemetry\CloudNativeKit.OpenTelemetry.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Resiliency\CloudNativeKit.Resiliency.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\src\CloudNativeKit.Web\CloudNativeKit.Web.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.Core\Squirrel.Core.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.HealthCheck\Squirrel.HealthCheck.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.OpenTelemetry\Squirrel.OpenTelemetry.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.Resiliency\Squirrel.Resiliency.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\src\Squirrel.Web\Squirrel.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

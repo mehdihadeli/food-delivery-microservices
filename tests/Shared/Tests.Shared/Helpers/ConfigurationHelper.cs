@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Extensions;
 using Microsoft.Extensions.Configuration;
+using Squirrel.Core.Extensions;
 
 namespace Tests.Shared.Helpers;
 

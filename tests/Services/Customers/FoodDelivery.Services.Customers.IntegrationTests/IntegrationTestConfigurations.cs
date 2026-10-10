@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Web;
+using Squirrel.Core.Web;
 using Tests.Shared;
 
 namespace FoodDelivery.Services.Customers.IntegrationTests;

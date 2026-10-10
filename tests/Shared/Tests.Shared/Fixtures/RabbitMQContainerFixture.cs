@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Core.Extensions;
 using Testcontainers.RabbitMq;
 using Tests.Shared.Helpers;
 using Xunit;

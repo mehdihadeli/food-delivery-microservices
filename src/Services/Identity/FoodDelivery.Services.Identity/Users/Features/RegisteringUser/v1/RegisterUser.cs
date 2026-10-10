@@ -1,14 +1,14 @@
 using System.Security.Claims;
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Abstractions.Messages;
-using CloudNativeKit.Core.Security;
-using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 using Microsoft.AspNetCore.Identity;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Messages;
+using Squirrel.Core.Security;
+using Squirrel.Validation.Extensions;
 using UserState = FoodDelivery.Services.Shared.Identity.Users.UserState;
 
 namespace FoodDelivery.Services.Identity.Users.Features.RegisteringUser.v1;

@@ -1,6 +1,4 @@
 using System.Collections.Immutable;
-using CloudNativeKit.Core.Domain;
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
@@ -21,6 +19,8 @@ using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 using FoodDelivery.Services.Catalogs.Products.Rules;
 using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
+using Squirrel.Core.Domain;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Models;
 

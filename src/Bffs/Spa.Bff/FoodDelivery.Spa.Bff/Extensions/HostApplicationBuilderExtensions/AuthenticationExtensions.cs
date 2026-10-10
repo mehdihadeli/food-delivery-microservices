@@ -1,8 +1,8 @@
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Core.Security;
 using LinqKit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Security;
 
 namespace FoodDelivery.Spa.Bff.Extensions.HostApplicationBuilderExtensions;
 

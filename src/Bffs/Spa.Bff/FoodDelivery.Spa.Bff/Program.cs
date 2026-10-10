@@ -1,7 +1,5 @@
 using System.Net;
 using System.Net.Http.Headers;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Web.Cors;
 using Duende.Bff.Yarp;
 using FoodDelivery.ServiceDefaults.Extensions;
 using FoodDelivery.Spa.Bff.Clients;
@@ -9,6 +7,8 @@ using FoodDelivery.Spa.Bff.Contracts;
 using FoodDelivery.Spa.Bff.Extensions;
 using FoodDelivery.Spa.Bff.Extensions.HostApplicationBuilderExtensions;
 using Microsoft.AspNetCore.HttpOverrides;
+using Squirrel.Core.Extensions;
+using Squirrel.Web.Cors;
 using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);

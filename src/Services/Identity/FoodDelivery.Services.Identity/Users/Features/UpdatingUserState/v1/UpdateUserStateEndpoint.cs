@@ -1,10 +1,10 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Abstractions.Web.MinimalApi;
-using CloudNativeKit.Web.ProblemDetail.HttpResults;
 using FoodDelivery.Services.Shared;
 using FoodDelivery.Services.Shared.Identity.Users;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Web.MinimalApi;
+using Squirrel.Web.ProblemDetail.HttpResults;
 
 namespace FoodDelivery.Services.Identity.Users.Features.UpdatingUserState.v1;
 

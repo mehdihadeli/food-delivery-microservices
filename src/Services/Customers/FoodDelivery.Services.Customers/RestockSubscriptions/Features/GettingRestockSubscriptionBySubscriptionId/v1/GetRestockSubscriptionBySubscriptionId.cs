@@ -1,9 +1,9 @@
-using CloudNativeKit.Abstractions.Queries;
-using CloudNativeKit.Core.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Dtos.v1;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
 using FoodDelivery.Services.Customers.Shared.Contracts;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.GettingRestockSubscriptionBySubscriptionId.v1;
 

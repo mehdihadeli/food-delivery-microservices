@@ -1,9 +1,9 @@
-using CloudNativeKit.Core.Domain;
-using CloudNativeKit.Core.Domain.Exceptions;
-using CloudNativeKit.Core.Exception;
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Categories.ValueObjects;
 using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
+using Squirrel.Core.Domain;
+using Squirrel.Core.Domain.Exceptions;
+using Squirrel.Core.Exception;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Categories;
 

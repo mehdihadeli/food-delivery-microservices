@@ -1,11 +1,11 @@
 using System.Globalization;
 using System.Security.Claims;
-using CloudNativeKit.Abstractions.Persistence;
-using CloudNativeKit.Core.Security;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Squirrel.Abstractions.Persistence;
+using Squirrel.Core.Security;
 
 namespace FoodDelivery.Services.Identity.Shared.Data;
 

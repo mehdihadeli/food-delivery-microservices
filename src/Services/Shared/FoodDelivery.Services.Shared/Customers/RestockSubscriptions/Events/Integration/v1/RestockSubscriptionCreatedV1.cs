@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Messages;
+using Squirrel.Core.Messages;
 
 namespace FoodDelivery.Services.Shared.Customers.RestockSubscriptions.Events.Integration.v1;
 

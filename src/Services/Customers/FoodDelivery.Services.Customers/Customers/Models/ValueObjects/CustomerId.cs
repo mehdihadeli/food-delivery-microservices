@@ -1,5 +1,5 @@
-using CloudNativeKit.Abstractions.Domain;
-using CloudNativeKit.Core.Extensions;
+using Squirrel.Abstractions.Domain;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 

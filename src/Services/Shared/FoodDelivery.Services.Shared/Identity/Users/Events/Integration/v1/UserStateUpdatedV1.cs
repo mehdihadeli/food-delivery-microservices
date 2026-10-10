@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Core.Messages;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Messages;
 
 namespace FoodDelivery.Services.Shared.Identity.Users.Events.Integration.v1;
 

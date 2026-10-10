@@ -1,4 +1,3 @@
-using CloudNativeKit.Core.Exception;
 using FluentAssertions;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
@@ -9,6 +8,7 @@ using FoodDelivery.Services.Customers.TestShared.Fakes.Customers.Models;
 using FoodDelivery.Services.Customers.UnitTests.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Squirrel.Core.Exception;
 using Tests.Shared.XunitCategories;
 
 namespace FoodDelivery.Services.Customers.UnitTests.Customers.Features.UpdatingCustomer.v1;

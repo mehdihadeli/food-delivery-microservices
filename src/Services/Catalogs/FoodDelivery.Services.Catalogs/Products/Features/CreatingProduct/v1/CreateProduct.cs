@@ -1,5 +1,3 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Core.IdsGenerator;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
@@ -11,6 +9,8 @@ using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Core.IdsGenerator;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1;
 

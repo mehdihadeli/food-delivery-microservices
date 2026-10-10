@@ -1,8 +1,8 @@
-using CloudNativeKit.Abstractions.Domain;
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.Exceptions.Domain;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
+using Squirrel.Abstractions.Domain;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Rules;
 

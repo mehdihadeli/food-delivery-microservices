@@ -1,8 +1,8 @@
-using CloudNativeKit.Core.Domain.Events.Internal;
-using CloudNativeKit.Core.Types;
 using FluentAssertions;
+using Squirrel.Core.Domain.Events.Internal;
+using Squirrel.Core.Types;
 
-namespace CloudNativeKit.Core.UnitTests;
+namespace Squirrel.Core.UnitTests;
 
 public class TypeMapperTests
 {

@@ -1,12 +1,12 @@
-using CloudNativeKit.Caching;
-using CloudNativeKit.Core.Extensions.ServiceCollectionExtensions;
-using CloudNativeKit.Core.Web;
-using CloudNativeKit.Integration.Wolverine;
-using CloudNativeKit.Persistence.EfCore.Postgres;
-using CloudNativeKit.Persistence.Mongo;
 using FoodDelivery.Services.Catalogs.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Squirrel.Caching;
+using Squirrel.Core.Extensions.ServiceCollectionExtensions;
+using Squirrel.Core.Web;
+using Squirrel.Integration.Wolverine;
+using Squirrel.Persistence.EfCore.Postgres;
+using Squirrel.Persistence.Mongo;
 using Tests.Shared.Factory;
 
 namespace FoodDelivery.Services.Catalogs.DependencyTests;

@@ -1,10 +1,10 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Domain;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscriptionsByTime.v1;
 
@@ -14,7 +14,7 @@ public class DeleteRestockSubscriptionsByTimeHandler(
     CustomersDbContext customersDbContext,
     ICommandBus commandBus,
     ILogger<DeleteRestockSubscriptionsByTimeHandler> logger
-) : CloudNativeKit.Abstractions.Commands.ICommandHandler<DeleteRestockSubscriptionsByTime>
+) : Squirrel.Abstractions.Commands.ICommandHandler<DeleteRestockSubscriptionsByTime>
 {
     public async ValueTask<Unit> Handle(DeleteRestockSubscriptionsByTime command, CancellationToken cancellationToken)
     {

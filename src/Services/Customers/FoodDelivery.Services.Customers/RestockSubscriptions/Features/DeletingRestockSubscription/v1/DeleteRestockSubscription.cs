@@ -1,10 +1,10 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Core.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.DeletingRestockSubscription.v1;
 
@@ -28,7 +28,7 @@ public class DeleteRestockSubscriptionValidator : AbstractValidator<DeleteRestoc
 public class DeleteRestockSubscriptionHandler(
     CustomersDbContext customersDbContext,
     ILogger<DeleteRestockSubscriptionHandler> logger
-) : CloudNativeKit.Abstractions.Commands.ICommandHandler<DeleteRestockSubscription>
+) : Squirrel.Abstractions.Commands.ICommandHandler<DeleteRestockSubscription>
 {
     public async ValueTask<Unit> Handle(DeleteRestockSubscription command, CancellationToken cancellationToken)
     {

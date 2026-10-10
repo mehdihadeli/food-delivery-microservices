@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Suppliers;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 

@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Messages;
+using Squirrel.Core.Messages;
 
 namespace FoodDelivery.Services.Shared.Catalogs.Suppliers.Events.Integration.v1;
 

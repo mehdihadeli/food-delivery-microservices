@@ -1,4 +1,4 @@
-using CloudNativeKit.Core.Domain;
+using Squirrel.Core.Domain;
 
 namespace FoodDelivery.Services.Catalogs.Suppliers;
 

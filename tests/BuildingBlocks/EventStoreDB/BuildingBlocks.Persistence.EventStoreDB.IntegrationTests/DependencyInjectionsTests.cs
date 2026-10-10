@@ -1,12 +1,12 @@
-using CloudNativeKit.Core.Registrations;
-using CloudNativeKit.Persistence.EventStoreDB.Extensions;
 using EventStore.Client;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Squirrel.Core.Registrations;
+using Squirrel.Persistence.EventStoreDB.Extensions;
 using Tests.Shared.Helpers;
 
-namespace CloudNativeKit.Persistence.EventStoreDB.IntegrationTests;
+namespace Squirrel.Persistence.EventStoreDB.IntegrationTests;
 
 public class DependencyInjectionsTests
 {

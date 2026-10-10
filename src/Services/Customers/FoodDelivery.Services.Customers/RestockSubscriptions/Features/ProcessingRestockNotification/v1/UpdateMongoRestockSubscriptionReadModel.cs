@@ -1,8 +1,8 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Core.Commands;
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Exceptions.Application;
 using FoodDelivery.Services.Customers.Shared.Contracts;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Core.Commands;
+using Squirrel.Core.Extensions;
 using Unit = Mediator.Unit;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.ProcessingRestockNotification.v1;

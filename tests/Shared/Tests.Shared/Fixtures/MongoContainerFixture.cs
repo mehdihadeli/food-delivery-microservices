@@ -1,5 +1,5 @@
-using CloudNativeKit.Core.Extensions;
 using MongoDB.Driver;
+using Squirrel.Core.Extensions;
 using Testcontainers.MongoDb;
 using Tests.Shared.Helpers;
 using Xunit;

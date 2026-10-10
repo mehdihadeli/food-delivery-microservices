@@ -1,14 +1,14 @@
-using CloudNativeKit.Abstractions.Core.Paging;
-using CloudNativeKit.Abstractions.Queries;
-using CloudNativeKit.Core.Paging;
-using CloudNativeKit.Core.Queries;
-using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Identity.Shared.Extensions;
 using FoodDelivery.Services.Identity.Shared.Models;
 using FoodDelivery.Services.Identity.Users.Dtos.v1;
 using Microsoft.AspNetCore.Identity;
 using Sieve.Services;
+using Squirrel.Abstractions.Core.Paging;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Core.Paging;
+using Squirrel.Core.Queries;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Identity.Users.Features.GettingUsers.v1;
 

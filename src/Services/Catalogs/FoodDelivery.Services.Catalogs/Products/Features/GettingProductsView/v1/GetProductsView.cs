@@ -1,12 +1,12 @@
-using CloudNativeKit.Abstractions.Persistence;
-using CloudNativeKit.Core.Paging;
-using CloudNativeKit.Core.Queries;
-using CloudNativeKit.Validation.Extensions;
 using Dapper;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
 using FoodDelivery.Services.Catalogs.Products.Models;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Persistence;
+using Squirrel.Core.Paging;
+using Squirrel.Core.Queries;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.GettingProductsView.v1;
 
@@ -43,7 +43,7 @@ public class GetProductsViewValidator : AbstractValidator<GetProductsView>
 }
 
 public class GetProductsViewHandler(IDbFacadeResolver facadeResolver)
-    : CloudNativeKit.Abstractions.Queries.IQueryHandler<GetProductsView, GetProductsViewResult>
+    : Squirrel.Abstractions.Queries.IQueryHandler<GetProductsView, GetProductsViewResult>
 {
     public async ValueTask<GetProductsViewResult> Handle(GetProductsView query, CancellationToken cancellationToken)
     {

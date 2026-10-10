@@ -1,7 +1,7 @@
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Persistence.EfCore.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Squirrel.Core.Extensions;
+using Squirrel.Persistence.EfCore.Postgres;
 using Testcontainers.PostgreSql;
 using Tests.Shared.Helpers;
 using Xunit;

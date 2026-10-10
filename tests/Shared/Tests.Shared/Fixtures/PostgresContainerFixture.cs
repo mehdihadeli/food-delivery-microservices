@@ -1,7 +1,7 @@
-using CloudNativeKit.Core.Extensions;
 using Dapper;
 using Npgsql;
 using Respawn;
+using Squirrel.Core.Extensions;
 using Testcontainers.PostgreSql;
 using Tests.Shared.Helpers;
 using Xunit;

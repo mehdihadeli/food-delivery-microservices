@@ -1,6 +1,3 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Caching;
-using CloudNativeKit.Core.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.Exceptions.Application;
@@ -18,6 +15,9 @@ using FoodDelivery.Services.Catalogs.Suppliers;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
 using FoodDelivery.Services.Catalogs.Suppliers.Exceptions.Application;
 using Mediator;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Caching;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 
@@ -67,7 +67,7 @@ public class UpdateProductCommandHandler(
     ICategoryChecker categoryChecker,
     IBrandChecker brandChecker,
     ISupplierChecker supplierChecker
-) : CloudNativeKit.Abstractions.Commands.ICommandHandler<UpdateProduct>
+) : Squirrel.Abstractions.Commands.ICommandHandler<UpdateProduct>
 {
     public async ValueTask<Unit> Handle(UpdateProduct command, CancellationToken cancellationToken)
     {

@@ -1,8 +1,8 @@
-using CloudNativeKit.Core.Persistence.EfCore;
 using FoodDelivery.Services.Customers.Customers.Models;
 using FoodDelivery.Services.Customers.RestockSubscriptions.Models;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Core.Persistence.EfCore;
 
 namespace FoodDelivery.Services.Customers.Shared.Data;
 

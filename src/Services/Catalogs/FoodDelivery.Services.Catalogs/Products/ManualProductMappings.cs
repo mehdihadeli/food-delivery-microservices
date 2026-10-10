@@ -1,5 +1,3 @@
-using CloudNativeKit.Abstractions.Domain;
-using CloudNativeKit.Core.IdsGenerator;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Categories.Contracts;
 using FoodDelivery.Services.Catalogs.Products.Dtos.v1;
@@ -8,6 +6,8 @@ using FoodDelivery.Services.Catalogs.Products.Models;
 using FoodDelivery.Services.Catalogs.Products.Models.Read;
 using FoodDelivery.Services.Catalogs.Products.Models.ValueObjects;
 using FoodDelivery.Services.Catalogs.Suppliers.Contracts;
+using Squirrel.Abstractions.Domain;
+using Squirrel.Core.IdsGenerator;
 
 namespace FoodDelivery.Services.Catalogs.Products;
 

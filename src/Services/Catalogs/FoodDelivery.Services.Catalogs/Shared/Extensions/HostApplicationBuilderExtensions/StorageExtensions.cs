@@ -1,13 +1,13 @@
-using CloudNativeKit.Abstractions.Events;
-using CloudNativeKit.Abstractions.Persistence;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Core.Web.Extensions;
-using CloudNativeKit.Persistence.EfCore.Postgres;
-using CloudNativeKit.Persistence.Mongo.Extensions;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Data;
 using FoodDelivery.Services.Shared.Constants;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Events;
+using Squirrel.Abstractions.Persistence;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.Web.Extensions;
+using Squirrel.Persistence.EfCore.Postgres;
+using Squirrel.Persistence.Mongo.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Shared.Extensions.HostApplicationBuilderExtensions;
 

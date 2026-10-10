@@ -1,8 +1,8 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Abstractions.Queries;
-using CloudNativeKit.Persistence.Mongo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Queries;
+using Squirrel.Persistence.Mongo;
 using Xunit.Sdk;
 using Xunit.v3;
 

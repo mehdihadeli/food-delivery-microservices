@@ -1,8 +1,8 @@
-using CloudNativeKit.Core.Commands;
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.Customers.Data.UOW.Mongo;
 using FoodDelivery.Services.Customers.Shared.Contracts;
 using Mediator;
+using Squirrel.Core.Commands;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.CreatingRestockSubscription.v1;
 
@@ -20,8 +20,8 @@ public record CreateMongoRestockSubscriptionReadModels(
     public bool IsDeleted { get; init; }
 }
 
-internal class CreateRestockSubscriptionReadModelHandler(ICustomersReadUnitOfWork unitOfWork)
-    : CloudNativeKit.Abstractions.Commands.ICommandHandler<CreateMongoRestockSubscriptionReadModels>
+public class CreateRestockSubscriptionReadModelHandler(ICustomersReadUnitOfWork unitOfWork)
+    : Squirrel.Abstractions.Commands.ICommandHandler<CreateMongoRestockSubscriptionReadModels>
 {
     public async ValueTask<Unit> Handle(
         CreateMongoRestockSubscriptionReadModels command,

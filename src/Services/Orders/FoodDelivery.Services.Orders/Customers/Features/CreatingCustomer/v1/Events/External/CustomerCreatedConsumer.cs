@@ -1,7 +1,7 @@
-using CloudNativeKit.Integration.Wolverine;
 using FoodDelivery.Services.Shared.Customers.Customers.Events.Integration.v1;
 using Microsoft.AspNetCore.HeaderPropagation;
 using Saunter.Attributes;
+using Squirrel.Integration.Wolverine;
 using Wolverine;
 
 namespace FoodDelivery.Services.Orders.Customers.Features.CreatingCustomer.v1.Events.External;

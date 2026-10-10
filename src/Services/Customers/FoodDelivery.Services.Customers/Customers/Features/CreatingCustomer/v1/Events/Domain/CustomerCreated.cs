@@ -1,9 +1,9 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Abstractions.Events;
-using CloudNativeKit.Core.Events.Internal;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Abstractions.Events;
+using Squirrel.Core.Events.Internal;
+using Squirrel.Core.Extensions;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1.Events.Domain;
 

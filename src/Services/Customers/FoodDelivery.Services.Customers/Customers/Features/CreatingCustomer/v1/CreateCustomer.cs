@@ -1,9 +1,3 @@
-using CloudNativeKit.Abstractions.Commands;
-using CloudNativeKit.Core.Domain.ValueObjects;
-using CloudNativeKit.Core.Exception;
-using CloudNativeKit.Core.Extensions;
-using CloudNativeKit.Core.IdsGenerator;
-using CloudNativeKit.Validation.Extensions;
 using FluentValidation;
 using FoodDelivery.Services.Customers.Customers.Exceptions;
 using FoodDelivery.Services.Customers.Customers.Exceptions.Application;
@@ -12,6 +6,12 @@ using FoodDelivery.Services.Customers.Customers.Models.ValueObjects;
 using FoodDelivery.Services.Customers.Shared.Clients.Rest.Identity;
 using FoodDelivery.Services.Customers.Shared.Data;
 using Microsoft.AspNetCore.HeaderPropagation;
+using Squirrel.Abstractions.Commands;
+using Squirrel.Core.Domain.ValueObjects;
+using Squirrel.Core.Exception;
+using Squirrel.Core.Extensions;
+using Squirrel.Core.IdsGenerator;
+using Squirrel.Validation.Extensions;
 
 namespace FoodDelivery.Services.Customers.Customers.Features.CreatingCustomer.v1;
 

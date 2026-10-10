@@ -1,8 +1,8 @@
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Brands.Contracts;
 using FoodDelivery.Services.Catalogs.Brands.ValueObjects;
 using FoodDelivery.Services.Catalogs.Shared.Contracts;
 using FoodDelivery.Services.Catalogs.Shared.Extensions;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Brands.Services;
 

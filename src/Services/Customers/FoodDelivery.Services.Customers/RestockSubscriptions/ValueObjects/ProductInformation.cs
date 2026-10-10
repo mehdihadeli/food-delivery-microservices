@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Customers.Products;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Customers.RestockSubscriptions.ValueObjects;
 

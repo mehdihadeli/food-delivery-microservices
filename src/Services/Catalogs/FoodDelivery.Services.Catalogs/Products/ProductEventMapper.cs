@@ -1,6 +1,3 @@
-using CloudNativeKit.Abstractions.Events;
-using CloudNativeKit.Abstractions.Messages;
-using CloudNativeKit.Core.Extensions;
 using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Domain;
 using FoodDelivery.Services.Catalogs.Products.Features.CreatingProduct.v1.Events.Notification;
 using FoodDelivery.Services.Catalogs.Products.Features.DebitingProductStock.v1.Events.Domain;
@@ -9,6 +6,9 @@ using FoodDelivery.Services.Catalogs.Products.Features.UpdatingProduct.v1;
 using FoodDelivery.Services.Catalogs.Shared.Data;
 using FoodDelivery.Services.Shared.Catalogs.Products.Events.Integration.v1;
 using Microsoft.EntityFrameworkCore;
+using Squirrel.Abstractions.Events;
+using Squirrel.Abstractions.Messages;
+using Squirrel.Core.Extensions;
 
 namespace FoodDelivery.Services.Catalogs.Products;
 

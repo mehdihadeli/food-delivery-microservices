@@ -94,7 +94,7 @@ jobs:
       - name: Calculate version
         id: version
         shell: bash
-        run: NBGV="$RUNNER_TEMP/nbgv/nbgv" ./scripts/calculate-version.sh
+        run: NBGV="$RUNNER_TEMP/nbgv/nbgv" bash ./scripts/calculate-version.sh
 
   docker-build-push:
     name: Build and push microservice images

@@ -8,7 +8,7 @@ namespace FoodDelivery.Services.Customers.RestockSubscriptions.Features.Processi
 public record UpdateMongoRestockSubscriptionsReadModelByTime(DateTime? From, DateTime? To, bool IsDeleted = false)
     : InternalCommand;
 
-internal class UpdateMongoRestockSubscriptionsReadModelByTimeHandler(ICustomersReadUnitOfWork unitOfWork)
+public class UpdateMongoRestockSubscriptionsReadModelByTimeHandler(ICustomersReadUnitOfWork unitOfWork)
     : Squirrel.Abstractions.Commands.ICommandHandler<UpdateMongoRestockSubscriptionsReadModelByTime>
 {
     public async ValueTask<Unit> Handle(

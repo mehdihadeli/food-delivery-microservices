@@ -20,7 +20,7 @@ public record CreateMongoRestockSubscriptionReadModels(
     public bool IsDeleted { get; init; }
 }
 
-internal class CreateRestockSubscriptionReadModelHandler(ICustomersReadUnitOfWork unitOfWork)
+public class CreateRestockSubscriptionReadModelHandler(ICustomersReadUnitOfWork unitOfWork)
     : Squirrel.Abstractions.Commands.ICommandHandler<CreateMongoRestockSubscriptionReadModels>
 {
     public async ValueTask<Unit> Handle(

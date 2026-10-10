@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"name": "Food Delivery Microservices",
+			"path": ".",
+		},
+		{
+			"name": "CloudNativeKit Squirrel",
+			"path": "d:/OpenSource/CloudNativeKit",
+		},
+	],
+	"settings": {
+		"files.exclude": {
+			"**/bin": true,
+			"**/obj": true,
+		},
+		"dotnet.defaultSolution": "food-delivery-microservices.slnx",
+	},
+}

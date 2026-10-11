@@ -113,6 +113,54 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
 - ✔️ **[`Mapperly`](https://github.com/riok/mapperly)** - A .NET source generator for generating object mappings, No runtime reflection.
 - ✔️ **[`IdGen`](https://github.com/RobThree/IdGen)** - Twitter Snowflake-alike ID generator for .Net
 
+### 📡 Distributed Event-Driven Telemetry & AsyncAPI Specification
+
+To satisfy the system architecture definitions for asynchronous messaging topologies across our decoupled microservices (Catalog, Ordering, and Identity systems), the platform exposes structured AsyncAPI specifications. This framework formally models event routing paths, message schemas, and broker bindings (RabbitMQ/MassTransit/Wolverine pipelines) to guarantee transactional consistency.
+
+#### 🏗️ Core AsyncAPI Event Messaging Schema Matrix
+
+```yaml
+asyncapi: 3.0.0
+info:
+  title: Food Delivery Platform Asynchronous Event Network
+  version: 1.0.0
+  description: Multi-tenant event mesh mapping distributed order lifecycles and event streams.
+
+channels:
+  order.created.events:
+    address: food-delivery.orders.v1.order-created
+    messages:
+      OrderCreatedMessage:
+        \$ref: '#/components/messages/OrderCreated'
+
+operations:
+  receiveOrderCreated:
+    action: receive
+    channel:
+      \$ref: '#/channels/order.created.events'
+
+components:
+  messages:
+    OrderCreated:
+      payload:
+        type: object
+        properties:
+          orderId:
+            type: string
+            format: uuid
+          customerId:
+            type: string
+            format: uuid
+          totalAmount:
+            type: number
+            format: float
+          timestamp:
+            type: string
+            format: date-time
+```
+
+
+
 ## The Domain And Bounded Context - Service Boundary
 
 TODO

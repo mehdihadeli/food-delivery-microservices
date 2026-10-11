@@ -15,12 +15,16 @@ COPY ./.editorconfig ./
 COPY ./nuget.config ./
 COPY ./global.json ./
 
+COPY ./Directory.Build.props ../
+COPY ./Directory.Packages.props ../
 COPY ./src/Directory.Build.props ./
 COPY ./src/Directory.Build.targets ./
-COPY ./src/Directory.Packages.props ./
-COPY ./src/Packages.props ./
-COPY ./src/Versions.props ./
 COPY ./src/ApiGateway/Directory.Build.props ./ApiGateway/
+
+COPY ./src/BuildingBlocks/Directory.Build.props ./BuildingBlocks/
+COPY ./src/BuildingBlocks/Directory.Build.targets ./BuildingBlocks/
+COPY ./src/BuildingBlocks/Directory.Packages.props ./BuildingBlocks/
+COPY ./src/BuildingBlocks/src/Directory.Build.props ./BuildingBlocks/src/
 
 COPY ./src/BuildingBlocks/src/Squirrel.Abstractions/Squirrel.Abstractions.csproj ./BuildingBlocks/src/Squirrel.Abstractions/
 COPY ./src/BuildingBlocks/src/Squirrel.Core/Squirrel.Core.csproj ./BuildingBlocks/src/Squirrel.Core/
@@ -42,10 +46,10 @@ COPY ./src/Services/Shared/  ./Services/Shared/
 
 WORKDIR /src/ApiGateway/FoodDelivery.ApiGateway/
 
-RUN dotnet build -c Release --no-restore -a $TARGETARCH
+RUN dotnet build -c Release --no-restore -p:SkipVersion=true -a $TARGETARCH
 
 FROM build AS publish
-RUN dotnet publish -c Release --no-build --no-restore -a $TARGETARCH -o /app/publish
+RUN dotnet publish -c Release --no-build --no-restore -p:SkipVersion=true -a $TARGETARCH -o /app/publish
 
 FROM base AS final
 WORKDIR /app

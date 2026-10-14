@@ -42,14 +42,16 @@ For your simplest .net core projects, you can use my `vertical-slice-api-templat
   - [Application Structure](#application-structure)
     - [High Level Structure](#high-level-structure)
   - [Vertical Slice Flow](#vertical-slice-flow)
-  - [Prerequisites](#prerequisites)
-  - [Setup](#setup)
-    - [Squirrel BuildingBlocks Submodule](#squirrel-buildingblocks-submodule)
-    - [Dev Certificate](#dev-certificate)
-    - [Conventional Commit](#conventional-commit)
-    - [Formatting](#formatting)
-    - [Analizers](#analizers)
-  - [How to Run](#how-to-run)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Clone With Submodules](#clone-with-submodules)
+    - [Setup](#setup)
+      - [Squirrel BuildingBlocks Submodule](#squirrel-buildingblocks-submodule)
+      - [Dev Certificate](#dev-certificate)
+      - [Conventional Commit](#conventional-commit)
+      - [Formatting](#formatting)
+      - [Analizers](#analizers)
+    - [How to Run](#how-to-run)
     - [Using Docker-Compose](#using-docker-compose)
     - [Using Kubernetes](#using-kubernetes)
       - [Plain Kubernetes](#plain-kubernetes)
@@ -223,25 +225,35 @@ TODO
 
 TODO
 
-## Prerequisites
+## Getting Started
+
+### Prerequisites
 
 1. This application uses `Https` for hosting apis, to setup a valid certificate on your machine, you can create a [Self-Signed Certificate](https://learn.microsoft.com/en-us/aspnet/core/security/docker-https?view=aspnetcore-7.0#macos-or-linux), see more about enforce certificate [here](https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl).
 2. Install git - [https://git-scm.com/downloads](https://git-scm.com/downloads).
-3. Install latest .NET version - [https://dotnet.microsoft.com/en-us/download](https://dotnet.microsoft.com/en-us/download).
+3. Install the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). The required SDK is defined in [global.json](global.json).
 4. Install Visual Studio, Rider or VSCode.
-5. Install docker - [https://docs.docker.com/docker-for-windows/install/](https://docs.docker.com/docker-for-windows/install/).
+5. Install [Docker](https://docs.docker.com/desktop/), with a running Linux-container engine.
 6. Make sure that you have ~10GB disk space.
-7. Clone the project with its submodules:
 
-  ```bash
-  git clone --recurse-submodules https://github.com/mehdihadeli/food-delivery-microservices.git
-  ```
+### Clone With Submodules
 
-  This clones the Squirrel BuildingBlocks source into `src/BuildingBlocks`. No separate Squirrel clone or additional submodule setup is required.
-8. Run the [docker-compose.infrastructure.yaml](deployments/docker-compose/docker-compose.infrastructure.yaml) file, for running prerequisites infrastructures with `docker-compose -f ./deployments/docker-compose/docker-compose.infrastructure.yaml up -d` command.
-9. Open [food-delivery-microservices.sln](./food-delivery-microservices.sln) solution.
+Clone the project together with its Squirrel BuildingBlocks submodule:
 
-## Setup
+```powershell
+git clone --recurse-submodules https://github.com/mehdihadeli/food-delivery-microservices.git
+cd food-delivery-microservices
+```
+
+This clones the Squirrel BuildingBlocks source into `src/BuildingBlocks`. If the repository was already cloned without submodules, run:
+
+```powershell
+git submodule update --init --recursive
+```
+
+Open [food-delivery-microservices.slnx](food-delivery-microservices.slnx) in your IDE.
+
+### Setup
 
 ### Squirrel BuildingBlocks Submodule
 
@@ -367,9 +379,38 @@ For roslyn analizers I use serveral analyzers and config the in `.editorconfig` 
 - [meziantou/Meziantou.Analyzer](https://github.com/meziantou/Meziantou.Analyzer)
 - [Microsoft.VisualStudio.Threading.Analyzers](https://www.nuget.org/packages/Microsoft.VisualStudio.Threading.Analyzers)
 
-## How to Run
+### How to Run
 
-For Running this application we could run our microservices one by one in our Dev Environment, for me, it's Rider, Or we could run it with using [Docker-Compose](#using-docker-compose) or we could use [Kubernetes](#using-kubernetes).
+The recommended local development path is the .NET Aspire AppHost. It starts the services and infrastructure resources defined in [FoodDelivery.AppHost](src/Aspire/FoodDelivery.AppHost).
+
+```powershell
+dotnet run --project src/Aspire/FoodDelivery.AppHost
+```
+
+Open the Aspire dashboard URL printed by the AppHost. The dashboard provides links to the gateway, service endpoints, logs, traces, and metrics. The gateway's direct HTTPS profile is `https://localhost:3001`.
+
+For infrastructure-only startup, use [docker-compose.infrastructure.yaml](deployments/docker-compose/docker-compose.infrastructure.yaml):
+
+```powershell
+docker compose -f deployments/docker-compose/docker-compose.infrastructure.yaml up -d
+```
+
+To run the services in development containers, use the base service file with its development override:
+
+Create the local Compose environment files first. Review the values in `.env`, especially the development credentials:
+
+```powershell
+Copy-Item deployments/docker-compose/.env.sample deployments/docker-compose/.env
+Copy-Item deployments/docker-compose/.env.dev.sample deployments/docker-compose/.env.dev
+```
+
+```powershell
+docker compose `
+  -f deployments/docker-compose/docker-compose.services.yaml `
+  -f deployments/docker-compose/docker-compose.services.dev.yaml `
+  --env-file deployments/docker-compose/.env `
+  --env-file deployments/docker-compose/.env.dev up --build
+```
 
 For testing apis I used [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) plugin of VSCode its related file scenarios are available in [\_httpclients](_httpclients) folder. also after running api you have access to `swagger open api` for all microservices in `/swagger` route path.
 
